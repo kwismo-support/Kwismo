@@ -93,7 +93,7 @@ cp .env.example .env
 uvicorn src.api.main:app --reload --port 8001
 ```
 
-Le service tourne sur **[http://localhost:8001](API)** — documentation sur **[http://localhost:8001/docs](API Docs)**.
+Le service tourne sur **[API](http://localhost:8001)** — documentation sur **[API Docs](http://localhost:8001/docs)**.
 
 ### Avec Docker (depuis la racine du monorepo)
 
@@ -251,7 +251,7 @@ Le cycle est le même pour les deux modèles :
 | `GET /health` | État du service. |
 | `GET /version` | Version du modèle chargé. |
 
-Documentation interactive : **[http://localhost:8001/docs](API Docs)**.
+Documentation interactive : **[API Docs](http://localhost:8001/docs)**.
 
 ---
 

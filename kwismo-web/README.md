@@ -85,7 +85,7 @@ cp .env.example .env
 npm run dev
 ```
 
-L'application tourne sur **[http://localhost:5173](Site Web)**.
+L'application tourne sur cette **[page](http://localhost:5173)**.
 
 ---
 

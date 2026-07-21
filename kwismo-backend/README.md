@@ -98,7 +98,7 @@ python scripts/seed.py
 uvicorn app.main:app --reload
 ```
 
-L'API tourne sur **[http://localhost:8000](API)** — documentation sur **[http://localhost:8000/docs](API Docs)**.
+L'API tourne sur **[API](http://localhost:8000)** — documentation sur **[API Docs](http://localhost:8000/docs)**.
 
 ### Avec Docker (depuis la racine du monorepo)
 

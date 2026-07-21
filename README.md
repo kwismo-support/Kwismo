@@ -184,9 +184,9 @@ Services démarrés :
 
 | Service | URL locale |
 | ------- | ---------- |
-| API Backend | [http://localhost:8000](API Backend) |
-| Documentation Swagger | [http://localhost:8000/docs](Documentation Swagger) |
-| Service IA | [http://localhost:8001](Service AI) |
+| API Backend | [API Backend](http://localhost:8000) |
+| Documentation Swagger | [Documentation Swagger](http://localhost:8000/docs) |
+| Service IA | [Service AI](http://localhost:8001) |
 | Base de données | interne (non exposée) |
 
 Le **web** et le **mobile** se lancent séparément (voir §7) car ce sont des interfaces de développement.
