@@ -1,0 +1,154 @@
+﻿Issue Type,Issue Key,Summary,Epic Name,Epic Link,Parent,Assignee,Sprint,Estimate (j),Depends On,Component
+Epic,CONC,Épic 1 — Conception,Épic 1 — Conception,,,,,,,CONC
+Story,CONC-1,Finalisation des diagrammes UML,,Épic 1 — Conception,,Dev Backend,Sprint 1 — Conception & Maquette (20 → 24 juil. 2026),2,,CONC
+Sub-task,CONC-1-1,"Revue des diagrammes de cas d’utilisation, séquence, activité, classe",,,CONC-1,Dev Backend,Sprint 1 — Conception & Maquette (20 → 24 juil. 2026),1,,CONC
+Sub-task,CONC-1-2,Validation croisée avec l’équipe et gel de la conception,,,CONC-1,Dev Backend,Sprint 1 — Conception & Maquette (20 → 24 juil. 2026),1,,CONC
+Story,CONC-2,"Validation des cahiers des charges (Web, Mobile, Backend, IA)",,Épic 1 — Conception,,Dev Backend,Sprint 1 — Conception & Maquette (20 → 24 juil. 2026),1,,CONC
+Sub-task,CONC-2-1,Lecture partagée et amendements,,,CONC-2,Dev Backend,Sprint 1 — Conception & Maquette (20 → 24 juil. 2026),1,,CONC
+Epic,DES,"Épic 2 — Design, Maquette & Branding","Épic 2 — Design, Maquette & Branding",,,,,,,DES
+Story,DES-1,"Design system Figma (tokens, composants, thèmes clair/sombre)",,"Épic 2 — Design, Maquette & Branding",,Designer,Sprint 1 — Conception & Maquette (20 → 24 juil. 2026),1,CONC-2,DES
+Sub-task,DES-1-1,Variables couleurs (clair/sombre) + styles de texte (Poppins/Aptos) + composants de base,,,DES-1,Designer,Sprint 1 — Conception & Maquette (20 → 24 juil. 2026),1,,DES
+Story,DES-2,"Maquette Web (landing + admin + partenaire, responsive, 2 thèmes)",,"Épic 2 — Design, Maquette & Branding",,Designer,Sprint 1 — Conception & Maquette (20 → 24 juil. 2026),2,DES-1,DES
+Sub-task,DES-2-1,"Landing (hero, comparatif, fonctionnalités, pricing API, footer)",,,DES-2,Designer,Sprint 1 — Conception & Maquette (20 → 24 juil. 2026),1,,DES
+Sub-task,DES-2-2,"Espaces Admin & Partenaire (dashboard, modules, états)",,,DES-2,Designer,Sprint 1 — Conception & Maquette (20 → 24 juil. 2026),1,,DES
+Story,DES-3,"Maquette Mobile (onboarding, auth, écrans app, 2 thèmes)",,"Épic 2 — Design, Maquette & Branding",,Designer,Sprint 1 — Conception & Maquette (20 → 24 juil. 2026),1,DES-1,DES
+Sub-task,DES-3-1,Splash/onboarding + connexion pays/numéro + OTP + écrans app,,,DES-3,Designer,Sprint 1 — Conception & Maquette (20 → 24 juil. 2026),1,,DES
+Story,DES-4,Prototype interactif + remise des specs aux développeurs,,"Épic 2 — Design, Maquette & Branding",,Designer,Sprint 1 — Conception & Maquette (20 → 24 juil. 2026),1,DES-2; DES-3,DES
+Sub-task,DES-4-1,"Prototype cliquable (navigation, bascules thème/langue)",,,DES-4,Designer,Sprint 1 — Conception & Maquette (20 → 24 juil. 2026),1,,DES
+Story,DES-5,Branding complet & charte marketing,,"Épic 2 — Design, Maquette & Branding",,Designer,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),5,DES-4,DES
+Sub-task,DES-5-1,"Déclinaisons du logo, charte, gabarits d’affiches",,,DES-5,Designer,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),2,,DES
+Sub-task,DES-5-2,"Kit de communication (couleurs, typographies, ton)",,,DES-5,Designer,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),1,,DES
+Sub-task,DES-5-3,"Support ponctuel aux développeurs (assets, ajustements maquette)",,,DES-5,Designer,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),2,,DES
+Story,DES-6,Création & lancement des pages sociales,,"Épic 2 — Design, Maquette & Branding",,Designer,Sprint 3 — Développement (2/3) (3 → 7 août 2026),5,DES-5,DES
+Sub-task,DES-6-1,"Ouverture des comptes (Facebook, Instagram, LinkedIn, TikTok…)",,,DES-6,Designer,Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,DES
+Sub-task,DES-6-2,Visuels de lancement + calendrier éditorial,,,DES-6,Designer,Sprint 3 — Développement (2/3) (3 → 7 août 2026),2,,DES
+Sub-task,DES-6-3,Affiches de teasing + animations,,,DES-6,Designer,Sprint 3 — Développement (2/3) (3 → 7 août 2026),2,,DES
+Story,DES-7,Préparation de la campagne de lancement V1,,"Épic 2 — Design, Maquette & Branding",,Designer,Sprint 4 — Développement (3/3) (10 → 14 août 2026),5,DES-6,DES
+Sub-task,DES-7-1,"Assets de lancement (store, réseaux, presse)",,,DES-7,Designer,Sprint 4 — Développement (3/3) (10 → 14 août 2026),2,,DES
+Sub-task,DES-7-2,Vidéo/animation de présentation de l’app,,,DES-7,Designer,Sprint 4 — Développement (3/3) (10 → 14 août 2026),2,,DES
+Sub-task,DES-7-3,Vérification des visuels sur la V1 avant publication,,,DES-7,Designer,Sprint 4 — Développement (3/3) (10 → 14 août 2026),1,,DES
+Epic,BACK,Épic 3 — Backend hybride,Épic 3 — Backend hybride,,,,,,,BACK
+Story,BACK-1,Initialisation projet & socle technique,,Épic 3 — Backend hybride,,Dev Backend,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),2,CONC-1,BACK
+Sub-task,BACK-1-1,"Structure en couches, config, Docker, docker-compose",,,BACK-1,Dev Backend,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),1,,BACK
+Sub-task,BACK-1-2,Schéma Prisma initial (SQLite) + première migration,,,BACK-1,Dev Backend,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),1,,BACK
+Story,BACK-2,Authentification & sécurité de base,,Épic 3 — Backend hybride,,Dev Backend,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),3,BACK-1,BACK
+Sub-task,BACK-2-1,"JWT (access/refresh), Argon2, OTP, reset par email",,,BACK-2,Dev Backend,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),2,,BACK
+Sub-task,BACK-2-2,RBAC (user/partner/admin) + dépendances de rôle,,,BACK-2,Dev Backend,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),1,,BACK
+Story,BACK-3,"Modules cœur : users, numbers, reports",,Épic 3 — Backend hybride,,Dev Backend,Sprint 3 — Développement (2/3) (3 → 7 août 2026),3,BACK-2,BACK
+Sub-task,BACK-3-1,CRUD utilisateurs + profil + KPI perso,,,BACK-3,Dev Backend,Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,BACK
+Sub-task,BACK-3-2,Vérification de numéro (+ batch contacts),,,BACK-3,Dev Backend,Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,BACK
+Sub-task,BACK-3-3,Signalements,,,BACK-3,Dev Backend,Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,BACK
+Story,BACK-4,"Modules USSD, partenaires & affiliation",,Épic 3 — Backend hybride,,Dev Backend,Sprint 3 — Développement (2/3) (3 → 7 août 2026),2,BACK-3,BACK
+Sub-task,BACK-4-1,Pays/Opérateurs/Actions USSD (CRUD admin),,,BACK-4,Dev Backend,Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,BACK
+Sub-task,BACK-4-2,Partenaires + règles d’affiliation par préfixes + cloisonnement,,,BACK-4,Dev Backend,Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,BACK
+Story,BACK-5,Passerelle IA (synchrone + asynchrone) & repli par règles,,Épic 3 — Backend hybride,,Dev Backend,Sprint 4 — Développement (3/3) (10 → 14 août 2026),2,BACK-3,BACK
+Sub-task,BACK-5-1,Appel /predict + timeout + repli règles expertes,,,BACK-5,Dev Backend,Sprint 4 — Développement (3/3) (10 → 14 août 2026),1,,BACK
+Sub-task,BACK-5-2,Transmission des signalements (/feedback) en asynchrone,,,BACK-5,Dev Backend,Sprint 4 — Développement (3/3) (10 → 14 août 2026),1,,BACK
+Story,BACK-6,"Transactions, WhatsApp, enquêtes, notifications, KPI",,Épic 3 — Backend hybride,,Dev Backend,Sprint 4 — Développement (3/3) (10 → 14 août 2026),2,BACK-4,BACK
+Sub-task,BACK-6-1,Préparation transfert USSD + alerte WhatsApp + enquêtes,,,BACK-6,Dev Backend,Sprint 4 — Développement (3/3) (10 → 14 août 2026),1,,BACK
+Sub-task,BACK-6-2,KPI (global/partenaire) + notifications,,,BACK-6,Dev Backend,Sprint 4 — Développement (3/3) (10 → 14 août 2026),1,,BACK
+Story,BACK-7,"i18n FR/EN, Swagger & durcissement sécurité",,Épic 3 — Backend hybride,,Dev Backend,Sprint 4 — Développement (3/3) (10 → 14 août 2026),2,BACK-6,BACK
+Sub-task,BACK-7-1,Fichiers FR/EN + middleware de langue,,,BACK-7,Dev Backend,Sprint 4 — Développement (3/3) (10 → 14 août 2026),1,,BACK
+Sub-task,BACK-7-2,"Rate-limiting, en-têtes, CORS, audit log, protections réseau + Swagger finalisé",,,BACK-7,Dev Backend,Sprint 4 — Développement (3/3) (10 → 14 août 2026),1,,BACK
+Epic,IA,Épic 4 — Modèle IA,Épic 4 — Modèle IA,,,,,,,IA
+Story,IA-1,Initialisation projet IA & pipeline de données,,Épic 4 — Modèle IA,,Data 1 (Scoring),Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),3,CONC-1,IA
+Sub-task,IA-1-1,Structure Cookiecutter DS + Docker + contrat d’API partagé,,,IA-1,Data 1 (Scoring),Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),1,,IA
+Sub-task,IA-1-2,"Collecte (via backend), nettoyage, features (Modèle A)",,,IA-1,Data 1 (Scoring),Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),2,,IA
+Story,IA-2,Collecte & annotation des données texte (local),,Épic 4 — Modèle IA,,Data 2 (NLP),Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),4,CONC-1,IA
+Sub-task,IA-2-1,"Rassemblement des messages (dons, jeux publics d’amorçage)",,,IA-2,Data 2 (NLP),Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),2,,IA
+Sub-task,IA-2-2,Annotation arnaque/légitime + prétraitement franglais/pidgin,,,IA-2,Data 2 (NLP),Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),2,,IA
+Story,IA-3,Modèle A — entraînement scoring + règles expertes,,Épic 4 — Modèle IA,,Data 1 (Scoring),Sprint 3 — Développement (2/3) (3 → 7 août 2026),3,IA-1,IA
+Sub-task,IA-3-1,Entraînement LightGBM + baseline + seuils,,,IA-3,Data 1 (Scoring),Sprint 3 — Développement (2/3) (3 → 7 août 2026),2,,IA
+Sub-task,IA-3-2,Règles expertes (démarrage à froid / repli),,,IA-3,Data 1 (Scoring),Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,IA
+Story,IA-4,Modèle B — fine-tuning NLP AfroXLMR (Colab/PC),,Épic 4 — Modèle IA,,Data 2 (NLP),Sprint 3 — Développement (2/3) (3 → 7 août 2026),4,IA-2,IA
+Sub-task,IA-4-1,Fine-tuning léger (PEFT/LoRA) sur Colab + quantification,,,IA-4,Data 2 (NLP),Sprint 3 — Développement (2/3) (3 → 7 août 2026),2,,IA
+Sub-task,IA-4-2,Repli TF-IDF garanti + évaluation,,,IA-4,Data 2 (NLP),Sprint 3 — Développement (2/3) (3 → 7 août 2026),2,,IA
+Story,IA-5,"Service d’inférence FastAPI (/predict, /feedback)",,Épic 4 — Modèle IA,,Data 1 (Scoring),Sprint 4 — Développement (3/3) (10 → 14 août 2026),3,IA-3; BACK-5,IA
+Sub-task,IA-5-1,Routes /predict/number + /feedback + /health + /version,,,IA-5,Data 1 (Scoring),Sprint 4 — Développement (3/3) (10 → 14 août 2026),2,,IA
+Sub-task,IA-5-2,Intégration au docker-compose commun + dossier models partagé,,,IA-5,Data 1 (Scoring),Sprint 4 — Développement (3/3) (10 → 14 août 2026),1,,IA
+Story,IA-6,Intégration NLP au service + évaluation finale & biais,,Épic 4 — Modèle IA,,Data 2 (NLP),Sprint 4 — Développement (3/3) (10 → 14 août 2026),3,IA-4; IA-5,IA
+Sub-task,IA-6-1,Route /predict/text + chargement du modèle quantifié,,,IA-6,Data 2 (NLP),Sprint 4 — Développement (3/3) (10 → 14 août 2026),2,,IA
+Sub-task,IA-6-2,Métriques (rappel/précision/F1) + surveillance des biais,,,IA-6,Data 2 (NLP),Sprint 4 — Développement (3/3) (10 → 14 août 2026),1,,IA
+Epic,WEB,Épic 5 — Frontend Web,Épic 5 — Frontend Web,,,,,,,WEB
+Story,WEB-1,Initialisation & design system en code,,Épic 5 — Frontend Web,,Dev Frontend,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),2,DES-4,WEB
+Sub-task,WEB-1-1,Vite + React + Tailwind + shadcn/ui + i18n + thèmes,,,WEB-1,Dev Frontend,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),1,,WEB
+Sub-task,WEB-1-2,"Composants de base d’après la maquette (tokens, UI)",,,WEB-1,Dev Frontend,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),1,,WEB
+Story,WEB-2,Landing page (statique) responsive & bilingue,,Épic 5 — Frontend Web,,Dev Frontend,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),3,WEB-1,WEB
+Sub-task,WEB-2-1,"Sections hero, problème, comparatif, fonctionnalités",,,WEB-2,Dev Frontend,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),2,,WEB
+Sub-task,WEB-2-2,"Pricing API, CTA, footer + thèmes clair/sombre",,,WEB-2,Dev Frontend,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),1,,WEB
+Story,WEB-3,Écrans Admin/Partenaire (statiques) + états UI,,Épic 5 — Frontend Web,,Dev Frontend,Sprint 3 — Développement (2/3) (3 → 7 août 2026),3,WEB-2,WEB
+Sub-task,WEB-3-1,"Layout applicatif (sidebar, topbar, dashboard, tableaux)",,,WEB-3,Dev Frontend,Sprint 3 — Développement (2/3) (3 → 7 août 2026),2,,WEB
+Sub-task,WEB-3-2,États chargement/vide/erreur/succès (skeletons),,,WEB-3,Dev Frontend,Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,WEB
+Story,WEB-4,"Connexion à l’API (auth, données)",,Épic 5 — Frontend Web,,Dev Frontend,Sprint 3 — Développement (2/3) (3 → 7 août 2026),2,WEB-3; BACK-2,WEB
+Sub-task,WEB-4-1,"Auth (login, refresh, routes protégées par rôle)",,,WEB-4,Dev Frontend,Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,WEB
+Sub-task,WEB-4-2,TanStack Query + intercepteurs Axios,,,WEB-4,Dev Frontend,Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,WEB
+Story,WEB-5,Intégration complète des modules & finitions,,Épic 5 — Frontend Web,,Dev Frontend,Sprint 4 — Développement (3/3) (10 → 14 août 2026),5,WEB-4; BACK-6,WEB
+Sub-task,WEB-5-1,"Branchement modules (users, numbers, partenaires, USSD, KPI)",,,WEB-5,Dev Frontend,Sprint 4 — Développement (3/3) (10 → 14 août 2026),3,,WEB
+Sub-task,WEB-5-2,"Accessibilité (WCAG AA), responsive final, polish",,,WEB-5,Dev Frontend,Sprint 4 — Développement (3/3) (10 → 14 août 2026),1,,WEB
+Sub-task,WEB-5-3,Tests manuels + corrections,,,WEB-5,Dev Frontend,Sprint 4 — Développement (3/3) (10 → 14 août 2026),1,,WEB
+Epic,MOB,Épic 6 — Application Mobile,Épic 6 — Application Mobile,,,,,,,MOB
+Story,MOB-1,Initialisation Expo & design system en code,,Épic 6 — Application Mobile,,Dev Mobile,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),2,DES-4,MOB
+Sub-task,MOB-1-1,Expo Router + NativeWind + i18n + thèmes + SecureStore,,,MOB-1,Dev Mobile,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),1,,MOB
+Sub-task,MOB-1-2,Composants de base d’après la maquette,,,MOB-1,Dev Mobile,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),1,,MOB
+Story,MOB-2,"Onboarding, connexion & écrans statiques",,Épic 6 — Application Mobile,,Dev Mobile,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),3,MOB-1,MOB
+Sub-task,MOB-2-1,Splash/onboarding animés (Reanimated/Moti),,,MOB-2,Dev Mobile,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),1,,MOB
+Sub-task,MOB-2-2,Connexion pays/numéro (libphonenumber) + OTP (UI),,,MOB-2,Dev Mobile,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),1,,MOB
+Sub-task,MOB-2-3,"Écrans app statiques (accueil, vérif, contacts, profil…)",,,MOB-2,Dev Mobile,Sprint 2 — Développement (1/3) (27 → 31 juil. 2026),1,,MOB
+Story,MOB-3,Fonctionnalités natives UI/UX,,Épic 6 — Application Mobile,,Dev Mobile,Sprint 3 — Développement (2/3) (3 → 7 août 2026),3,MOB-2,MOB
+Sub-task,MOB-3-1,Capture d’appel entrant + overlay d’alerte,,,MOB-3,Dev Mobile,Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,MOB
+Sub-task,MOB-3-2,Lecture des contacts (permissions) + insignes,,,MOB-3,Dev Mobile,Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,MOB
+Sub-task,MOB-3-3,Formulaire d’enquête (notification) + composition USSD,,,MOB-3,Dev Mobile,Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,MOB
+Story,MOB-4,"Connexion à l’API (auth, données)",,Épic 6 — Application Mobile,,Dev Mobile,Sprint 3 — Développement (2/3) (3 → 7 août 2026),2,MOB-3; BACK-2,MOB
+Sub-task,MOB-4-1,Auth OTP + stockage sécurisé des tokens,,,MOB-4,Dev Mobile,Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,MOB
+Sub-task,MOB-4-2,TanStack Query + branchement vérif/contacts,,,MOB-4,Dev Mobile,Sprint 3 — Développement (2/3) (3 → 7 août 2026),1,,MOB
+Story,MOB-5,Intégration complète des modules & finitions,,Épic 6 — Application Mobile,,Dev Mobile,Sprint 4 — Développement (3/3) (10 → 14 août 2026),5,MOB-4; BACK-6,MOB
+Sub-task,MOB-5-1,"Branchement transfert USSD, alerte WhatsApp, signalement, KPI",,,MOB-5,Dev Mobile,Sprint 4 — Développement (3/3) (10 → 14 août 2026),3,,MOB
+Sub-task,MOB-5-2,"Responsive, accessibilité, mode hors-ligne, polish",,,MOB-5,Dev Mobile,Sprint 4 — Développement (3/3) (10 → 14 août 2026),1,,MOB
+Sub-task,MOB-5-3,Tests sur appareils + corrections,,,MOB-5,Dev Mobile,Sprint 4 — Développement (3/3) (10 → 14 août 2026),1,,MOB
+Epic,DEP,"Épic 7 — Déploiement, Tests & Lancement V1","Épic 7 — Déploiement, Tests & Lancement V1",,,,,,,DEP
+Story,DEP-1,Tests d’intégration bout en bout,,"Épic 7 — Déploiement, Tests & Lancement V1",,Dev Backend,"Sprint 5 — Déploiement, tests & lancement V1 (17 → 21 août 2026)",2,BACK-7; IA-6; WEB-5; MOB-5,DEP
+Sub-task,DEP-1-1,"Scénarios complets (vérif, transfert, signalement, alerte)",,,DEP-1,Dev Backend,"Sprint 5 — Déploiement, tests & lancement V1 (17 → 21 août 2026)",1,,DEP
+Sub-task,DEP-1-2,Correctifs bloquants identifiés,,,DEP-1,Dev Frontend,"Sprint 5 — Déploiement, tests & lancement V1 (17 → 21 août 2026)",1,,DEP
+Story,DEP-2,Déploiement backend + IA + base (prod),,"Épic 7 — Déploiement, Tests & Lancement V1",,Dev Backend,"Sprint 5 — Déploiement, tests & lancement V1 (17 → 21 août 2026)",2,DEP-1,DEP
+Sub-task,DEP-2-1,"Bascule PostgreSQL, secrets, HTTPS, reverse proxy",,,DEP-2,Dev Backend,"Sprint 5 — Déploiement, tests & lancement V1 (17 → 21 août 2026)",1,,DEP
+Sub-task,DEP-2-2,Déploiement service IA + dossier models partagé,,,DEP-2,Data 1 (Scoring),"Sprint 5 — Déploiement, tests & lancement V1 (17 → 21 août 2026)",1,,DEP
+Story,DEP-3,Déploiement web + publication de l’app mobile,,"Épic 7 — Déploiement, Tests & Lancement V1",,Dev Frontend,"Sprint 5 — Déploiement, tests & lancement V1 (17 → 21 août 2026)",2,DEP-2,DEP
+Sub-task,DEP-3-1,Mise en ligne du site (landing + espaces),,,DEP-3,Dev Frontend,"Sprint 5 — Déploiement, tests & lancement V1 (17 → 21 août 2026)",1,,DEP
+Sub-task,DEP-3-2,Build & soumission de l’app (stores / distribution),,,DEP-3,Dev Mobile,"Sprint 5 — Déploiement, tests & lancement V1 (17 → 21 août 2026)",1,,DEP
+Story,DEP-4,Lancement public V1 & collecte des premiers retours,,"Épic 7 — Déploiement, Tests & Lancement V1",,Designer,"Sprint 5 — Déploiement, tests & lancement V1 (17 → 21 août 2026)",1,DEP-3,DEP
+Sub-task,DEP-4-1,"Campagne de lancement (réseaux, affiches)",,,DEP-4,Designer,"Sprint 5 — Déploiement, tests & lancement V1 (17 → 21 août 2026)",1,,DEP
+Epic,MAINT,"Épic 8 — Maintenance, Peaufinage & Acquisition","Épic 8 — Maintenance, Peaufinage & Acquisition",,,,,,,MAINT
+Story,MAINT-1,Correction des bugs post-lancement,,"Épic 8 — Maintenance, Peaufinage & Acquisition",,Dev Backend,Sprint 6 — Maintenance & acquisition (1/3) (24 → 28 août 2026),5,DEP-4,MAINT
+Sub-task,MAINT-1-1,Tri et priorisation des retours utilisateurs,,,MAINT-1,Dev Backend,Sprint 6 — Maintenance & acquisition (1/3) (24 → 28 août 2026),1,,MAINT
+Sub-task,MAINT-1-2,Correctifs backend/API,,,MAINT-1,Dev Backend,Sprint 6 — Maintenance & acquisition (1/3) (24 → 28 août 2026),2,,MAINT
+Sub-task,MAINT-1-3,Correctifs web & mobile,,,MAINT-1,Dev Frontend,Sprint 6 — Maintenance & acquisition (1/3) (24 → 28 août 2026),2,,MAINT
+Story,MAINT-2,Peaufinage du modèle IA (réentraînement),,"Épic 8 — Maintenance, Peaufinage & Acquisition",,Data 1 (Scoring),Sprint 6 — Maintenance & acquisition (1/3) (24 → 28 août 2026),5,DEP-4,MAINT
+Sub-task,MAINT-2-1,Réentraînement avec les vrais signalements collectés,,,MAINT-2,Data 1 (Scoring),Sprint 6 — Maintenance & acquisition (1/3) (24 → 28 août 2026),2,,MAINT
+Sub-task,MAINT-2-2,Réglage des seuils + suivi des métriques,,,MAINT-2,Data 2 (NLP),Sprint 6 — Maintenance & acquisition (1/3) (24 → 28 août 2026),2,,MAINT
+Sub-task,MAINT-2-3,Surveillance des biais en conditions réelles,,,MAINT-2,Data 2 (NLP),Sprint 6 — Maintenance & acquisition (1/3) (24 → 28 août 2026),1,,MAINT
+Story,MAINT-3,Acquisition & animation des réseaux (S6),,"Épic 8 — Maintenance, Peaufinage & Acquisition",,Designer,Sprint 6 — Maintenance & acquisition (1/3) (24 → 28 août 2026),5,DEP-4,MAINT
+Sub-task,MAINT-3-1,Publications régulières + campagnes d’acquisition,,,MAINT-3,Designer,Sprint 6 — Maintenance & acquisition (1/3) (24 → 28 août 2026),3,,MAINT
+Sub-task,MAINT-3-2,Affiches & contenus pour pousser au téléchargement,,,MAINT-3,Designer,Sprint 6 — Maintenance & acquisition (1/3) (24 → 28 août 2026),2,,MAINT
+Story,MAINT-3B,Acquisition & animation des réseaux (S7),,"Épic 8 — Maintenance, Peaufinage & Acquisition",,Designer,Sprint 7 — Maintenance & acquisition (2/3) (31 août → 4 sept. 2026),5,MAINT-3,MAINT
+Sub-task,MAINT-3B-1,Nouvelles campagnes + contenus de croissance,,,MAINT-3B,Designer,Sprint 7 — Maintenance & acquisition (2/3) (31 août → 4 sept. 2026),3,,MAINT
+Sub-task,MAINT-3B-2,Suivi de l’audience et ajustements,,,MAINT-3B,Designer,Sprint 7 — Maintenance & acquisition (2/3) (31 août → 4 sept. 2026),2,,MAINT
+Story,MAINT-3C,Acquisition & animation des réseaux (S8),,"Épic 8 — Maintenance, Peaufinage & Acquisition",,Designer,Sprint 8 — Maintenance & acquisition (3/3) (7 → 11 sept. 2026),5,MAINT-3B,MAINT
+Sub-task,MAINT-3C-1,Consolidation de la communauté + bilan d’acquisition,,,MAINT-3C,Designer,Sprint 8 — Maintenance & acquisition (3/3) (7 → 11 sept. 2026),3,,MAINT
+Sub-task,MAINT-3C-2,Préparation des visuels pour la présentation,,,MAINT-3C,Designer,Sprint 8 — Maintenance & acquisition (3/3) (7 → 11 sept. 2026),2,,MAINT
+Story,MAINT-4,Améliorations & stabilisation (itératif),,"Épic 8 — Maintenance, Peaufinage & Acquisition",,Dev Mobile,Sprint 7 — Maintenance & acquisition (2/3) (31 août → 4 sept. 2026),5,MAINT-1,MAINT
+Sub-task,MAINT-4-1,"Optimisations mobile (performance, UX)",,,MAINT-4,Dev Mobile,Sprint 7 — Maintenance & acquisition (2/3) (31 août → 4 sept. 2026),3,,MAINT
+Sub-task,MAINT-4-2,Optimisations web + backend,,,MAINT-4,Dev Frontend,Sprint 7 — Maintenance & acquisition (2/3) (31 août → 4 sept. 2026),2,,MAINT
+Story,MAINT-5,Réentraînement continu & vérif de robustesse,,"Épic 8 — Maintenance, Peaufinage & Acquisition",,Data 1 (Scoring),Sprint 7 — Maintenance & acquisition (2/3) (31 août → 4 sept. 2026),5,MAINT-2,MAINT
+Sub-task,MAINT-5-1,Boucle d’apprentissage continu vérifiée en prod,,,MAINT-5,Data 1 (Scoring),Sprint 7 — Maintenance & acquisition (2/3) (31 août → 4 sept. 2026),3,,MAINT
+Sub-task,MAINT-5-2,Contrôle qualité des prédictions,,,MAINT-5,Data 2 (NLP),Sprint 7 — Maintenance & acquisition (2/3) (31 août → 4 sept. 2026),2,,MAINT
+Story,MAINT-6,Gel du code & stabilisation finale,,"Épic 8 — Maintenance, Peaufinage & Acquisition",,Dev Backend,Sprint 8 — Maintenance & acquisition (3/3) (7 → 11 sept. 2026),5,MAINT-4; MAINT-5,MAINT
+Sub-task,MAINT-6-1,Derniers correctifs + gel de version,,,MAINT-6,Dev Backend,Sprint 8 — Maintenance & acquisition (3/3) (7 → 11 sept. 2026),2,,MAINT
+Sub-task,MAINT-6-2,Vérification complète de la V1 stabilisée,,,MAINT-6,Dev Frontend,Sprint 8 — Maintenance & acquisition (3/3) (7 → 11 sept. 2026),2,,MAINT
+Sub-task,MAINT-6-3,Sauvegardes & documentation de maintenance,,,MAINT-6,Dev Mobile,Sprint 8 — Maintenance & acquisition (3/3) (7 → 11 sept. 2026),1,,MAINT
+Epic,PRES,Épic 9 — Préparation de la présentation,Épic 9 — Préparation de la présentation,,,,,,,PRES
+Story,PRES-1,Support de présentation & récit du projet,,Épic 9 — Préparation de la présentation,,Designer,Sprint 9 — Préparation de la présentation (14 → 18 sept. 2026),3,MAINT-6,PRES
+Sub-task,PRES-1-1,"Slides (problème, solution, architecture, résultats)",,,PRES-1,Designer,Sprint 9 — Préparation de la présentation (14 → 18 sept. 2026),2,,PRES
+Sub-task,PRES-1-2,Chiffres d’impact & retours utilisateurs,,,PRES-1,Data 2 (NLP),Sprint 9 — Préparation de la présentation (14 → 18 sept. 2026),1,,PRES
+Story,PRES-2,Scénario de démonstration live,,Épic 9 — Préparation de la présentation,,Dev Mobile,Sprint 9 — Préparation de la présentation (14 → 18 sept. 2026),2,PRES-1,PRES
+Sub-task,PRES-2-1,"Parcours démo (vérif, transfert, alerte)",,,PRES-2,Dev Mobile,Sprint 9 — Préparation de la présentation (14 → 18 sept. 2026),1,,PRES
+Sub-task,PRES-2-2,Répétition générale + plan B (vidéo de secours),,,PRES-2,Dev Frontend,Sprint 9 — Préparation de la présentation (14 → 18 sept. 2026),1,,PRES
