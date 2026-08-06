@@ -146,7 +146,7 @@ kwismo-ai/
 │
 ├─ src/                             # ★ Code source réutilisable
 │  ├─ __init__.py                   # Signale une erreur si mauvaise version Python
-│  ├─ config.py                     # Chemins, seuils, hyperparamètres
+│  ├─ config.py                     # Settings Pydantic : BACKEND_URL, MODEL_DIR, seuils…
 │  │
 │  ├─ data/
 │  │  ├─ __init__.py
@@ -176,8 +176,10 @@ kwismo-ai/
 │  │
 │  └─ api/                          # ★ Service d'inférence (FastAPI)
 │     ├─ __init__.py
-│     ├─ main.py                    # Routes /predict, /feedback, /health, /version
-│     ├─ schemas.py                 # ★ Contrat d'API PARTAGÉ avec le backend
+│     ├─ main.py                    # ★ 5 routes : /predict/number, /predict/text, /feedback, /health, /version
+│     ├─ schemas.py                 # ★ Contrat d'API PARTAGÉ, identique à kwismo-backend/app/modules/ai_gateway/schemas.py
+│     ├─ errors.py                  # ★ slowapi (anti-surcharge) + gestionnaires d'erreurs globaux (anti-crash)
+│     ├─ middleware.py              # ★ Limite de taille de requête (texte trop long → 413)
 │     └─ loader.py                  # Charge la dernière version du modèle
 │
 ├─ models/                          # ★ Artefacts entraînés (partagés au backend)

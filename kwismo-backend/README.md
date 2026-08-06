@@ -142,20 +142,21 @@ kwismo-backend/
 │  ├─ core/                          # Cœur transverse (partagé par tous les modules)
 │  │  ├─ __init__.py
 │  │  ├─ config.py                   # Settings Pydantic (lecture des variables .env)
-│  │  ├─ security.py                 # JWT (création/vérif), hachage Argon2, get_current_user
-│  │  ├─ permissions.py              # RBAC : require_role("admin"), require_role("partner")
-│  │  ├─ rate_limit.py               # Limitation de débit (par IP / utilisateur)
-│  │  ├─ middleware.py               # Journalisation, en-têtes de sécurité, mesure du temps
-│  │  ├─ exceptions.py               # Exceptions métier + gestionnaire d'erreurs global
+│  │  ├─ security.py                 # Schéma Bearer + get_current_user (squelette JWT)
+│  │  ├─ permissions.py              # RBAC : require_roles("admin"), require_roles("partner")
+│  │  ├─ schemas.py                  # Page[T], ErrorResponse, Message, HealthOut (bilingues)
+│  │  ├─ rate_limit.py               # ★ slowapi : limite globale + AUTH/OTP_RATE_LIMIT (anti brute-force)
+│  │  ├─ middleware.py               # ★ En-têtes de sécurité HTTP + limite de taille de requête
+│  │  ├─ exceptions.py               # ★ not_implemented() + gestionnaires globaux (anti-crash, §8.4)
 │  │  ├─ i18n.py                     # Chargement des traductions, résolution de la langue
 │  │  └─ logging.py                  # Configuration des logs structurés (JSON)
 │  │
 │  ├─ db/
 │  │  ├─ __init__.py
-│  │  ├─ prisma_client.py            # Instance Prisma unique (connexion/déconnexion)
+│  │  ├─ prisma_client.py            # ★ Instance Prisma unique + connect/disconnect (lifespan)
 │  │  └─ repositories/               # Accès données par entité (fine abstraction sur Prisma)
 │  │     ├─ __init__.py
-│  │     ├─ base_repository.py       # CRUD générique réutilisable
+│  │     ├─ base_repository.py       # ★ CRUD générique portable (jamais de SQL brut, cf. §3.1)
 │  │     ├─ user_repository.py
 │  │     ├─ number_repository.py
 │  │     ├─ report_repository.py
@@ -168,82 +169,92 @@ kwismo-backend/
 │  │  │
 │  │  ├─ auth/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # Routes /auth/* (register, login, otp, refresh, reset)
-│  │  │  ├─ schemas.py               # Pydantic : RegisterIn, LoginIn, TokenOut, OtpVerifyIn…
+│  │  │  ├─ router.py                # ★ 9 routes /auth/* (register, login, otp, refresh, reset)
+│  │  │  ├─ schemas.py               # RegisterIn, LoginIn, TokenOut, DeviceVerificationRequiredOut…
 │  │  │  ├─ service.py               # Logique : login, génération/vérif OTP, refresh, reset
 │  │  │  └─ dependencies.py          # Dépendances spécifiques à l'auth
 │  │  │
 │  │  ├─ users/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # /users/me, /users, /users/{id}…
-│  │  │  ├─ schemas.py               # UserOut, UserUpdateIn, UserKpiOut…
+│  │  │  ├─ router.py                # ★ 5 routes : /users/me, /users, /users/{id}…
+│  │  │  ├─ schemas.py               # UserMeOut, UserListItemOut, UserDetailOut, UserStatusIn…
 │  │  │  └─ service.py
+│  │  │
+│  │  ├─ user_phones/                # ★ "Mes numéros" — module distinct de users (cahier §3.2)
+│  │  │  ├─ __init__.py
+│  │  │  ├─ router.py                # ★ 6 routes /users/me/phones/* (ajout, OTP SMS, compromission)
+│  │  │  └─ schemas.py               # UserPhoneOut, UserPhoneAddIn, CompromiseIncidentOut…
+│  │  │
+│  │  ├─ contacts/                   # ★ Ajouté (hors §5 explicite, cf. README §9 note)
+│  │  │  ├─ __init__.py
+│  │  │  ├─ router.py                # ★ 4 routes /contacts/* (liste à insignes, cf. cahier IA §4)
+│  │  │  └─ schemas.py               # ContactOut, ContactAddIn
 │  │  │
 │  │  ├─ numbers/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # /numbers/verify, /numbers/batch-verify, /numbers…
-│  │  │  ├─ schemas.py               # NumberVerifyIn, NumberOut, RiskScoreOut…
+│  │  │  ├─ router.py                # ★ 5 routes /numbers/verify, /batch-verify, /numbers…
+│  │  │  ├─ schemas.py               # NumberVerifyIn, NumberOut, NumberDetailOut, NumberStatusIn…
 │  │  │  └─ service.py               # Appelle ai_gateway pour le score
 │  │  │
 │  │  ├─ reports/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # /reports (POST, GET, validate)
-│  │  │  ├─ schemas.py
+│  │  │  ├─ router.py                # ★ 3 routes /reports (POST, GET, validate)
+│  │  │  ├─ schemas.py               # ReportCreateIn, ReportOut, ReportValidateIn
 │  │  │  └─ service.py
 │  │  │
 │  │  ├─ transactions/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # /transactions/prepare (génère le code USSD)
-│  │  │  ├─ schemas.py
+│  │  │  ├─ router.py                # ★ 3 routes /transactions/prepare (génère le code USSD), historique
+│  │  │  ├─ schemas.py               # TransactionPrepareIn, TransactionOut
 │  │  │  └─ service.py
 │  │  │
 │  │  ├─ ussd/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # /countries, /operators, /ussd-actions
-│  │  │  ├─ schemas.py               # CountryOut, OperatorOut, UssdActionOut…
+│  │  │  ├─ router.py                # ★ 12 routes /countries, /operators, /ussd-actions (CRUD admin)
+│  │  │  ├─ schemas.py               # CountryOut, OperatorOut, OperatorPrefixOut, UssdActionOut…
 │  │  │  └─ service.py               # Génération du format USSD (pays+opérateur+action)
 │  │  │
 │  │  ├─ partners/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # /partners, /partners/{id}/affiliation-rules, /partner/scope/*
-│  │  │  ├─ schemas.py               # PartnerOut, AffiliationRuleIn…
+│  │  │  ├─ router.py                # ★ 8 routes /partners, /affiliation-rules, /partner/scope/*
+│  │  │  ├─ schemas.py               # PartnerOut, AffiliationRuleOut, PartnerScopeNumberOut…
 │  │  │  ├─ service.py               # Cloisonnement par périmètre + règles d'affiliation
 │  │  │  └─ affiliation.py           # Logique d'affiliation par préfixes (69, 651-654, 68…)
 │  │  │
 │  │  ├─ whatsapp_alert/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # /whatsapp-alerts/incident, /broadcast
-│  │  │  ├─ schemas.py
+│  │  │  ├─ router.py                # ★ 2 routes /whatsapp-alerts/incident, /broadcast
+│  │  │  ├─ schemas.py               # WhatsAppIncidentIn, WhatsAppBroadcastIn, WhatsAppAlertOut
 │  │  │  └─ service.py
 │  │  │
 │  │  ├─ surveys/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # /surveys/active, /surveys/{id}/answer
-│  │  │  ├─ schemas.py
+│  │  │  ├─ router.py                # ★ 2 routes /surveys/active, /surveys/{id}/answer
+│  │  │  ├─ schemas.py               # SurveyOut, SurveyAnswerIn, SurveyResponseOut
 │  │  │  └─ service.py
 │  │  │
 │  │  ├─ kpi/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # /kpi/global, /kpi/partner
-│  │  │  ├─ schemas.py
+│  │  │  ├─ router.py                # ★ 2 routes /kpi/global, /kpi/partner
+│  │  │  ├─ schemas.py               # KpiOut
 │  │  │  └─ service.py               # Agrégations et calculs d'indicateurs
 │  │  │
 │  │  ├─ access_control/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # /roles, /access-rights
-│  │  │  ├─ schemas.py
+│  │  │  ├─ router.py                # ★ 4 routes GET/POST /roles, /access-rights
+│  │  │  ├─ schemas.py               # RoleOut, RoleIn, AccessRightOut, AccessRightIn
 │  │  │  └─ service.py
 │  │  │
 │  │  ├─ notifications/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # /notifications
-│  │  │  ├─ schemas.py
+│  │  │  ├─ router.py                # ★ 1 route GET /notifications
+│  │  │  ├─ schemas.py               # NotificationOut
 │  │  │  └─ service.py               # Construit les messages FR/EN
 │  │  │
 │  │  └─ ai_gateway/                 # ★ Passerelle unique vers le service IA
 │  │     ├─ __init__.py
 │  │     ├─ client.py                # Appels HTTP vers l'IA (/predict, /feedback) + timeout
-│  │     ├─ schemas.py               # ★ Contrat d'API PARTAGÉ avec le service IA
+│  │     ├─ schemas.py               # ★ Contrat d'API PARTAGÉ, identique à kwismo-ai/src/api/schemas.py
 │  │     ├─ fallback_rules.py        # Règles expertes de repli si l'IA est indisponible
 │  │     └─ queue.py                 # Envoi asynchrone des signalements (apprentissage continu)
 │  │
@@ -348,18 +359,24 @@ Toutes les routes sont documentées dans Swagger (`/docs`). Aperçu :
 
 | Module | Routes principales | Rôle |
 | ------ | ------------------ | ---- |
-| auth | `/auth/register`, `/auth/otp/verify`, `/auth/login`, `/auth/refresh`, `/auth/password/*` | public / auth |
-| users | `/users/me`, `/users`, `/users/{id}` | user / admin / partner |
-| numbers | `/numbers/verify`, `/numbers/batch-verify`, `/numbers` | user / admin / partner |
-| reports | `/reports` | user / admin |
-| transactions | `/transactions/prepare` | user |
-| ussd | `/countries`, `/operators`, `/ussd-actions` | user (lecture) / admin (CRUD) |
-| partners | `/partners`, `/partners/{id}/affiliation-rules`, `/partner/scope/*` | admin / partner |
-| whatsapp_alert | `/whatsapp-alerts/incident`, `/broadcast` | user |
-| surveys | `/surveys/active`, `/surveys/{id}/answer` | user |
-| kpi | `/kpi/global`, `/kpi/partner` | admin / partner |
-| access_control | `/roles`, `/access-rights` | admin |
-| notifications | `/notifications` | user |
+| auth (9) | `/auth/register`, `/auth/email/verify`, `/auth/login`, `/auth/device/verify`, `/auth/refresh`, `/auth/password/*`, `/auth/logout` | public / auth |
+| users (5) | `/users/me`, `/users`, `/users/{id}`, `/users/{id}/status` | user / admin / partner |
+| user_phones (6) | `/users/me/phones`, `/users/me/phones/{id}/verify`, `/…/resend`, `/…/compromise` | user |
+| contacts (4) | `/contacts`, `/contacts/{id}/refresh` — *ajouté, cf. §9 | user |
+| numbers (5) | `/numbers/verify`, `/numbers/batch-verify`, `/numbers`, `/numbers/{id}/status` | user / admin / partner |
+| reports (3) | `/reports`, `/reports/{id}/validate` | user / admin |
+| transactions (3) | `/transactions/prepare`, `/transactions`, `/transactions/{id}` | user |
+| ussd (12) | `/countries`, `/operators`, `/ussd-actions` (+ CRUD) | user (lecture) / admin (CRUD) |
+| partners (8) | `/partners`, `/partners/{id}/affiliation-rules`, `/partner/scope/*` | admin / partner |
+| whatsapp_alert (2) | `/whatsapp-alerts/incident`, `/broadcast` | user |
+| surveys (2) | `/surveys/active`, `/surveys/{id}/answer` | user |
+| kpi (2) | `/kpi/global`, `/kpi/partner` | admin / partner |
+| access_control (4) | `/roles`, `/access-rights` | admin |
+| notifications (1) | `/notifications` | user |
+
+*⁠ ⁠`contacts` n'est pas listé au §5 du cahier des charges — ajouté pour que la table `Contact` et la "liste de contacts à insignes" (cahier IA §4) soient utilisables par `/whatsapp-alerts/broadcast`. Voir le commentaire en tête de `app/modules/contacts/schemas.py`.
+
+Total : **67 opérations** sur **53 chemins**, 100 % typées en entrée/sortie (voir `/openapi.json`). Toutes répondent `501` tant que la logique métier n'est pas écrite — c'est un squelette Swagger-first volontaire.
 
 ---
 
