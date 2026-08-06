@@ -1,0 +1,159 @@
+"""Point d'entree FastAPI. / FastAPI entry point.
+
+FR — Toutes les routes du cahier des charges Backend §5 sont enregistrees
+ici, avec schemas et documentation bilingue FR/EN, pour que Swagger (/docs)
+serve de reference complete pendant le developpement (rien d'oublie).
+La logique metier n'est pas encore branchee : chaque route repond 501 tant
+qu'elle n'est pas implementee (voir app/core/exceptions.not_implemented).
+
+Securite (cf. cahier §8) : limitation de debit (brute-force + surcharge),
+gestionnaires d'exceptions globaux, en-tetes de securite, taille de requete
+plafonnee, hotes/origines restreints. Voir app/core/{rate_limit,exceptions,
+middleware}.py pour le detail de chaque garde-fou.
+
+EN — Every route from the Backend spec §5 is registered here, with schemas
+and bilingual FR/EN docs, so Swagger (/docs) is a complete reference while
+developing (nothing forgotten). Business logic isn't wired yet: each route
+returns 501 until implemented (see app/core/exceptions.not_implemented).
+
+Security (see spec §8): rate limiting (brute-force + overload), global
+exception handlers, security headers, capped request size, restricted
+hosts/origins. See app/core/{rate_limit,exceptions,middleware}.py for each
+guardrail's detail.
+"""
+
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
+
+from app.core.config import get_settings
+from app.core.exceptions import register_exception_handlers
+from app.core.middleware import MaxBodySizeMiddleware, SecurityHeadersMiddleware
+from app.core.rate_limit import limiter, rate_limit_exceeded_handler
+from app.core.schemas import HealthOut
+from app.db.prisma_client import connect_db, disconnect_db
+from app.modules.access_control.router import router as access_control_router
+from app.modules.auth.router import router as auth_router
+from app.modules.contacts.router import router as contacts_router
+from app.modules.kpi.router import router as kpi_router
+from app.modules.notifications.router import router as notifications_router
+from app.modules.numbers.router import router as numbers_router
+from app.modules.partners.router import router as partners_router
+from app.modules.reports.router import router as reports_router
+from app.modules.surveys.router import router as surveys_router
+from app.modules.transactions.router import router as transactions_router
+from app.modules.user_phones.router import router as user_phones_router
+from app.modules.users.router import router as users_router
+from app.modules.ussd.router import router as ussd_router
+from app.modules.whatsapp_alert.router import router as whatsapp_alert_router
+
+DESCRIPTION = """
+**FR** — API centrale hybride de KWISMO : authentification, gestion des
+comptes et de leurs numéros, vérification de réputation (via le service IA),
+signalements, transferts protégés par code USSD, partenaires, alertes
+WhatsApp, enquêtes, KPI et administration des rôles. Le backend est la seule
+porte d'accès à la base de données (voir cahier des charges Backend, §1 et
+§8). La plupart des routes ci-dessous répondent **501** tant que leur
+logique métier n'est pas encore écrite — c'est un squelette d'API délibéré,
+pas un bug.
+
+**EN** — KWISMO's hybrid central API: authentication, accounts and their
+phone numbers, reputation checks (via the AI service), reports, USSD-code
+protected transfers, partners, WhatsApp alerts, surveys, KPIs and role
+administration. The backend is the only door to the database (see Backend
+spec §1 and §8). Most routes below return **501** until their business
+logic is written — this is a deliberate API skeleton, not a bug.
+"""
+
+TAGS_METADATA = [
+    {"name": "Auth", "description": "FR — Inscription, connexion, OTP, jetons. / EN — Registration, login, OTP, tokens."},
+    {"name": "Users", "description": "FR — Comptes utilisateurs. / EN — User accounts."},
+    {"name": "My Numbers", "description": "FR — Numéros possédés par le compte (multi-SIM). / EN — Numbers owned by the account (multi-SIM)."},
+    {"name": "Contacts", "description": "FR — Carnet de contacts à insignes de réputation. / EN — Contact list with reputation badges."},
+    {"name": "Numbers", "description": "FR — Registre de réputation de tout numéro analysé. / EN — Reputation ledger for any analyzed number."},
+    {"name": "Reports", "description": "FR — Signalements de numéros frauduleux. / EN — Fraudulent number reports."},
+    {"name": "Transactions", "description": "FR — Préparation de transferts protégés (métadonnées seulement). / EN — Protected transfer preparation (metadata only)."},
+    {"name": "USSD", "description": "FR — Pays, opérateurs, actions USSD. / EN — Countries, operators, USSD actions."},
+    {"name": "Partners", "description": "FR — Partenaires et règles d'affiliation (cloisonnement serveur). / EN — Partners and affiliation rules (server-side scoping)."},
+    {"name": "WhatsApp Alert", "description": "FR — Incident de piratage et diffusion d'alerte. / EN — Hijack incident and alert broadcast."},
+    {"name": "Surveys", "description": "FR — Enquêtes utilisateur. / EN — User surveys."},
+    {"name": "KPI", "description": "FR — Indicateurs globaux et par partenaire. / EN — Global and per-partner indicators."},
+    {"name": "Access Control", "description": "FR — Rôles et droits d'accès (RBAC). / EN — Roles and access rights (RBAC)."},
+    {"name": "Notifications", "description": "FR — Notifications utilisateur FR/EN. / EN — User notifications, FR/EN."},
+    {"name": "System", "description": "FR — Supervision (santé). / EN — Supervision (health)."},
+]
+
+settings = get_settings()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await connect_db()
+    yield
+    await disconnect_db()
+
+
+app = FastAPI(
+    title="KWISMO Backend API",
+    description=DESCRIPTION,
+    version="0.1.0",
+    openapi_tags=TAGS_METADATA,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    lifespan=lifespan,
+)
+
+# --- Securite (cf. cahier §8) --------------------------------------------
+# Ordre : le dernier middleware ajoute est le plus "exterieur" (execute en
+# premier sur la requete). On rejette d'abord les hotes/tailles suspects,
+# puis CORS, puis on habille la reponse (en-tetes, compression).
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
+register_exception_handlers(app)
+
+app.add_middleware(GZipMiddleware, minimum_size=1024)
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(SlowAPIMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins_list,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+app.add_middleware(MaxBodySizeMiddleware)
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.allowed_hosts_list)
+
+for router in (
+    auth_router,
+    users_router,
+    user_phones_router,
+    contacts_router,
+    numbers_router,
+    reports_router,
+    transactions_router,
+    ussd_router,
+    partners_router,
+    whatsapp_alert_router,
+    surveys_router,
+    kpi_router,
+    access_control_router,
+    notifications_router,
+):
+    app.include_router(router)
+
+
+@app.get(
+    "/health",
+    response_model=HealthOut,
+    tags=["System"],
+    summary="Health check / Vérification de santé",
+    description="**FR** — Point de contrôle pour la supervision.\n\n**EN** — Health check for supervision/orchestration.",
+)
+async def health() -> HealthOut:
+    return HealthOut(status="ok")

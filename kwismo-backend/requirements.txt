@@ -21,6 +21,7 @@ argon2-cffi>=23.1
 # --- Cache / limitation de debit / files d'attente ---
 redis>=5.0
 rq>=1.16
+slowapi>=0.1.9        # rate limiting (anti brute-force / anti DoS)
 
 # --- Appels HTTP vers le service IA ---
 httpx>=0.27
