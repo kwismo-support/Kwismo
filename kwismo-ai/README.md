@@ -64,7 +64,7 @@ Le service IA détecte les **numéros** et **messages** frauduleux liés au Mobi
 ## 4. Prérequis
 
 ```bash
-python --version    # 3.11+
+python --version    # 3.13 (obligatoire)
 ```
 
 - Un **PC** suffit pour le Modèle A et l'inférence.
@@ -78,22 +78,29 @@ python --version    # 3.11+
 # 1. Se placer dans le dossier
 cd kwismo-ai
 
-# 2. Créer et activer un environnement virtuel
-python -m venv .venv
-source .venv/bin/activate           # Windows : .venv\Scripts\activate
+# 2. Vérifier que Python 3.13 est installé (obligatoire)
+check_python.bat                              # Windows : double-clic ou en ligne de commande
+python3.13 scripts/check_python_version.py    # macOS / Linux
 
-# 3. Installer les dépendances
-pip install -r requirements.txt
+# 3. Créer et activer un environnement virtuel (Python 3.13)
+py -3.13 -m venv .venv                        # Windows
+python3.13 -m venv .venv                      # macOS / Linux
+source .venv/bin/activate                     # Windows : .venv\Scripts\activate
 
-# 4. Configurer l'environnement
+# 4. Installer les dépendances
+pip install -e .
+
+# 5. Configurer l'environnement
 cp .env.example .env
 #   → éditer BACKEND_URL, MODEL_DIR…
 
-# 5. Lancer le service d'inférence
+# 6. Lancer le service d'inférence
 uvicorn src.api.main:app --reload --port 8001
 ```
 
 Le service tourne sur **[API](http://localhost:8001)** — documentation sur **[API Docs](http://localhost:8001/docs)**.
+
+> **Python 3.13 imposé, à trois niveaux.** `check_python.bat` (ou `scripts/check_python_version.py`) vérifie *avant* la création du venv. `pip install -e .` s'appuie sur `requires-python` (pyproject.toml) pour que pip lui-même refuse d'installer sur la mauvaise version. `src/__init__.py` vérifie *à l'exécution* : toute méthode qui importe le package `src` (`uvicorn`, l'entraînement des modèles, `pytest`…) échoue immédiatement avec un message clair si Python 3.13 n'est pas utilisé. Seul `pip install -r requirements.txt` pris isolément n'a pas de garde-fou natif — pip n'exécute aucune vérification sur un simple fichier de dépendances, d'où les deux autres niveaux.
 
 ### Avec Docker (depuis la racine du monorepo)
 
@@ -138,7 +145,7 @@ kwismo-ai/
 │  └─ 03_train_model_b.ipynb        # Fine-tuning NLP AfroXLMR (Colab)
 │
 ├─ src/                             # ★ Code source réutilisable
-│  ├─ __init__.py
+│  ├─ __init__.py                   # Signale une erreur si mauvaise version Python
 │  ├─ config.py                     # Chemins, seuils, hyperparamètres
 │  │
 │  ├─ data/
@@ -187,13 +194,17 @@ kwismo-ai/
 │  ├─ test_model_b.py
 │  └─ test_api.py
 │
+├─ scripts/
+│  └─ check_python_version.py       # Fichier de vérification de Python 3.13
+│
+├─ check_python.bat                 # Vérifie Python 3.13 avant de démarrer
 ├─ .env                             # Variables réelles (NON versionné)
 ├─ .env.example
 ├─ .gitignore
 ├─ .dockerignore
 ├─ Dockerfile                       # Image du service d'inférence
 ├─ requirements.txt                 # scikit-learn, lightgbm, transformers…
-├─ pyproject.toml                   # Config Ruff / Black / pytest
+├─ pyproject.toml                   # requires-python + dependencies (pip install -e .)
 └─ README.md                        # Ce fichier
 ```
 

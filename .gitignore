@@ -1,0 +1,46 @@
+# ============================================================
+# KWISMO — .gitignore racine du monorepo
+# ============================================================
+
+# --- Outils IA / assistants de code (jamais partages entre postes) ---
+.claude/
+
+# --- Secrets & configuration locale ---
+.env
+.env.local
+.env.*.local
+
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Bases de donnees locales ---
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Node / JS (kwismo-web, kwismo-mobile) ---
+node_modules/
+dist/
+build/
+.expo/
+.turbo/
+coverage/
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Editeurs / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

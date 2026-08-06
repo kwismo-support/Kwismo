@@ -36,7 +36,7 @@ Le backend est le **cœur de KWISMO** et la **seule porte d'accès à la base de
 - sert de **passerelle vers le service IA** (transmet les données, récupère les scores) ;
 - sert les textes (notifications, alertes, erreurs) en **français et anglais**.
 
-Il est **hybride** : le même code fonctionne sur SQLite (défaut), PostgreSQL, MySQL ou MongoDB grâce à Prisma, sans réécriture.
+Il est **hybride** : le même code fonctionne sur SQLite (défaut), PostgreSQL ou MySQL grâce à Prisma, sans réécriture.
 
 ---
 
@@ -61,7 +61,7 @@ Il est **hybride** : le même code fonctionne sur SQLite (défaut), PostgreSQL, 
 ## 3. Prérequis
 
 ```bash
-python --version    # 3.11+
+python --version    # 3.13 (obligatoire)
 node --version      # 20+ (nécessaire pour le CLI Prisma)
 docker --version    # optionnel mais recommandé
 ```
@@ -76,29 +76,36 @@ docker --version    # optionnel mais recommandé
 # 1. Se placer dans le dossier
 cd kwismo-backend
 
-# 2. Créer et activer un environnement virtuel
-python -m venv .venv
-source .venv/bin/activate           # Windows : .venv\Scripts\activate
+# 2. Vérifier que Python 3.13 est installé (obligatoire)
+check_python.bat                              # Windows : double-clic ou en ligne de commande
+python3.13 scripts/check_python_version.py    # macOS / Linux
 
-# 3. Installer les dépendances
-pip install -r requirements.txt
+# 3. Créer et activer un environnement virtuel (Python 3.13)
+py -3.13 -m venv .venv                        # Windows
+python3.13 -m venv .venv                      # macOS / Linux
+source .venv/bin/activate                     # Windows : .venv\Scripts\activate
 
-# 4. Configurer l'environnement
+# 4. Installer les dépendances
+pip install -e .
+
+# 5. Configurer l'environnement
 cp .env.example .env
-#   → éditer .env : DATABASE_URL, JWT_SECRET, AI_SERVICE_URL…
+#   → éditer .env : DB_TYPE, DATABASE_URL, JWT_SECRET, AI_SERVICE_URL…
 
-# 5. Générer le client Prisma et créer la base
+# 6. Générer le client Prisma et créer la base
 prisma generate
 prisma migrate dev --name init
 
-# 6. (Optionnel) Peupler la base avec des données de test
+# 7. (Optionnel) Peupler la base avec des données de test
 python scripts/seed.py
 
-# 7. Lancer le serveur de développement
+# 8. Lancer le serveur de développement
 uvicorn app.main:app --reload
 ```
 
 L'API tourne sur **[API](http://localhost:8000)** — documentation sur **[API Docs](http://localhost:8000/docs)**.
+
+> **Python 3.13 imposé, à trois niveaux.** `check_python.bat` (ou `scripts/check_python_version.py`) vérifie *avant* la création du venv. `pip install -e .` s'appuie sur `requires-python` (pyproject.toml) pour que pip lui-même refuse d'installer sur la mauvaise version. `app/__init__.py` vérifie *à l'exécution* : toute méthode qui importe le package `app` (`uvicorn`, `gunicorn`, `pytest`, `python scripts/seed.py`…) échoue immédiatement avec un message clair si Python 3.13 n'est pas utilisé. Seul `pip install -r requirements.txt` pris isolément n'a pas de garde-fou natif — pip n'exécute aucune vérification sur un simple fichier de dépendances, d'où les deux autres niveaux.
 
 ### Avec Docker (depuis la racine du monorepo)
 
@@ -129,7 +136,7 @@ docker compose up --build backend
 kwismo-backend/
 │
 ├─ app/
-│  ├─ __init__.py
+│  ├─ __init__.py                    # Signale une erreur si mauvaise version de Python
 │  ├─ main.py                        # Point d'entrée FastAPI : app, montage routes, middlewares
 │  │
 │  ├─ core/                          # Cœur transverse (partagé par tous les modules)
@@ -254,7 +261,7 @@ kwismo-backend/
 ├─ prisma/
 │  ├─ schema.prisma                  # ★ Schéma unique = toutes les tables/collections
 │  ├─ migrations/                    # Historique versionné des migrations
-│  │  └─ .gitkeep
+│  │  └─ ...._init/                  # Migration initiale
 │  └─ seed_data/                     # Jeux de données initiales (pays, opérateurs, USSD)
 │     ├─ countries.json
 │     ├─ operators.json
@@ -271,15 +278,18 @@ kwismo-backend/
 │
 ├─ scripts/
 │  ├─ seed.py                        # Peuple la base (pays, opérateurs, admin par défaut)
-│  └─ create_admin.py                # Crée un compte administrateur
+│  ├─ create_admin.py                # Crée un compte administrateur
+│  ├─ check_python_version.py        # Vérif Python 3.13 (utilisé par check_python.bat)
+│  └─ sync_db_provider.py            # Bascule le provider Prisma selon DB_TYPE (.env)
 │
-├─ .env                             # Variables réelles (NON versionné)
-├─ .env.example                     # Modèle de variables (versionné)
+├─ check_python.bat                  # Vérifie Python 3.13 avant de démarrer
+├─ .env                              # Variables réelles (NON versionné)
+├─ .env.example                      # Modèle de variables (versionné)
 ├─ .gitignore
 ├─ .dockerignore
 ├─ Dockerfile                        # Image du backend
-├─ requirements.txt                 # Dépendances Python
-├─ pyproject.toml                    # Config Ruff / Black / mypy / pytest
+├─ requirements.txt                  # Dépendances Python (pip install -r requirements.txt)
+├─ pyproject.toml                    # requires-python + dependencies (pip install -e .)
 └─ README.md                         # Ce fichier
 ```
 
@@ -306,15 +316,29 @@ Cette régularité rend le code prévisible et testable.
 
 Le schéma unique (`prisma/schema.prisma`) définit toutes les entités : `User`, `Contact`, `Number`, `Report`, `Country`, `Operator`, `UssdAction`, `Partner`, `AffiliationRule`, `Transaction`, `WhatsAppAlert`, `SurveyResponse`, `Kpi`, `Role`, `AccessRight`, `AuditLog`.
 
+### Changer de base de données
+
+Deux variables dans `.env` pilotent la base utilisée : `DB_TYPE` (sqlite | postgresql | mysql) et `DATABASE_URL`. Prisma n'autorise pas de `provider` dynamique dans `schema.prisma` (seule `url` peut venir d'une variable d'environnement) — `scripts/sync_db_provider.py` comble cet écart en réécrivant le `provider` du schéma à partir de `DB_TYPE`.
+
 ```bash
-# Changer de base = changer une seule variable DATABASE_URL :
-file:./dev.db                                   # SQLite (défaut)
-postgresql://user:pass@localhost:5432/kwismo    # PostgreSQL
-mysql://user:pass@localhost:3306/kwismo         # MySQL
-mongodb+srv://user:pass@cluster/kwismo          # MongoDB
+# 1. Éditer .env : DB_TYPE + DATABASE_URL
+DB_TYPE="postgresql"
+DATABASE_URL="postgresql://user:pass@localhost:5432/kwismo"
+
+# 2. Répercuter le changement sur le schéma Prisma + régénérer le client
+python scripts/sync_db_provider.py --generate
+
+# 3. Appliquer le schéma sur la nouvelle base
+prisma migrate dev --name init
 ```
 
-> **Cassandra n'est pas supportée par Prisma** et n'est volontairement pas dans le périmètre.
+| `DB_TYPE`         | `DATABASE_URL`                                  |
+| ----------------- | ----------------------------------------------- |
+| `sqlite` (défaut) | `file:./dev.db`                                 |
+| `postgresql`      | `postgresql://user:pass@localhost:5432/kwismo`  |
+| `mysql`           | `mysql://user:pass@localhost:3306/kwismo`       |
+
+> **Cassandra et MongoDB ne sont pas dans le périmètre.** Cassandra n'est pas supportée par Prisma. MongoDB l'est en théorie, mais son connecteur exige que le champ `@id` de chaque modèle soit mappé sur `_id` (`@map("_id")`) — un changement qui toucherait aussi les colonnes des bases SQL si on le généralisait au schéma unique. Choix assumé : KWISMO reste sur SQLite/PostgreSQL/MySQL.
 
 ---
 

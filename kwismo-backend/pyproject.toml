@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kwismo-backend"
+version = "0.1.0"
+requires-python = ">=3.13,<3.14"
+dynamic = ["dependencies"]
+
+# pip verifie requires-python AVANT d'installer quoi que ce soit quand on
+# utilise `pip install -e .` (ou `pip install .`) : sur une mauvaise version
+# de Python, l'installation s'arrete immediatement avec un message clair.
+# `pip install -r requirements.txt` seul ne peut pas etre garde de cette
+# facon (pip n'execute aucune verification sur un simple fichier de
+# dependances) — d'ou les garde-fous complementaires : check_python.bat
+# (avant meme le venv) et app/__init__.py (a l'execution, uvicorn compris).
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+include = ["app*"]

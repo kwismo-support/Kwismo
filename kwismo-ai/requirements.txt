@@ -1,0 +1,34 @@
+# KWISMO Modele IA — dependances Python
+
+# --- Manipulation de donnees ---
+pandas>=2.2
+numpy>=1.26
+
+# --- Modele A : scoring de reputation (arbres boostes, CPU) ---
+scikit-learn>=1.5
+lightgbm>=4.3
+
+# --- Modele B : NLP multilingue (AfroXLMR + PEFT/LoRA) ---
+torch>=2.3
+transformers>=4.42
+peft>=0.11
+sentencepiece>=0.2.0
+
+# --- Service d'inference (FastAPI) ---
+fastapi>=0.111,<1.0
+uvicorn[standard]>=0.30
+pydantic>=2.7,<3.0
+pydantic-settings>=2.3
+
+# --- Appels HTTP (collecte via le backend, tests) ---
+httpx>=0.27
+
+# --- Notebooks (exploration & entrainement local/Colab) ---
+jupyter>=1.0
+
+# --- Tests ---
+pytest>=8.2
+
+# --- Qualite de code ---
+ruff>=0.5
+black>=24.4

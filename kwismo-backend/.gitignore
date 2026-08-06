@@ -1,0 +1,29 @@
+# Environnement virtuel
+.venv/
+
+# Artefacts Python
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+
+# Caches d'outils
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Prisma
+prisma/dev.db
+prisma/dev.db-journal
+
+# Variables d'environnement reelles
+.env
+
+# Editeurs / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,38 @@
+# Environnement virtuel
+.venv/
+
+# Artefacts Python
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+
+# Caches d'outils
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Variables d'environnement reelles
+.env
+
+# Donnees
+data/raw/*
+!data/raw/.gitkeep
+data/interim/*
+!data/interim/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Artefacts de modeles entraines
+models/model_a/*
+!models/model_a/.gitkeep
+models/model_b/*
+!models/model_b/.gitkeep
+
+# Editeurs / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

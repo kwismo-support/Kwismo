@@ -1,0 +1,388 @@
+// Schema unique — portable SQLite (dev) / PostgreSQL / MySQL (prod)
+
+generator client {
+  provider             = "prisma-client-py"
+  interface            = "asyncio"
+  recursive_type_depth = 5
+}
+
+datasource db {
+  provider = "sqlite" // dev par defaut. Prod: "postgresql" ou "mysql" + DATABASE_URL
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Identite & acces (RBAC)
+// ---------------------------------------------------------------------------
+
+model User {
+  id              String   @id @default(cuid())
+  nom             String
+  prenom          String
+  email           String   @unique
+  motDePasse      String
+  emailVerifie    Boolean  @default(false)
+  statut          String   @default("active") // active | suspended
+  dateInscription DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  phones              UserPhone[]
+  devices             Device[]
+  otpCodes            OtpCode[]
+  compromiseIncidents CompromiseIncident[]
+  contacts            Contact[]
+  reports             Report[]
+  transactions        Transaction[]
+  whatsAppAlerts      WhatsAppAlert[]
+  surveyResponses     SurveyResponse[]
+  auditLogs           AuditLog[]
+
+  @@index([roleId])
+}
+
+model Role {
+  id           String        @id @default(cuid())
+  nomRole      String        @unique // "user" | "partner" | "admin"
+  users        User[]
+  accessRights AccessRight[]
+}
+
+model AccessRight {
+  id          String  @id @default(cuid())
+  roleId      String
+  role        Role    @relation(fields: [roleId], references: [id])
+  permission  String  // ex: "reports:validate", "partners:manage"
+  description String?
+
+  @@unique([roleId, permission])
+  @@index([roleId])
+}
+
+model OtpCode {
+  id             String     @id @default(cuid())
+  userId         String
+  user           User       @relation(fields: [userId], references: [id])
+  userPhoneId    String?
+  userPhone      UserPhone? @relation(fields: [userPhoneId], references: [id])
+  code           String
+  canal          String     // "email" | "sms"
+  cible          String     // email ou numero cible
+  dateExpiration DateTime
+  estUtilise     Boolean    @default(false)
+  createdAt      DateTime   @default(now())
+
+  @@index([userId])
+  @@index([userPhoneId])
+}
+
+model Device {
+  id                    String   @id @default(cuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id])
+  identifiant           String
+  nom                   String
+  datePremiereConnexion DateTime @default(now())
+  dateDerniereConnexion DateTime @updatedAt
+
+  @@unique([userId, identifiant])
+}
+
+// ---------------------------------------------------------------------------
+// Numeros
+// ---------------------------------------------------------------------------
+
+model UserPhone {
+  id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id])
+  valeur           String    @unique // unicite globale : un numero = un seul compte
+  countryId        String
+  country          Country   @relation(fields: [countryId], references: [id])
+  operatorId       String?
+  operator         Operator? @relation(fields: [operatorId], references: [id])
+  numeroId         String?
+  numero           Numero?   @relation(fields: [numeroId], references: [id])
+  estVerifie       Boolean   @default(false)
+  dateVerification DateTime?
+  estCompromis     Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  otpCodes            OtpCode[]
+  compromiseIncidents CompromiseIncident[]
+
+  @@index([userId])
+  @@index([countryId])
+  @@index([operatorId])
+  @@index([numeroId])
+}
+
+model CompromiseIncident {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  userPhoneId     String
+  userPhone       UserPhone @relation(fields: [userPhoneId], references: [id])
+  dateDeclaration DateTime  @default(now())
+  statut          String    @default("open") // open | closed
+
+  whatsAppAlerts WhatsAppAlert[]
+
+  @@index([userId])
+  @@index([userPhoneId])
+}
+
+model Numero {
+  id                       String    @id @default(cuid())
+  valeur                   String    @unique
+  scoreRisque              Float     @default(0)
+  statut                   String    @default("unknown") // securise | a_signaler | frauduleux
+  dateDerniereVerification DateTime?
+  countryId                String?
+  country                  Country?  @relation(fields: [countryId], references: [id])
+  operatorId               String?
+  operator                 Operator? @relation(fields: [operatorId], references: [id])
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  userPhones   UserPhone[]
+  contacts     Contact[]
+  reports      Report[]
+  transactions Transaction[]
+
+  @@index([countryId])
+  @@index([operatorId])
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  nom       String
+  numero    String
+  statut    String? // insigne affiche : securise | suspect | frauduleux | inconnu
+  numeroId  String?
+  numeroRef Numero?  @relation(fields: [numeroId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  whatsAppRecipients WhatsAppAlertRecipient[]
+
+  @@index([userId])
+  @@index([numeroId])
+}
+
+model Report {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  numeroId        String
+  numero          Numero   @relation(fields: [numeroId], references: [id])
+  motif           String
+  dateSignalement DateTime @default(now())
+  statut          String   @default("pending") // pending | validated | rejected
+
+  @@index([userId])
+  @@index([numeroId])
+}
+
+// ---------------------------------------------------------------------------
+// USSD : Pays / Operateurs / Actions
+// ---------------------------------------------------------------------------
+
+model Country {
+  id           String  @id @default(cuid())
+  nom          String
+  codePays     String  @unique // indicatif, ex "+237"
+  estParDefaut Boolean @default(false)
+
+  operators        Operator[]
+  affiliationRules AffiliationRule[]
+  userPhones       UserPhone[]
+  numeros          Numero[]
+  transactions     Transaction[]
+}
+
+model Operator {
+  id        String  @id @default(cuid())
+  nom       String
+  countryId String
+  country   Country @relation(fields: [countryId], references: [id])
+
+  prefixes     OperatorPrefix[]
+  ussdActions  UssdAction[]
+  numeros      Numero[]
+  userPhones   UserPhone[]
+  transactions Transaction[]
+
+  @@index([countryId])
+}
+
+model OperatorPrefix {
+  id         String   @id @default(cuid())
+  operatorId String
+  operator   Operator @relation(fields: [operatorId], references: [id])
+  prefixe    String   // ex "67", "650", "651"
+
+  @@unique([operatorId, prefixe])
+  @@index([operatorId])
+}
+
+model UssdAction {
+  id         String   @id @default(cuid())
+  operatorId String
+  operator   Operator @relation(fields: [operatorId], references: [id])
+  nomAction  String
+  codeUSSD   String
+  format     String   // gabarit du code, ex "*126*{montant}*{numero}#"
+
+  transactions Transaction[]
+
+  @@index([operatorId])
+}
+
+// ---------------------------------------------------------------------------
+// Partenaires & affiliation
+// ---------------------------------------------------------------------------
+
+model Partner {
+  id              String   @id @default(cuid())
+  nomEntreprise   String
+  typePartenariat String
+  dateAdhesion    DateTime @default(now())
+
+  affiliationRules AffiliationRule[]
+  kpis             Kpi[]
+}
+
+model AffiliationRule {
+  id        String   @id @default(cuid())
+  partnerId String
+  partner   Partner  @relation(fields: [partnerId], references: [id])
+  countryId String
+  country   Country  @relation(fields: [countryId], references: [id])
+  createdAt DateTime @default(now())
+
+  prefixes AffiliationRulePrefix[]
+
+  @@index([partnerId])
+  @@index([countryId])
+}
+
+model AffiliationRulePrefix {
+  id                String          @id @default(cuid())
+  affiliationRuleId String
+  affiliationRule   AffiliationRule @relation(fields: [affiliationRuleId], references: [id])
+  prefixe           String          // ex "69" ou plage "651-654"
+
+  @@index([affiliationRuleId])
+}
+
+// ---------------------------------------------------------------------------
+// Transferts, alertes, enquetes, KPI
+// ---------------------------------------------------------------------------
+
+model Transaction {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  numeroId        String
+  numero          Numero      @relation(fields: [numeroId], references: [id])
+  countryId       String?
+  country         Country?    @relation(fields: [countryId], references: [id])
+  operatorId      String?
+  operator        Operator?   @relation(fields: [operatorId], references: [id])
+  ussdActionId    String?
+  ussdAction      UssdAction? @relation(fields: [ussdActionId], references: [id])
+  montant         Float
+  dateTransaction DateTime    @default(now())
+  statut          String      @default("prepared") // prepared | confirmed | cancelled
+  niveauRisque    String?
+  codeUSSDGenere  String?
+
+  @@index([userId])
+  @@index([numeroId])
+}
+
+model WhatsAppAlert {
+  id                   String              @id @default(cuid())
+  userId               String
+  user                 User                @relation(fields: [userId], references: [id])
+  compromiseIncidentId String?
+  compromiseIncident   CompromiseIncident? @relation(fields: [compromiseIncidentId], references: [id])
+  contenu              String
+  dateEnvoi            DateTime            @default(now())
+  statut               String              @default("sent") // sent | delivered | failed
+
+  recipients WhatsAppAlertRecipient[]
+
+  @@index([userId])
+  @@index([compromiseIncidentId])
+}
+
+model WhatsAppAlertRecipient {
+  id              String        @id @default(cuid())
+  whatsAppAlertId String
+  whatsAppAlert   WhatsAppAlert @relation(fields: [whatsAppAlertId], references: [id])
+  contactId       String
+  contact         Contact       @relation(fields: [contactId], references: [id])
+  statutAccuse    String? // envoye | recu | echec
+
+  @@unique([whatsAppAlertId, contactId])
+  @@index([whatsAppAlertId])
+  @@index([contactId])
+}
+
+model Survey {
+  id           String   @id @default(cuid())
+  question     String
+  actif        Boolean  @default(true)
+  dateCreation DateTime @default(now())
+
+  responses SurveyResponse[]
+}
+
+model SurveyResponse {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  surveyId    String
+  survey      Survey   @relation(fields: [surveyId], references: [id])
+  reponse     String
+  dateReponse DateTime @default(now())
+
+  @@unique([userId, surveyId])
+  @@index([userId])
+  @@index([surveyId])
+}
+
+model Kpi {
+  id            String   @id @default(cuid())
+  nomIndicateur String
+  valeur        Float
+  periode       String   // ex "2026-07"
+  portee        String   @default("global") // global | partner
+  partnerId     String?
+  partner       Partner? @relation(fields: [partnerId], references: [id])
+
+  @@index([partnerId])
+}
+
+// ---------------------------------------------------------------------------
+// Audit
+// ---------------------------------------------------------------------------
+
+model AuditLog {
+  id     String   @id @default(cuid())
+  userId String?
+  user   User?    @relation(fields: [userId], references: [id])
+  action String
+  cible  String?
+  date   DateTime @default(now())
+  ip     String?
+
+  @@index([userId])
+}
