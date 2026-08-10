@@ -1,0 +1,32 @@
+# Orchestration commune backend + service IA + Redis.
+# Common orchestration: backend + AI service + Redis.
+#
+# Usage : docker compose up --build
+
+services:
+  backend:
+    build: ./kwismo-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./kwismo-backend/.env
+    environment:
+      AI_SERVICE_URL: "http://ai:8001"
+      REDIS_URL: "redis://redis:6379"
+    depends_on:
+      - ai
+      - redis
+
+  ai:
+    build: ./kwismo-ai
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./kwismo-ai/.env
+    volumes:
+      - ./kwismo-ai/models:/app/models
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
