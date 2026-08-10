@@ -1,0 +1,17 @@
+[
+  {
+    "nom": "MTN Cameroun",
+    "country_code_pays": "+237",
+    "prefixes": ["67", "650", "651", "652", "653", "654", "680", "681", "682", "683", "684"]
+  },
+  {
+    "nom": "Orange Cameroun",
+    "country_code_pays": "+237",
+    "prefixes": ["69", "655", "656", "657", "658", "659", "686", "687", "688", "689"]
+  },
+  {
+    "nom": "Camtel (Nexttel/Blue)",
+    "country_code_pays": "+237",
+    "prefixes": ["62", "66"]
+  }
+]

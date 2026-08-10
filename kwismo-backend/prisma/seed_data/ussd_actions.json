@@ -1,0 +1,14 @@
+[
+  {
+    "operator_nom": "MTN Cameroun",
+    "nom_action": "Transfert Mobile Money",
+    "code_ussd": "*126#",
+    "format": "*126*1*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "Orange Cameroun",
+    "nom_action": "Transfert Orange Money",
+    "code_ussd": "#150#",
+    "format": "#150*1*{numero}*{montant}#"
+  }
+]

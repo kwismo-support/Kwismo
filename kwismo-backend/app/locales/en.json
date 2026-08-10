@@ -1,0 +1,24 @@
+{
+  "errors": {
+    "invalid_otp": "Invalid OTP code.",
+    "otp_expired": "OTP code expired.",
+    "number_invalid": "Invalid number for {country}.",
+    "number_already_linked": "This number is already linked to another account.",
+    "unauthorized": "Authentication required.",
+    "forbidden": "You do not have the required permissions.",
+    "not_found": "Resource not found.",
+    "validation_error": "The submitted data is invalid.",
+    "internal_error": "An internal error occurred. Please try again later.",
+    "rate_limited": "Too many requests. Try again later."
+  },
+  "notifications": {
+    "suspicious_call": "Suspicious call detected from {number}.",
+    "number_reported": "Number {number} has been reported.",
+    "transfer_prepared": "Your transfer of {amount} has been prepared."
+  },
+  "emails": {
+    "welcome_subject": "Welcome to KWISMO",
+    "otp_subject": "Your KWISMO verification code",
+    "password_reset_subject": "Reset your KWISMO password"
+  }
+}
