@@ -2,14 +2,14 @@
 
 Guide pour récupérer les notebooks du dépôt dans son propre Google Colab, les exécuter, et récupérer/partager les résultats (modèles entraînés, jeux de données) avec le reste de l'équipe.
 
-Référencé depuis [README.md §14](./README.md#14-collecte-de-données-scraping--entraînement-sur-google-colab).
+Référencé depuis [README.md](./README.md#14-collecte-de-données-scraping--entraînement-sur-google-colab).
 
 ---
 
 ## 1. Prérequis
 
 - Un compte Google (pour Colab et, si tu veux garder les gros fichiers, Google Drive).
-- Rien d'autre : le dépôt GitHub `kwismo` est **public**, pas besoin de jeton pour le cloner (seulement pour repousser des changements, voir §5).
+- Rien d'autre : le dépôt GitHub `kwismo` est **public**, pas besoin de jeton pour le cloner (seulement pour repousser des changements).
 
 ---
 
@@ -24,9 +24,11 @@ Trois façons, de la plus simple à la plus flexible :
 
 **B. Cloner tout le dépôt dans une session Colab (recommandé si tu veux enchaîner plusieurs notebooks)**
 Ouvre un notebook Colab vide, puis :
+
 ```bash
 !git clone https://github.com/newtonachonduh46/kwismo.git
 ```
+
 Ensuite, dans le panneau de fichiers à gauche (icône dossier), navigue jusqu'à `kwismo/kwismo-ai/notebooks/` et ouvre le notebook voulu directement dans Colab (clic droit > Open with > Google Colaboratory).
 
 **C. Google Drive** — si tu préfères garder une copie personnelle : télécharge le dossier `notebooks/` et dépose-le dans ton Drive, puis ouvre-le depuis `Drive > clic droit > Ouvrir avec > Google Colaboratory`. Moins pratique pour rester synchronisé avec les mises à jour du dépôt.

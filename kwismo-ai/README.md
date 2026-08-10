@@ -119,9 +119,10 @@ docker compose up --build ai
 | `python -m src.models.model_a.train` | Entraîne le Modèle A (scoring). |
 | `python -m src.models.model_b.train` | Entraîne le Modèle B (NLP). |
 | `python -m src.evaluation.metrics` | Évalue les modèles (rappel, précision, F1). |
-| `python -m src.data.scrape` | Scrape les sources texte (presse/institutionnel) → `data/raw/scraped/`. |
-| `python -m src.data.scrape_social` | Scrape Facebook/Instagram/X (compte d'entreprise requis, §14). |
+| `python -m src.data.scrape` | Découvre des sources et scrape texte/image → `data/raw/scraped/`. |
+| `python -m src.data.scrape_social` | Scrape Facebook/Instagram/X. |
 | `python -m src.data.ocr` | OCRise les captures en attente (`type: "image_a_ocr"`). |
+| `python -m src.data.metrics` | Régénère l'historique et les graphes d'évolution de la collecte. |
 | `jupyter notebook notebooks/` | Ouvre les notebooks d'exploration/entraînement. |
 | `pytest` | Lance les tests. |
 | `ruff check . && black .` | Vérifie la qualité du code. |
@@ -138,18 +139,22 @@ kwismo-ai/
 ├─ data/                            # Données (NON versionnées si sensibles)
 │  ├─ raw/                          # Données brutes reçues (via le backend) ou scrapées
 │  │  ├─ .gitkeep
-│  │  └─ scraped/                   # ★ Sortie du scraping (§14)
+│  │  └─ scraped/                   # ★ Sortie du scraping
 │  │     ├─ messages.jsonl          # ★ Versionné : texte + résultat OCR, sans étiquette
 │  │     └─ images/                 # Captures brutes — NON versionné, à synchroniser sur Drive
-│  ├─ interim/                      # Données nettoyées intermédiaires (+ scraping_state.db, anti-doublon)
-│  │  └─ .gitkeep
+│  ├─ interim/                      # Données nettoyées intermédiaires
+│  │  ├─ .gitkeep
+│  │  ├─ scraping_state.db          # Registre anti-doublon SQLite — NON versionné
+│  │  ├─ known_domains.json         # ★ Domaines découverts par le scraper — versionné
+│  │  └─ metrics/                   # ★ Historique + graphes de scraping — versionné
 │  └─ processed/                    # Données prêtes pour l'entraînement
 │     └─ .gitkeep
 │
 ├─ notebooks/                       # Exploration & entraînement (local + Colab)
 │  ├─ 01_exploration.ipynb          # Analyse exploratoire des données
 │  ├─ 02_train_model_a.ipynb        # Entraînement scoring (interactif)
-│  └─ 03_train_model_b.ipynb        # Fine-tuning NLP AfroXLMR (Colab)
+│  ├─ 03_train_model_b.ipynb        # Fine-tuning NLP AfroXLMR (Colab)
+│  └─ 04_scraping.ipynb             # ★ Collecte + OCR + métriques (appelle src/data/)
 │
 ├─ src/                             # ★ Code source réutilisable
 │  ├─ __init__.py                   # Signale une erreur si mauvaise version Python
@@ -160,10 +165,11 @@ kwismo-ai/
 │  │  ├─ collect.py                 # Réception des données depuis le backend
 │  │  ├─ clean.py                   # Nettoyage
 │  │  ├─ features.py                # Construction des caractéristiques (Modèle A)
-│  │  ├─ scrape.py                  # ★ Scraping sources texte (presse/institutionnel), §14
-│  │  ├─ scrape_social.py           # ★ Scraping Facebook/Instagram/X (Playwright), §14
-│  │  ├─ ocr.py                     # ★ Texte depuis capture d'écran (EasyOCR), §14
-│  │  └─ dedupe.py                  # ★ Anti-doublon texte + image (SQLite), §14
+│  │  ├─ scrape.py                  # ★ Découverte web dynamique + collecte texte/image
+│  │  ├─ scrape_social.py           # ★ Scraping Facebook/Instagram/X (Playwright)
+│  │  ├─ ocr.py                     # ★ Texte depuis capture d'écran (EasyOCR)
+│  │  ├─ dedupe.py                  # ★ Anti-doublon atomique texte + image (SQLite)
+│  │  └─ metrics.py                 # ★ Historique + graphes de scraping
 │  │
 │  ├─ models/
 │  │  ├─ __init__.py
@@ -218,7 +224,7 @@ kwismo-ai/
 ├─ Dockerfile                       # Image du service d'inférence
 ├─ requirements.txt                 # scikit-learn, lightgbm, transformers, playwright, easyocr…
 ├─ pyproject.toml                   # requires-python + dependencies (pip install -e .)
-├─ COLAB.md                         # ★ Guide complet : lancer les notebooks sur Google Colab (§14)
+├─ COLAB.md                         # ★ Guide complet : lancer les notebooks sur Google Colab
 └─ README.md                        # Ce fichier
 ```
 
@@ -302,9 +308,13 @@ Documentation interactive : **[API Docs](http://localhost:8001/docs)**.
 | `SCRAPER_USER_AGENT` | `KWISMO-DataCollector/1.0` | Identifiant envoyé aux sources scrapées. |
 | `SCRAPER_DELAY_SECONDS` | `3.0` | Pause minimale entre deux requêtes/actions. |
 | `SCRAPER_MAX_CONCURRENCY` | `2` | Requêtes simultanées max (sources texte). |
-| `FACEBOOK_USERNAME` / `FACEBOOK_PASSWORD` | *(vide)* | Compte **d'entreprise** dédié — jamais personnel. |
-| `INSTAGRAM_USERNAME` / `INSTAGRAM_PASSWORD` | *(vide)* | Idem, compte d'entreprise. |
-| `X_USERNAME` / `X_PASSWORD` | *(vide)* | Idem, compte d'entreprise. |
+| `SCRAPER_MAX_RETRIES` | `3` | Tentatives avant d'abandonner une URL pour ce run (délai croissant). |
+| `SCRAPER_PROXY_URL` | *(vide)* | Proxy optionnel, seulement si l'entreprise en possède déjà un. |
+| `SCRAPER_SEARCH_REGION` | `fr-fr` | Région de recherche pour la découverte dynamique de sites. |
+| `SCRAPER_MAX_RESULTS_PER_KEYWORD` | `10` | Résultats max par mot-clé lors de la découverte. |
+| `FACEBOOK_ACCOUNTS` | *(vide)* | Comptes **d'entreprise** dédiés — `"user1:pass1,user2:pass2"`, jamais personnels. |
+| `INSTAGRAM_ACCOUNTS` | *(vide)* | Idem, comptes d'entreprise. |
+| `X_ACCOUNTS` | *(vide)* | Idem, comptes d'entreprise. |
 
 > Copie toujours `.env.example` → `.env` et ne committe jamais `.env`.
 
@@ -316,30 +326,34 @@ Documentation interactive : **[API Docs](http://localhost:8001/docs)**.
 
 Au démarrage du projet, les sources de données prévues (signalements KWISMO, collecte terrain…) sont vides — il n'y a pas encore d'utilisateurs. Le scraping amorce le Modèle B avec des exemples locaux réels le temps que ces sources se remplissent.
 
-### Sources
+### Sources — découverte dynamique, pas de liste figée
 
-| Priorité | Sources | Texte natif ? |
-| -------- | ------- | -------------- |
-| 1 | Orange Cameroun, MTN Cameroun, CIRT Cameroun, MINPOSTEL, 237online, StopBlaBlaCam, PesaCheck | Oui — le message d'arnaque est cité dans l'article, pas d'OCR. |
-| 2 | Facebook, Instagram, X (mots-clés : « arnaque mobile money cameroun », « arnaque orange money »…) | Majoritairement des **captures d'écran** → OCR nécessaire. |
+`src/data/scrape.py` n'a pas de liste de sites codée en dur : il interroge un moteur de recherche (`ddgs`, gratuit, sans clé API) avec des mots-clés larges — arnaque, usurpation d'identité, piratage de compte, vidage de compte, vol d'argent mobile money — et découvre lui-même les domaines pertinents, qu'il retient pour les prochaines recherches (`data/interim/known_domains.json`). **Chaque page visitée est vérifiée pour du texte ET des images**, sans présupposer le type de contenu d'un site. Un filtre de pertinence écarte les pages hors-sujet avant de les garder.
 
-Facebook/Instagram/X exigent une connexion : `scrape_social.py` utilise un **compte d'entreprise** dédié (jamais personnel), identifiants dans `.env`. Le scraping de ces plateformes se fait sous couverture de l'entreprise, qui porte la responsabilité en cas de contestation.
+Facebook, Instagram, X exigent une connexion pour la quasi-totalité de leur contenu (majoritairement des **captures d'écran** → OCR) : `scrape_social.py` utilise des **comptes d'entreprise** dédiés (jamais personnels), identifiants dans `.env` — plusieurs comptes possibles par plateforme, essayés dans l'ordre. Le scraping de ces plateformes se fait sous couverture de l'entreprise, qui porte la responsabilité en cas de contestation.
 
 ### Pipeline
 
 ```bash
-python -m src.data.scrape           # sources texte
+python -m src.data.scrape           # découverte + collecte texte/image
 python -m src.data.scrape_social    # Facebook/Instagram/X (Playwright)
 python -m src.data.ocr              # OCRise les captures collectées
+python -m src.data.metrics          # régénère les graphes d'évolution
 ```
 
-- **Anti-doublon** (`src/data/dedupe.py`) : hash SHA-256 du texte + hash perceptuel des images, état persistant en SQLite (`data/interim/scraping_state.db`) — un second passage ne retraite jamais le déjà-vu.
-- **Anti-blocage** : `robots.txt` respecté sur les sources texte, cadence limitée et pauses aléatoires partout. Aucun contournement actif (pas de résolution de CAPTCHA, pas de comptes jetables) — un compte bloqué est un risque accepté, pas un problème à contourner techniquement.
+- **Anti-doublon** (`src/data/dedupe.py`) : hash SHA-256 du texte + hash perceptuel des images, vérification et marquage **atomiques** (pas de course entre deux pages traitées en parallèle qui partagent une même image). État persistant en SQLite. `reconcile()` revérifie au début de chaque run que ce que la base dit « déjà vu » existe réellement dans `data/` — une suppression accidentelle de fichier ne fait jamais perdre une donnée pour de bon.
+- **Résilience réseau** : nouvelle tentative avec délai croissant (2s, 4s, 8s) avant d'abandonner une URL pour ce run ; une coupure de connexion n'oblige jamais à tout recommencer, grâce à l'état persistant.
+- **Anti-blocage** : `robots.txt` respecté sur les sources texte, cadence limitée et pauses aléatoires partout, proxy optionnel (`SCRAPER_PROXY_URL`) si l'entreprise en possède déjà un. Aucun contournement actif (pas de résolution de CAPTCHA, pas de bascule automatique de compte en cas de blocage, pas d'usurpation d'empreinte navigateur) — `scrape_social.py` s'arrête et journalise plutôt que de basculer silencieusement, pour qu'un humain décide de la suite.
+- **Métriques** (`src/data/metrics.py`) : chaque run enregistre volume/erreurs/durée par source dans un historique (`data/interim/metrics/`), avec des graphes d'évolution — pour savoir si la collecte progresse d'un lancement à l'autre. Fonctionne pareil en notebook ou en script (même code).
 - **Sortie** : `data/raw/scraped/messages.jsonl`, **sans étiquette** arnaque/légitime — l'annotation reste le travail de Data 2 (cahier IA, organisation §11).
 
 ### Données sur Git
 
-`data/raw/scraped/messages.jsonl` est **versionné** (texte léger, `git pull` suffit pour que tout le monde — y compris Colab — ait le même jeu de données). Les captures brutes (`data/raw/scraped/images/`) ne le sont **pas** (bloat du dépôt) : à synchroniser sur un dossier Drive partagé de l'équipe à la place.
+`data/raw/scraped/messages.jsonl` et `data/interim/metrics/` sont **versionnés** (texte léger, `git pull` suffit pour que tout le monde — y compris Colab — ait le même jeu de données et le même historique). Les captures brutes (`data/raw/scraped/images/`) ne le sont **pas** (bloat du dépôt) : à synchroniser sur un dossier Drive partagé de l'équipe à la place.
+
+### Exécuter la collecte (notebook ou script)
+
+`notebooks/04_scraping.ipynb` appelle directement le code de `src/data/` (aucune logique dupliquée) — fonctionne en local comme sur Colab (détection automatique). Sinon, les commandes du pipeline ci-dessus font exactement la même chose en ligne de commande.
 
 ### Entraînement sur Google Colab
 
