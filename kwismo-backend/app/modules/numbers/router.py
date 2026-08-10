@@ -1,4 +1,4 @@
-"""Routes /numbers/*. / /numbers/* routes. Cf. cahier des charges Backend §5.4."""
+"""Routes /numbers/*. / Number reputation routes."""
 
 from fastapi import APIRouter, Depends, Query
 

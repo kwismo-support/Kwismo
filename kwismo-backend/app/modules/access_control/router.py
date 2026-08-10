@@ -1,4 +1,4 @@
-"""Routes /roles, /access-rights. Cf. cahier des charges Backend §5.10."""
+"""Routes /roles, /access-rights. / Roles and access rights routes."""
 
 from fastapi import APIRouter, Depends, status
 

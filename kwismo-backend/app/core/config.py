@@ -29,21 +29,16 @@ class Settings(BaseSettings):
     allowed_hosts: str = "*"
     redis_url: str = "redis://localhost:6379"
 
-    # Limitation de debit (anti brute-force / anti DoS, cf. cahier §8.1 et §8.5)
-    # "memory://" par defaut : aucune dependance externe, ne peut jamais bloquer
-    # le demarrage si Redis est indisponible. Passer a redis_url en production
-    # multi-workers (Gunicorn) pour partager les compteurs entre processus.
+    # Limitation de debit (anti brute-force / anti DoS)
     rate_limit_storage_uri: str = "memory://"
     rate_limit_default: str = "100/minute"
     rate_limit_auth: str = "10/minute"
     rate_limit_otp: str = "5/minute"
 
-    # Garde-fous de charge (cf. cahier §8.5 : jamais paralyser le backend)
+    # Garde-fous de charge
     max_request_body_mb: int = 5
 
-    # Stockage fichiers (images/videos) — pas encore de route d'upload dans le
-    # cahier §5, mais parametrage pret pour que les futurs devs n'aient qu'a
-    # coder la route, pas a redefinir ces regles.
+    # Stockage fichiers (images/videos)
     upload_dir: str = "./storage/uploads"
     max_upload_size_mb: int = 20
     allowed_image_extensions: str = "jpg,jpeg,png,webp"

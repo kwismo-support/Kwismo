@@ -1,4 +1,4 @@
-"""Routes /kpi/*. Cf. cahier des charges Backend §5.10."""
+"""Routes /kpi/*. / KPI routes."""
 
 from fastapi import APIRouter, Depends
 

@@ -1,11 +1,10 @@
-"""Routes /partners/*, /partner/scope/*. Cf. cahier des charges Backend §5.8.
+"""Routes /partners/*, /partner/scope/*. / Partner routes.
 
-FR — Le cloisonnement des donnees partenaire (§5.8) est applique COTE
-SERVEUR : un partner ne voit que son perimetre (regles d'affiliation) ; un
-admin peut tout consulter en mode supervision.
-EN — Partner data scoping (§5.8) is enforced SERVER-SIDE: a partner only
-sees their own scope (affiliation rules); an admin can view everything in
-supervision mode.
+FR — Le cloisonnement des donnees partenaire est applique cote serveur : un
+partner ne voit que son perimetre (regles d'affiliation) ; un admin peut
+tout consulter en mode supervision.
+EN — Partner data scoping is enforced server-side: a partner only sees
+their own scope (affiliation rules); an admin can view everything.
 """
 
 from fastapi import APIRouter, Depends, status

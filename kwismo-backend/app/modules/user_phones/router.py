@@ -1,9 +1,9 @@
-"""Routes /users/me/phones/*. / /users/me/phones/* routes.
+"""Routes /users/me/phones/*. / "My numbers" routes.
 
-Cf. cahier des charges Backend §5.3 : un compte, plusieurs numeros ; chaque
-numero est verifie par OTP SMS et unique globalement (un seul compte a la fois).
-See Backend spec §5.3: one account, many numbers; each number is verified via
-SMS OTP and is globally unique (one account at a time).
+FR — Un compte, plusieurs numeros ; chaque numero est verifie par OTP SMS et
+reste unique globalement (un seul compte a la fois).
+EN — One account, several numbers; each number is verified via SMS OTP and
+stays globally unique (one account at a time).
 """
 
 from fastapi import APIRouter, Depends, Request, status

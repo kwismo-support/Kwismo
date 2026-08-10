@@ -147,7 +147,7 @@ kwismo-backend/
 │  │  ├─ schemas.py                  # Page[T], ErrorResponse, Message, HealthOut (bilingues)
 │  │  ├─ rate_limit.py               # ★ slowapi : limite globale + AUTH/OTP_RATE_LIMIT (anti brute-force)
 │  │  ├─ middleware.py               # ★ En-têtes de sécurité HTTP + limite de taille de requête
-│  │  ├─ exceptions.py               # ★ not_implemented() + gestionnaires globaux (anti-crash, §8.4)
+│  │  ├─ exceptions.py               # ★ not_implemented() + gestionnaires globaux (anti-crash)
 │  │  ├─ i18n.py                     # Chargement des traductions, résolution de la langue
 │  │  └─ logging.py                  # Configuration des logs structurés (JSON)
 │  │
@@ -156,7 +156,7 @@ kwismo-backend/
 │  │  ├─ prisma_client.py            # ★ Instance Prisma unique + connect/disconnect (lifespan)
 │  │  └─ repositories/               # Accès données par entité (fine abstraction sur Prisma)
 │  │     ├─ __init__.py
-│  │     ├─ base_repository.py       # ★ CRUD générique portable (jamais de SQL brut, cf. §3.1)
+│  │     ├─ base_repository.py       # ★ CRUD générique portable (jamais de SQL brut)
 │  │     ├─ user_repository.py
 │  │     ├─ number_repository.py
 │  │     ├─ report_repository.py
@@ -180,14 +180,14 @@ kwismo-backend/
 │  │  │  ├─ schemas.py               # UserMeOut, UserListItemOut, UserDetailOut, UserStatusIn…
 │  │  │  └─ service.py
 │  │  │
-│  │  ├─ user_phones/                # ★ "Mes numéros" — module distinct de users (cahier §3.2)
+│  │  ├─ user_phones/                # ★ "Mes numéros" — module distinct de users
 │  │  │  ├─ __init__.py
 │  │  │  ├─ router.py                # ★ 6 routes /users/me/phones/* (ajout, OTP SMS, compromission)
 │  │  │  └─ schemas.py               # UserPhoneOut, UserPhoneAddIn, CompromiseIncidentOut…
 │  │  │
-│  │  ├─ contacts/                   # ★ Ajouté (hors §5 explicite, cf. README §9 note)
+│  │  ├─ contacts/                   # ★ Ajouté (voir note §9 plus bas)
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # ★ 4 routes /contacts/* (liste à insignes, cf. cahier IA §4)
+│  │  │  ├─ router.py                # ★ 4 routes /contacts/* (liste à insignes)
 │  │  │  └─ schemas.py               # ContactOut, ContactAddIn
 │  │  │
 │  │  ├─ numbers/
@@ -362,7 +362,7 @@ Toutes les routes sont documentées dans Swagger (`/docs`). Aperçu :
 | auth (9) | `/auth/register`, `/auth/email/verify`, `/auth/login`, `/auth/device/verify`, `/auth/refresh`, `/auth/password/*`, `/auth/logout` | public / auth |
 | users (5) | `/users/me`, `/users`, `/users/{id}`, `/users/{id}/status` | user / admin / partner |
 | user_phones (6) | `/users/me/phones`, `/users/me/phones/{id}/verify`, `/…/resend`, `/…/compromise` | user |
-| contacts (4) | `/contacts`, `/contacts/{id}/refresh` — *ajouté, cf. §9 | user |
+| contacts (4) | `/contacts`, `/contacts/{id}/refresh` — *voir note ci-dessous | user |
 | numbers (5) | `/numbers/verify`, `/numbers/batch-verify`, `/numbers`, `/numbers/{id}/status` | user / admin / partner |
 | reports (3) | `/reports`, `/reports/{id}/validate` | user / admin |
 | transactions (3) | `/transactions/prepare`, `/transactions`, `/transactions/{id}` | user |
@@ -374,7 +374,7 @@ Toutes les routes sont documentées dans Swagger (`/docs`). Aperçu :
 | access_control (4) | `/roles`, `/access-rights` | admin |
 | notifications (1) | `/notifications` | user |
 
-*⁠ ⁠`contacts` n'est pas listé au §5 du cahier des charges — ajouté pour que la table `Contact` et la "liste de contacts à insignes" (cahier IA §4) soient utilisables par `/whatsapp-alerts/broadcast`. Voir le commentaire en tête de `app/modules/contacts/schemas.py`.
+*⁠ ⁠`contacts` a été ajouté pour que la table `Contact` et la "liste de contacts à insignes" soient utilisables par `/whatsapp-alerts/broadcast`. Voir le commentaire en tête de `app/modules/contacts/schemas.py`.
 
 Total : **67 opérations** sur **53 chemins**, 100 % typées en entrée/sortie (voir `/openapi.json`). Toutes répondent `501` tant que la logique métier n'est pas écrite — c'est un squelette Swagger-first volontaire.
 

@@ -1,25 +1,12 @@
 """Point d'entree FastAPI. / FastAPI entry point.
 
-FR — Toutes les routes du cahier des charges Backend §5 sont enregistrees
-ici, avec schemas et documentation bilingue FR/EN, pour que Swagger (/docs)
-serve de reference complete pendant le developpement (rien d'oublie).
-La logique metier n'est pas encore branchee : chaque route repond 501 tant
-qu'elle n'est pas implementee (voir app/core/exceptions.not_implemented).
-
-Securite (cf. cahier §8) : limitation de debit (brute-force + surcharge),
-gestionnaires d'exceptions globaux, en-tetes de securite, taille de requete
-plafonnee, hotes/origines restreints. Voir app/core/{rate_limit,exceptions,
-middleware}.py pour le detail de chaque garde-fou.
-
-EN — Every route from the Backend spec §5 is registered here, with schemas
-and bilingual FR/EN docs, so Swagger (/docs) is a complete reference while
-developing (nothing forgotten). Business logic isn't wired yet: each route
-returns 501 until implemented (see app/core/exceptions.not_implemented).
-
-Security (see spec §8): rate limiting (brute-force + overload), global
-exception handlers, security headers, capped request size, restricted
-hosts/origins. See app/core/{rate_limit,exceptions,middleware}.py for each
-guardrail's detail.
+FR — Assemble toutes les routes, la securite (limitation de debit,
+gestionnaires d'erreurs, en-tetes HTTP) et la connexion a la base. Les
+routes repondent 501 tant que leur logique n'est pas ecrite (voir
+app/core/exceptions.not_implemented).
+EN — Wires up all routes, security (rate limiting, error handlers, HTTP
+headers) and the database connection. Routes return 501 until their logic
+is written (see app/core/exceptions.not_implemented).
 """
 
 from contextlib import asynccontextmanager
@@ -57,17 +44,16 @@ DESCRIPTION = """
 comptes et de leurs numéros, vérification de réputation (via le service IA),
 signalements, transferts protégés par code USSD, partenaires, alertes
 WhatsApp, enquêtes, KPI et administration des rôles. Le backend est la seule
-porte d'accès à la base de données (voir cahier des charges Backend, §1 et
-§8). La plupart des routes ci-dessous répondent **501** tant que leur
-logique métier n'est pas encore écrite — c'est un squelette d'API délibéré,
-pas un bug.
+porte d'accès à la base de données. La plupart des routes ci-dessous
+répondent **501** tant que leur logique métier n'est pas encore écrite —
+c'est un squelette d'API délibéré, pas un bug.
 
 **EN** — KWISMO's hybrid central API: authentication, accounts and their
 phone numbers, reputation checks (via the AI service), reports, USSD-code
 protected transfers, partners, WhatsApp alerts, surveys, KPIs and role
-administration. The backend is the only door to the database (see Backend
-spec §1 and §8). Most routes below return **501** until their business
-logic is written — this is a deliberate API skeleton, not a bug.
+administration. The backend is the only door to the database. Most routes
+below return **501** until their business logic is written — this is a
+deliberate API skeleton, not a bug.
 """
 
 TAGS_METADATA = [
@@ -108,7 +94,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# --- Securite (cf. cahier §8) --------------------------------------------
+# --- Securite ---------------------------------------------------------
 # Ordre : le dernier middleware ajoute est le plus "exterieur" (execute en
 # premier sur la requete). On rejette d'abord les hotes/tailles suspects,
 # puis CORS, puis on habille la reponse (en-tetes, compression).

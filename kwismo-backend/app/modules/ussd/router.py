@@ -1,4 +1,4 @@
-"""Routes /countries, /operators, /ussd-actions. Cf. cahier des charges Backend §5.7."""
+"""Routes /countries, /operators, /ussd-actions. / Country, operator and USSD-action routes."""
 
 from fastapi import APIRouter, Depends, Query, status
 

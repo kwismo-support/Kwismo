@@ -1,11 +1,9 @@
 """Middlewares de securite. / Security middlewares.
 
-FR — cf. cahier des charges Backend §8.4 (en-tetes de securite HTTP) et §8.5
-(limitation de la charge reseau). CORS est configure separement dans
-app/main.py (FastAPI CORSMiddleware natif).
-EN — see Backend spec §8.4 (HTTP security headers) and §8.5 (network load
-limiting). CORS is configured separately in app/main.py (native FastAPI
-CORSMiddleware).
+FR — En-tetes HTTP de securite et limite de taille de requete. Le CORS est
+configure a part dans app/main.py.
+EN — Security HTTP headers and a request-size cap. CORS is configured
+separately in app/main.py.
 """
 
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -20,7 +18,7 @@ settings = get_settings()
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    """Ajoute les en-tetes HTTP de securite recommandes (§8.4). / Adds the recommended HTTP security headers (§8.4)."""
+    """Ajoute les en-tetes HTTP de securite recommandes. / Adds the recommended HTTP security headers."""
 
     async def dispatch(self, request: Request, call_next) -> Response:
         response = await call_next(request)
@@ -28,7 +26,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
-        # HSTS n'a de sens que derriere HTTPS (reverse proxy en prod) ; inoffensif en dev HTTP.
         response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains"
         response.headers.setdefault(
             "Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'"
@@ -37,10 +34,8 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 class MaxBodySizeMiddleware(BaseHTTPMiddleware):
-    """FR — Rejette (413) toute requete dont le corps depasse MAX_REQUEST_BODY_MB,
-    avant que le corps ne soit lu — protection anti-surcharge (§8.5).
-    EN — Rejects (413) any request whose body exceeds MAX_REQUEST_BODY_MB,
-    before the body is read — anti-overload protection (§8.5)."""
+    """FR — Rejette (413) toute requete dont le corps depasse MAX_REQUEST_BODY_MB.
+    EN — Rejects (413) any request whose body exceeds MAX_REQUEST_BODY_MB."""
 
     def __init__(self, app: ASGIApp, max_body_mb: int | None = None) -> None:
         super().__init__(app)

@@ -32,7 +32,7 @@ class Message(BaseModel):
 
 
 class HealthOut(BaseModel):
-    """Reponse de /health (cf. cahier des charges Backend §10.1)."""
+    """Reponse de /health. / Health check response."""
 
     status: str = Field(..., examples=["ok"])
 

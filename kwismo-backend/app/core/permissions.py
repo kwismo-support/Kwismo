@@ -1,11 +1,9 @@
-"""RBAC : dependances require_role(...). / RBAC: require_role(...) dependencies.
+"""RBAC : dependances require_roles(...). / RBAC: require_roles(...) dependencies.
 
-FR — user / partner / admin (cf. cahier des charges Backend §8.2). Chaque
-route protegee declare explicitement le(s) role(s) requis via
-`Depends(require_roles("admin"))`.
-
-EN — user / partner / admin (see Backend spec §8.2). Every protected route
-explicitly declares its required role(s) via `Depends(require_roles("admin"))`.
+FR — Roles : user / partner / admin. Chaque route protegee declare le(s)
+role(s) requis via `Depends(require_roles("admin"))`.
+EN — Roles: user / partner / admin. Every protected route declares its
+required role(s) via `Depends(require_roles("admin"))`.
 """
 
 from fastapi import Depends, HTTPException, status

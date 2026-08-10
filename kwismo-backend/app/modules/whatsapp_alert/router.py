@@ -1,4 +1,4 @@
-"""Routes /whatsapp-alerts/*. Cf. cahier des charges Backend §5.9."""
+"""Routes /whatsapp-alerts/*. / WhatsApp alert routes."""
 
 from fastapi import APIRouter, Depends, status
 

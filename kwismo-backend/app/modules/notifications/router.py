@@ -1,4 +1,4 @@
-"""Routes /notifications. Cf. cahier des charges Backend §5.10."""
+"""Routes /notifications. / Notification routes."""
 
 from fastapi import APIRouter, Depends
 

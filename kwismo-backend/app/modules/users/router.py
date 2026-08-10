@@ -1,4 +1,4 @@
-"""Routes /users/*. / /users/* routes. Cf. cahier des charges Backend §5.2."""
+"""Routes /users/*. / User account routes."""
 
 from fastapi import APIRouter, Depends, Query, status
 

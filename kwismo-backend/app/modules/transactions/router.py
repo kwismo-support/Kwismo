@@ -1,4 +1,4 @@
-"""Routes /transactions/*. / /transactions/* routes. Cf. cahier des charges Backend §5.6."""
+"""Routes /transactions/*. / Protected-transfer routes."""
 
 from fastapi import APIRouter, Depends, Query
 

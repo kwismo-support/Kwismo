@@ -1,11 +1,9 @@
-"""Routes /contacts/*. / /contacts/* routes.
+"""Routes /contacts/*. / Contact routes.
 
-FR — Non listees explicitement au cahier §5 (voir note dans schemas.py) mais
-necessaires pour que la table Contact et la "liste de contacts a insignes"
-soient utilisables, notamment par `POST /whatsapp-alerts/broadcast`.
-EN — Not explicitly listed in spec §5 (see note in schemas.py) but required
-for the Contact table and the "badge contact list" to be usable, in
-particular by `POST /whatsapp-alerts/broadcast`.
+FR — Carnet de contacts avec insigne de reputation ; utilise notamment par
+`POST /whatsapp-alerts/broadcast` pour choisir les destinataires.
+EN — Contact list with a reputation badge; used in particular by
+`POST /whatsapp-alerts/broadcast` to pick recipients.
 """
 
 from fastapi import APIRouter, Depends, status

@@ -1,8 +1,9 @@
-"""Routes /auth/*. / /auth/* routes.
+"""Routes /auth/*. / Authentication routes.
 
-Cf. cahier des charges Backend §5.1 et §8.1 (OTP a deux canaux, appareils connus,
-anti brute-force). See Backend spec §5.1 and §8.1 (two-channel OTP, known
-devices, anti brute-force).
+FR — Inscription, connexion, OTP a deux canaux (email et SMS), appareils
+connus, anti brute-force.
+EN — Registration, login, two-channel OTP (email and SMS), known devices,
+brute-force protection.
 """
 
 from fastapi import APIRouter, Request, status

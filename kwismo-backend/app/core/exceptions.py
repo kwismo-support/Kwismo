@@ -1,26 +1,11 @@
 """Exceptions metier + gestionnaires globaux (protection anti-crash). / Business exceptions + global handlers (crash protection).
 
-FR — cf. cahier des charges Backend §8.4 (validation stricte) et §10.1
-(journaux structures). Ces gestionnaires garantissent que :
-  1. aucune exception non geree ne fait fuiter une trace technique au client
-     (juste un message bilingue propre + un log serveur complet) ;
-  2. les erreurs de validation Pydantic renvoient un format bilingue coherent
-     avec le reste de l'API plutot que le format brut de FastAPI.
-Rien n'empeche jamais le process de continuer a servir les autres requetes :
-c'est le comportement normal d'ASGI (une exception reste isolee a sa
-requete), mais sans ces gestionnaires, le detail technique de l'exception
-peut fuiter au client — ce que §8.4 interdit.
-
-EN — see Backend spec §8.4 (strict validation) and §10.1 (structured logs).
-These handlers guarantee that:
-  1. no unhandled exception leaks a technical traceback to the client (just
-     a clean bilingual message + a full server-side log);
-  2. Pydantic validation errors return a bilingual shape consistent with the
-     rest of the API instead of FastAPI's raw format.
-Nothing here is what stops the process from continuing to serve other
-requests — that's normal ASGI behaviour (an exception stays scoped to its
-own request) — but without these handlers, the exception's technical detail
-can leak to the client, which §8.4 forbids.
+FR — Capture toute exception non geree pour ne jamais renvoyer de trace
+technique au client (juste un message bilingue propre + un log serveur), et
+uniformise les erreurs de validation Pydantic.
+EN — Catches every unhandled exception so the client never sees a technical
+traceback (just a clean bilingual message + a server log), and normalizes
+Pydantic validation errors.
 """
 
 import logging
