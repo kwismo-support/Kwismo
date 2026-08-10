@@ -23,6 +23,7 @@
 11. [API d'inférence](#11-api-dinférence)
 12. [Intégration avec le backend](#12-intégration-avec-le-backend)
 13. [Variables d'environnement](#13-variables-denvironnement)
+14. [Collecte de données (scraping) & entraînement sur Google Colab](#14-collecte-de-données-scraping--entraînement-sur-google-colab)
 
 ---
 
@@ -118,6 +119,9 @@ docker compose up --build ai
 | `python -m src.models.model_a.train` | Entraîne le Modèle A (scoring). |
 | `python -m src.models.model_b.train` | Entraîne le Modèle B (NLP). |
 | `python -m src.evaluation.metrics` | Évalue les modèles (rappel, précision, F1). |
+| `python -m src.data.scrape` | Scrape les sources texte (presse/institutionnel) → `data/raw/scraped/`. |
+| `python -m src.data.scrape_social` | Scrape Facebook/Instagram/X (compte d'entreprise requis, §14). |
+| `python -m src.data.ocr` | OCRise les captures en attente (`type: "image_a_ocr"`). |
 | `jupyter notebook notebooks/` | Ouvre les notebooks d'exploration/entraînement. |
 | `pytest` | Lance les tests. |
 | `ruff check . && black .` | Vérifie la qualité du code. |
@@ -132,9 +136,12 @@ docker compose up --build ai
 kwismo-ai/
 │
 ├─ data/                            # Données (NON versionnées si sensibles)
-│  ├─ raw/                          # Données brutes reçues (via le backend)
-│  │  └─ .gitkeep
-│  ├─ interim/                      # Données nettoyées intermédiaires
+│  ├─ raw/                          # Données brutes reçues (via le backend) ou scrapées
+│  │  ├─ .gitkeep
+│  │  └─ scraped/                   # ★ Sortie du scraping (§14)
+│  │     ├─ messages.jsonl          # ★ Versionné : texte + résultat OCR, sans étiquette
+│  │     └─ images/                 # Captures brutes — NON versionné, à synchroniser sur Drive
+│  ├─ interim/                      # Données nettoyées intermédiaires (+ scraping_state.db, anti-doublon)
 │  │  └─ .gitkeep
 │  └─ processed/                    # Données prêtes pour l'entraînement
 │     └─ .gitkeep
@@ -152,7 +159,11 @@ kwismo-ai/
 │  │  ├─ __init__.py
 │  │  ├─ collect.py                 # Réception des données depuis le backend
 │  │  ├─ clean.py                   # Nettoyage
-│  │  └─ features.py                # Construction des caractéristiques (Modèle A)
+│  │  ├─ features.py                # Construction des caractéristiques (Modèle A)
+│  │  ├─ scrape.py                  # ★ Scraping sources texte (presse/institutionnel), §14
+│  │  ├─ scrape_social.py           # ★ Scraping Facebook/Instagram/X (Playwright), §14
+│  │  ├─ ocr.py                     # ★ Texte depuis capture d'écran (EasyOCR), §14
+│  │  └─ dedupe.py                  # ★ Anti-doublon texte + image (SQLite), §14
 │  │
 │  ├─ models/
 │  │  ├─ __init__.py
@@ -205,8 +216,9 @@ kwismo-ai/
 ├─ .gitignore
 ├─ .dockerignore
 ├─ Dockerfile                       # Image du service d'inférence
-├─ requirements.txt                 # scikit-learn, lightgbm, transformers…
+├─ requirements.txt                 # scikit-learn, lightgbm, transformers, playwright, easyocr…
 ├─ pyproject.toml                   # requires-python + dependencies (pip install -e .)
+├─ COLAB.md                         # ★ Guide complet : lancer les notebooks sur Google Colab (§14)
 └─ README.md                        # Ce fichier
 ```
 
@@ -287,5 +299,48 @@ Documentation interactive : **[API Docs](http://localhost:8001/docs)**.
 | `MODEL_B_VERSION` | `latest` | Version du modèle NLP à charger. |
 | `HF_MODEL_NAME` | `Davlan/afro-xlmr-base` | Modèle de base Hugging Face (exemple). |
 | `PREDICT_THRESHOLD` | `0.5` | Seuil de décision (réglable sans réentraîner). |
+| `SCRAPER_USER_AGENT` | `KWISMO-DataCollector/1.0` | Identifiant envoyé aux sources scrapées. |
+| `SCRAPER_DELAY_SECONDS` | `3.0` | Pause minimale entre deux requêtes/actions. |
+| `SCRAPER_MAX_CONCURRENCY` | `2` | Requêtes simultanées max (sources texte). |
+| `FACEBOOK_USERNAME` / `FACEBOOK_PASSWORD` | *(vide)* | Compte **d'entreprise** dédié — jamais personnel. |
+| `INSTAGRAM_USERNAME` / `INSTAGRAM_PASSWORD` | *(vide)* | Idem, compte d'entreprise. |
+| `X_USERNAME` / `X_PASSWORD` | *(vide)* | Idem, compte d'entreprise. |
 
 > Copie toujours `.env.example` → `.env` et ne committe jamais `.env`.
+
+---
+
+## 14. Collecte de données (scraping) & entraînement sur Google Colab
+
+### Pourquoi le scraping
+
+Au démarrage du projet, les sources de données prévues (signalements KWISMO, collecte terrain…) sont vides — il n'y a pas encore d'utilisateurs. Le scraping amorce le Modèle B avec des exemples locaux réels le temps que ces sources se remplissent.
+
+### Sources
+
+| Priorité | Sources | Texte natif ? |
+| -------- | ------- | -------------- |
+| 1 | Orange Cameroun, MTN Cameroun, CIRT Cameroun, MINPOSTEL, 237online, StopBlaBlaCam, PesaCheck | Oui — le message d'arnaque est cité dans l'article, pas d'OCR. |
+| 2 | Facebook, Instagram, X (mots-clés : « arnaque mobile money cameroun », « arnaque orange money »…) | Majoritairement des **captures d'écran** → OCR nécessaire. |
+
+Facebook/Instagram/X exigent une connexion : `scrape_social.py` utilise un **compte d'entreprise** dédié (jamais personnel), identifiants dans `.env`. Le scraping de ces plateformes se fait sous couverture de l'entreprise, qui porte la responsabilité en cas de contestation.
+
+### Pipeline
+
+```bash
+python -m src.data.scrape           # sources texte
+python -m src.data.scrape_social    # Facebook/Instagram/X (Playwright)
+python -m src.data.ocr              # OCRise les captures collectées
+```
+
+- **Anti-doublon** (`src/data/dedupe.py`) : hash SHA-256 du texte + hash perceptuel des images, état persistant en SQLite (`data/interim/scraping_state.db`) — un second passage ne retraite jamais le déjà-vu.
+- **Anti-blocage** : `robots.txt` respecté sur les sources texte, cadence limitée et pauses aléatoires partout. Aucun contournement actif (pas de résolution de CAPTCHA, pas de comptes jetables) — un compte bloqué est un risque accepté, pas un problème à contourner techniquement.
+- **Sortie** : `data/raw/scraped/messages.jsonl`, **sans étiquette** arnaque/légitime — l'annotation reste le travail de Data 2 (cahier IA, organisation §11).
+
+### Données sur Git
+
+`data/raw/scraped/messages.jsonl` est **versionné** (texte léger, `git pull` suffit pour que tout le monde — y compris Colab — ait le même jeu de données). Les captures brutes (`data/raw/scraped/images/`) ne le sont **pas** (bloat du dépôt) : à synchroniser sur un dossier Drive partagé de l'équipe à la place.
+
+### Entraînement sur Google Colab
+
+Guide complet, pas-à-pas, gratuit et payant : **[COLAB.md](./COLAB.md)**.
