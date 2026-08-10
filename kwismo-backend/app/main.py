@@ -20,6 +20,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.core.config import get_settings
 from app.core.exceptions import register_exception_handlers
+from app.core.logging import configure_logging
 from app.core.middleware import MaxBodySizeMiddleware, SecurityHeadersMiddleware
 from app.core.rate_limit import limiter, rate_limit_exceeded_handler
 from app.core.schemas import HealthOut
@@ -75,6 +76,7 @@ TAGS_METADATA = [
 ]
 
 settings = get_settings()
+configure_logging()
 
 
 @asynccontextmanager

@@ -17,6 +17,7 @@ python-dotenv>=1.0
 # --- Authentification & securite ---
 python-jose[cryptography]>=3.3
 argon2-cffi>=23.1
+cryptography>=42.0    # chiffrement des champs sensibles (utils/crypto.py)
 
 # --- Cache / limitation de debit / files d'attente ---
 redis>=5.0

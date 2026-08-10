@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     jwt_access_expire_min: int = 15
     jwt_refresh_expire_days: int = 7
 
+    # Chiffrement des champs sensibles (Fernet, cle via `Fernet.generate_key()`)
+    field_encryption_key: str = "changeme-generate-with-Fernet.generate_key()"
+
     # Service IA
     ai_service_url: str = "http://localhost:8001"
     ai_service_timeout_seconds: float = 5.0
