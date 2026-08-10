@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     hf_model_name: str = "Davlan/afro-xlmr-base"
     predict_threshold: float = 0.5
 
-    # Garde-fous de charge (cf. cahier Backend §8.5 : jamais paralyser le service)
+    # Garde-fous de charge : jamais paralyser le service.
     # "memory://" par defaut : aucune dependance externe requise pour demarrer.
     rate_limit_storage_uri: str = "memory://"
     rate_limit_default: str = "300/minute"

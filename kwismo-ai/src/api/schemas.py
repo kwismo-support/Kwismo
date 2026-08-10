@@ -1,19 +1,18 @@
 """Contrat d'API partage avec kwismo-backend (module ai_gateway). / Shared API contract with kwismo-backend (ai_gateway module).
 
-FR — Ces schemas DOIVENT rester identiques a
-kwismo-backend/app/modules/ai_gateway/schemas.py (cahier IA §9.3 / cahier
-Backend §9.3) : aucun des deux services ne doit "deviner" le format de
-l'autre.
-EN — These schemas MUST stay identical to
-kwismo-backend/app/modules/ai_gateway/schemas.py (AI spec §9.3 / Backend
-spec §9.3): neither service should ever "guess" the other's format.
+FR — Doit rester identique a
+kwismo-backend/app/modules/ai_gateway/schemas.py : aucun des deux services
+ne doit deviner le format de l'autre.
+EN — Must stay identical to
+kwismo-backend/app/modules/ai_gateway/schemas.py: neither service should
+ever guess the other's format.
 """
 
 from pydantic import BaseModel, Field
 
 
 class NumberFeaturesIn(BaseModel):
-    """Caracteristiques recues par POST /predict/number (Modele A, §4.1)."""
+    """Caracteristiques recues par POST /predict/number (Modele A). / Features received by POST /predict/number (Model A)."""
 
     numero: str
     nombre_signalements: int = Field(0, ge=0)
@@ -35,7 +34,7 @@ class PredictNumberOut(BaseModel):
 
 
 class TextIn(BaseModel):
-    """Message reçu par POST /predict/text (Modèle B, §6)."""
+    """Message reçu par POST /predict/text (Modèle B). / Message received by POST /predict/text (Model B)."""
 
     texte: str = Field(..., examples=["Felicitation ! Vous avez gagné 500000F, envoyez le code OTP pour recevoir."])
     langue: str | None = Field(None, examples=["fr"], description="Indice de langue, détection automatique sinon.")
@@ -48,7 +47,7 @@ class PredictTextOut(BaseModel):
 
 
 class FeedbackIn(BaseModel):
-    """Nouvelle donnée étiquetée reçue pour l'apprentissage continu (§9.2)."""
+    """Nouvelle donnée étiquetée reçue pour l'apprentissage continu. / New labeled data received for continuous learning."""
 
     type: str = Field(..., examples=["number"], description="'number' ou 'text'.")
     numero: str | None = None

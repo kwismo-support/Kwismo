@@ -2,10 +2,10 @@
 
 FR — Rejette (413) tout corps de requete depassant MAX_REQUEST_BODY_MB avant
 de le lire, pour qu'un texte demesure envoye a /predict/text ne sature jamais
-le service (cahier Backend §8.5, applique aussi cote IA).
+le service.
 EN — Rejects (413) any request body exceeding MAX_REQUEST_BODY_MB before
 reading it, so an oversized text sent to /predict/text never overloads the
-service (Backend spec §8.5, also applied on the AI side).
+service.
 """
 
 from starlette.middleware.base import BaseHTTPMiddleware

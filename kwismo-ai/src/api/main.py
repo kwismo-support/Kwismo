@@ -1,16 +1,12 @@
 """Point d'entree FastAPI du service d'inference. / FastAPI entry point for the inference service.
 
-FR — Toutes les routes du cahier des charges Modele IA §9.1 sont
-enregistrees ici, avec le contrat partage (schemas.py) et une documentation
-bilingue FR/EN. Ce service ne se connecte jamais a une base de donnees : il
-recoit ses donnees du backend et lui renvoie ses predictions (§9). La
-logique d'inference n'est pas encore branchee : chaque route repond 501
-tant qu'elle n'est pas implementee.
-EN — Every route from the AI spec §9.1 is registered here, with the shared
-contract (schemas.py) and bilingual FR/EN docs. This service never connects
-to a database: it only receives data from the backend and returns
-predictions (§9). Inference logic isn't wired yet: each route returns 501
-until implemented.
+FR — Ce service ne se connecte jamais a une base de donnees : il recoit ses
+donnees du backend et lui renvoie ses predictions. La logique d'inference
+n'est pas encore branchee : chaque route repond 501 tant qu'elle n'est pas
+implementee.
+EN — This service never connects to a database: it only receives data from
+the backend and returns predictions. Inference logic isn't wired yet: each
+route returns 501 until implemented.
 """
 
 from fastapi import FastAPI, HTTPException, status
@@ -34,16 +30,15 @@ from src.config import get_settings
 DESCRIPTION = """
 **FR** — Service d'inférence KWISMO : Modèle A (scoring de réputation des
 numéros, LightGBM) et Modèle B (détection d'arnaque dans un texte,
-AfroXLMR + repli TF-IDF). Appelé uniquement par le backend (voir cahier des
-charges Modèle IA, §9). La plupart des routes ci-dessous répondent **501**
-tant que le modèle correspondant n'est pas encore entraîné/chargé — c'est un
-squelette d'API délibéré, pas un bug.
+AfroXLMR + repli TF-IDF). Appelé uniquement par le backend. La plupart des
+routes ci-dessous répondent **501** tant que le modèle correspondant n'est
+pas encore entraîné/chargé — c'est un squelette d'API délibéré, pas un bug.
 
 **EN** — KWISMO's inference service: Model A (number reputation scoring,
 LightGBM) and Model B (scam-text detection, AfroXLMR + TF-IDF fallback).
-Called only by the backend (see AI spec, §9). Most routes below return
-**501** until the matching model is trained/loaded — this is a deliberate
-API skeleton, not a bug.
+Called only by the backend. Most routes below return **501** until the
+matching model is trained/loaded — this is a deliberate API skeleton, not a
+bug.
 """
 
 TAGS_METADATA = [
@@ -63,7 +58,7 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# --- Robustesse (cf. cahier Backend §8/§8.5, applique aussi cote IA) -----
+# --- Robustesse -----------------------------------------------------
 # Une exception d'inference ou une charge excessive ne doit jamais rendre ce
 # service (dont le backend depend a chaque verification) indisponible.
 app.state.limiter = limiter
@@ -89,9 +84,9 @@ def _not_implemented() -> HTTPException:
     description=(
         "**FR** — Reçoit les caractéristiques d'un numéro et renvoie un score de "
         "risque + statut (Modèle A). Repli sur les règles expertes si le modèle "
-        "est indisponible (§5).\n\n"
+        "est indisponible.\n\n"
         "**EN** — Receives a number's features and returns a risk score + status "
-        "(Model A). Falls back to expert rules if the model is unavailable (§5)."
+        "(Model A). Falls back to expert rules if the model is unavailable."
     ),
 )
 async def predict_number(payload: NumberFeaturesIn) -> PredictNumberOut:
@@ -105,9 +100,9 @@ async def predict_number(payload: NumberFeaturesIn) -> PredictNumberOut:
     summary="Analyze a message / Analyser un message",
     description=(
         "**FR** — Reçoit un message (SMS/WhatsApp) et renvoie la probabilité "
-        "qu'il s'agisse d'une arnaque (Modèle B). Repli TF-IDF garanti (§6.3).\n\n"
+        "qu'il s'agisse d'une arnaque (Modèle B). Repli TF-IDF garanti.\n\n"
         "**EN** — Receives a message (SMS/WhatsApp) and returns the probability "
-        "it is a scam (Model B). Guaranteed TF-IDF fallback (§6.3)."
+        "it is a scam (Model B). Guaranteed TF-IDF fallback."
     ),
 )
 async def predict_text(payload: TextIn) -> PredictTextOut:
@@ -121,9 +116,9 @@ async def predict_text(payload: TextIn) -> PredictTextOut:
     summary="Send labeled feedback / Transmettre une donnée étiquetée",
     description=(
         "**FR** — Reçoit une nouvelle donnée étiquetée (signalement, validation "
-        "admin...) pour l'apprentissage continu, incrémental et planifié (§8).\n\n"
+        "admin...) pour l'apprentissage continu, incrémental et planifié.\n\n"
         "**EN** — Receives a new labeled data point (report, admin validation...) "
-        "for incremental, scheduled continuous learning (§8)."
+        "for incremental, scheduled continuous learning."
     ),
 )
 async def feedback(payload: FeedbackIn) -> FeedbackAck:
@@ -146,7 +141,7 @@ async def health() -> AiHealthOut:
     response_model=AiVersionOut,
     tags=["System"],
     summary="Loaded model versions / Versions des modèles chargés",
-    description="**FR** — Versions actuellement chargées (registre, §8).\n\n**EN** — Currently loaded versions (registry, §8).",
+    description="**FR** — Versions actuellement chargées (registre).\n\n**EN** — Currently loaded versions (registry).",
 )
 async def version() -> AiVersionOut:
     return AiVersionOut(
