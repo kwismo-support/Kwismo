@@ -1,5 +1,6 @@
 # Environnement virtuel
 .venv/
+.venv313/
 
 # Artefacts Python
 __pycache__/
