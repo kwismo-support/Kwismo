@@ -24,6 +24,9 @@ data/raw/*
 data/raw/scraped/images/
 data/interim/*
 !data/interim/.gitkeep
+!data/interim/metrics/
+!data/interim/known_domains.json
+data/interim/scraping_state.db
 data/processed/*
 !data/processed/.gitkeep
 
