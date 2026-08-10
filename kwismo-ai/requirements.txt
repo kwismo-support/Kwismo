@@ -24,6 +24,13 @@ slowapi>=0.1.9        # limitation de debit (protection anti-surcharge)
 # --- Appels HTTP (collecte via le backend, tests) ---
 httpx>=0.27
 
+# --- Scraping & OCR (collecte de donnees locales pour le Modele B) ---
+beautifulsoup4>=4.12   # parsing HTML (sources presse/institutionnelles)
+playwright>=1.45       # navigateur automatise (Facebook/Instagram/X) — lancer `playwright install chromium` apres l'install
+easyocr>=1.7           # extraction de texte depuis les captures d'ecran
+imagehash>=4.3          # dedoublonnage d'images quasi identiques
+Pillow>=10.0
+
 # --- Notebooks (exploration & entrainement local/Colab) ---
 jupyter>=1.0
 

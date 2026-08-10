@@ -20,6 +20,8 @@ dist/
 # Donnees
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/scraped/
+data/raw/scraped/images/
 data/interim/*
 !data/interim/.gitkeep
 data/processed/*
