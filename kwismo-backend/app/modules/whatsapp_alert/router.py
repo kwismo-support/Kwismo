@@ -31,7 +31,7 @@ router = APIRouter(prefix="/whatsapp-alerts", tags=["WhatsApp Alert"])
 async def declare_whatsapp_incident(
     payload: WhatsAppIncidentIn, user=Depends(require_roles("user"))
 ) -> WhatsAppIncidentOut:
-    return await service.declare_whatsapp_incident(user.id, payload)
+    return await service.declare_whatsapp_incident(user.id, payload, user.langue)
 
 
 @router.post(
@@ -45,6 +45,12 @@ async def declare_whatsapp_incident(
         "**EN** — Broadcasts the hijacked-account alert to the selected contacts."
     ),
 )
+async def broadcast_whatsapp_alert(
+    payload: WhatsAppBroadcastIn, user=Depends(require_roles("user"))
+) -> WhatsAppAlertOut:
+    return await service.broadcast_whatsapp_alert(user.id, payload, user.langue)
+
+
 @router.patch(
     "/incident/{incident_id}/close",
     response_model=WhatsAppIncidentOut,
@@ -58,4 +64,4 @@ async def declare_whatsapp_incident(
 async def close_whatsapp_incident(
     incident_id: str, user=Depends(require_roles("user"))
 ) -> WhatsAppIncidentOut:
-    return await service.close_whatsapp_incident(user.id, incident_id)
+    return await service.close_whatsapp_incident(user.id, incident_id, user.langue)

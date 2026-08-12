@@ -19,7 +19,7 @@ router = APIRouter(prefix="/reports", tags=["Reports"])
     description="**FR** — Crée un signalement (motif + numéro).\n\n**EN** — Creates a report (reason + number).",
 )
 async def create_report(payload: ReportCreateIn, user=Depends(require_roles("user"))) -> ReportOut:
-    return await service.create_report(user.id, payload)
+    return await service.create_report(user.id, payload, user.langue)
 
 
 @router.get(
@@ -50,4 +50,4 @@ async def list_reports(
 async def validate_report(
     report_id: str, payload: ReportValidateIn, user=Depends(require_roles("admin"))
 ) -> ReportOut:
-    return await service.validate_report(report_id, payload, admin_user_id=user.id)
+    return await service.validate_report(report_id, payload, admin_user_id=user.id, lang=user.langue)

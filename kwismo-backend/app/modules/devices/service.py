@@ -6,6 +6,7 @@ from fastapi import HTTPException, status
 
 from app.db.prisma_client import db
 from app.modules.devices.schemas import DeviceOut
+from app.utils.i18n import t
 
 logger = logging.getLogger("kwismo.backend")
 
@@ -21,7 +22,6 @@ def _to_out(d) -> DeviceOut:
 
 
 async def list_my_devices(user_id: str) -> list[DeviceOut]:
-    """Liste les appareils de l'utilisateur."""
     devices = await db.device.find_many(
         where={"userId": user_id},
         order={"dateDerniereConnexion": "desc"},
@@ -29,19 +29,18 @@ async def list_my_devices(user_id: str) -> list[DeviceOut]:
     return [_to_out(d) for d in devices]
 
 
-async def delete_my_device(user_id: str, device_id: str):
-    """Supprime un appareil de l'utilisateur."""
+async def delete_my_device(user_id: str, device_id: str, lang: str = "fr"):
     from app.core.schemas import Message
-    
+
     device = await db.device.find_unique(where={"id": device_id})
     if device is None or device.userId != user_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Appareil introuvable / Device not found.",
+            detail=t("device_not_found", lang),
         )
-    
+
     await db.device.delete(where={"id": device_id})
     return Message(
-        message_fr="Appareil supprimé de votre compte.",
-        message_en="Device removed from your account.",
+        message_fr=t("device_removed", "fr"),
+        message_en=t("device_removed", "en"),
     )

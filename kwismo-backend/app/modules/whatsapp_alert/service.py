@@ -12,6 +12,7 @@ from app.modules.whatsapp_alert.schemas import (
     WhatsAppIncidentIn,
     WhatsAppIncidentOut,
 )
+from app.utils.i18n import t
 
 logger = logging.getLogger("kwismo.backend")
 
@@ -26,21 +27,19 @@ DEFAULT_ALERT_TEMPLATE = (
 # declare_whatsapp_incident
 # ---------------------------------------------------------------------------
 
-async def declare_whatsapp_incident(user_id: str, payload: WhatsAppIncidentIn) -> WhatsAppIncidentOut:
-    # Verifier que le UserPhone appartient a l'utilisateur et est verifie.
+async def declare_whatsapp_incident(user_id: str, payload: WhatsAppIncidentIn, lang: str = "fr") -> WhatsAppIncidentOut:
     phone = await db.userphone.find_unique(where={"id": payload.user_phone_id})
     if phone is None or phone.userId != user_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Numero introuvable / Phone not found.",
+            detail=t("phone_not_found", lang),
         )
     if not phone.estVerifie:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Seul un numero verifie peut faire l'objet d'une declaration / Only a verified number can be declared.",
+            detail=t("phone_not_verified_for_incident", lang),
         )
 
-    # Verifier qu'il n'y a pas deja un incident ouvert pour ce numero.
     existing = await db.compromiseincident.find_first(
         where={"userPhoneId": payload.user_phone_id, "statut": "open"}
     )
@@ -51,7 +50,6 @@ async def declare_whatsapp_incident(user_id: str, payload: WhatsAppIncidentIn) -
             statut=existing.statut,
         )
 
-    # Marquer le numero compromis si ce n'est pas deja fait.
     if not phone.estCompromis:
         await db.userphone.update(where={"id": phone.id}, data={"estCompromis": True})
 
@@ -69,33 +67,27 @@ async def declare_whatsapp_incident(user_id: str, payload: WhatsAppIncidentIn) -
 # broadcast_whatsapp_alert
 # ---------------------------------------------------------------------------
 
-async def broadcast_whatsapp_alert(user_id: str, payload: WhatsAppBroadcastIn) -> WhatsAppAlertOut:
-    # Verifier que l'incident appartient a l'utilisateur.
+async def broadcast_whatsapp_alert(user_id: str, payload: WhatsAppBroadcastIn, lang: str = "fr") -> WhatsAppAlertOut:
     incident = await db.compromiseincident.find_unique(where={"id": payload.compromise_incident_id})
     if incident is None or incident.userId != user_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Incident introuvable / Incident not found.",
+            detail=t("incident_not_found", lang),
         )
 
-    # Recuperer le numero compromis pour le message par defaut.
     phone = await db.userphone.find_unique(where={"id": incident.userPhoneId})
     phone_valeur = phone.valeur if phone else "inconnu"
-
-    # Construire le message.
     contenu = payload.contenu if payload.contenu else DEFAULT_ALERT_TEMPLATE.format(phone=phone_valeur)
 
-    # Verifier que les contacts appartiennent a l'utilisateur.
     contacts = await db.contact.find_many(
         where={"id": {"in": payload.contact_ids}, "userId": user_id}
     )
     if not contacts:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Aucun contact valide fourni / No valid contacts provided.",
+            detail=t("no_valid_contacts", lang),
         )
 
-    # Creer l'alerte.
     alert = await db.whatsappalert.create(
         data={
             "userId": user_id,
@@ -104,7 +96,6 @@ async def broadcast_whatsapp_alert(user_id: str, payload: WhatsAppBroadcastIn) -
         }
     )
 
-    # Creer les destinataires.
     recipients_out = []
     for contact in contacts:
         recipient = await db.whatsapalertrecipient.create(
@@ -120,26 +111,26 @@ async def broadcast_whatsapp_alert(user_id: str, payload: WhatsAppBroadcastIn) -
                 statut_accuse=recipient.statutAccuse,
             )
         )
-        # Simuler l'envoi (log en dev — brancher WhatsApp Business API ici).
-        logger.info(
-            "[WHATSAPP ALERT] -> %s (%s) : %s",
-            contact.nom,
-            contact.numero,
-            contenu,
-        )
+        logger.info("[WHATSAPP ALERT] -> %s (%s) : %s", contact.nom, contact.numero, contenu)
 
-async def close_whatsapp_incident(user_id: str, incident_id: str) -> WhatsAppIncidentOut:
-    """Clôture un incident WhatsApp ouvert."""
+    return WhatsAppAlertOut(
+        id=alert.id,
+        contenu=contenu,
+        destinataires=recipients_out,
+    )
+
+
+async def close_whatsapp_incident(user_id: str, incident_id: str, lang: str = "fr") -> WhatsAppIncidentOut:
     incident = await db.compromiseincident.find_unique(where={"id": incident_id})
     if incident is None or incident.userId != user_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Incident introuvable / Incident not found.",
+            detail=t("incident_not_found", lang),
         )
     if incident.statut == "closed":
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Cet incident est déjà clôturé / This incident is already closed.",
+            detail=t("incident_already_closed", lang),
         )
 
     updated = await db.compromiseincident.update(

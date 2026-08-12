@@ -1,10 +1,9 @@
 """Logique metier du module auth. / Business logic for the auth module."""
 
 import logging
+from datetime import UTC, datetime
 
 from fastapi import HTTPException, status
-
-from datetime import UTC, datetime
 
 from app.core.config import get_settings
 from app.core.security import (
@@ -32,12 +31,13 @@ from app.modules.auth.schemas import (
     TokenOut,
 )
 from app.utils.dates import is_expired, minutes_from_now, utcnow
+from app.utils.i18n import t
 from app.utils.otp import generate_otp, send_email_otp
 
 logger = logging.getLogger("kwismo.backend")
 settings = get_settings()
-
 _users = UserRepository()
+
 
 # ---------------------------------------------------------------------------
 # Helpers internes
@@ -61,7 +61,6 @@ def _token_out(user) -> TokenOut:
 
 
 async def _get_default_user_role():
-    """Recupere le role 'user', le cree s'il n'existe pas. / Gets the 'user' role, creating it if absent."""
     role = await db.role.find_unique(where={"nomRole": "user"})
     if role is None:
         role = await db.role.create(data={"nomRole": "user"})
@@ -69,8 +68,6 @@ async def _get_default_user_role():
 
 
 async def _create_email_otp(user_id: str, email: str) -> str:
-    """Invalide les OTP email precedents, cree un nouveau, renvoie le code. / Invalidates previous email OTPs, creates a new one, returns the code."""
-    # Invalider les anciens OTP email non utilises pour cet utilisateur.
     await db.otpcode.update_many(
         where={"userId": user_id, "canal": "email", "estUtilise": False},
         data={"estUtilise": True},
@@ -92,19 +89,15 @@ async def _create_email_otp(user_id: str, email: str) -> str:
 # register
 # ---------------------------------------------------------------------------
 
-async def register(payload: RegisterIn):
-    # 1. Verifier que l'email n'est pas deja pris.
+async def register(payload: RegisterIn, lang: str = "fr"):
     existing = await _users.get_by_email(payload.email)
     if existing:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Email deja utilise / Email already in use.",
+            detail=t("email_already_in_use", lang),
         )
 
-    # 2. Resoudre le role par defaut 'user'.
     role = await _get_default_user_role()
-
-    # 3. Creer le compte.
     user = await db.user.create(
         data={
             "nom": payload.nom,
@@ -112,17 +105,17 @@ async def register(payload: RegisterIn):
             "email": payload.email,
             "motDePasse": hash_password(payload.mot_de_passe),
             "roleId": role.id,
+            "langue": lang,
         }
     )
 
-    # 4. Envoyer l'OTP d'activation par email.
     code = await _create_email_otp(user.id, user.email)
     await send_email_otp(user.email, code)
 
     from app.core.schemas import Message
     return Message(
-        message_fr="Compte créé. Un code de vérification a été envoyé par email.",
-        message_en="Account created. A verification code was sent by email.",
+        message_fr=t("account_created", "fr"),
+        message_en=t("account_created", "en"),
     )
 
 
@@ -130,12 +123,14 @@ async def register(payload: RegisterIn):
 # verify_email
 # ---------------------------------------------------------------------------
 
-async def verify_email(payload: EmailVerifyIn) -> TokenOut:
+async def verify_email(payload: EmailVerifyIn, lang: str = "fr") -> TokenOut:
     user = await _users.get_by_email(payload.email)
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Compte introuvable / Account not found.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=t("account_not_found", lang),
+        )
 
-    # Chercher un OTP email valide.
     otp = await db.otpcode.find_first(
         where={
             "userId": user.id,
@@ -148,10 +143,9 @@ async def verify_email(payload: EmailVerifyIn) -> TokenOut:
     if otp is None or is_expired(otp.dateExpiration):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Code OTP invalide ou expire / Invalid or expired OTP code.",
+            detail=t("otp_invalid_or_expired", lang),
         )
 
-    # Marquer l'OTP utilise + le compte verifie.
     await db.otpcode.update(where={"id": otp.id}, data={"estUtilise": True})
     user = await db.user.update(
         where={"id": user.id},
@@ -165,23 +159,21 @@ async def verify_email(payload: EmailVerifyIn) -> TokenOut:
 # resend_email_otp
 # ---------------------------------------------------------------------------
 
-async def resend_email_otp(payload: EmailResendIn):
+async def resend_email_otp(payload: EmailResendIn, lang: str = "fr"):
     user = await _users.get_by_email(payload.email)
+    from app.core.schemas import Message
     if user is None:
-        # Ne pas confirmer l'existence du compte (securite).
-        from app.core.schemas import Message
         return Message(
-            message_fr="Si cet email existe, un code a été envoyé.",
-            message_en="If this email exists, a code was sent.",
+            message_fr=t("otp_email_resent_ambiguous", "fr"),
+            message_en=t("otp_email_resent_ambiguous", "en"),
         )
 
     code = await _create_email_otp(user.id, user.email)
     await send_email_otp(user.email, code)
 
-    from app.core.schemas import Message
     return Message(
-        message_fr="Nouveau code envoyé par email.",
-        message_en="New code sent by email.",
+        message_fr=t("otp_email_resent", "fr"),
+        message_en=t("otp_email_resent", "en"),
     )
 
 
@@ -189,7 +181,7 @@ async def resend_email_otp(payload: EmailResendIn):
 # login
 # ---------------------------------------------------------------------------
 
-async def login(payload: LoginIn):
+async def login(payload: LoginIn, lang: str = "fr"):
     user = await db.user.find_unique(
         where={"email": payload.email},
         include={"role": True, "devices": True},
@@ -197,33 +189,30 @@ async def login(payload: LoginIn):
     if user is None or not verify_password(payload.mot_de_passe, user.motDePasse):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Email ou mot de passe incorrect / Incorrect email or password.",
+            detail=t("login_invalid_credentials", lang),
         )
     if user.statut != "active":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Compte suspendu / Account suspended.",
+            detail=t("account_suspended", lang),
         )
     if not user.emailVerifie:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Email non verifie. Verifiez votre boite mail / Email not verified. Check your inbox.",
+            detail=t("email_not_verified", lang),
         )
 
-    # Verifier si l'appareil est connu.
     known_device = next(
         (d for d in (user.devices or []) if d.identifiant == payload.device_id), None
     )
 
     if known_device:
-        # Appareil connu : mise a jour date derniere connexion + emission des jetons.
         await db.device.update(
             where={"id": known_device.id},
             data={"dateDerniereConnexion": utcnow()},
         )
         return _token_out(user)
     else:
-        # Nouvel appareil : envoyer OTP email, pas de jeton pour l'instant.
         code = await _create_email_otp(user.id, user.email)
         await send_email_otp(user.email, code)
         return DeviceVerificationRequiredOut()
@@ -233,13 +222,16 @@ async def login(payload: LoginIn):
 # verify_device
 # ---------------------------------------------------------------------------
 
-async def verify_device(payload: DeviceVerifyIn) -> TokenOut:
+async def verify_device(payload: DeviceVerifyIn, lang: str = "fr") -> TokenOut:
     user = await db.user.find_unique(
         where={"email": payload.email},
         include={"role": True},
     )
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Compte introuvable / Account not found.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=t("account_not_found", lang),
+        )
 
     otp = await db.otpcode.find_first(
         where={
@@ -252,12 +244,10 @@ async def verify_device(payload: DeviceVerifyIn) -> TokenOut:
     if otp is None or is_expired(otp.dateExpiration):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Code OTP invalide ou expire / Invalid or expired OTP code.",
+            detail=t("otp_invalid_or_expired", lang),
         )
 
     await db.otpcode.update(where={"id": otp.id}, data={"estUtilise": True})
-
-    # Enregistrer l'appareil pour les prochaines connexions.
     await db.device.upsert(
         where={"userId_identifiant": {"userId": user.id, "identifiant": payload.device_id}},
         data={
@@ -276,7 +266,7 @@ async def verify_device(payload: DeviceVerifyIn) -> TokenOut:
 # refresh
 # ---------------------------------------------------------------------------
 
-async def refresh(payload: RefreshIn) -> TokenOut:
+async def refresh(payload: RefreshIn, lang: str = "fr") -> TokenOut:
     token_payload = decode_token(payload.refresh_token, expected_type="refresh")
     user_id: str = token_payload.get("sub", "")
     jti: str = token_payload.get("jti", "")
@@ -284,16 +274,21 @@ async def refresh(payload: RefreshIn) -> TokenOut:
     if await is_revoked(jti):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Jeton de rafraichissement revolque / Revoked refresh token.",
+            detail=t("token_revoked", lang),
         )
 
     user = await db.user.find_unique(where={"id": user_id}, include={"role": True})
     if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Compte introuvable / Account not found.")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=t("account_not_found", lang),
+        )
     if user.statut != "active":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Compte suspendu / Account suspended.")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=t("account_suspended", lang),
+        )
 
-    settings = get_settings()
     exp = token_payload.get("exp", 0)
     remaining = max(0, int(exp - datetime.now(UTC).timestamp()))
     await revoke_token(jti, remaining)
@@ -305,21 +300,20 @@ async def refresh(payload: RefreshIn) -> TokenOut:
 # forgot_password
 # ---------------------------------------------------------------------------
 
-async def forgot_password(payload: PasswordForgotIn):
+async def forgot_password(payload: PasswordForgotIn, lang: str = "fr"):
     user = await _users.get_by_email(payload.email)
     from app.core.schemas import Message
     if user is None:
         return Message(
-            message_fr="Si cet email existe, un lien de réinitialisation a été envoyé.",
-            message_en="If this email exists, a reset link was sent.",
+            message_fr=t("forgot_password_sent", "fr"),
+            message_en=t("forgot_password_sent", "en"),
         )
 
-    # Reutilise le meme mecanisme OTP email pour le reset.
     code = await _create_email_otp(user.id, user.email)
     await send_email_otp(user.email, code)
     return Message(
-        message_fr="Un code de réinitialisation a été envoyé par email.",
-        message_en="A reset code was sent by email.",
+        message_fr=t("forgot_password_code_sent", "fr"),
+        message_en=t("forgot_password_code_sent", "en"),
     )
 
 
@@ -327,9 +321,7 @@ async def forgot_password(payload: PasswordForgotIn):
 # reset_password
 # ---------------------------------------------------------------------------
 
-async def reset_password(payload: PasswordResetIn):
-    # Le token est ici le code OTP numerique envoye par email.
-    # On cherche un OTP email valide quel que soit l'utilisateur cible.
+async def reset_password(payload: PasswordResetIn, lang: str = "fr"):
     otp = await db.otpcode.find_first(
         where={
             "canal": "email",
@@ -341,7 +333,7 @@ async def reset_password(payload: PasswordResetIn):
     if otp is None or is_expired(otp.dateExpiration):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Code invalide ou expire / Invalid or expired code.",
+            detail=t("code_invalid_or_expired", lang),
         )
 
     await db.otpcode.update(where={"id": otp.id}, data={"estUtilise": True})
@@ -352,8 +344,8 @@ async def reset_password(payload: PasswordResetIn):
 
     from app.core.schemas import Message
     return Message(
-        message_fr="Mot de passe réinitialisé avec succès.",
-        message_en="Password reset successfully.",
+        message_fr=t("password_reset_success", "fr"),
+        message_en=t("password_reset_success", "en"),
     )
 
 
@@ -361,7 +353,7 @@ async def reset_password(payload: PasswordResetIn):
 # logout
 # ---------------------------------------------------------------------------
 
-async def logout(payload: LogoutIn):
+async def logout(payload: LogoutIn, lang: str = "fr"):
     try:
         token_payload = decode_token(payload.refresh_token, expected_type="refresh")
         jti: str = token_payload.get("jti", "")
@@ -373,6 +365,6 @@ async def logout(payload: LogoutIn):
 
     from app.core.schemas import Message
     return Message(
-        message_fr="Déconnexion réussie.",
-        message_en="Logged out successfully.",
+        message_fr=t("logout_success", "fr"),
+        message_en=t("logout_success", "en"),
     )

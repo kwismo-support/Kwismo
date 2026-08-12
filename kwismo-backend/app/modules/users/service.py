@@ -16,16 +16,17 @@ from app.modules.users.schemas import (
     UserStatusIn,
     UserUpdateIn,
 )
+from app.utils.i18n import t
 
 logger = logging.getLogger("kwismo.backend")
 _users = UserRepository()
+
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
 async def _build_me(user) -> UserMeOut:
-    """Construit le schema UserMeOut a partir d'un objet Prisma User complet."""
     phones_count = await db.userphone.count(where={"userId": user.id})
     reports_count = await db.report.count(where={"userId": user.id})
     transactions_count = await db.transaction.count(where={"userId": user.id})
@@ -48,6 +49,7 @@ async def _build_me(user) -> UserMeOut:
         email_verifie=user.emailVerifie,
         statut=user.statut,
         role=user.role.nomRole,
+        langue=getattr(user, "langue", "fr") or "fr",
         date_inscription=user.dateInscription,
         kpi=UserKpiOut(
             numeros_verifies=phones_count,
@@ -68,7 +70,7 @@ async def get_me(user_id: str) -> UserMeOut:
         include={"role": True, "devices": True},
     )
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Compte introuvable / Account not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("account_not_found"))
     return await _build_me(user)
 
 
@@ -76,14 +78,19 @@ async def get_me(user_id: str) -> UserMeOut:
 # update_me
 # ---------------------------------------------------------------------------
 
-async def update_me(user_id: str, payload: UserUpdateIn) -> UserMeOut:
+async def update_me(user_id: str, payload: UserUpdateIn, lang: str = "fr") -> UserMeOut:
     data: dict = {}
     if payload.nom is not None:
         data["nom"] = payload.nom
     if payload.prenom is not None:
         data["prenom"] = payload.prenom
+    if payload.langue is not None and payload.langue in ("fr", "en"):
+        data["langue"] = payload.langue
     if not data:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Aucune donnee a mettre a jour / No data to update.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=t("no_data_to_update", lang),
+        )
 
     user = await db.user.update(
         where={"id": user_id},
@@ -127,13 +134,16 @@ async def list_users(page: int, page_size: int):
 # get_user
 # ---------------------------------------------------------------------------
 
-async def get_user(user_id: str) -> UserDetailOut:
+async def get_user(user_id: str, lang: str = "fr") -> UserDetailOut:
     user = await db.user.find_unique(
         where={"id": user_id},
         include={"role": True, "phones": True},
     )
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utilisateur introuvable / User not found.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=t("user_not_found", lang),
+        )
     phones_count = len(user.phones or [])
     numeros = [
         UserPhoneSummaryOut(id=p.id, valeur=p.valeur, est_verifie=p.estVerifie, est_compromis=p.estCompromis)
@@ -155,15 +165,18 @@ async def get_user(user_id: str) -> UserDetailOut:
 # set_user_status
 # ---------------------------------------------------------------------------
 
-async def set_user_status(user_id: str, payload: UserStatusIn) -> UserDetailOut:
+async def set_user_status(user_id: str, payload: UserStatusIn, lang: str = "fr") -> UserDetailOut:
     if payload.statut not in ("active", "suspended"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Statut invalide. Valeurs acceptees : active, suspended / Invalid status. Accepted: active, suspended.",
+            detail=t("status_invalid_user", lang),
         )
     user = await db.user.find_unique(where={"id": user_id})
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utilisateur introuvable / User not found.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=t("user_not_found", lang),
+        )
 
     await db.user.update(where={"id": user_id}, data={"statut": payload.statut})
-    return await get_user(user_id)
+    return await get_user(user_id, lang)

@@ -42,7 +42,7 @@ async def list_contacts(user=Depends(require_roles("user"))) -> list[ContactOut]
     ),
 )
 async def add_contact(payload: ContactAddIn, user=Depends(require_roles("user"))) -> ContactOut:
-    return await service.add_contact(user.id, payload)
+    return await service.add_contact(user.id, payload, user.langue)
 
 
 @router.post(
@@ -56,7 +56,7 @@ async def add_contact(payload: ContactAddIn, user=Depends(require_roles("user"))
     ),
 )
 async def refresh_contact(contact_id: str, user=Depends(require_roles("user"))) -> ContactOut:
-    return await service.refresh_contact(user.id, contact_id)
+    return await service.refresh_contact(user.id, contact_id, user.langue)
 
 
 @router.delete(
@@ -66,4 +66,4 @@ async def refresh_contact(contact_id: str, user=Depends(require_roles("user"))) 
     summary="Remove a contact / Retirer un contact",
 )
 async def remove_contact(contact_id: str, user=Depends(require_roles("user"))) -> Message:
-    return await service.remove_contact(user.id, contact_id)
+    return await service.remove_contact(user.id, contact_id, user.langue)

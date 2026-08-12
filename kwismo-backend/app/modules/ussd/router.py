@@ -17,15 +17,15 @@ from app.modules.ussd.schemas import (
 router = APIRouter(tags=["USSD"])
 
 
-# --- Countries / Pays --------------------------------------------------
+# --- Countries -----------------------------------------------------------
 
 @router.get(
     "/countries",
     response_model=list[CountryOut],
     summary="List countries / Lister les pays",
     description=(
-        "**FR** — Liste des pays (drapeaux/indicatifs) — Cameroun par défaut.\n\n"
-        "**EN** — List of countries (flags/dial codes) — Cameroon by default."
+        "**FR** — Liste des pays (indicatifs) — Cameroun par défaut.\n\n"
+        "**EN** — List of countries (dial codes) — Cameroon by default."
     ),
 )
 async def list_countries() -> list[CountryOut]:
@@ -41,7 +41,7 @@ async def list_countries() -> list[CountryOut]:
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def create_country(payload: CountryIn, user=Depends(require_roles("admin"))) -> CountryOut:
-    return await service.create_country(payload)
+    return await service.create_country(payload, user.langue)
 
 
 @router.patch(
@@ -54,7 +54,7 @@ async def create_country(payload: CountryIn, user=Depends(require_roles("admin")
 async def update_country(
     country_id: str, payload: CountryIn, user=Depends(require_roles("admin"))
 ) -> CountryOut:
-    return await service.update_country(country_id, payload)
+    return await service.update_country(country_id, payload, user.langue)
 
 
 @router.delete(
@@ -65,10 +65,10 @@ async def update_country(
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def delete_country(country_id: str, user=Depends(require_roles("admin"))) -> Message:
-    return await service.delete_country(country_id)
+    return await service.delete_country(country_id, user.langue)
 
 
-# --- Operators / Operateurs ---------------------------------------------
+# --- Operators -----------------------------------------------------------
 
 @router.get(
     "/operators",
@@ -77,7 +77,7 @@ async def delete_country(country_id: str, user=Depends(require_roles("admin"))) 
     description="**FR** — Opérateurs d'un pays.\n\n**EN** — A country's operators.",
 )
 async def list_operators(
-    country: str = Query(..., description="ID du pays / Country id")
+    country: str = Query(..., description="ID du pays / Country id"),
 ) -> list[OperatorOut]:
     return await service.list_operators(country)
 
@@ -91,7 +91,7 @@ async def list_operators(
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def create_operator(payload: OperatorIn, user=Depends(require_roles("admin"))) -> OperatorOut:
-    return await service.create_operator(payload)
+    return await service.create_operator(payload, user.langue)
 
 
 @router.patch(
@@ -104,7 +104,7 @@ async def create_operator(payload: OperatorIn, user=Depends(require_roles("admin
 async def update_operator(
     operator_id: str, payload: OperatorIn, user=Depends(require_roles("admin"))
 ) -> OperatorOut:
-    return await service.update_operator(operator_id, payload)
+    return await service.update_operator(operator_id, payload, user.langue)
 
 
 @router.delete(
@@ -115,10 +115,10 @@ async def update_operator(
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def delete_operator(operator_id: str, user=Depends(require_roles("admin"))) -> Message:
-    return await service.delete_operator(operator_id)
+    return await service.delete_operator(operator_id, user.langue)
 
 
-# --- USSD actions ---------------------------------------------------------
+# --- USSD actions --------------------------------------------------------
 
 @router.get(
     "/ussd-actions",
@@ -143,8 +143,10 @@ async def list_ussd_actions(
     summary="Create a USSD action / Créer une action USSD",
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
-async def create_ussd_action(payload: UssdActionIn, user=Depends(require_roles("admin"))) -> UssdActionOut:
-    return await service.create_ussd_action(payload)
+async def create_ussd_action(
+    payload: UssdActionIn, user=Depends(require_roles("admin"))
+) -> UssdActionOut:
+    return await service.create_ussd_action(payload, user.langue)
 
 
 @router.patch(
@@ -157,7 +159,7 @@ async def create_ussd_action(payload: UssdActionIn, user=Depends(require_roles("
 async def update_ussd_action(
     action_id: str, payload: UssdActionIn, user=Depends(require_roles("admin"))
 ) -> UssdActionOut:
-    return await service.update_ussd_action(action_id, payload)
+    return await service.update_ussd_action(action_id, payload, user.langue)
 
 
 @router.delete(
@@ -168,4 +170,4 @@ async def update_ussd_action(
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def delete_ussd_action(action_id: str, user=Depends(require_roles("admin"))) -> Message:
-    return await service.delete_ussd_action(action_id)
+    return await service.delete_ussd_action(action_id, user.langue)

@@ -6,6 +6,7 @@ from fastapi import HTTPException, status
 
 from app.db.prisma_client import db
 from app.modules.contacts.schemas import ContactAddIn, ContactOut
+from app.utils.i18n import t
 from app.utils.phone import is_valid_phone, normalize_phone
 
 logger = logging.getLogger("kwismo.backend")
@@ -51,26 +52,22 @@ async def list_contacts(user_id: str) -> list[ContactOut]:
 # add_contact
 # ---------------------------------------------------------------------------
 
-async def add_contact(user_id: str, payload: ContactAddIn) -> ContactOut:
+async def add_contact(user_id: str, payload: ContactAddIn, lang: str = "fr") -> ContactOut:
     valeur = normalize_phone(payload.numero)
     if not is_valid_phone(valeur):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Format de numero invalide (E.164 attendu) / Invalid phone format (E.164 expected).",
+            detail=t("invalid_phone_format", lang),
         )
 
-    # Eviter les doublons pour ce meme utilisateur.
     existing = await db.contact.find_first(where={"userId": user_id, "numero": valeur})
     if existing is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Ce contact existe deja / This contact already exists.",
+            detail=t("contact_already_exists", lang),
         )
 
-    # Tenter de recuperer le badge depuis le registre Numero.
     badge = await _resolve_badge(valeur)
-
-    # Recuperer la reference Numero si elle existe.
     numero_ref = await db.numero.find_unique(where={"valeur": valeur})
     numero_id = numero_ref.id if numero_ref else None
 
@@ -90,10 +87,10 @@ async def add_contact(user_id: str, payload: ContactAddIn) -> ContactOut:
 # refresh_contact
 # ---------------------------------------------------------------------------
 
-async def refresh_contact(user_id: str, contact_id: str) -> ContactOut:
+async def refresh_contact(user_id: str, contact_id: str, lang: str = "fr") -> ContactOut:
     contact = await db.contact.find_unique(where={"id": contact_id})
     if contact is None or contact.userId != user_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact introuvable / Contact not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("contact_not_found", lang))
 
     badge = await _resolve_badge(contact.numero)
     numero_ref = await db.numero.find_unique(where={"valeur": contact.numero})
@@ -110,11 +107,14 @@ async def refresh_contact(user_id: str, contact_id: str) -> ContactOut:
 # remove_contact
 # ---------------------------------------------------------------------------
 
-async def remove_contact(user_id: str, contact_id: str):
+async def remove_contact(user_id: str, contact_id: str, lang: str = "fr"):
     from app.core.schemas import Message
     contact = await db.contact.find_unique(where={"id": contact_id})
     if contact is None or contact.userId != user_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact introuvable / Contact not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("contact_not_found", lang))
 
     await db.contact.delete(where={"id": contact_id})
-    return Message(message_fr="Contact supprimé.", message_en="Contact deleted.")
+    return Message(
+        message_fr=t("contact_removed", "fr"),
+        message_en=t("contact_removed", "en"),
+    )

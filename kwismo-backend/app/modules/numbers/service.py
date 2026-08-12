@@ -20,6 +20,7 @@ from app.modules.numbers.schemas import (
     NumberVerifyIn,
 )
 from app.utils.dates import utcnow
+from app.utils.i18n import t
 from app.utils.phone import is_valid_phone, normalize_phone
 
 logger = logging.getLogger("kwismo.backend")
@@ -148,12 +149,12 @@ async def _score_and_upsert(valeur: str, country_id: str | None = None) -> Numbe
 # verify_number
 # ---------------------------------------------------------------------------
 
-async def verify_number(payload: NumberVerifyIn) -> NumberOut:
+async def verify_number(payload: NumberVerifyIn, lang: str = "fr") -> NumberOut:
     valeur = normalize_phone(payload.valeur)
     if not is_valid_phone(valeur):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Format de numero invalide (E.164 attendu) / Invalid phone format (E.164 expected).",
+            detail=t("invalid_phone_format", lang),
         )
     return await _score_and_upsert(valeur, payload.country_id)
 
@@ -220,10 +221,10 @@ async def list_numbers(
 # get_number
 # ---------------------------------------------------------------------------
 
-async def get_number(number_id: str) -> NumberDetailOut:
+async def get_number(number_id: str, lang: str = "fr") -> NumberDetailOut:
     numero = await db.numero.find_unique(where={"id": number_id})
     if numero is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Numero introuvable / Number not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("number_not_found", lang))
     nombre_signalements = await db.report.count(where={"numeroId": number_id})
     return _to_detail_out(numero, nombre_signalements)
 
@@ -232,15 +233,15 @@ async def get_number(number_id: str) -> NumberDetailOut:
 # set_number_status
 # ---------------------------------------------------------------------------
 
-async def set_number_status(number_id: str, payload: NumberStatusIn) -> NumberDetailOut:
+async def set_number_status(number_id: str, payload: NumberStatusIn, lang: str = "fr") -> NumberDetailOut:
     if payload.statut not in VALID_STATUTS:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Statut invalide. Valeurs acceptees : {', '.join(VALID_STATUTS)}",
+            detail=t("number_status_invalid", lang),
         )
     numero = await db.numero.find_unique(where={"id": number_id})
     if numero is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Numero introuvable / Number not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("number_not_found", lang))
 
     if payload.reanalyser:
         # Relancer l'evaluation (fallback rules pour l'instant).

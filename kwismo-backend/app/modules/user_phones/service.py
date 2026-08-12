@@ -13,6 +13,7 @@ from app.modules.user_phones.schemas import (
     UserPhoneVerifyIn,
 )
 from app.utils.dates import is_expired, minutes_from_now, utcnow
+from app.utils.i18n import t
 from app.utils.otp import generate_otp, send_sms_otp
 from app.utils.phone import is_valid_phone, normalize_phone
 
@@ -38,7 +39,6 @@ def _to_out(p) -> UserPhoneOut:
 
 
 async def _detect_operator(valeur: str, country_id: str) -> str | None:
-    """Tente de detecter l'operateur a partir des prefixes connus pour ce pays."""
     operators = await db.operator.find_many(
         where={"countryId": country_id},
         include={"prefixes": True},
@@ -46,10 +46,8 @@ async def _detect_operator(valeur: str, country_id: str) -> str | None:
     country = await db.country.find_unique(where={"id": country_id})
     if country is None:
         return None
-    country_code = country.codePays  # ex. "+237"
-    local = valeur
-    if local.startswith(country_code):
-        local = local[len(country_code):]
+    country_code = country.codePays
+    local = valeur[len(country_code):] if valeur.startswith(country_code) else valeur
     for op in operators:
         for prefix in (op.prefixes or []):
             if local.startswith(prefix.prefixe):
@@ -58,7 +56,6 @@ async def _detect_operator(valeur: str, country_id: str) -> str | None:
 
 
 async def _create_sms_otp(user_id: str, user_phone_id: str, phone_valeur: str) -> str:
-    """Invalide les OTP SMS precedents pour ce UserPhone, cree un nouveau code."""
     await db.otpcode.update_many(
         where={"userPhoneId": user_phone_id, "canal": "sms", "estUtilise": False},
         data={"estUtilise": True},
@@ -93,34 +90,29 @@ async def list_my_phones(user_id: str) -> list[UserPhoneOut]:
 # add_my_phone
 # ---------------------------------------------------------------------------
 
-async def add_my_phone(user_id: str, payload: UserPhoneAddIn) -> UserPhoneOut:
+async def add_my_phone(user_id: str, payload: UserPhoneAddIn, lang: str = "fr") -> UserPhoneOut:
     valeur = normalize_phone(payload.valeur)
     if not is_valid_phone(valeur):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Format de numero invalide (E.164 attendu) / Invalid phone format (E.164 expected).",
+            detail=t("invalid_phone_format", lang),
         )
 
-    # Unicite globale : un numero = un seul compte KWISMO.
     existing = await db.userphone.find_unique(where={"valeur": valeur})
     if existing is not None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Ce numero est deja rattache a un compte / This number is already attached to an account.",
+            detail=t("phone_already_attached", lang),
         )
 
-    # Verifier que le pays existe.
     country = await db.country.find_unique(where={"id": payload.country_id})
     if country is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Pays introuvable / Country not found.",
+            detail=t("country_not_found", lang),
         )
 
-    # Detection automatique de l'operateur.
     operator_id = await _detect_operator(valeur, payload.country_id)
-
-    # Creer le UserPhone (non verifie).
     phone = await db.userphone.create(
         data={
             "userId": user_id,
@@ -130,10 +122,8 @@ async def add_my_phone(user_id: str, payload: UserPhoneAddIn) -> UserPhoneOut:
         }
     )
 
-    # Envoyer l'OTP SMS.
     code = await _create_sms_otp(user_id, phone.id, valeur)
     await send_sms_otp(valeur, code)
-
     return _to_out(phone)
 
 
@@ -141,10 +131,10 @@ async def add_my_phone(user_id: str, payload: UserPhoneAddIn) -> UserPhoneOut:
 # verify_my_phone
 # ---------------------------------------------------------------------------
 
-async def verify_my_phone(user_id: str, phone_id: str, payload: UserPhoneVerifyIn) -> UserPhoneOut:
+async def verify_my_phone(user_id: str, phone_id: str, payload: UserPhoneVerifyIn, lang: str = "fr") -> UserPhoneOut:
     phone = await db.userphone.find_unique(where={"id": phone_id})
     if phone is None or phone.userId != user_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Numero introuvable / Phone not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("phone_not_found", lang))
 
     otp = await db.otpcode.find_first(
         where={
@@ -157,7 +147,7 @@ async def verify_my_phone(user_id: str, phone_id: str, payload: UserPhoneVerifyI
     if otp is None or is_expired(otp.dateExpiration):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Code OTP invalide ou expire / Invalid or expired OTP code.",
+            detail=t("otp_invalid_or_expired", lang),
         )
 
     now = utcnow()
@@ -173,22 +163,22 @@ async def verify_my_phone(user_id: str, phone_id: str, payload: UserPhoneVerifyI
 # resend_my_phone_otp
 # ---------------------------------------------------------------------------
 
-async def resend_my_phone_otp(user_id: str, phone_id: str):
+async def resend_my_phone_otp(user_id: str, phone_id: str, lang: str = "fr"):
     from app.core.schemas import Message
     phone = await db.userphone.find_unique(where={"id": phone_id})
     if phone is None or phone.userId != user_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Numero introuvable / Phone not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("phone_not_found", lang))
     if phone.estVerifie:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Ce numero est deja verifie / This number is already verified.",
+            detail=t("phone_already_verified", lang),
         )
 
     code = await _create_sms_otp(user_id, phone.id, phone.valeur)
     await send_sms_otp(phone.valeur, code)
     return Message(
-        message_fr="Nouveau code OTP SMS envoyé.",
-        message_en="New SMS OTP sent.",
+        message_fr=t("otp_sms_resent", "fr"),
+        message_en=t("otp_sms_resent", "en"),
     )
 
 
@@ -196,21 +186,20 @@ async def resend_my_phone_otp(user_id: str, phone_id: str):
 # remove_my_phone
 # ---------------------------------------------------------------------------
 
-async def remove_my_phone(user_id: str, phone_id: str):
+async def remove_my_phone(user_id: str, phone_id: str, lang: str = "fr"):
     from app.core.schemas import Message
     phone = await db.userphone.find_unique(where={"id": phone_id})
     if phone is None or phone.userId != user_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Numero introuvable / Phone not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("phone_not_found", lang))
 
-    # Invalider les OTP associes avant suppression.
     await db.otpcode.update_many(
         where={"userPhoneId": phone_id, "estUtilise": False},
         data={"estUtilise": True},
     )
     await db.userphone.delete(where={"id": phone_id})
     return Message(
-        message_fr="Numéro retiré du compte.",
-        message_en="Number removed from account.",
+        message_fr=t("phone_removed", "fr"),
+        message_en=t("phone_removed", "en"),
     )
 
 
@@ -218,30 +207,24 @@ async def remove_my_phone(user_id: str, phone_id: str):
 # declare_my_phone_compromised
 # ---------------------------------------------------------------------------
 
-async def declare_my_phone_compromised(user_id: str, phone_id: str) -> CompromiseIncidentOut:
+async def declare_my_phone_compromised(user_id: str, phone_id: str, lang: str = "fr") -> CompromiseIncidentOut:
     phone = await db.userphone.find_unique(where={"id": phone_id})
     if phone is None or phone.userId != user_id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Numero introuvable / Phone not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("phone_not_found", lang))
     if not phone.estVerifie:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Seul un numero verifie peut etre declare compromis / Only a verified number can be declared compromised.",
+            detail=t("phone_not_verified_for_compromise", lang),
         )
     if phone.estCompromis:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Ce numero est deja marque comme compromis / This number is already marked as compromised.",
+            detail=t("phone_already_compromised", lang),
         )
 
-    # Marquer le numero compromis.
     await db.userphone.update(where={"id": phone_id}, data={"estCompromis": True})
-
-    # Creer l'incident.
     incident = await db.compromiseincident.create(
-        data={
-            "userId": user_id,
-            "userPhoneId": phone_id,
-        }
+        data={"userId": user_id, "userPhoneId": phone_id}
     )
 
     from app.core.audit_log import log_audit

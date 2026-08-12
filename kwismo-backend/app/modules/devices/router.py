@@ -35,4 +35,4 @@ async def list_my_devices(user=Depends(require_roles("user"))) -> list[DeviceOut
     ),
 )
 async def delete_my_device(device_id: str, user=Depends(require_roles("user"))) -> Message:
-    return await service.delete_my_device(user.id, device_id)
+    return await service.delete_my_device(user.id, device_id, user.langue)

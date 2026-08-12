@@ -5,8 +5,9 @@ connus, anti brute-force.
 EN — Registration, login, two-channel OTP (email and SMS), known devices,
 brute-force protection.
 """
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Depends, Request, status
 
+from app.core.lang import get_lang
 from app.core.rate_limit import AUTH_RATE_LIMIT, OTP_RATE_LIMIT, limiter
 from app.core.schemas import Message
 from app.modules.auth import service
@@ -40,8 +41,8 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
     ),
 )
 @limiter.limit(AUTH_RATE_LIMIT)
-async def register(request: Request, payload: RegisterIn) -> Message:
-    return await service.register(payload)
+async def register(request: Request, payload: RegisterIn, lang: str = Depends(get_lang)) -> Message:
+    return await service.register(payload, lang)
 
 
 @router.post(
@@ -51,13 +52,13 @@ async def register(request: Request, payload: RegisterIn) -> Message:
     description=(
         "**FR** — Valide le code OTP email → compte vérifié + jetons émis. "
         f"Limité en débit ({OTP_RATE_LIMIT}).\n\n"
-        "**EN** — Validates the registration email OTP → account verified + tokens issued."
+        "**EN** — Validates the registration email OTP → account verified + tokens issued. "
         f"Rate-limited against code brute-forcing ({OTP_RATE_LIMIT})."
     ),
 )
 @limiter.limit(OTP_RATE_LIMIT)
-async def verify_email(request: Request, payload: EmailVerifyIn) -> TokenOut:
-    return await service.verify_email(payload)
+async def verify_email(request: Request, payload: EmailVerifyIn, lang: str = Depends(get_lang)) -> TokenOut:
+    return await service.verify_email(payload, lang)
 
 
 @router.post(
@@ -68,8 +69,8 @@ async def verify_email(request: Request, payload: EmailVerifyIn) -> TokenOut:
     f"**EN** — Resends a new email OTP ({OTP_RATE_LIMIT}).",
 )
 @limiter.limit(OTP_RATE_LIMIT)
-async def resend_email_otp(request: Request, payload: EmailResendIn) -> Message:
-    return await service.resend_email_otp(payload)
+async def resend_email_otp(request: Request, payload: EmailResendIn, lang: str = Depends(get_lang)) -> Message:
+    return await service.resend_email_otp(payload, lang)
 
 
 @router.post(
@@ -77,15 +78,15 @@ async def resend_email_otp(request: Request, payload: EmailResendIn) -> Message:
     response_model=TokenOut | DeviceVerificationRequiredOut,
     summary="Login / Connexion",
     description=(
-        "**FR** — Email + mot de passe + identifiant appareil."
+        "**FR** — Email + mot de passe + identifiant appareil. "
         f"Si appareil inconnu, OTP envoyé par email. Limité en débit ({AUTH_RATE_LIMIT}).\n\n"
-        "**EN** — Email + password + device id."
+        "**EN** — Email + password + device id. "
         f"If device unknown, OTP sent by email. Rate-limited ({AUTH_RATE_LIMIT})."
     ),
 )
 @limiter.limit(AUTH_RATE_LIMIT)
-async def login(request: Request, payload: LoginIn) -> TokenOut | DeviceVerificationRequiredOut:
-    return await service.login(payload)
+async def login(request: Request, payload: LoginIn, lang: str = Depends(get_lang)) -> TokenOut | DeviceVerificationRequiredOut:
+    return await service.login(payload, lang)
 
 
 @router.post(
@@ -95,8 +96,8 @@ async def login(request: Request, payload: LoginIn) -> TokenOut | DeviceVerifica
     description=f"**FR** — Valide l'OTP email appareil inconnu → jetons émis ({OTP_RATE_LIMIT}).\n\n**EN** — Validates the device OTP → tokens issued.",
 )
 @limiter.limit(OTP_RATE_LIMIT)
-async def verify_device(request: Request, payload: DeviceVerifyIn) -> TokenOut:
-    return await service.verify_device(payload)
+async def verify_device(request: Request, payload: DeviceVerifyIn, lang: str = Depends(get_lang)) -> TokenOut:
+    return await service.verify_device(payload, lang)
 
 
 @router.post(
@@ -111,8 +112,8 @@ async def verify_device(request: Request, payload: DeviceVerifyIn) -> TokenOut:
     ),
 )
 @limiter.limit(AUTH_RATE_LIMIT)
-async def refresh(request: Request, payload: RefreshIn) -> TokenOut:
-    return await service.refresh(payload)
+async def refresh(request: Request, payload: RefreshIn, lang: str = Depends(get_lang)) -> TokenOut:
+    return await service.refresh(payload, lang)
 
 
 @router.post(
@@ -122,8 +123,8 @@ async def refresh(request: Request, payload: RefreshIn) -> TokenOut:
     description=f"**FR** — Envoie un code de réinitialisation par email.\n\n**EN** — Sends a reset code by email.",
 )
 @limiter.limit(AUTH_RATE_LIMIT)
-async def forgot_password(request: Request, payload: PasswordForgotIn) -> Message:
-    return await service.forgot_password(payload)
+async def forgot_password(request: Request, payload: PasswordForgotIn, lang: str = Depends(get_lang)) -> Message:
+    return await service.forgot_password(payload, lang)
 
 
 @router.post(
@@ -133,8 +134,8 @@ async def forgot_password(request: Request, payload: PasswordForgotIn) -> Messag
     description=f"**FR** — Nouveau mot de passe via le code reçu par email.\n\n**EN** — Sets a new password using the code received by email.",
 )
 @limiter.limit(AUTH_RATE_LIMIT)
-async def reset_password(request: Request, payload: PasswordResetIn) -> Message:
-    return await service.reset_password(payload)
+async def reset_password(request: Request, payload: PasswordResetIn, lang: str = Depends(get_lang)) -> Message:
+    return await service.reset_password(payload, lang)
 
 
 @router.post(
@@ -143,5 +144,5 @@ async def reset_password(request: Request, payload: PasswordResetIn) -> Message:
     summary="Logout / Déconnexion",
     description="**FR** — Révoque le jeton de rafraîchissement.\n\n**EN** — Revokes the refresh token.",
 )
-async def logout(payload: LogoutIn) -> Message:
-    return await service.logout(payload)
+async def logout(payload: LogoutIn, lang: str = Depends(get_lang)) -> Message:
+    return await service.logout(payload, lang)

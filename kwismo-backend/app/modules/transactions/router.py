@@ -25,7 +25,7 @@ router = APIRouter(prefix="/transactions", tags=["Transactions"])
 async def prepare_transaction(
     payload: TransactionPrepareIn, user=Depends(require_roles("user"))
 ) -> TransactionOut:
-    return await service.prepare_transaction(user.id, payload)
+    return await service.prepare_transaction(user.id, payload, user.langue)
 
 
 @router.get(
@@ -51,4 +51,4 @@ async def list_transactions(
     description="**FR** — Détail d'un transfert.\n\n**EN** — A transfer's detail.",
 )
 async def get_transaction(transaction_id: str, user=Depends(require_roles("user"))) -> TransactionOut:
-    return await service.get_transaction(user.id, transaction_id)
+    return await service.get_transaction(user.id, transaction_id, user.langue)
