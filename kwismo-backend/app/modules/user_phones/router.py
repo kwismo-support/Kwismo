@@ -8,10 +8,10 @@ stays globally unique (one account at a time).
 
 from fastapi import APIRouter, Depends, Request, status
 
-from app.core.exceptions import not_implemented
 from app.core.permissions import require_roles
 from app.core.rate_limit import AUTH_RATE_LIMIT, OTP_RATE_LIMIT, limiter
 from app.core.schemas import AUTH_RESPONSES, Message, NOT_FOUND_RESPONSE
+from app.modules.user_phones import service
 from app.modules.user_phones.schemas import (
     CompromiseIncidentOut,
     UserPhoneAddIn,
@@ -30,10 +30,10 @@ router = APIRouter(prefix="/users/me/phones", tags=["My Numbers"])
     description=(
         "**FR** — Liste des numéros du compte avec leur statut.\n\n"
         "**EN** — The account's numbers with their status."
-    ),
+    )
 )
 async def list_my_phones(user=Depends(require_roles("user"))) -> list[UserPhoneOut]:
-    raise not_implemented()
+    return await service.list_my_phones(user.id)
 
 
 @router.post(
@@ -53,7 +53,7 @@ async def list_my_phones(user=Depends(require_roles("user"))) -> list[UserPhoneO
 async def add_my_phone(
     request: Request, payload: UserPhoneAddIn, user=Depends(require_roles("user"))
 ) -> UserPhoneOut:
-    raise not_implemented()
+    return await service.add_my_phone(user.id, payload)
 
 
 @router.post(
@@ -72,7 +72,7 @@ async def add_my_phone(
 async def verify_my_phone(
     request: Request, phone_id: str, payload: UserPhoneVerifyIn, user=Depends(require_roles("user"))
 ) -> UserPhoneOut:
-    raise not_implemented()
+    return await service.verify_my_phone(user.id, phone_id, payload)
 
 
 @router.post(
@@ -89,7 +89,7 @@ async def verify_my_phone(
 async def resend_my_phone_otp(
     request: Request, phone_id: str, user=Depends(require_roles("user"))
 ) -> Message:
-    raise not_implemented()
+    return await service.resend_my_phone_otp(user.id, phone_id)
 
 
 @router.delete(
@@ -105,7 +105,7 @@ async def resend_my_phone_otp(
     ),
 )
 async def remove_my_phone(phone_id: str, user=Depends(require_roles("user"))) -> Message:
-    raise not_implemented()
+    return await service.remove_my_phone(user.id, phone_id)
 
 
 @router.post(
@@ -124,4 +124,4 @@ async def remove_my_phone(phone_id: str, user=Depends(require_roles("user"))) ->
 async def declare_my_phone_compromised(
     phone_id: str, user=Depends(require_roles("user"))
 ) -> CompromiseIncidentOut:
-    raise not_implemented()
+    return await service.declare_my_phone_compromised(user.id, phone_id)

@@ -1,11 +1,68 @@
 """Logique metier du module surveys. / Business logic for the surveys module."""
 
-from app.core.exceptions import not_implemented
+import logging
+
+from fastapi import HTTPException, status
+
+from app.db.prisma_client import db
+from app.modules.surveys.schemas import SurveyAnswerIn, SurveyOut, SurveyResponseOut
+
+logger = logging.getLogger("kwismo.backend")
 
 
-async def get_active_surveys(user_id: str):
-    raise not_implemented()
+# ---------------------------------------------------------------------------
+# get_active_surveys
+# ---------------------------------------------------------------------------
+
+async def get_active_surveys(user_id: str) -> list[SurveyOut]:
+    """Retourne les enquetes actives auxquelles l'utilisateur n'a pas encore repondu."""
+    surveys = await db.survey.find_many(where={"actif": True}, order={"dateCreation": "desc"})
+
+    # Filtrer celles deja repondues par cet utilisateur.
+    answered_ids = set()
+    responses = await db.surveyresponse.find_many(where={"userId": user_id})
+    for r in responses:
+        answered_ids.add(r.surveyId)
+
+    return [
+        SurveyOut(id=s.id, question=s.question, actif=s.actif)
+        for s in surveys
+        if s.id not in answered_ids
+    ]
 
 
-async def answer_survey(user_id: str, survey_id: str, payload):
-    raise not_implemented()
+# ---------------------------------------------------------------------------
+# answer_survey
+# ---------------------------------------------------------------------------
+
+async def answer_survey(user_id: str, survey_id: str, payload: SurveyAnswerIn) -> SurveyResponseOut:
+    survey = await db.survey.find_unique(where={"id": survey_id})
+    if survey is None or not survey.actif:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Enquete introuvable ou inactive / Survey not found or inactive.",
+        )
+
+    # Une seule reponse par utilisateur par enquete (contrainte unique en base).
+    existing = await db.surveyresponse.find_first(
+        where={"userId": user_id, "surveyId": survey_id}
+    )
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Vous avez deja repondu a cette enquete / You have already answered this survey.",
+        )
+
+    response = await db.surveyresponse.create(
+        data={
+            "userId": user_id,
+            "surveyId": survey_id,
+            "reponse": payload.reponse,
+        }
+    )
+    return SurveyResponseOut(
+        id=response.id,
+        survey_id=response.surveyId,
+        reponse=response.reponse,
+        date_reponse=response.dateReponse,
+    )
