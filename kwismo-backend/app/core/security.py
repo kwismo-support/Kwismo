@@ -31,6 +31,7 @@ class CurrentUser:
 
     id: str
     role: str
+    langue: str = "fr"
 
 
 # ---------------------------------------------------------------------------
@@ -128,4 +129,5 @@ async def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Compte suspendu / Account suspended.",
         )
-    return CurrentUser(id=user_id, role=role)
+    langue = getattr(user, "langue", "fr") or "fr"
+    return CurrentUser(id=user_id, role=role, langue=langue)

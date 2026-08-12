@@ -32,6 +32,7 @@ class UserMeOut(BaseModel):
     email_verifie: bool
     statut: str = Field(..., examples=["active"])
     role: str = Field(..., examples=["user"])
+    langue: str = Field("fr", examples=["fr", "en"])
     date_inscription: datetime
     kpi: UserKpiOut
     devices: list[DeviceSummaryOut] = []
@@ -40,6 +41,7 @@ class UserMeOut(BaseModel):
 class UserUpdateIn(BaseModel):
     nom: str | None = None
     prenom: str | None = None
+    langue: str | None = Field(None, examples=["fr", "en"])
 
 
 class UserListItemOut(BaseModel):
