@@ -10,5 +10,95 @@
     "nom_action": "Transfert Orange Money",
     "code_ussd": "#150#",
     "format": "#150*1*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "Orange Sénégal",
+    "nom_action": "Transfert Orange Money",
+    "code_ussd": "#144#",
+    "format": "#144*2*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "Free Sénégal",
+    "nom_action": "Transfert Free Money",
+    "code_ussd": "*555#",
+    "format": "*555*1*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "MTN Côte d'Ivoire",
+    "nom_action": "Transfert Mobile Money",
+    "code_ussd": "*133#",
+    "format": "*133*1*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "Orange Côte d'Ivoire",
+    "nom_action": "Transfert Orange Money",
+    "code_ussd": "#144#",
+    "format": "#144*2*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "Moov Africa Côte d'Ivoire",
+    "nom_action": "Transfert Flooz",
+    "code_ussd": "*155#",
+    "format": "*155*1*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "MTN Congo",
+    "nom_action": "Transfert Mobile Money",
+    "code_ussd": "*126#",
+    "format": "*126*1*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "Airtel Congo",
+    "nom_action": "Transfert Airtel Money",
+    "code_ussd": "*500#",
+    "format": "*500*1*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "Airtel Gabon",
+    "nom_action": "Transfert Airtel Money",
+    "code_ussd": "*500#",
+    "format": "*500*1*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "Moov Africa Gabon",
+    "nom_action": "Transfert Moov Money",
+    "code_ussd": "*155#",
+    "format": "*155*1*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "Orange Guinée",
+    "nom_action": "Transfert Orange Money",
+    "code_ussd": "#144#",
+    "format": "#144*2*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "MTN Guinée",
+    "nom_action": "Transfert Mobile Money",
+    "code_ussd": "*126#",
+    "format": "*126*1*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "Orange Burkina Faso",
+    "nom_action": "Transfert Orange Money",
+    "code_ussd": "#144#",
+    "format": "#144*2*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "Moov Africa Burkina Faso",
+    "nom_action": "Transfert Flooz",
+    "code_ussd": "*155#",
+    "format": "*155*1*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "Orange Mali",
+    "nom_action": "Transfert Orange Money",
+    "code_ussd": "#144#",
+    "format": "#144*2*{numero}*{montant}#"
+  },
+  {
+    "operator_nom": "Moov Africa Mali",
+    "nom_action": "Transfert Flooz",
+    "code_ussd": "*155#",
+    "format": "*155*1*{numero}*{montant}#"
   }
 ]

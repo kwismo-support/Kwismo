@@ -10,8 +10,88 @@
     "prefixes": ["69", "655", "656", "657", "658", "659", "686", "687", "688", "689"]
   },
   {
-    "nom": "Camtel (Nexttel/Blue)",
+    "nom": "Camtel (Blue)",
     "country_code_pays": "+237",
     "prefixes": ["62", "66"]
+  },
+  {
+    "nom": "Orange Sénégal",
+    "country_code_pays": "+221",
+    "prefixes": ["77", "78"]
+  },
+  {
+    "nom": "Free Sénégal",
+    "country_code_pays": "+221",
+    "prefixes": ["76"]
+  },
+  {
+    "nom": "Expresso Sénégal",
+    "country_code_pays": "+221",
+    "prefixes": ["70"]
+  },
+  {
+    "nom": "MTN Côte d'Ivoire",
+    "country_code_pays": "+225",
+    "prefixes": ["05", "45", "55", "65", "85"]
+  },
+  {
+    "nom": "Orange Côte d'Ivoire",
+    "country_code_pays": "+225",
+    "prefixes": ["07", "47", "57", "67", "87"]
+  },
+  {
+    "nom": "Moov Africa Côte d'Ivoire",
+    "country_code_pays": "+225",
+    "prefixes": ["01", "41", "51", "61", "81"]
+  },
+  {
+    "nom": "MTN Congo",
+    "country_code_pays": "+242",
+    "prefixes": ["06", "05"]
+  },
+  {
+    "nom": "Airtel Congo",
+    "country_code_pays": "+242",
+    "prefixes": ["04", "07"]
+  },
+  {
+    "nom": "Airtel Gabon",
+    "country_code_pays": "+241",
+    "prefixes": ["07", "06"]
+  },
+  {
+    "nom": "Moov Africa Gabon",
+    "country_code_pays": "+241",
+    "prefixes": ["05", "04"]
+  },
+  {
+    "nom": "Orange Guinée",
+    "country_code_pays": "+224",
+    "prefixes": ["62", "65"]
+  },
+  {
+    "nom": "MTN Guinée",
+    "country_code_pays": "+224",
+    "prefixes": ["63", "66"]
+  },
+  {
+    "nom": "Orange Burkina Faso",
+    "country_code_pays": "+226",
+    "prefixes": ["70", "71", "72", "73", "74", "75"]
+  },
+  {
+    "nom": "Moov Africa Burkina Faso",
+    "country_code_pays": "+226",
+    "prefixes": ["60", "61", "62", "63", "64", "65"]
+  },
+  {
+    "nom": "Orange Mali",
+    "country_code_pays": "+223",
+    "prefixes": ["70", "71", "72", "73"]
+  },
+  {
+    "nom": "Moov Africa Mali",
+    "country_code_pays": "+223",
+    "prefixes": ["65", "66", "67"]
   }
 ]

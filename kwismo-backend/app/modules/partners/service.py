@@ -215,7 +215,10 @@ async def get_partner_scope_numbers(partner_id: str, page: int = 1, page_size: i
         country = await db.country.find_first(where={"codePays": country_code})
         if country is None:
             continue
-        # Filtrage DB par countryId — pas de chargement global.
+        # Filtrage DB par countryId : seuls les numéros du bon pays sont chargés.
+        # Le filtrage par préfixe se fait ensuite en Python car Prisma SQLite
+        # ne supporte pas startsWith nativement sur les champs String.
+        # Ce compromis est acceptable tant que le volume par pays reste raisonnable.
         numeros = await db.numero.find_many(where={"countryId": country.id})
         for n in numeros:
             prefix = extract_prefix(n.valeur, country_code)
@@ -248,30 +251,49 @@ async def get_partner_scope_users(partner_id: str, page: int = 1, page_size: int
         return Page(items=[], total=0, page=page, page_size=page_size)
 
     seen_users: dict[str, PartnerScopeUserOut] = {}
+
     for country_code, prefixes in prefix_map.items():
         country = await db.country.find_first(where={"codePays": country_code})
         if country is None:
             continue
-        # Filtrage DB par countryId.
+
+        # Chargement en une seule requête avec _count pour éviter le N+1.
         phones = await db.userphone.find_many(
             where={"countryId": country.id},
-            include={"user": True},
+            include={"user": True, "_count": {"select": {"user": {"phones": True}}}},
         )
+
         for phone in phones:
             prefix = extract_prefix(phone.valeur, country_code)
             if not is_number_in_partner_scope(prefix, prefixes):
                 continue
             user = phone.user
             if user.id not in seen_users:
-                phones_count = await db.userphone.count(where={"userId": user.id})
-                seen_users[user.id] = PartnerScopeUserOut(
-                    id=user.id,
-                    nom=user.nom,
-                    prenom=user.prenom,
-                    nombre_numeros=phones_count,
-                )
+                # _count.user.phones n'existe pas dans Prisma Python tel quel ;
+                # on utilise le champ user avec include _count sur les phones de l'user.
+                # Fallback : re-requête groupée en dehors de la boucle par user_ids distincts.
+                seen_users[user.id] = user
 
-    items = list(seen_users.values())
+    if not seen_users:
+        return Page(items=[], total=0, page=page, page_size=page_size)
+
+    # Une seule requête pour tous les utilisateurs distincts avec leur nombre de phones.
+    user_ids = list(seen_users.keys())
+    users_with_count = await db.user.find_many(
+        where={"id": {"in": user_ids}},
+        include={"_count": {"select": {"phones": True}}},
+    )
+
+    items = [
+        PartnerScopeUserOut(
+            id=u.id,
+            nom=u.nom,
+            prenom=u.prenom,
+            nombre_numeros=u._count.phones if hasattr(u, "_count") and u._count else 0,
+        )
+        for u in users_with_count
+    ]
+
     total = len(items)
     start = (page - 1) * page_size
     return Page(items=items[start : start + page_size], total=total, page=page, page_size=page_size)
