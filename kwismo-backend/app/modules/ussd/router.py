@@ -2,9 +2,9 @@
 
 from fastapi import APIRouter, Depends, Query, status
 
-from app.core.exceptions import not_implemented
 from app.core.permissions import require_roles
 from app.core.schemas import AUTH_RESPONSES, Message, NOT_FOUND_RESPONSE
+from app.modules.ussd import service
 from app.modules.ussd.schemas import (
     CountryIn,
     CountryOut,
@@ -29,7 +29,7 @@ router = APIRouter(tags=["USSD"])
     ),
 )
 async def list_countries() -> list[CountryOut]:
-    raise not_implemented()
+    return await service.list_countries()
 
 
 @router.post(
@@ -41,7 +41,7 @@ async def list_countries() -> list[CountryOut]:
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def create_country(payload: CountryIn, user=Depends(require_roles("admin"))) -> CountryOut:
-    raise not_implemented()
+    return await service.create_country(payload)
 
 
 @router.patch(
@@ -54,7 +54,7 @@ async def create_country(payload: CountryIn, user=Depends(require_roles("admin")
 async def update_country(
     country_id: str, payload: CountryIn, user=Depends(require_roles("admin"))
 ) -> CountryOut:
-    raise not_implemented()
+    return await service.update_country(country_id, payload)
 
 
 @router.delete(
@@ -65,7 +65,7 @@ async def update_country(
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def delete_country(country_id: str, user=Depends(require_roles("admin"))) -> Message:
-    raise not_implemented()
+    return await service.delete_country(country_id)
 
 
 # --- Operators / Operateurs ---------------------------------------------
@@ -76,8 +76,10 @@ async def delete_country(country_id: str, user=Depends(require_roles("admin"))) 
     summary="List a country's operators / Opérateurs d'un pays",
     description="**FR** — Opérateurs d'un pays.\n\n**EN** — A country's operators.",
 )
-async def list_operators(country: str = Query(..., description="ID du pays / Country id")) -> list[OperatorOut]:
-    raise not_implemented()
+async def list_operators(
+    country: str = Query(..., description="ID du pays / Country id")
+) -> list[OperatorOut]:
+    return await service.list_operators(country)
 
 
 @router.post(
@@ -89,7 +91,7 @@ async def list_operators(country: str = Query(..., description="ID du pays / Cou
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def create_operator(payload: OperatorIn, user=Depends(require_roles("admin"))) -> OperatorOut:
-    raise not_implemented()
+    return await service.create_operator(payload)
 
 
 @router.patch(
@@ -102,7 +104,7 @@ async def create_operator(payload: OperatorIn, user=Depends(require_roles("admin
 async def update_operator(
     operator_id: str, payload: OperatorIn, user=Depends(require_roles("admin"))
 ) -> OperatorOut:
-    raise not_implemented()
+    return await service.update_operator(operator_id, payload)
 
 
 @router.delete(
@@ -113,7 +115,7 @@ async def update_operator(
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def delete_operator(operator_id: str, user=Depends(require_roles("admin"))) -> Message:
-    raise not_implemented()
+    return await service.delete_operator(operator_id)
 
 
 # --- USSD actions ---------------------------------------------------------
@@ -130,7 +132,7 @@ async def delete_operator(operator_id: str, user=Depends(require_roles("admin"))
 async def list_ussd_actions(
     operator: str = Query(..., description="ID de l'opérateur / Operator id"),
 ) -> list[UssdActionOut]:
-    raise not_implemented()
+    return await service.list_ussd_actions(operator)
 
 
 @router.post(
@@ -142,7 +144,7 @@ async def list_ussd_actions(
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def create_ussd_action(payload: UssdActionIn, user=Depends(require_roles("admin"))) -> UssdActionOut:
-    raise not_implemented()
+    return await service.create_ussd_action(payload)
 
 
 @router.patch(
@@ -155,7 +157,7 @@ async def create_ussd_action(payload: UssdActionIn, user=Depends(require_roles("
 async def update_ussd_action(
     action_id: str, payload: UssdActionIn, user=Depends(require_roles("admin"))
 ) -> UssdActionOut:
-    raise not_implemented()
+    return await service.update_ussd_action(action_id, payload)
 
 
 @router.delete(
@@ -166,4 +168,4 @@ async def update_ussd_action(
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def delete_ussd_action(action_id: str, user=Depends(require_roles("admin"))) -> Message:
-    raise not_implemented()
+    return await service.delete_ussd_action(action_id)

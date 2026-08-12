@@ -8,9 +8,9 @@ EN — Contact list with a reputation badge; used in particular by
 
 from fastapi import APIRouter, Depends, status
 
-from app.core.exceptions import not_implemented
 from app.core.permissions import require_roles
 from app.core.schemas import AUTH_RESPONSES, Message, NOT_FOUND_RESPONSE
+from app.modules.contacts import service
 from app.modules.contacts.schemas import ContactAddIn, ContactOut
 
 router = APIRouter(prefix="/contacts", tags=["Contacts"])
@@ -22,14 +22,12 @@ router = APIRouter(prefix="/contacts", tags=["Contacts"])
     responses=AUTH_RESPONSES,
     summary="List my contacts / Lister mes contacts",
     description=(
-        "**FR** — Liste des contacts du compte avec leur insigne de réputation "
-        "(alimenté par le Modèle A côté IA).\n\n"
-        "**EN** — The account's contacts with their reputation badge (fed by the "
-        "AI's Model A)."
+        "**FR** — Liste des contacts du compte avec leur insigne de réputation.\n\n"
+        "**EN** — The account's contacts with their reputation badge."
     ),
 )
 async def list_contacts(user=Depends(require_roles("user"))) -> list[ContactOut]:
-    raise not_implemented()
+    return await service.list_contacts(user.id)
 
 
 @router.post(
@@ -39,13 +37,12 @@ async def list_contacts(user=Depends(require_roles("user"))) -> list[ContactOut]
     responses=AUTH_RESPONSES,
     summary="Add a contact / Ajouter un contact",
     description=(
-        "**FR** — Ajoute un contact (nom + numéro) ; déclenche une vérification "
-        "de réputation.\n\n"
+        "**FR** — Ajoute un contact (nom + numéro) ; déclenche une vérification de réputation.\n\n"
         "**EN** — Adds a contact (name + number); triggers a reputation check."
     ),
 )
 async def add_contact(payload: ContactAddIn, user=Depends(require_roles("user"))) -> ContactOut:
-    raise not_implemented()
+    return await service.add_contact(user.id, payload)
 
 
 @router.post(
@@ -59,7 +56,7 @@ async def add_contact(payload: ContactAddIn, user=Depends(require_roles("user"))
     ),
 )
 async def refresh_contact(contact_id: str, user=Depends(require_roles("user"))) -> ContactOut:
-    raise not_implemented()
+    return await service.refresh_contact(user.id, contact_id)
 
 
 @router.delete(
@@ -67,7 +64,6 @@ async def refresh_contact(contact_id: str, user=Depends(require_roles("user"))) 
     response_model=Message,
     responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
     summary="Remove a contact / Retirer un contact",
-    description="**FR** — Retire un contact du compte.\n\n**EN** — Removes a contact from the account.",
 )
 async def remove_contact(contact_id: str, user=Depends(require_roles("user"))) -> Message:
-    raise not_implemented()
+    return await service.remove_contact(user.id, contact_id)

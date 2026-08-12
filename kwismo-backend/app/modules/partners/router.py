@@ -7,11 +7,11 @@ EN — Partner data scoping is enforced server-side: a partner only sees
 their own scope (affiliation rules); an admin can view everything.
 """
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Query, status
 
-from app.core.exceptions import not_implemented
 from app.core.permissions import require_roles
 from app.core.schemas import AUTH_RESPONSES, NOT_FOUND_RESPONSE, Page
+from app.modules.partners import service
 from app.modules.partners.schemas import (
     AffiliationRuleCreateIn,
     AffiliationRuleOut,
@@ -34,7 +34,7 @@ router = APIRouter(tags=["Partners"])
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def list_partners(user=Depends(require_roles("admin"))) -> Page[PartnerOut]:
-    raise not_implemented()
+    return await service.list_partners()
 
 
 @router.post(
@@ -46,7 +46,7 @@ async def list_partners(user=Depends(require_roles("admin"))) -> Page[PartnerOut
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def create_partner(payload: PartnerCreateIn, user=Depends(require_roles("admin"))) -> PartnerOut:
-    raise not_implemented()
+    return await service.create_partner(payload)
 
 
 @router.get(
@@ -57,7 +57,7 @@ async def create_partner(payload: PartnerCreateIn, user=Depends(require_roles("a
     description="**FR** — Fiche partenaire + KPI.\n\n**EN** — Partner sheet + KPIs.",
 )
 async def get_partner(partner_id: str, user=Depends(require_roles("admin"))) -> PartnerDetailOut:
-    raise not_implemented()
+    return await service.get_partner(partner_id)
 
 
 @router.get(
@@ -70,7 +70,7 @@ async def get_partner(partner_id: str, user=Depends(require_roles("admin"))) -> 
 async def list_affiliation_rules(
     partner_id: str, user=Depends(require_roles("admin"))
 ) -> list[AffiliationRuleOut]:
-    raise not_implemented()
+    return await service.list_affiliation_rules(partner_id)
 
 
 @router.post(
@@ -87,7 +87,7 @@ async def list_affiliation_rules(
 async def add_affiliation_rule(
     partner_id: str, payload: AffiliationRuleCreateIn, user=Depends(require_roles("admin"))
 ) -> AffiliationRuleOut:
-    raise not_implemented()
+    return await service.add_affiliation_rule(partner_id, payload)
 
 
 @router.get(
@@ -102,7 +102,7 @@ async def add_affiliation_rule(
     ),
 )
 async def get_partner_scope_numbers(user=Depends(require_roles("partner"))) -> Page[PartnerScopeNumberOut]:
-    raise not_implemented()
+    return await service.get_partner_scope_numbers(user.id)
 
 
 @router.get(
@@ -113,7 +113,7 @@ async def get_partner_scope_numbers(user=Depends(require_roles("partner"))) -> P
     description="**FR** — Utilisateurs découlant du périmètre.\n\n**EN** — Users derived from the scope.",
 )
 async def get_partner_scope_users(user=Depends(require_roles("partner"))) -> Page[PartnerScopeUserOut]:
-    raise not_implemented()
+    return await service.get_partner_scope_users(user.id)
 
 
 @router.get(
@@ -124,4 +124,4 @@ async def get_partner_scope_users(user=Depends(require_roles("partner"))) -> Pag
     description="**FR** — KPI limités au périmètre.\n\n**EN** — KPIs limited to the scope.",
 )
 async def get_partner_scope_kpi(user=Depends(require_roles("partner"))) -> list[PartnerScopeKpiOut]:
-    raise not_implemented()
+    return await service.get_partner_scope_kpi(user.id)

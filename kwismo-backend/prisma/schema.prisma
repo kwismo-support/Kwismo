@@ -39,6 +39,8 @@ model User {
   whatsAppAlerts      WhatsAppAlert[]
   surveyResponses     SurveyResponse[]
   auditLogs           AuditLog[]
+  notifications       Notification[]
+  feedbacks           Feedback[]
 
   @@index([roleId])
 }
@@ -184,6 +186,7 @@ model Report {
   motif           String
   dateSignalement DateTime @default(now())
   statut          String   @default("pending") // pending | validated | rejected
+  feedbacks       Feedback[]
 
   @@index([userId])
   @@index([numeroId])
@@ -385,4 +388,36 @@ model AuditLog {
   ip     String?
 
   @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Notifications utilisateur
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  texte     String
+  lu        Boolean  @default(false)
+  date      DateTime @default(now())
+
+  @@index([userId])
+}
+// ---------------------------------------------------------------------------
+// Feedback & Surveys (simplified feedback queue)
+// ---------------------------------------------------------------------------
+
+model Feedback {
+  id           String   @id @default(cuid())
+  reportId     String?
+  report       Report?  @relation(fields: [reportId], references: [id])
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  typeRetour   String   // "report" | "transaction" | "other"
+  contenu      String
+  dateCreation DateTime @default(now())
+
+  @@index([userId])
+  @@index([reportId])
 }
