@@ -106,9 +106,9 @@ async def prepare_transaction(user_id: str, payload: TransactionPrepareIn, lang:
 
     from app.modules.notifications.service import create_notification
     if niveau_risque == "eleve":
-        await create_notification(user_id, "transaction_risk_high")
+        await create_notification(user_id, "transaction_risk_high", lang)
     elif niveau_risque == "moyen":
-        await create_notification(user_id, "transaction_risk_medium")
+        await create_notification(user_id, "transaction_risk_medium", lang)
 
     return _to_out(transaction)
 

@@ -116,7 +116,7 @@ async def validate_report(report_id: str, payload: ReportValidateIn, admin_user_
 
     from app.modules.notifications.service import create_notification
     notif_key = "report_validated" if payload.statut == "validated" else "report_rejected"
-    await create_notification(report.userId, notif_key)
+    await create_notification(report.userId, notif_key, lang)
 
     from app.utils.feedback import enqueue_feedback
     feedback_msg = f"Report {payload.statut}: {report.motif}"

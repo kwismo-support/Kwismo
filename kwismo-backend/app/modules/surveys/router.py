@@ -32,4 +32,4 @@ async def get_active_surveys(user=Depends(require_roles("user"))) -> list[Survey
 async def answer_survey(
     survey_id: str, payload: SurveyAnswerIn, user=Depends(require_roles("user"))
 ) -> SurveyResponseOut:
-    return await service.answer_survey(user.id, survey_id, payload)
+    return await service.answer_survey(user.id, survey_id, payload, user.langue)
