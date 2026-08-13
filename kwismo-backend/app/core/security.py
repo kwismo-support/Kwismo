@@ -2,7 +2,7 @@
 
 import logging
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
@@ -32,6 +32,7 @@ class CurrentUser:
     id: str
     role: str
     langue: str = "fr"
+    partner_id: str | None = field(default=None)
 
 
 # ---------------------------------------------------------------------------
@@ -39,12 +40,10 @@ class CurrentUser:
 # ---------------------------------------------------------------------------
 
 def hash_password(plain: str) -> str:
-    """Hache un mot de passe avec Argon2id. / Hashes a password with Argon2id."""
     return _ph.hash(plain)
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    """Verifie un mot de passe contre son hash Argon2. / Verifies a password against its Argon2 hash."""
     try:
         return _ph.verify(hashed, plain)
     except VerifyMismatchError:
@@ -55,8 +54,8 @@ def verify_password(plain: str, hashed: str) -> bool:
 # JWT
 # ---------------------------------------------------------------------------
 
-def create_access_token(user_id: str, role: str) -> str:
-    """Cree un jeton d'acces JWT (courte duree). / Creates a short-lived JWT access token."""
+def create_access_token(user_id: str, role: str, partner_id: str | None = None) -> str:
+    """Cree un jeton d'acces JWT (courte duree)."""
     from app.utils.dates import minutes_from_now
     settings = get_settings()
     payload = {
@@ -66,11 +65,13 @@ def create_access_token(user_id: str, role: str) -> str:
         "jti": str(uuid.uuid4()),
         "exp": minutes_from_now(settings.jwt_access_expire_min),
     }
+    if partner_id:
+        payload["partner_id"] = partner_id
     return jwt.encode(payload, settings.jwt_secret, algorithm=ALGORITHM)
 
 
-def create_refresh_token(user_id: str, role: str) -> str:
-    """Cree un jeton de rafraichissement JWT (longue duree). / Creates a long-lived JWT refresh token."""
+def create_refresh_token(user_id: str, role: str, partner_id: str | None = None) -> str:
+    """Cree un jeton de rafraichissement JWT (longue duree)."""
     from datetime import UTC, datetime, timedelta
     settings = get_settings()
     payload = {
@@ -80,11 +81,13 @@ def create_refresh_token(user_id: str, role: str) -> str:
         "jti": str(uuid.uuid4()),
         "exp": datetime.now(UTC) + timedelta(days=settings.jwt_refresh_expire_days),
     }
+    if partner_id:
+        payload["partner_id"] = partner_id
     return jwt.encode(payload, settings.jwt_secret, algorithm=ALGORITHM)
 
 
 def decode_token(token: str, expected_type: str = "access") -> dict:
-    """Decode et valide un JWT. Leve 401 si invalide. / Decodes and validates a JWT. Raises 401 if invalid."""
+    """Decode et valide un JWT. Leve 401 si invalide."""
     settings = get_settings()
     try:
         payload = jwt.decode(token, settings.jwt_secret, algorithms=[ALGORITHM])
@@ -108,7 +111,7 @@ def decode_token(token: str, expected_type: str = "access") -> dict:
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
 ) -> CurrentUser:
-    """Dependance FastAPI : resout l'utilisateur authentifie. / FastAPI dependency: resolves the authenticated user."""
+    """Dependance FastAPI : resout l'utilisateur authentifie."""
     if credentials is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -117,6 +120,7 @@ async def get_current_user(
     payload = decode_token(credentials.credentials, expected_type="access")
     user_id: str = payload.get("sub", "")
     role: str = payload.get("role", "")
+    partner_id: str | None = payload.get("partner_id")
 
     user = await db.user.find_unique(where={"id": user_id})
     if user is None:
@@ -129,5 +133,9 @@ async def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Compte suspendu / Account suspended.",
         )
+
     langue = getattr(user, "langue", "fr") or "fr"
-    return CurrentUser(id=user_id, role=role, langue=langue)
+    # partner_id depuis le JWT — fallback sur user.partnerId si absent du token (migration)
+    resolved_partner_id = partner_id or getattr(user, "partnerId", None)
+
+    return CurrentUser(id=user_id, role=role, langue=langue, partner_id=resolved_partner_id)

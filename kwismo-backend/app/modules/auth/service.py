@@ -44,8 +44,9 @@ _users = UserRepository()
 # ---------------------------------------------------------------------------
 
 def _token_out(user) -> TokenOut:
-    access = create_access_token(user.id, user.role.nomRole)
-    refresh = create_refresh_token(user.id, user.role.nomRole)
+    partner_id = getattr(user, "partnerId", None)
+    access = create_access_token(user.id, user.role.nomRole, partner_id=partner_id)
+    refresh = create_refresh_token(user.id, user.role.nomRole, partner_id=partner_id)
     return TokenOut(
         access_token=access,
         refresh_token=refresh,

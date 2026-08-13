@@ -86,8 +86,9 @@ _logger = logging.getLogger("kwismo.backend")
 
 
 def _check_startup_config() -> None:
-    """Refuse de demarrer silencieusement avec une config dangereuse en prod.
-    / Refuses to start silently with a dangerous config in production."""
+    """Valide la configuration au demarrage — bloque si secrets par defaut hors dev."""
+    settings.validate_secrets()
+
     memory_rl = settings.rate_limit_storage_uri == "memory://"
     hosts_open = settings.allowed_hosts == "*"
     if memory_rl and not hosts_open:
