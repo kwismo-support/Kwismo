@@ -19,6 +19,7 @@ from app.modules.partners.schemas import (
     PartnerScopeNumberOut,
     PartnerScopeUserOut,
 )
+from app.utils.i18n import t
 from app.utils.phone import extract_prefix
 
 logger = logging.getLogger("kwismo.backend")
@@ -49,7 +50,6 @@ def _rule_out(r) -> AffiliationRuleOut:
 
 
 async def _get_partner_rules(partner_id: str) -> list:
-    """Retourne les regles d'affiliation d'un partenaire avec leurs prefixes."""
     return await db.affiliationrule.find_many(
         where={"partnerId": partner_id},
         include={"prefixes": True, "country": True},
@@ -57,7 +57,6 @@ async def _get_partner_rules(partner_id: str) -> list:
 
 
 def _build_prefix_map(rules: list) -> dict[str, list[str]]:
-    """Construit un dict {country_code: [prefixes]} depuis les regles."""
     mapping: dict[str, list[str]] = {}
     for rule in rules:
         if rule.country is None:
@@ -68,25 +67,6 @@ def _build_prefix_map(rules: list) -> dict[str, list[str]]:
         for p in (rule.prefixes or []):
             mapping[code].append(p.prefixe)
     return mapping
-
-
-async def _get_partner_prefixes(partner_id: str) -> list[str]:
-    rules = await _get_partner_rules(partner_id)
-    result = []
-    for rule in rules:
-        for p in (rule.prefixes or []):
-            result.append(p.prefixe)
-    return result
-
-
-async def _get_partner_country_code(partner_id: str) -> str | None:
-    rule = await db.affiliationrule.find_first(
-        where={"partnerId": partner_id},
-        include={"country": True},
-    )
-    if rule and rule.country:
-        return rule.country.codePays
-    return None
 
 
 # ---------------------------------------------------------------------------
@@ -118,24 +98,28 @@ async def create_partner(payload: PartnerCreateIn) -> PartnerOut:
 # get_partner
 # ---------------------------------------------------------------------------
 
-async def get_partner(partner_id: str) -> PartnerDetailOut:
+async def get_partner(partner_id: str, lang: str = "fr") -> PartnerDetailOut:
     partner = await db.partner.find_unique(where={"id": partner_id})
     if partner is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Partenaire introuvable / Partner not found.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=t("partner_not_found", lang),
+        )
 
     rules = await _get_partner_rules(partner_id)
     prefix_map = _build_prefix_map(rules)
 
     numeros_affilies = 0
-    signalements_perimetre = 0
     frauduleux_count = 0
+    signalements_perimetre = 0
 
     for country_code, prefixes in prefix_map.items():
-        # Filtrage cote DB par pays : seuls les numeros du bon indicatif.
         country = await db.country.find_first(where={"codePays": country_code})
         if country is None:
             continue
+        # Filtrage DB par countryId — filtrage préfixe en Python (Prisma SQLite sans startsWith)
         numeros = await db.numero.find_many(where={"countryId": country.id})
+        numero_ids_in_scope = []
         for n in numeros:
             prefix = extract_prefix(n.valeur, country_code)
             if not is_number_in_partner_scope(prefix, prefixes):
@@ -143,7 +127,13 @@ async def get_partner(partner_id: str) -> PartnerDetailOut:
             numeros_affilies += 1
             if n.statut == "frauduleux":
                 frauduleux_count += 1
-            signalements_perimetre += await db.report.count(where={"numeroId": n.id})
+            numero_ids_in_scope.append(n.id)
+
+        if numero_ids_in_scope:
+            # Une seule requête count pour tous les signalements du périmètre pays
+            signalements_perimetre += await db.report.count(
+                where={"numeroId": {"in": numero_ids_in_scope}}
+            )
 
     taux_fraude = (frauduleux_count / numeros_affilies) if numeros_affilies > 0 else 0.0
 
@@ -164,10 +154,13 @@ async def get_partner(partner_id: str) -> PartnerDetailOut:
 # list_affiliation_rules
 # ---------------------------------------------------------------------------
 
-async def list_affiliation_rules(partner_id: str) -> list[AffiliationRuleOut]:
+async def list_affiliation_rules(partner_id: str, lang: str = "fr") -> list[AffiliationRuleOut]:
     partner = await db.partner.find_unique(where={"id": partner_id})
     if partner is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Partenaire introuvable / Partner not found.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=t("partner_not_found", lang),
+        )
     rules = await db.affiliationrule.find_many(
         where={"partnerId": partner_id},
         include={"prefixes": True},
@@ -179,13 +172,19 @@ async def list_affiliation_rules(partner_id: str) -> list[AffiliationRuleOut]:
 # add_affiliation_rule
 # ---------------------------------------------------------------------------
 
-async def add_affiliation_rule(partner_id: str, payload: AffiliationRuleCreateIn) -> AffiliationRuleOut:
+async def add_affiliation_rule(partner_id: str, payload: AffiliationRuleCreateIn, lang: str = "fr") -> AffiliationRuleOut:
     partner = await db.partner.find_unique(where={"id": partner_id})
     if partner is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Partenaire introuvable / Partner not found.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=t("partner_not_found", lang),
+        )
     country = await db.country.find_unique(where={"id": payload.country_id})
     if country is None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Pays introuvable / Country not found.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=t("country_not_found", lang),
+        )
 
     rule = await db.affiliationrule.create(
         data={"partnerId": partner_id, "countryId": payload.country_id}
@@ -215,10 +214,8 @@ async def get_partner_scope_numbers(partner_id: str, page: int = 1, page_size: i
         country = await db.country.find_first(where={"codePays": country_code})
         if country is None:
             continue
-        # Filtrage DB par countryId : seuls les numéros du bon pays sont chargés.
-        # Le filtrage par préfixe se fait ensuite en Python car Prisma SQLite
-        # ne supporte pas startsWith nativement sur les champs String.
-        # Ce compromis est acceptable tant que le volume par pays reste raisonnable.
+        # Filtrage DB par countryId ; filtrage préfixe en Python
+        # (Prisma SQLite ne supporte pas startsWith natif sur String).
         numeros = await db.numero.find_many(where={"countryId": country.id})
         for n in numeros:
             prefix = extract_prefix(n.valeur, country_code)
@@ -250,37 +247,27 @@ async def get_partner_scope_users(partner_id: str, page: int = 1, page_size: int
     if not prefix_map:
         return Page(items=[], total=0, page=page, page_size=page_size)
 
-    seen_users: dict[str, PartnerScopeUserOut] = {}
+    seen_user_ids: set[str] = set()
 
     for country_code, prefixes in prefix_map.items():
         country = await db.country.find_first(where={"codePays": country_code})
         if country is None:
             continue
-
-        # Chargement en une seule requête avec _count pour éviter le N+1.
         phones = await db.userphone.find_many(
             where={"countryId": country.id},
-            include={"user": True, "_count": {"select": {"user": {"phones": True}}}},
+            include={"user": True},
         )
-
         for phone in phones:
             prefix = extract_prefix(phone.valeur, country_code)
-            if not is_number_in_partner_scope(prefix, prefixes):
-                continue
-            user = phone.user
-            if user.id not in seen_users:
-                # _count.user.phones n'existe pas dans Prisma Python tel quel ;
-                # on utilise le champ user avec include _count sur les phones de l'user.
-                # Fallback : re-requête groupée en dehors de la boucle par user_ids distincts.
-                seen_users[user.id] = user
+            if is_number_in_partner_scope(prefix, prefixes):
+                seen_user_ids.add(phone.user.id)
 
-    if not seen_users:
+    if not seen_user_ids:
         return Page(items=[], total=0, page=page, page_size=page_size)
 
-    # Une seule requête pour tous les utilisateurs distincts avec leur nombre de phones.
-    user_ids = list(seen_users.keys())
+    # Une seule requête pour tous les users distincts avec leur _count de phones.
     users_with_count = await db.user.find_many(
-        where={"id": {"in": user_ids}},
+        where={"id": {"in": list(seen_user_ids)}},
         include={"_count": {"select": {"phones": True}}},
     )
 
