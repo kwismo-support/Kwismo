@@ -3,11 +3,10 @@
 Table Prisma : Transaction. Le backend ne deplace pas d'argent : il ne
 stocke que des metadonnees (montant, statut, niveau de risque) et genere le
 code USSD ; la transaction financiere reelle se deroule dans l'app native de
-l'operateur (cf. cahier Backend §5.6).
+l'operateur.
 Prisma table: Transaction. The backend never moves money: it only stores
 metadata (amount, status, risk level) and generates the USSD code; the real
-financial transaction happens in the operator's native app (see Backend
-spec §5.6).
+financial transaction happens in the operator's native app.
 """
 
 from datetime import datetime

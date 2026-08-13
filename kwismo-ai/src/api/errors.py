@@ -2,12 +2,10 @@
 
 FR — Garantit que ni une exception d'inference (modele non charge, entree
 inattendue...) ni une charge excessive ne rendent le service indisponible :
-c'est le service dont depend le backend pour scorer chaque numero/message
-(cahier Backend §9.1), il ne doit donc jamais tomber silencieusement.
+le backend en depend pour scorer chaque numero/message.
 EN — Guarantees that neither an inference exception (model not loaded,
 unexpected input...) nor excessive load ever take the service down: the
-backend depends on this service to score every number/message (Backend spec
-§9.1), so it must never go down silently.
+backend depends on it to score every number/message.
 """
 
 import logging

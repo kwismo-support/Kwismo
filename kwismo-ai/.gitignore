@@ -1,5 +1,6 @@
 # Environnement virtuel
 .venv/
+.venv313/
 
 # Artefacts Python
 __pycache__/
@@ -20,8 +21,13 @@ dist/
 # Donnees
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/scraped/
+data/raw/scraped/images/
 data/interim/*
 !data/interim/.gitkeep
+!data/interim/metrics/
+!data/interim/known_domains.json
+data/interim/scraping_state.db
 data/processed/*
 !data/processed/.gitkeep
 

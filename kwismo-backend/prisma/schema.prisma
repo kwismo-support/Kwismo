@@ -23,11 +23,16 @@ model User {
   motDePasse      String
   emailVerifie    Boolean  @default(false)
   statut          String   @default("active") // active | suspended
+  langue          String   @default("fr")     // fr | en
   dateInscription DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  roleId String
-  role   Role   @relation(fields: [roleId], references: [id])
+  roleId    String
+  role      Role    @relation(fields: [roleId], references: [id])
+
+  // Lien optionnel vers un partenaire (rempli si role = "partner")
+  partnerId String?
+  partner   Partner? @relation(fields: [partnerId], references: [id])
 
   phones              UserPhone[]
   devices             Device[]
@@ -39,8 +44,11 @@ model User {
   whatsAppAlerts      WhatsAppAlert[]
   surveyResponses     SurveyResponse[]
   auditLogs           AuditLog[]
+  notifications       Notification[]
+  feedbacks           Feedback[]
 
   @@index([roleId])
+  @@index([partnerId])
 }
 
 model Role {
@@ -163,7 +171,7 @@ model Contact {
   user      User     @relation(fields: [userId], references: [id])
   nom       String
   numero    String
-  statut    String? // insigne affiche : securise | suspect | frauduleux | inconnu
+  statut    String?  // insigne affiche : securise | suspect | frauduleux | inconnu
   numeroId  String?
   numeroRef Numero?  @relation(fields: [numeroId], references: [id])
   createdAt DateTime @default(now())
@@ -176,14 +184,15 @@ model Contact {
 }
 
 model Report {
-  id              String   @id @default(cuid())
+  id              String     @id @default(cuid())
   userId          String
-  user            User     @relation(fields: [userId], references: [id])
+  user            User       @relation(fields: [userId], references: [id])
   numeroId        String
-  numero          Numero   @relation(fields: [numeroId], references: [id])
+  numero          Numero     @relation(fields: [numeroId], references: [id])
   motif           String
-  dateSignalement DateTime @default(now())
-  statut          String   @default("pending") // pending | validated | rejected
+  dateSignalement DateTime   @default(now())
+  statut          String     @default("pending") // pending | validated | rejected
+  feedbacks       Feedback[]
 
   @@index([userId])
   @@index([numeroId])
@@ -218,6 +227,7 @@ model Operator {
   userPhones   UserPhone[]
   transactions Transaction[]
 
+  @@unique([nom, countryId])
   @@index([countryId])
 }
 
@@ -241,6 +251,7 @@ model UssdAction {
 
   transactions Transaction[]
 
+  @@unique([operatorId, nomAction])
   @@index([operatorId])
 }
 
@@ -254,6 +265,7 @@ model Partner {
   typePartenariat String
   dateAdhesion    DateTime @default(now())
 
+  users            User[]
   affiliationRules AffiliationRule[]
   kpis             Kpi[]
 }
@@ -329,7 +341,7 @@ model WhatsAppAlertRecipient {
   whatsAppAlert   WhatsAppAlert @relation(fields: [whatsAppAlertId], references: [id])
   contactId       String
   contact         Contact       @relation(fields: [contactId], references: [id])
-  statutAccuse    String? // envoye | recu | echec
+  statutAccuse    String?       // envoye | recu | echec
 
   @@unique([whatsAppAlertId, contactId])
   @@index([whatsAppAlertId])
@@ -385,4 +397,37 @@ model AuditLog {
   ip     String?
 
   @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Notifications utilisateur
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  texte     String
+  lu        Boolean  @default(false)
+  date      DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Feedback
+// ---------------------------------------------------------------------------
+
+model Feedback {
+  id           String   @id @default(cuid())
+  reportId     String?
+  report       Report?  @relation(fields: [reportId], references: [id])
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  typeRetour   String   // "report" | "transaction" | "other"
+  contenu      String
+  dateCreation DateTime @default(now())
+
+  @@index([userId])
+  @@index([reportId])
 }

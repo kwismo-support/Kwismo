@@ -1,10 +1,10 @@
-"""Routes /surveys/*. Cf. cahier des charges Backend §5.10."""
+"""Routes /surveys/*. / Survey routes."""
 
 from fastapi import APIRouter, Depends, status
 
-from app.core.exceptions import not_implemented
 from app.core.permissions import require_roles
 from app.core.schemas import AUTH_RESPONSES, NOT_FOUND_RESPONSE
+from app.modules.surveys import service
 from app.modules.surveys.schemas import SurveyAnswerIn, SurveyOut, SurveyResponseOut
 
 router = APIRouter(prefix="/surveys", tags=["Surveys"])
@@ -14,11 +14,11 @@ router = APIRouter(prefix="/surveys", tags=["Surveys"])
     "/active",
     response_model=list[SurveyOut],
     responses=AUTH_RESPONSES,
-    summary="Get the active survey(s) / Récupérer l'enquête active",
-    description="**FR** — Enquête(s) actuellement actives à proposer à l'utilisateur.\n\n**EN** — Currently active survey(s) to show the user.",
+    summary="Get active surveys / Enquêtes actives",
+    description="**FR** — Enquêtes actives non encore répondues par l'utilisateur.\n\n**EN** — Active surveys not yet answered by the user.",
 )
 async def get_active_surveys(user=Depends(require_roles("user"))) -> list[SurveyOut]:
-    raise not_implemented()
+    return await service.get_active_surveys(user.id)
 
 
 @router.post(
@@ -32,4 +32,4 @@ async def get_active_surveys(user=Depends(require_roles("user"))) -> list[Survey
 async def answer_survey(
     survey_id: str, payload: SurveyAnswerIn, user=Depends(require_roles("user"))
 ) -> SurveyResponseOut:
-    raise not_implemented()
+    return await service.answer_survey(user.id, survey_id, payload, user.langue)

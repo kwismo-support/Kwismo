@@ -2,17 +2,10 @@
 
 Table Prisma : Contact. / Prisma table: Contact.
 
-FR — Module ajoute au-dela de la liste normative du cahier §5 : la table
-`Contact` (§4) et la fonctionnalite "liste de contacts a insignes" (cahier
-IA §4, alimentee par le Modele A) n'ont pas de section de routes dediee dans
-le cahier Backend, alors que `POST /whatsapp-alerts/broadcast` a besoin de
-contacts selectionnables. Ce module comble ce trou pour que la table Contact
-soit atteignable via l'API.
-EN — Module added beyond the cahier's normative §5 list: the `Contact` table
-(§4) and the "badge contact list" feature (AI spec §4, fed by Model A) have
-no dedicated route section in the Backend spec, while
-`POST /whatsapp-alerts/broadcast` needs selectable contacts. This module
-closes that gap so the Contact table is reachable via the API.
+FR — Le statut vient du Modele A cote IA (insigne : securise / suspect /
+frauduleux / inconnu).
+EN — The status comes from the AI's Model A (badge: secure / suspicious /
+fraudulent / unknown).
 """
 
 from datetime import datetime

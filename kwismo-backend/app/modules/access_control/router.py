@@ -1,10 +1,10 @@
-"""Routes /roles, /access-rights. Cf. cahier des charges Backend §5.10."""
+"""Routes /roles, /access-rights. / Roles and access rights routes."""
 
 from fastapi import APIRouter, Depends, status
 
-from app.core.exceptions import not_implemented
 from app.core.permissions import require_roles
-from app.core.schemas import AUTH_RESPONSES
+from app.core.schemas import AUTH_RESPONSES, Message, NOT_FOUND_RESPONSE
+from app.modules.access_control import service
 from app.modules.access_control.schemas import AccessRightIn, AccessRightOut, RoleIn, RoleOut
 
 router = APIRouter(tags=["Access Control"])
@@ -18,7 +18,7 @@ router = APIRouter(tags=["Access Control"])
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def list_roles(user=Depends(require_roles("admin"))) -> list[RoleOut]:
-    raise not_implemented()
+    return await service.list_roles()
 
 
 @router.post(
@@ -30,7 +30,18 @@ async def list_roles(user=Depends(require_roles("admin"))) -> list[RoleOut]:
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def create_role(payload: RoleIn, user=Depends(require_roles("admin"))) -> RoleOut:
-    raise not_implemented()
+    return await service.create_role(payload, user.langue)
+
+
+@router.delete(
+    "/roles/{role_id}",
+    response_model=Message,
+    responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
+    summary="Delete a role / Supprimer un rôle",
+    description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
+)
+async def delete_role(role_id: str, user=Depends(require_roles("admin"))) -> Message:
+    return await service.delete_role(role_id, user.langue)
 
 
 @router.get(
@@ -41,7 +52,7 @@ async def create_role(payload: RoleIn, user=Depends(require_roles("admin"))) -> 
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def list_access_rights(user=Depends(require_roles("admin"))) -> list[AccessRightOut]:
-    raise not_implemented()
+    return await service.list_access_rights()
 
 
 @router.post(
@@ -55,4 +66,15 @@ async def list_access_rights(user=Depends(require_roles("admin"))) -> list[Acces
 async def create_access_right(
     payload: AccessRightIn, user=Depends(require_roles("admin"))
 ) -> AccessRightOut:
-    raise not_implemented()
+    return await service.create_access_right(payload, user.langue)
+
+
+@router.delete(
+    "/access-rights/{right_id}",
+    response_model=Message,
+    responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
+    summary="Delete an access right / Supprimer un droit d'accès",
+    description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
+)
+async def delete_access_right(right_id: str, user=Depends(require_roles("admin"))) -> Message:
+    return await service.delete_access_right(right_id, user.langue)

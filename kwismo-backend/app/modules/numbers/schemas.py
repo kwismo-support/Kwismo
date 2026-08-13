@@ -33,7 +33,7 @@ class NumberOut(BaseModel):
 
 
 class NumberDetailOut(NumberOut):
-    """Detail + historique (§5.4). / Detail + history (§5.4)."""
+    """Detail + historique de verification. / Detail + verification history."""
 
     created_at: datetime
     updated_at: datetime

@@ -1,20 +1,18 @@
 """Contrat d'API partage avec kwismo-ai. / Shared API contract with kwismo-ai.
 
-FR — Ces schemas DOIVENT rester identiques a kwismo-ai/src/api/schemas.py
-(cahier Backend §9.3 / cahier IA §9.3) : aucun des deux services ne doit
-"deviner" le format de l'autre. Ils ne sont pas exposes tels quels au
-client final ; ils typent les appels internes vers AI_SERVICE_URL.
-EN — These schemas MUST stay identical to kwismo-ai/src/api/schemas.py
-(Backend spec §9.3 / AI spec §9.3): neither service should ever "guess" the
-other's format. They are not exposed as-is to the end client; they type the
-internal calls to AI_SERVICE_URL.
+FR — Doit rester identique a kwismo-ai/src/api/schemas.py : ni le backend
+ni le service IA ne doivent deviner le format de l'autre. Typent les appels
+internes vers AI_SERVICE_URL (pas exposes tels quels au client final).
+EN — Must stay identical to kwismo-ai/src/api/schemas.py: neither the
+backend nor the AI service should ever guess the other's format. Types the
+internal calls to AI_SERVICE_URL (not exposed as-is to the end client).
 """
 
 from pydantic import BaseModel, Field
 
 
 class NumberFeaturesIn(BaseModel):
-    """Caracteristiques envoyees a POST /predict/number (Modele A, cahier IA §4.1)."""
+    """Caracteristiques envoyees a POST /predict/number (Modele A). / Features sent to POST /predict/number (Model A)."""
 
     numero: str
     nombre_signalements: int = Field(0, ge=0)
@@ -36,7 +34,7 @@ class PredictNumberOut(BaseModel):
 
 
 class TextIn(BaseModel):
-    """Message envoyé à POST /predict/text (Modèle B, cahier IA §6)."""
+    """Message envoyé à POST /predict/text (Modèle B). / Message sent to POST /predict/text (Model B)."""
 
     texte: str = Field(..., examples=["Felicitation ! Vous avez gagné 500000F, envoyez le code OTP pour recevoir."])
     langue: str | None = Field(None, examples=["fr"], description="Indice de langue, détection automatique sinon.")
@@ -49,7 +47,7 @@ class PredictTextOut(BaseModel):
 
 
 class FeedbackIn(BaseModel):
-    """Nouvelle donnée étiquetée transmise pour l'apprentissage continu (§9.2)."""
+    """Nouvelle donnée étiquetée transmise pour l'apprentissage continu. / New labeled data sent for continuous learning."""
 
     type: str = Field(..., examples=["number"], description="'number' ou 'text'.")
     numero: str | None = None

@@ -1,35 +1,13 @@
 """Limitation de debit — anti brute-force, anti DoS. / Rate limiting — anti brute-force, anti DoS.
 
-FR — Cf. cahier des charges Backend §8.1 ("Anti-force brute : limitation des
-tentatives de connexion, de vérification d'OTP et d'ajout de numéros") et
-§8.5 ("Limitation de débit : plafonnement des requêtes par IP/utilisateur").
-
-Deux niveaux :
-- `limiter` avec une limite par defaut appliquee a TOUTES les routes (protege
-  contre la surcharge / les requetes en masse) ;
-- `AUTH_RATE_LIMIT` / `OTP_RATE_LIMIT`, des limites plus strictes a apposer
-  explicitement sur les routes sensibles (login, OTP, mot de passe, ajout de
-  numero) via le decorateur `@limiter.limit(...)`.
-
-Stockage : "memory://" par defaut (aucune dependance externe, ne peut jamais
-empecher le demarrage si Redis est indisponible). Passer RATE_LIMIT_STORAGE_URI
-a l'URL Redis en production multi-workers pour partager les compteurs entre
-processus Gunicorn.
-
-EN — See Backend spec §8.1 ("Anti brute-force: rate limiting login attempts,
-OTP verification and number additions") and §8.5 ("Rate limiting: capping
-requests per IP/user").
-
-Two tiers:
-- `limiter` with a default limit applied to EVERY route (guards against
-  overload / mass requests);
-- `AUTH_RATE_LIMIT` / `OTP_RATE_LIMIT`, stricter limits to apply explicitly on
-  sensitive routes (login, OTP, password, adding a number) via the
-  `@limiter.limit(...)` decorator.
-
-Storage: "memory://" by default (no external dependency, can never block
-startup if Redis is down). Set RATE_LIMIT_STORAGE_URI to the Redis URL in a
-multi-worker production deployment to share counters across Gunicorn workers.
+FR — Une limite par defaut sur toutes les routes, plus deux limites plus
+strictes (`AUTH_RATE_LIMIT`, `OTP_RATE_LIMIT`) a poser sur les routes
+sensibles via `@limiter.limit(...)`. Stockage "memory://" par defaut (aucune
+dependance externe) ; passer a Redis en production multi-workers.
+EN — A default limit on every route, plus two stricter limits
+(`AUTH_RATE_LIMIT`, `OTP_RATE_LIMIT`) to apply on sensitive routes via
+`@limiter.limit(...)`. Defaults to "memory://" storage (no external
+dependency); switch to Redis in a multi-worker production setup.
 """
 
 from slowapi import Limiter

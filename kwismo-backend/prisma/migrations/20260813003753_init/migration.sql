@@ -7,10 +7,13 @@ CREATE TABLE "User" (
     "motDePasse" TEXT NOT NULL,
     "emailVerifie" BOOLEAN NOT NULL DEFAULT false,
     "statut" TEXT NOT NULL DEFAULT 'active',
+    "langue" TEXT NOT NULL DEFAULT 'fr',
     "dateInscription" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     "roleId" TEXT NOT NULL,
-    CONSTRAINT "User_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "partnerId" TEXT,
+    CONSTRAINT "User_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "User_partnerId_fkey" FOREIGN KEY ("partnerId") REFERENCES "Partner" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -268,11 +271,36 @@ CREATE TABLE "AuditLog" (
     CONSTRAINT "AuditLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
+-- CreateTable
+CREATE TABLE "Notification" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "texte" TEXT NOT NULL,
+    "lu" BOOLEAN NOT NULL DEFAULT false,
+    "date" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "Notification_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Feedback" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "reportId" TEXT,
+    "userId" TEXT NOT NULL,
+    "typeRetour" TEXT NOT NULL,
+    "contenu" TEXT NOT NULL,
+    "dateCreation" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "Feedback_reportId_fkey" FOREIGN KEY ("reportId") REFERENCES "Report" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Feedback_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE INDEX "User_roleId_idx" ON "User"("roleId");
+
+-- CreateIndex
+CREATE INDEX "User_partnerId_idx" ON "User"("partnerId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Role_nomRole_key" ON "Role"("nomRole");
@@ -341,6 +369,9 @@ CREATE UNIQUE INDEX "Country_codePays_key" ON "Country"("codePays");
 CREATE INDEX "Operator_countryId_idx" ON "Operator"("countryId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Operator_nom_countryId_key" ON "Operator"("nom", "countryId");
+
+-- CreateIndex
 CREATE INDEX "OperatorPrefix_operatorId_idx" ON "OperatorPrefix"("operatorId");
 
 -- CreateIndex
@@ -348,6 +379,9 @@ CREATE UNIQUE INDEX "OperatorPrefix_operatorId_prefixe_key" ON "OperatorPrefix"(
 
 -- CreateIndex
 CREATE INDEX "UssdAction_operatorId_idx" ON "UssdAction"("operatorId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UssdAction_operatorId_nomAction_key" ON "UssdAction"("operatorId", "nomAction");
 
 -- CreateIndex
 CREATE INDEX "AffiliationRule_partnerId_idx" ON "AffiliationRule"("partnerId");
@@ -393,3 +427,12 @@ CREATE INDEX "Kpi_partnerId_idx" ON "Kpi"("partnerId");
 
 -- CreateIndex
 CREATE INDEX "AuditLog_userId_idx" ON "AuditLog"("userId");
+
+-- CreateIndex
+CREATE INDEX "Notification_userId_idx" ON "Notification"("userId");
+
+-- CreateIndex
+CREATE INDEX "Feedback_userId_idx" ON "Feedback"("userId");
+
+-- CreateIndex
+CREATE INDEX "Feedback_reportId_idx" ON "Feedback"("reportId");

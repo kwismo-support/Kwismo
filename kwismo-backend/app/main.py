@@ -1,28 +1,16 @@
 """Point d'entree FastAPI. / FastAPI entry point.
 
-FR — Toutes les routes du cahier des charges Backend §5 sont enregistrees
-ici, avec schemas et documentation bilingue FR/EN, pour que Swagger (/docs)
-serve de reference complete pendant le developpement (rien d'oublie).
-La logique metier n'est pas encore branchee : chaque route repond 501 tant
-qu'elle n'est pas implementee (voir app/core/exceptions.not_implemented).
-
-Securite (cf. cahier §8) : limitation de debit (brute-force + surcharge),
-gestionnaires d'exceptions globaux, en-tetes de securite, taille de requete
-plafonnee, hotes/origines restreints. Voir app/core/{rate_limit,exceptions,
-middleware}.py pour le detail de chaque garde-fou.
-
-EN — Every route from the Backend spec §5 is registered here, with schemas
-and bilingual FR/EN docs, so Swagger (/docs) is a complete reference while
-developing (nothing forgotten). Business logic isn't wired yet: each route
-returns 501 until implemented (see app/core/exceptions.not_implemented).
-
-Security (see spec §8): rate limiting (brute-force + overload), global
-exception handlers, security headers, capped request size, restricted
-hosts/origins. See app/core/{rate_limit,exceptions,middleware}.py for each
-guardrail's detail.
+FR — Assemble toutes les routes, la securite (limitation de debit,
+gestionnaires d'erreurs, en-tetes HTTP) et la connexion a la base. Les
+routes repondent 501 tant que leur logique n'est pas ecrite (voir
+app/core/exceptions.not_implemented).
+EN — Wires up all routes, security (rate limiting, error handlers, HTTP
+headers) and the database connection. Routes return 501 until their logic
+is written (see app/core/exceptions.not_implemented).
 """
 
 from contextlib import asynccontextmanager
+import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -31,8 +19,10 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
+from app.core.audit_log import AuditLogMiddleware
 from app.core.config import get_settings
 from app.core.exceptions import register_exception_handlers
+from app.core.logging import configure_logging
 from app.core.middleware import MaxBodySizeMiddleware, SecurityHeadersMiddleware
 from app.core.rate_limit import limiter, rate_limit_exceeded_handler
 from app.core.schemas import HealthOut
@@ -40,6 +30,7 @@ from app.db.prisma_client import connect_db, disconnect_db
 from app.modules.access_control.router import router as access_control_router
 from app.modules.auth.router import router as auth_router
 from app.modules.contacts.router import router as contacts_router
+from app.modules.devices.router import router as devices_router
 from app.modules.kpi.router import router as kpi_router
 from app.modules.notifications.router import router as notifications_router
 from app.modules.numbers.router import router as numbers_router
@@ -57,17 +48,16 @@ DESCRIPTION = """
 comptes et de leurs numéros, vérification de réputation (via le service IA),
 signalements, transferts protégés par code USSD, partenaires, alertes
 WhatsApp, enquêtes, KPI et administration des rôles. Le backend est la seule
-porte d'accès à la base de données (voir cahier des charges Backend, §1 et
-§8). La plupart des routes ci-dessous répondent **501** tant que leur
-logique métier n'est pas encore écrite — c'est un squelette d'API délibéré,
-pas un bug.
+porte d'accès à la base de données. La plupart des routes ci-dessous
+répondent **501** tant que leur logique métier n'est pas encore écrite —
+c'est un squelette d'API délibéré, pas un bug.
 
 **EN** — KWISMO's hybrid central API: authentication, accounts and their
 phone numbers, reputation checks (via the AI service), reports, USSD-code
 protected transfers, partners, WhatsApp alerts, surveys, KPIs and role
-administration. The backend is the only door to the database (see Backend
-spec §1 and §8). Most routes below return **501** until their business
-logic is written — this is a deliberate API skeleton, not a bug.
+administration. The backend is the only door to the database. Most routes
+below return **501** until their business logic is written — this is a
+deliberate API skeleton, not a bug.
 """
 
 TAGS_METADATA = [
@@ -85,14 +75,38 @@ TAGS_METADATA = [
     {"name": "KPI", "description": "FR — Indicateurs globaux et par partenaire. / EN — Global and per-partner indicators."},
     {"name": "Access Control", "description": "FR — Rôles et droits d'accès (RBAC). / EN — Roles and access rights (RBAC)."},
     {"name": "Notifications", "description": "FR — Notifications utilisateur FR/EN. / EN — User notifications, FR/EN."},
+    {"name": "Devices", "description": "FR — Appareils connectés. / EN — Connected devices."},
     {"name": "System", "description": "FR — Supervision (santé). / EN — Supervision (health)."},
 ]
 
 settings = get_settings()
+configure_logging()
+
+_logger = logging.getLogger("kwismo.backend")
+
+
+def _check_startup_config() -> None:
+    """Valide la configuration au demarrage — bloque si secrets par defaut hors dev."""
+    settings.validate_secrets()
+
+    memory_rl = settings.rate_limit_storage_uri == "memory://"
+    hosts_open = settings.allowed_hosts == "*"
+    if memory_rl and not hosts_open:
+        _logger.warning(
+            "SECURITE — RATE_LIMIT_STORAGE_URI='memory://' avec des hotes restreints : "
+            "en multi-workers les limites de debit ne sont pas partagees. "
+            "Passez RATE_LIMIT_STORAGE_URI a l'URL Redis pour la production."
+        )
+    if hosts_open and settings.cors_origins != "http://localhost:5173":
+        _logger.warning(
+            "SECURITE — ALLOWED_HOSTS='*' avec des origines CORS non locales : "
+            "restreignez ALLOWED_HOSTS en production."
+        )
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    _check_startup_config()
     await connect_db()
     yield
     await disconnect_db()
@@ -108,7 +122,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# --- Securite (cf. cahier §8) --------------------------------------------
+# --- Securite ---------------------------------------------------------
 # Ordre : le dernier middleware ajoute est le plus "exterieur" (execute en
 # premier sur la requete). On rejette d'abord les hotes/tailles suspects,
 # puis CORS, puis on habille la reponse (en-tetes, compression).
@@ -118,6 +132,7 @@ register_exception_handlers(app)
 
 app.add_middleware(GZipMiddleware, minimum_size=1024)
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(AuditLogMiddleware)
 app.add_middleware(SlowAPIMiddleware)
 app.add_middleware(
     CORSMiddleware,
@@ -144,6 +159,7 @@ for router in (
     kpi_router,
     access_control_router,
     notifications_router,
+    devices_router,
 ):
     app.include_router(router)
 

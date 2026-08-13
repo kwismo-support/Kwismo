@@ -1,18 +1,17 @@
-"""Routes /partners/*, /partner/scope/*. Cf. cahier des charges Backend §5.8.
+"""Routes /partners/*, /partner/scope/*. / Partner routes.
 
-FR — Le cloisonnement des donnees partenaire (§5.8) est applique COTE
-SERVEUR : un partner ne voit que son perimetre (regles d'affiliation) ; un
-admin peut tout consulter en mode supervision.
-EN — Partner data scoping (§5.8) is enforced SERVER-SIDE: a partner only
-sees their own scope (affiliation rules); an admin can view everything in
-supervision mode.
+FR — Le cloisonnement des donnees partenaire est applique cote serveur : un
+partner ne voit que son perimetre (regles d'affiliation) ; un admin peut
+tout consulter en mode supervision.
+EN — Partner data scoping is enforced server-side: a partner only sees
+their own scope (affiliation rules); an admin can view everything.
 """
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-from app.core.exceptions import not_implemented
 from app.core.permissions import require_roles
 from app.core.schemas import AUTH_RESPONSES, NOT_FOUND_RESPONSE, Page
+from app.modules.partners import service
 from app.modules.partners.schemas import (
     AffiliationRuleCreateIn,
     AffiliationRuleOut,
@@ -35,7 +34,7 @@ router = APIRouter(tags=["Partners"])
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def list_partners(user=Depends(require_roles("admin"))) -> Page[PartnerOut]:
-    raise not_implemented()
+    return await service.list_partners()
 
 
 @router.post(
@@ -47,7 +46,7 @@ async def list_partners(user=Depends(require_roles("admin"))) -> Page[PartnerOut
     description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
 )
 async def create_partner(payload: PartnerCreateIn, user=Depends(require_roles("admin"))) -> PartnerOut:
-    raise not_implemented()
+    return await service.create_partner(payload)
 
 
 @router.get(
@@ -58,7 +57,7 @@ async def create_partner(payload: PartnerCreateIn, user=Depends(require_roles("a
     description="**FR** — Fiche partenaire + KPI.\n\n**EN** — Partner sheet + KPIs.",
 )
 async def get_partner(partner_id: str, user=Depends(require_roles("admin"))) -> PartnerDetailOut:
-    raise not_implemented()
+    return await service.get_partner(partner_id, user.langue)
 
 
 @router.get(
@@ -71,7 +70,7 @@ async def get_partner(partner_id: str, user=Depends(require_roles("admin"))) -> 
 async def list_affiliation_rules(
     partner_id: str, user=Depends(require_roles("admin"))
 ) -> list[AffiliationRuleOut]:
-    raise not_implemented()
+    return await service.list_affiliation_rules(partner_id, user.langue)
 
 
 @router.post(
@@ -88,7 +87,7 @@ async def list_affiliation_rules(
 async def add_affiliation_rule(
     partner_id: str, payload: AffiliationRuleCreateIn, user=Depends(require_roles("admin"))
 ) -> AffiliationRuleOut:
-    raise not_implemented()
+    return await service.add_affiliation_rule(partner_id, payload, user.langue)
 
 
 @router.get(
@@ -97,13 +96,21 @@ async def add_affiliation_rule(
     responses=AUTH_RESPONSES,
     summary="My scope's numbers / Numéros de mon périmètre",
     description=(
-        "**FR** — Numéros correspondant aux règles d'affiliation du partenaire "
-        "connecté.\n\n"
+        "**FR** — Numéros correspondant aux règles d'affiliation du partenaire connecté.\n\n"
         "**EN** — Numbers matching the connected partner's affiliation rules."
     ),
 )
-async def get_partner_scope_numbers(user=Depends(require_roles("partner"))) -> Page[PartnerScopeNumberOut]:
-    raise not_implemented()
+async def get_partner_scope_numbers(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    user=Depends(require_roles("partner")),
+) -> Page[PartnerScopeNumberOut]:
+    if user.partner_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Compte non associé à un partenaire / Account not linked to a partner.",
+        )
+    return await service.get_partner_scope_numbers(user.partner_id, page, page_size)
 
 
 @router.get(
@@ -113,8 +120,17 @@ async def get_partner_scope_numbers(user=Depends(require_roles("partner"))) -> P
     summary="My scope's users / Utilisateurs de mon périmètre",
     description="**FR** — Utilisateurs découlant du périmètre.\n\n**EN** — Users derived from the scope.",
 )
-async def get_partner_scope_users(user=Depends(require_roles("partner"))) -> Page[PartnerScopeUserOut]:
-    raise not_implemented()
+async def get_partner_scope_users(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    user=Depends(require_roles("partner")),
+) -> Page[PartnerScopeUserOut]:
+    if user.partner_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Compte non associé à un partenaire / Account not linked to a partner.",
+        )
+    return await service.get_partner_scope_users(user.partner_id, page, page_size)
 
 
 @router.get(
@@ -125,4 +141,9 @@ async def get_partner_scope_users(user=Depends(require_roles("partner"))) -> Pag
     description="**FR** — KPI limités au périmètre.\n\n**EN** — KPIs limited to the scope.",
 )
 async def get_partner_scope_kpi(user=Depends(require_roles("partner"))) -> list[PartnerScopeKpiOut]:
-    raise not_implemented()
+    if user.partner_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Compte non associé à un partenaire / Account not linked to a partner.",
+        )
+    return await service.get_partner_scope_kpi(user.partner_id)

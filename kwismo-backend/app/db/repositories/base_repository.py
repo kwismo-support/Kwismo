@@ -1,28 +1,14 @@
 """CRUD generique reutilisable, portable sur toute base geree par Prisma. / Reusable generic CRUD, portable across any Prisma-managed database.
 
-FR — Enveloppe fine autour d'un delegate de modele Prisma (ex. `db.user`,
-`db.numero`...). N'utilise QUE l'API Prisma Client Python
-(`find_many`/`find_unique`/`count`/`create`/`update`/`delete`) : c'est cette
-regle qui garantit la portabilite SQLite/PostgreSQL/MySQL (cf. cahier §3.1
-"Portabilite BD"). AUCUNE requete SQL brute (`query_raw`/`execute_raw`) ne
-doit etre ajoutee ici ni ailleurs dans le projet — ce serait specifique au
-moteur de la base active et casserait la bascule DB_TYPE.
-
-Les repositories renvoient des instances de modele Prisma (pas encore les
-schemas Pydantic `*Out` des modules) : la conversion vers le contrat public
-de l'API se fait dans la couche `service.py` de chaque module.
-
-EN — Thin wrapper around a Prisma model delegate (e.g. `db.user`,
-`db.numero`...). Uses ONLY the Prisma Client Python API
-(`find_many`/`find_unique`/`count`/`create`/`update`/`delete`): this rule is
-what guarantees SQLite/PostgreSQL/MySQL portability (see spec §3.1 "DB
-portability"). NO raw SQL query (`query_raw`/`execute_raw`) should ever be
-added here or anywhere else in the project — it would be specific to the
-active database engine and break the DB_TYPE switch.
-
-Repositories return Prisma model instances (not yet the modules' public
-`*Out` Pydantic schemas): converting to the API's public contract happens in
-each module's `service.py` layer.
+FR — Fine enveloppe autour d'un delegate de modele Prisma (ex. `db.user`).
+N'utilise que l'API Prisma (find_many/find_unique/count/create/update/delete)
+: jamais de SQL brut, pour rester portable entre bases. Renvoie des
+instances Prisma brutes ; la conversion vers les schemas `*Out` se fait dans
+`service.py`.
+EN — Thin wrapper around a Prisma model delegate (e.g. `db.user`). Uses only
+the Prisma API (find_many/find_unique/count/create/update/delete): never
+raw SQL, to stay portable across databases. Returns raw Prisma instances;
+converting to `*Out` schemas happens in `service.py`.
 """
 
 from typing import Any, Generic, TypeVar
