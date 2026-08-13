@@ -38,9 +38,22 @@ async def create_role(payload: RoleIn, lang: str = "fr") -> RoleOut:
 
 async def delete_role(role_id: str, lang: str = "fr"):
     from app.core.schemas import Message
+
     role = await db.role.find_unique(where={"id": role_id})
     if role is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("role_not_found", lang))
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=t("role_not_found", lang),
+        )
+
+    # Vérifier qu'aucun utilisateur n'est encore attaché à ce rôle.
+    users_count = await db.user.count(where={"roleId": role_id})
+    if users_count > 0:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=t("role_has_users", lang),
+        )
+
     await db.role.delete(where={"id": role_id})
     return Message(
         message_fr=t("role_deleted", "fr"),
@@ -97,9 +110,13 @@ async def create_access_right(payload: AccessRightIn, lang: str = "fr") -> Acces
 
 async def delete_access_right(right_id: str, lang: str = "fr"):
     from app.core.schemas import Message
+
     right = await db.accessright.find_unique(where={"id": right_id})
     if right is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("access_right_not_found", lang))
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=t("access_right_not_found", lang),
+        )
     await db.accessright.delete(where={"id": right_id})
     return Message(
         message_fr=t("access_right_deleted", "fr"),

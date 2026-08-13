@@ -41,6 +41,7 @@ settings = get_settings()
 # Helpers
 # ---------------------------------------------------------------------------
 
+<<<<<<< HEAD
 def _generate_otp() -> str:
     return str(secrets.randbelow(1000000)).zfill(6)
 
@@ -57,6 +58,12 @@ async def _get_or_create_role(nom: str):
 
 
 def _build_token_out(user, role_name: str) -> TokenOut:
+=======
+def _token_out(user) -> TokenOut:
+    partner_id = getattr(user, "partnerId", None)
+    access = create_access_token(user.id, user.role.nomRole, partner_id=partner_id)
+    refresh = create_refresh_token(user.id, user.role.nomRole, partner_id=partner_id)
+>>>>>>> 5058dd10544d6cac9787dcacc1f7f8f887c37419
     return TokenOut(
         access_token=create_access_token(user.id, role_name),
         refresh_token=create_refresh_token(user.id, role_name),

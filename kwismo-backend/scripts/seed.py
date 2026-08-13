@@ -1,4 +1,4 @@
-"""Peuple la base : roles, pays, operateurs, actions USSD. / Seeds the database: roles, countries, operators, USSD actions.
+"""Peuple la base : roles, pays, operateurs, actions USSD.
 
 Usage: python scripts/seed.py
 """
@@ -33,7 +33,7 @@ async def seed_countries() -> dict[str, str]:
                     "codePays": c["code_pays"],
                     "estParDefaut": c["est_par_defaut"],
                 },
-                "update": {},
+                "update": {"nom": c["nom"], "estParDefaut": c["est_par_defaut"]},
             },
         )
         ids[c["code_pays"]] = country.id
@@ -45,9 +45,21 @@ async def seed_operators(country_ids: dict[str, str]) -> dict[str, str]:
     ids: dict[str, str] = {}
     for o in operators:
         country_id = country_ids[o["country_code_pays"]]
-        operator = await db.operator.create(data={"nom": o["nom"], "countryId": country_id})
+        operator = await db.operator.upsert(
+            where={"nom_countryId": {"nom": o["nom"], "countryId": country_id}},
+            data={
+                "create": {"nom": o["nom"], "countryId": country_id},
+                "update": {},
+            },
+        )
         for prefixe in o["prefixes"]:
-            await db.operatorprefix.create(data={"operatorId": operator.id, "prefixe": prefixe})
+            await db.operatorprefix.upsert(
+                where={"operatorId_prefixe": {"operatorId": operator.id, "prefixe": prefixe}},
+                data={
+                    "create": {"operatorId": operator.id, "prefixe": prefixe},
+                    "update": {},
+                },
+            )
         ids[o["nom"]] = operator.id
     return ids
 
@@ -55,13 +67,18 @@ async def seed_operators(country_ids: dict[str, str]) -> dict[str, str]:
 async def seed_ussd_actions(operator_ids: dict[str, str]) -> None:
     actions = json.loads((SEED_DIR / "ussd_actions.json").read_text(encoding="utf-8"))
     for a in actions:
-        await db.ussdaction.create(
+        operator_id = operator_ids[a["operator_nom"]]
+        await db.ussdaction.upsert(
+            where={"operatorId_nomAction": {"operatorId": operator_id, "nomAction": a["nom_action"]}},
             data={
-                "operatorId": operator_ids[a["operator_nom"]],
-                "nomAction": a["nom_action"],
-                "codeUSSD": a["code_ussd"],
-                "format": a["format"],
-            }
+                "create": {
+                    "operatorId": operator_id,
+                    "nomAction": a["nom_action"],
+                    "codeUSSD": a["code_ussd"],
+                    "format": a["format"],
+                },
+                "update": {"codeUSSD": a["code_ussd"], "format": a["format"]},
+            },
         )
 
 

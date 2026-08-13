@@ -11,29 +11,50 @@ from app.db.prisma_client import db
 
 logger = logging.getLogger("kwismo.backend")
 
-SENSITIVE_ACTIONS = {
-    "POST /api/v1/auth/register",
-    "POST /api/v1/auth/login",
-    "POST /api/v1/auth/logout",
-    "POST /api/v1/auth/refresh",
-    "POST /api/v1/auth/forgot-password",
-    "POST /api/v1/auth/reset-password",
-    "PATCH /api/v1/users/me/status",
-    "DELETE /api/v1/user-phones",
-    "POST /api/v1/user-phones/compromise",
-    "POST /api/v1/reports",
-    "POST /api/v1/reports/validate",
-    "POST /api/v1/transactions",
-    "PATCH /api/v1/whatsapp-alert/incidents",
-    "POST /api/v1/whatsapp-alert/broadcast",
-    "DELETE /api/v1/access-control/roles",
-    "DELETE /api/v1/access-control/access-rights",
+SENSITIVE_PATHS = {
+    ("POST", "/auth/register"),
+    ("POST", "/auth/login"),
+    ("POST", "/auth/logout"),
+    ("POST", "/auth/refresh"),
+    ("POST", "/auth/password/forgot"),
+    ("POST", "/auth/password/reset"),
+    ("PATCH", "/users/me"),
+    ("DELETE", "/users/me/phones"),
+    ("POST", "/users/me/phones"),
+    ("PATCH", "/users/me/phones"),
+    ("POST", "/reports"),
+    ("PATCH", "/reports"),
+    ("POST", "/transactions/prepare"),
+    ("PATCH", "/whatsapp-alerts/incident"),
+    ("POST", "/whatsapp-alerts/broadcast"),
+    ("DELETE", "/roles"),
+    ("DELETE", "/access-rights"),
+    ("DELETE", "/devices"),
 }
 
 
 def _should_audit(method: str, path: str) -> bool:
-    route = f"{method} {path}"
-    return route in SENSITIVE_ACTIONS
+    """Verifie si la route est sensible par prefixe de chemin."""
+    for m, p in SENSITIVE_PATHS:
+        if method == m and path.startswith(p):
+            return True
+    return False
+
+
+def _extract_user_id_from_bearer(request: Request) -> str | None:
+    """Extrait user_id depuis le JWT Bearer sans lever d'exception."""
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        return None
+    token = auth_header.removeprefix("Bearer ").strip()
+    if not token:
+        return None
+    try:
+        from app.core.security import decode_token
+        payload = decode_token(token, expected_type="access")
+        return payload.get("sub")
+    except Exception:
+        return None
 
 
 async def log_audit(
@@ -52,8 +73,8 @@ async def log_audit(
                 "date": datetime.utcnow(),
             }
         )
-    except Exception as e:
-        logger.warning(f"Audit log failed: {e}", exc_info=True)
+    except Exception as exc:
+        logger.warning("Audit log failed: %s", exc, exc_info=True)
 
 
 class AuditLogMiddleware(BaseHTTPMiddleware):
@@ -64,13 +85,13 @@ class AuditLogMiddleware(BaseHTTPMiddleware):
         if not _should_audit(method, path):
             return await call_next(request)
 
-        user_id = getattr(request.state, "user_id", None)
+        user_id = _extract_user_id_from_bearer(request)
         ip = request.client.host if request.client else None
         action = f"{method} {path}"
 
         response: Response = await call_next(request)
 
         if 200 <= response.status_code < 300:
-            await log_audit(user_id, action, cible=None, ip=ip)
+            await log_audit(user_id, action, ip=ip)
 
         return response

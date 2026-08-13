@@ -258,6 +258,10 @@ MESSAGES: dict[str, dict[str, str]] = {
         "en": "Device removed from your account.",
     },
     # --- Access control ---
+    "role_has_users": {
+        "fr": "Impossible de supprimer ce rôle : des utilisateurs y sont encore rattachés.",
+        "en": "Cannot delete this role: some users are still attached to it.",
+    },
     "role_not_found": {
         "fr": "Rôle introuvable.",
         "en": "Role not found.",
@@ -281,6 +285,18 @@ MESSAGES: dict[str, dict[str, str]] = {
     "access_right_deleted": {
         "fr": "Droit d'accès supprimé.",
         "en": "Access right deleted.",
+    },
+    "survey_not_found": {
+        "fr": "Enquête introuvable ou inactive.",
+        "en": "Survey not found or inactive.",
+    },
+    "survey_already_answered": {
+        "fr": "Vous avez déjà répondu à cette enquête.",
+        "en": "You have already answered this survey.",
+    },
+    "role_has_users": {
+        "fr": "Impossible de supprimer ce rôle : des utilisateurs y sont encore rattachés.",
+        "en": "Cannot delete this role: some users are still attached to it.",
     },
 }
 

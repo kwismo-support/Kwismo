@@ -29,4 +29,10 @@ async def get_global_kpi(user=Depends(require_roles("admin"))) -> list[KpiOut]:
     description="**FR** — KPI du partenaire connecté (historique stocké).\n\n**EN** — Connected partner's KPIs (stored history).",
 )
 async def get_partner_kpi(user=Depends(require_roles("partner"))) -> list[KpiOut]:
-    return await service.get_partner_kpi(user.id)
+    if user.partner_id is None:
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Compte non associé à un partenaire / Account not linked to a partner.",
+        )
+    return await service.get_partner_kpi(user.partner_id)
