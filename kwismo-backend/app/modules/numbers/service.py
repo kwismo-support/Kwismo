@@ -77,6 +77,12 @@ async def _score_and_upsert(valeur: str, country_id: str | None = None) -> Numbe
                 resolved_country_id = c["id"]
                 break
 
+        # Fallback to the default country (estParDefaut = True, e.g. Cameroon).
+        if resolved_country_id is None:
+            default_country = await db.country.find_first(where={"estParDefaut": True})
+            if default_country is not None:
+                resolved_country_id = default_country.id
+
     if resolved_country_id:
         async def _fetch_operators():
             operators = await db.operator.find_many(

@@ -16,6 +16,8 @@ class WhatsAppIncidentIn(BaseModel):
 class WhatsAppIncidentOut(BaseModel):
     id: str
     compromise_incident_id: str
+    user_phone_id: str
+    numero: str = Field(..., description="Numéro compromis / Compromised number.")
     statut: str = Field(..., examples=["open"])
 
 

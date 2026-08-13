@@ -5,6 +5,7 @@ import logging
 from fastapi import HTTPException, status
 
 from app.core.config import get_settings
+from app.core.schemas import Message
 from app.db.prisma_client import db
 from app.modules.user_phones.schemas import (
     CompromiseIncidentOut,
@@ -14,8 +15,9 @@ from app.modules.user_phones.schemas import (
 )
 from app.utils.dates import is_expired, minutes_from_now, utcnow
 from app.utils.i18n import t
-from app.utils.otp import generate_otp, send_sms_otp
+from app.utils.otp import generate_otp
 from app.utils.phone import is_valid_phone, normalize_phone
+from app.utils.sms import check_sms_otp, send_sms_otp
 
 logger = logging.getLogger("kwismo.backend")
 settings = get_settings()
@@ -90,6 +92,34 @@ async def list_my_phones(user_id: str) -> list[UserPhoneOut]:
 # add_my_phone
 # ---------------------------------------------------------------------------
 
+async def _resolve_country_id(valeur: str, lang: str = "fr") -> str:
+    """Auto-detecte le pays du numero depuis son indicatif international.
+
+    FR — Parse l'indicatif international du numero (ex. "+237" -> Cameroun)
+    et retourne l'id du pays correspondant. Si aucun indicatif ne correspond,
+    on retombe sur le pays par defaut (`estParDefaut = True`). Si aucun pays
+    par defaut n'existe, 400.
+    EN — Parses the number's international prefix (e.g. "+237" -> Cameroon)
+    and returns the matching country id. If no prefix matches, falls back to
+    the default country (`estParDefaut = True`). If no default country
+    exists, 400.
+    """
+    # Auto-detect from the international prefix (e.g. "+237").
+    countries = await db.country.find_many()
+    for c in countries:
+        if valeur.startswith(c.codePays):
+            return c.id
+
+    # Fallback to the default country (Cameroon).
+    default_country = await db.country.find_first(where={"estParDefaut": True})
+    if default_country is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=t("country_not_found", lang),
+        )
+    return default_country.id
+
+
 async def add_my_phone(user_id: str, payload: UserPhoneAddIn, lang: str = "fr") -> UserPhoneOut:
     valeur = normalize_phone(payload.valeur)
     if not is_valid_phone(valeur):
@@ -105,25 +135,20 @@ async def add_my_phone(user_id: str, payload: UserPhoneAddIn, lang: str = "fr") 
             detail=t("phone_already_attached", lang),
         )
 
-    country = await db.country.find_unique(where={"id": payload.country_id})
-    if country is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=t("country_not_found", lang),
-        )
+    country_id = await _resolve_country_id(valeur, lang)
 
-    operator_id = await _detect_operator(valeur, payload.country_id)
+    operator_id = await _detect_operator(valeur, country_id)
     phone = await db.userphone.create(
         data={
             "userId": user_id,
             "valeur": valeur,
-            "countryId": payload.country_id,
+            "countryId": country_id,
             "operatorId": operator_id,
+            "estVerifie": False,  # Explicitly unverified on creation — OTP required before verification
         }
     )
-
-    code = await _create_sms_otp(user_id, phone.id, valeur)
-    await send_sms_otp(valeur, code)
+    # Twilio Verify owns the OTP — no need to store it in OtpCode
+    await send_sms_otp(valeur)
     return _to_out(phone)
 
 
@@ -131,32 +156,30 @@ async def add_my_phone(user_id: str, payload: UserPhoneAddIn, lang: str = "fr") 
 # verify_my_phone
 # ---------------------------------------------------------------------------
 
-async def verify_my_phone(user_id: str, phone_id: str, payload: UserPhoneVerifyIn, lang: str = "fr") -> UserPhoneOut:
+async def verify_my_phone(user_id: str, phone_id: str, payload: UserPhoneVerifyIn, lang: str = "fr") -> Message:
     phone = await db.userphone.find_unique(where={"id": phone_id})
     if phone is None or phone.userId != user_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("phone_not_found", lang))
+    if phone.estVerifie:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=t("phone_already_verified", lang))
 
-    otp = await db.otpcode.find_first(
-        where={
-            "userPhoneId": phone_id,
-            "canal": "sms",
-            "code": payload.code,
-            "estUtilise": False,
-        }
-    )
-    if otp is None or is_expired(otp.dateExpiration):
+    # Twilio Verify validates the code — no DB lookup needed
+    valid = await check_sms_otp(phone.valeur, payload.code)
+    if not valid:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=t("otp_invalid_or_expired", lang),
         )
 
     now = utcnow()
-    await db.otpcode.update(where={"id": otp.id}, data={"estUtilise": True})
-    phone = await db.userphone.update(
+    await db.userphone.update(
         where={"id": phone_id},
         data={"estVerifie": True, "dateVerification": now},
     )
-    return _to_out(phone)
+    return Message(
+        message_fr=t("success.phone_verified", "fr"),
+        message_en=t("success.phone_verified", "en"),
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -164,7 +187,6 @@ async def verify_my_phone(user_id: str, phone_id: str, payload: UserPhoneVerifyI
 # ---------------------------------------------------------------------------
 
 async def resend_my_phone_otp(user_id: str, phone_id: str, lang: str = "fr"):
-    from app.core.schemas import Message
     phone = await db.userphone.find_unique(where={"id": phone_id})
     if phone is None or phone.userId != user_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("phone_not_found", lang))
@@ -173,12 +195,11 @@ async def resend_my_phone_otp(user_id: str, phone_id: str, lang: str = "fr"):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=t("phone_already_verified", lang),
         )
-
-    code = await _create_sms_otp(user_id, phone.id, phone.valeur)
-    await send_sms_otp(phone.valeur, code)
+    # Twilio Verify handles resend — just trigger again
+    await send_sms_otp(phone.valeur)
     return Message(
-        message_fr=t("otp_sms_resent", "fr"),
-        message_en=t("otp_sms_resent", "en"),
+        message_fr=t("success.otp_sms_resent", "fr"),
+        message_en=t("success.otp_sms_resent", "en"),
     )
 
 
@@ -187,7 +208,6 @@ async def resend_my_phone_otp(user_id: str, phone_id: str, lang: str = "fr"):
 # ---------------------------------------------------------------------------
 
 async def remove_my_phone(user_id: str, phone_id: str, lang: str = "fr"):
-    from app.core.schemas import Message
     phone = await db.userphone.find_unique(where={"id": phone_id})
     if phone is None or phone.userId != user_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("phone_not_found", lang))
@@ -198,8 +218,8 @@ async def remove_my_phone(user_id: str, phone_id: str, lang: str = "fr"):
     )
     await db.userphone.delete(where={"id": phone_id})
     return Message(
-        message_fr=t("phone_removed", "fr"),
-        message_en=t("phone_removed", "en"),
+        message_fr=t("success.phone_removed", "fr"),
+        message_en=t("success.phone_removed", "en"),
     )
 
 

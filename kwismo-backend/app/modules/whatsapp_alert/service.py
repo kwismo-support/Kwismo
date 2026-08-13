@@ -44,9 +44,12 @@ async def declare_whatsapp_incident(user_id: str, payload: WhatsAppIncidentIn, l
         where={"userPhoneId": payload.user_phone_id, "statut": "open"}
     )
     if existing:
+        phone_existing = await db.userphone.find_unique(where={"id": existing.userPhoneId})
         return WhatsAppIncidentOut(
             id=existing.id,
             compromise_incident_id=existing.id,
+            user_phone_id=existing.userPhoneId,
+            numero=phone_existing.valeur if phone_existing else "inconnu",
             statut=existing.statut,
         )
 
@@ -59,6 +62,8 @@ async def declare_whatsapp_incident(user_id: str, payload: WhatsAppIncidentIn, l
     return WhatsAppIncidentOut(
         id=incident.id,
         compromise_incident_id=incident.id,
+        user_phone_id=incident.userPhoneId,
+        numero=phone.valeur,
         statut=incident.statut,
     )
 
@@ -98,7 +103,7 @@ async def broadcast_whatsapp_alert(user_id: str, payload: WhatsAppBroadcastIn, l
 
     recipients_out = []
     for contact in contacts:
-        recipient = await db.whatsapalertrecipient.create(
+        recipient = await db.whatsappalertrecipient.create(
             data={
                 "whatsAppAlertId": alert.id,
                 "contactId": contact.id,
@@ -116,7 +121,7 @@ async def broadcast_whatsapp_alert(user_id: str, payload: WhatsAppBroadcastIn, l
     return WhatsAppAlertOut(
         id=alert.id,
         contenu=contenu,
-        destinataires=recipients_out,
+        recipients=recipients_out,
     )
 
 
@@ -137,8 +142,11 @@ async def close_whatsapp_incident(user_id: str, incident_id: str, lang: str = "f
         where={"id": incident_id},
         data={"statut": "closed"},
     )
+    phone_closed = await db.userphone.find_unique(where={"id": updated.userPhoneId})
     return WhatsAppIncidentOut(
         id=updated.id,
         compromise_incident_id=updated.id,
+        user_phone_id=updated.userPhoneId,
+        numero=phone_closed.valeur if phone_closed else "inconnu",
         statut=updated.statut,
     )

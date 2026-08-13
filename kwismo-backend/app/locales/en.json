@@ -9,7 +9,20 @@
     "not_found": "Resource not found.",
     "validation_error": "The submitted data is invalid.",
     "internal_error": "An internal error occurred. Please try again later.",
-    "rate_limited": "Too many requests. Try again later."
+    "rate_limited": "Too many requests. Try again later.",
+    "invalid_phone_format": "Invalid phone number format.",
+    "phone_already_attached": "This number is already attached to an account.",
+    "country_not_found": "Country not found.",
+    "otp_invalid_or_expired": "Invalid or expired OTP code.",
+    "phone_not_found": "Phone number not found.",
+    "phone_already_verified": "This number is already verified.",
+    "phone_not_verified_for_compromise": "Only verified numbers can be declared compromised.",
+    "phone_already_compromised": "This number is already declared compromised."
+  },
+  "success": {
+    "phone_verified": "Phone number verified successfully.",
+    "otp_sms_resent": "SMS OTP code resent.",
+    "phone_removed": "Phone number removed from account."
   },
   "notifications": {
     "suspicious_call": "Suspicious call detected from {number}.",

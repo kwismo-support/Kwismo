@@ -9,7 +9,6 @@ from pydantic import BaseModel, Field
 
 
 class UserPhoneAddIn(BaseModel):
-    country_id: str = Field(..., description="Pays du numéro / Number's country.")
     valeur: str = Field(..., examples=["+237690000000"])
 
 

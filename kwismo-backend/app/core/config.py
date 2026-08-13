@@ -47,6 +47,15 @@ class Settings(BaseSettings):
     allowed_image_extensions: str = "jpg,jpeg,png,webp"
     allowed_video_extensions: str = "mp4,mov,webm"
 
+    # Email (Resend)
+    resend_api_key: str = ""
+    email_from: str = "KWISMO <noreply@unphishable.org>"
+
+    # SMS (Twilio Verify)
+    twilio_account_sid: str = ""
+    twilio_auth_token: str = ""
+    twilio_verify_service_sid: str = ""
+
     @property
     def cors_origins_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]

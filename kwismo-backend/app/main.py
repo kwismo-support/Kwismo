@@ -13,6 +13,8 @@ from contextlib import asynccontextmanager
 import logging
 
 from fastapi import FastAPI
+from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from slowapi.errors import RateLimitExceeded
@@ -103,10 +105,42 @@ def _check_startup_config() -> None:
         )
 
 
+async def _seed_defaults() -> None:
+    """Insere les donnees minimales au premier demarrage. / Inserts minimal data on first startup.
+
+    Idempotent — ne fait rien si les donnees existent deja.
+    Idempotent — does nothing if data already exists.
+    """
+    from app.db.prisma_client import db as _db
+
+    # Roles
+    for nom_role in ("user", "partner", "admin"):
+        await _db.role.upsert(
+            where={"nomRole": nom_role},
+            data={"create": {"nomRole": nom_role}, "update": {}},
+        )
+
+    # Cameroun par defaut — seul pays amorce au demarrage.
+    # Cameroon by default — only country seeded at startup.
+    await _db.country.upsert(
+        where={"codePays": "+237"},
+        data={
+            "create": {
+                "nom": "Cameroun",
+                "codePays": "+237",
+                "estParDefaut": True,
+            },
+            "update": {},
+        },
+    )
+    _logger.info("Seed par defaut applique (roles + Cameroun).")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     _check_startup_config()
     await connect_db()
+    await _seed_defaults()
     yield
     await disconnect_db()
 
@@ -116,8 +150,8 @@ app = FastAPI(
     description=DESCRIPTION,
     version="0.1.0",
     openapi_tags=TAGS_METADATA,
-    docs_url="/docs",
-    redoc_url="/redoc",
+    docs_url=None,
+    redoc_url=None,
     lifespan=lifespan,
 )
 
@@ -163,8 +197,7 @@ for router in (
     app.include_router(router)
 
 
-@app.get(
-    "/health",
+@app.get("/health",
     response_model=HealthOut,
     tags=["System"],
     summary="Health check / Vérification de santé",
@@ -172,3 +205,22 @@ for router in (
 )
 async def health() -> HealthOut:
     return HealthOut(status="ok")
+
+
+@app.get("/docs", include_in_schema=False)
+async def swagger_ui() -> HTMLResponse:
+    return get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title="KWISMO API",
+        swagger_js_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js",
+        swagger_css_url="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css",
+    )
+
+
+@app.get("/redoc", include_in_schema=False)
+async def redoc_ui() -> HTMLResponse:
+    return get_redoc_html(
+        openapi_url="/openapi.json",
+        title="KWISMO API",
+        redoc_js_url="https://unpkg.com/redoc@latest/bundles/redoc.standalone.js",
+    )

@@ -9,7 +9,20 @@
     "not_found": "Ressource introuvable.",
     "validation_error": "Les données envoyées sont invalides.",
     "internal_error": "Une erreur interne est survenue. Réessayez plus tard.",
-    "rate_limited": "Trop de requêtes. Réessayez plus tard."
+    "rate_limited": "Trop de requêtes. Réessayez plus tard.",
+    "invalid_phone_format": "Format de numéro invalide.",
+    "phone_already_attached": "Ce numéro est déjà rattaché à un compte.",
+    "country_not_found": "Pays introuvable.",
+    "otp_invalid_or_expired": "Code OTP invalide ou expiré.",
+    "phone_not_found": "Numéro introuvable.",
+    "phone_already_verified": "Ce numéro est déjà vérifié.",
+    "phone_not_verified_for_compromise": "Seuls les numéros vérifiés peuvent être déclarés compromis.",
+    "phone_already_compromised": "Ce numéro est déjà déclaré compromis."
+  },
+  "success": {
+    "phone_verified": "Numéro vérifié avec succès.",
+    "otp_sms_resent": "Code OTP SMS renvoyé.",
+    "phone_removed": "Numéro retiré du compte."
   },
   "notifications": {
     "suspicious_call": "Appel suspect détecté de {number}.",

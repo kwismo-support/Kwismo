@@ -27,9 +27,17 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
         response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains"
-        response.headers.setdefault(
-            "Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'"
-        )
+        if request.url.path in ("/docs", "/redoc"):
+            # Relax CSP so Swagger/ReDoc can load assets from unpkg
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; "
+                "script-src 'self' 'unsafe-inline' https://unpkg.com; "
+                "style-src 'self' 'unsafe-inline' https://unpkg.com; "
+                "img-src 'self' data: https://fastapi.tiangolo.com; "
+                "frame-ancestors 'none'"
+            )
+        # API routes: no CSP — CSP is for HTML pages, not JSON API responses.
+        # Applying default-src 'none' to API routes blocks Swagger UI fetch calls.
         return response
 
 

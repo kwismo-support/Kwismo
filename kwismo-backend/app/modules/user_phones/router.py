@@ -50,7 +50,7 @@ async def add_my_phone(
 
 @router.post(
     "/{phone_id}/verify",
-    response_model=UserPhoneOut,
+    response_model=Message,
     responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
     summary="Verify a number's SMS OTP / Vérifier l'OTP SMS",
     description=f"**FR** — Vérifie l'OTP SMS. Limité ({OTP_RATE_LIMIT}).\n\n**EN** — Verifies the SMS OTP. Rate-limited ({OTP_RATE_LIMIT}).",
@@ -58,7 +58,7 @@ async def add_my_phone(
 @limiter.limit(OTP_RATE_LIMIT)
 async def verify_my_phone(
     request: Request, phone_id: str, payload: UserPhoneVerifyIn, user=Depends(require_roles("user"))
-) -> UserPhoneOut:
+) -> Message:
     return await service.verify_my_phone(user.id, phone_id, payload, user.langue)
 
 
