@@ -82,7 +82,10 @@ def claim_text(texte: str) -> bool:
 def is_new_image(image_path: Path, max_distance: int = 5) -> bool:
     """FR — Compare au hash perceptuel le plus proche deja vu (distance de Hamming)."""
 
-    phash = imagehash.phash(Image.open(image_path))
+    try:
+        phash = imagehash.phash(Image.open(image_path))
+    except Exception:
+        return False
     with _connect() as conn:
         rows = conn.execute("SELECT hash FROM seen_image_hashes").fetchall()
     return all(abs(phash - imagehash.hex_to_hash(row[0])) > max_distance for row in rows)
@@ -103,7 +106,10 @@ def claim_image(image_path: Path, max_distance: int = 5) -> bool:
     duplicate). The frequent case (same image, same exact hash, e.g. a
     logo repeated across a site) is fully covered by the atomic insert."""
 
-    phash = imagehash.phash(Image.open(image_path))
+    try:
+        phash = imagehash.phash(Image.open(image_path))
+    except Exception:
+        return False
     with _connect() as conn:
         rows = conn.execute("SELECT hash FROM seen_image_hashes").fetchall()
         if any(abs(phash - imagehash.hex_to_hash(row[0])) <= max_distance for row in rows):

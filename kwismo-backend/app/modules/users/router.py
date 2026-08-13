@@ -2,9 +2,9 @@
 
 from fastapi import APIRouter, Depends, Query, status
 
-from app.core.exceptions import not_implemented
 from app.core.permissions import require_roles
 from app.core.schemas import AUTH_RESPONSES, NOT_FOUND_RESPONSE, Page
+from app.modules.users import service
 from app.modules.users.schemas import (
     UserDetailOut,
     UserListItemOut,
@@ -27,7 +27,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
     ),
 )
 async def get_me(user=Depends(require_roles("user"))) -> UserMeOut:
-    raise not_implemented()
+    return await service.get_me(user.id)
 
 
 @router.patch(
@@ -36,12 +36,12 @@ async def get_me(user=Depends(require_roles("user"))) -> UserMeOut:
     responses=AUTH_RESPONSES,
     summary="Update my profile / Mettre à jour mon profil",
     description=(
-        "**FR** — Met à jour le nom et/ou le prénom du compte courant.\n\n"
-        "**EN** — Updates the current account's first/last name."
+        "**FR** — Met à jour le nom, le prénom et/ou la langue du compte courant.\n\n"
+        "**EN** — Updates the current account's name, surname and/or language preference."
     ),
 )
 async def update_me(payload: UserUpdateIn, user=Depends(require_roles("user"))) -> UserMeOut:
-    raise not_implemented()
+    return await service.update_me(user.id, payload, user.langue)
 
 
 @router.get(
@@ -50,10 +50,8 @@ async def update_me(payload: UserUpdateIn, user=Depends(require_roles("user"))) 
     responses=AUTH_RESPONSES,
     summary="List users / Lister les utilisateurs",
     description=(
-        "**FR** — Liste paginée des comptes (nom, prénom, email, nombre de numéros "
-        "rattachés). Périmètre restreint côté serveur pour un `partner`.\n\n"
-        "**EN** — Paginated account list (name, surname, email, attached numbers "
-        "count). Server-side scoped for a `partner`."
+        "**FR** — Liste paginée des comptes. Périmètre restreint côté serveur pour un `partner`.\n\n"
+        "**EN** — Paginated account list. Server-side scoped for a `partner`."
     ),
 )
 async def list_users(
@@ -61,7 +59,7 @@ async def list_users(
     page_size: int = Query(20, ge=1, le=100),
     user=Depends(require_roles("admin", "partner")),
 ) -> Page[UserListItemOut]:
-    raise not_implemented()
+    return await service.list_users(page, page_size)
 
 
 @router.get(
@@ -75,7 +73,7 @@ async def list_users(
     ),
 )
 async def get_user(user_id: str, user=Depends(require_roles("admin", "partner"))) -> UserDetailOut:
-    raise not_implemented()
+    return await service.get_user(user_id, user.langue)
 
 
 @router.patch(
@@ -91,4 +89,4 @@ async def get_user(user_id: str, user=Depends(require_roles("admin", "partner"))
 async def set_user_status(
     user_id: str, payload: UserStatusIn, user=Depends(require_roles("admin"))
 ) -> UserDetailOut:
-    raise not_implemented()
+    return await service.set_user_status(user_id, payload, user.langue)

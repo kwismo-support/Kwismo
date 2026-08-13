@@ -2,9 +2,9 @@
 
 from fastapi import APIRouter, Depends, Query
 
-from app.core.exceptions import not_implemented
 from app.core.permissions import require_roles
 from app.core.schemas import AUTH_RESPONSES, NOT_FOUND_RESPONSE, Page
+from app.modules.numbers import service
 from app.modules.numbers.schemas import (
     NumberBatchVerifyIn,
     NumberDetailOut,
@@ -22,14 +22,12 @@ router = APIRouter(prefix="/numbers", tags=["Numbers"])
     responses=AUTH_RESPONSES,
     summary="Verify a number / Vérifier un numéro",
     description=(
-        "**FR** — Vérifie un numéro (appelle le service IA via `ai_gateway`) et "
-        "renvoie son score de risque et son statut.\n\n"
-        "**EN** — Verifies a number (calls the AI service via `ai_gateway`) and "
-        "returns its risk score and status."
+        "**FR** — Vérifie un numéro renvoie son score de risque et son statut.\n\n"
+        "**EN** — Verifies a number and returns its risk score and status."
     ),
 )
 async def verify_number(payload: NumberVerifyIn, user=Depends(require_roles("user"))) -> NumberOut:
-    raise not_implemented()
+    return await service.verify_number(payload, user.langue)
 
 
 @router.post(
@@ -38,15 +36,14 @@ async def verify_number(payload: NumberVerifyIn, user=Depends(require_roles("use
     responses=AUTH_RESPONSES,
     summary="Batch-verify numbers / Vérifier une liste de numéros",
     description=(
-        "**FR** — Vérifie une liste de numéros (ex. import de contacts) en un seul "
-        "appel.\n\n"
-        "**EN** — Verifies a list of numbers (e.g. contacts import) in a single call."
+        "**FR** — Vérifie une liste de numéros en un seul appel.\n\n"
+        "**EN** — Verifies a list of numbers in a single call."
     ),
 )
 async def batch_verify_numbers(
     payload: NumberBatchVerifyIn, user=Depends(require_roles("user"))
 ) -> list[NumberOut]:
-    raise not_implemented()
+    return await service.batch_verify_numbers(payload)
 
 
 @router.get(
@@ -55,10 +52,8 @@ async def batch_verify_numbers(
     responses=AUTH_RESPONSES,
     summary="List numbers / Lister les numéros",
     description=(
-        "**FR** — Liste paginée du registre de numéros, avec filtres statut/pays/"
-        "opérateur.\n\n"
-        "**EN** — Paginated listing of the number ledger, with status/country/"
-        "operator filters."
+        "**FR** — Liste paginée du registre avec filtres statut/pays/opérateur.\n\n"
+        "**EN** — Paginated listing of the number ledger with status/country/operator filters."
     ),
 )
 async def list_numbers(
@@ -69,7 +64,7 @@ async def list_numbers(
     operator_id: str | None = Query(None),
     user=Depends(require_roles("admin", "partner")),
 ) -> Page[NumberOut]:
-    raise not_implemented()
+    return await service.list_numbers(page, page_size, statut, country_id, operator_id)
 
 
 @router.get(
@@ -78,12 +73,12 @@ async def list_numbers(
     responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
     summary="Get a number's detail / Détail d'un numéro",
     description=(
-        "**FR** — Détail d'un numéro et son historique de vérification.\n\n"
-        "**EN** — A number's detail and its verification history."
+        "**FR** — Détail d'un numéro et son historique.\n\n"
+        "**EN** — A number's detail and its history."
     ),
 )
 async def get_number(number_id: str, user=Depends(require_roles("admin", "partner"))) -> NumberDetailOut:
-    raise not_implemented()
+    return await service.get_number(number_id, user.langue)
 
 
 @router.patch(
@@ -92,11 +87,11 @@ async def get_number(number_id: str, user=Depends(require_roles("admin", "partne
     responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
     summary="Force a number's status / Forcer le statut d'un numéro",
     description=(
-        "**FR** — Force un statut ou déclenche une réanalyse par l'IA.\n\n"
-        "**EN** — Forces a status or triggers AI re-analysis."
+        "**FR** — Force un statut ou déclenche une réanalyse.\n\n"
+        "**EN** — Forces a status or triggers re-analysis."
     ),
 )
 async def set_number_status(
     number_id: str, payload: NumberStatusIn, user=Depends(require_roles("admin", "partner"))
 ) -> NumberDetailOut:
-    raise not_implemented()
+    return await service.set_number_status(number_id, payload, user.langue)

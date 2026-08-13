@@ -68,6 +68,18 @@ RELEVANCE_KEYWORDS = [
 
 MAX_IMAGES_PER_PAGE = 10
 
+TRUSTED_URLS = [
+    "https://www.orange.cm/fr/arnaques.html",
+    "https://mtn.cm/help/report-fraud/",
+    "https://cirt.cm/mefiez-vous-du-phishing-et-des-arnaques-en-ligne/",
+    "https://www.237online.com/cameroun-arnaques-en-ligne-pieges/",
+    "https://www.stopblablacam.com/culture-et-societe/0312-2298-attention-des-arnaqueurs-deguisent-de-simples-sms-sous-forme-de-notifications-de-transfert-dargent-par-mobile-money",
+    "https://cirt.cm/menaces-cybersecurite-au-cameroun/",
+    "https://www.antic.cm/index.php/fr/sensibilisation/securite-de-l-information/arnaques-les-plus-repandues",
+    "https://www.antic.cm/index.php/fr/sensibilisation/securite-de-l-information/regles-d-or-de-la-securite",
+]
+
+
 
 def is_relevant(texte: str) -> bool:
     lowered = texte.lower()
@@ -183,10 +195,10 @@ async def _get_with_retry(client: httpx.AsyncClient, url: str) -> httpx.Response
 
 
 async def _process_url(
-    client: httpx.AsyncClient, url: str, semaphore: asyncio.Semaphore, metrics: RunMetrics
+    client: httpx.AsyncClient, url: str, semaphore: asyncio.Semaphore, metrics: RunMetrics, is_trusted: bool = False
 ) -> None:
     source = urlparse(url).netloc
-    if not is_new_url(url) or not _is_allowed(url):
+    if not is_new_url(url) or (not is_trusted and not _is_allowed(url)):
         return
 
     async with semaphore:
@@ -200,8 +212,8 @@ async def _process_url(
     claim_url(url)
 
     texte = _extract_text(response.text)
-    if texte and not is_relevant(texte):
-        return  # page hors-sujet : ni son texte ni ses images ne sont retenus
+    if texte and not is_trusted and not is_relevant(texte):
+        return
 
     if texte and claim_text(texte):
         _append_record(
@@ -247,7 +259,7 @@ async def _process_url(
         metrics.record_success(source, "image")
 
 
-async def run(keywords: list[str] = SEARCH_KEYWORDS) -> dict:
+async def run(keywords: list[str] = SEARCH_KEYWORDS, trusted_urls: list[str] = TRUSTED_URLS) -> dict:
     reconcile()
     urls = discover_urls(keywords)
 
@@ -257,7 +269,14 @@ async def run(keywords: list[str] = SEARCH_KEYWORDS) -> dict:
     proxy = settings.scraper_proxy_url or None
 
     async with httpx.AsyncClient(headers=headers, follow_redirects=True, proxy=proxy) as client:
-        await asyncio.gather(*(_process_url(client, url, semaphore, metrics) for url in urls))
+        tasks = []
+        for url in trusted_urls:
+            tasks.append(_process_url(client, url, semaphore, metrics, is_trusted=True))
+        trusted_set = set(trusted_urls)
+        for url in urls:
+            if url not in trusted_set:
+                tasks.append(_process_url(client, url, semaphore, metrics, is_trusted=False))
+        await asyncio.gather(*tasks)
 
     return metrics.finalize()
 
