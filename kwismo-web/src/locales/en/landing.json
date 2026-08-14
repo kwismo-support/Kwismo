@@ -1,0 +1,106 @@
+{
+  "nav": {
+    "features": "Features",
+    "howItWorks": "How it works",
+    "pricing": "Pricing",
+    "partners": "Partners",
+    "login": "Login",
+    "getStarted": "Get started"
+  },
+  "hero": {
+    "badge": "Phone fraud protection",
+    "title": "Protect yourself from fraudulent calls",
+    "subtitle": "KWISMO detects, reports, and blocks fraudulent numbers in real time. Join the community protecting Africa.",
+    "cta": "Download the app",
+    "ctaSecondary": "Watch demo",
+    "trustedBy": "Already used by thousands of people"
+  },
+  "problem": {
+    "title": "Phone fraud, an African plague",
+    "subtitle": "Millions of fraudulent calls every day on the continent",
+    "stats": {
+      "fraud": "fraudulent calls detected",
+      "victims": "victims per year",
+      "loss": "lost to mobile fraud"
+    }
+  },
+  "comparison": {
+    "title": "Why KWISMO?",
+    "subtitle": "A solution built for Africa",
+    "features": {
+      "africaFocus": "Built for Africa",
+      "ussd": "Integrated USSD transfer",
+      "community": "Community reporting",
+      "realtime": "Real-time detection",
+      "whatsapp": "WhatsApp alert",
+      "offline": "Offline mode"
+    }
+  },
+  "features": {
+    "title": "Everything you need",
+    "subtitle": "A complete protection suite",
+    "items": {
+      "verify": {
+        "title": "Instant verification",
+        "desc": "Check any number in one click before calling back."
+      },
+      "detect": {
+        "title": "Automatic detection",
+        "desc": "The app analyzes every incoming call and alerts you immediately."
+      },
+      "transfer": {
+        "title": "Secure USSD transfer",
+        "desc": "Send money via USSD with a pre-verification of the recipient."
+      },
+      "report": {
+        "title": "Community reporting",
+        "desc": "Report suspicious numbers and protect your community."
+      },
+      "whatsapp": {
+        "title": "WhatsApp alert",
+        "desc": "Notify your contacts if your account is compromised."
+      },
+      "contacts": {
+        "title": "Secured contacts",
+        "desc": "Each contact is scored and badged by risk level."
+      }
+    }
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "steps": {
+      "1": { "title": "Sign up", "desc": "Create your account in 30 seconds with your phone number." },
+      "2": { "title": "Verify", "desc": "Enter any number to see its risk score." },
+      "3": { "title": "Stay protected", "desc": "Get real-time alerts on every incoming call." }
+    }
+  },
+  "pricing": {
+    "title": "API Pricing",
+    "subtitle": "Integrate KWISMO into your services",
+    "price": "$0.001",
+    "perCall": "per call",
+    "features": {
+      "api": "Full API access",
+      "support": "Dedicated technical support",
+      "sla": "99.9% SLA guaranteed",
+      "custom": "Customizable scope"
+    },
+    "cta": "Become a partner"
+  },
+  "partners": {
+    "title": "They trust us",
+    "subtitle": "Partner operators and institutions"
+  },
+  "download": {
+    "title": "Download KWISMO",
+    "subtitle": "Available on iOS and Android",
+    "ios": "App Store",
+    "android": "Google Play"
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "contact": "Contact"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "title": "Espace partenaire",
+  "welcome": "Bienvenue dans votre espace partenaire",
+  "overview": {
+    "title": "Vue d'ensemble",
+    "scopeNumbers": "Numéros du périmètre",
+    "scopeUsers": "Utilisateurs du périmètre",
+    "totalReports": "Signalements",
+    "fraudRate": "Taux de fraude"
+  },
+  "partners": {
+    "title": "Partenaires",
+    "create": "Nouveau partenaire",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "name": "Nom",
+    "email": "Email",
+    "country": "Pays",
+    "apiKey": "Clé API",
+    "status": "Statut",
+    "prefixes": "Préfixes",
+    "affiliation": "Règles d'affiliation",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "created": "Partenaire créé",
+    "updated": "Partenaire mis à jour",
+    "deleted": "Partenaire supprimé"
+  },
+  "reports": {
+    "title": "Rapports",
+    "export": "Exporter",
+    "period": "Période",
+    "format": "Format",
+    "generate": "Générer le rapport"
+  },
+  "profile": {
+    "title": "Mon profil",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Email",
+    "language": "Langue",
+    "updateSuccess": "Profil mis à jour"
+  }
+}

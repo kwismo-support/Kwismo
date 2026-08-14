@@ -1,0 +1,56 @@
+{
+  "appName": "Kwismo",
+  "loading": "Chargement…",
+  "error": "Une erreur est survenue",
+  "retry": "Réessayer",
+  "save": "Enregistrer",
+  "cancel": "Annuler",
+  "delete": "Supprimer",
+  "edit": "Modifier",
+  "add": "Ajouter",
+  "search": "Rechercher",
+  "filter": "Filtrer",
+  "back": "Retour",
+  "next": "Suivant",
+  "confirm": "Confirmer",
+  "close": "Fermer",
+  "yes": "Oui",
+  "no": "Non",
+  "status": "Statut",
+  "actions": {
+    "label": "Actions",
+    "logout": "Déconnexion",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "view": "Voir",
+    "add": "Ajouter",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer"
+  },
+  "total": "Total",
+  "page": "Page",
+  "noData": "Aucune donnée disponible",
+  "nav": {
+    "home": "Accueil",
+    "dashboard": "Tableau de bord",
+    "numbers": "Numéros",
+    "reports": "Signalements",
+    "users": "Utilisateurs",
+    "partners": "Partenaires",
+    "ussd": "USSD",
+    "access": "Contrôle d'accès",
+    "profile": "Mon profil",
+    "notifications": "Notifications"
+  },
+  "pagination": {
+    "previous": "Précédent",
+    "next": "Suivant",
+    "of": "sur",
+    "results": "résultats"
+  },
+  "table": {
+    "noResults": "Aucun résultat",
+    "loading": "Chargement des données…"
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "dashboard": {
+    "title": "Tableau de bord",
+    "welcome": "Bienvenue",
+    "totalUsers": "Utilisateurs",
+    "totalNumbers": "Numéros",
+    "totalReports": "Signalements",
+    "fraudRate": "Taux de fraude",
+    "trend": "Évolution",
+    "byOperator": "Par opérateur"
+  },
+  "users": {
+    "title": "Utilisateurs",
+    "detail": "Détail utilisateur",
+    "suspend": "Suspendre",
+    "activate": "Activer",
+    "ban": "Bannir",
+    "role": "Rôle",
+    "registeredAt": "Inscrit le",
+    "lastLogin": "Dernière connexion",
+    "status": {
+      "active": "Actif",
+      "suspended": "Suspendu",
+      "banned": "Banni"
+    }
+  },
+  "numbers": {
+    "title": "Registre des numéros",
+    "verify": "Vérifier un numéro",
+    "batchVerify": "Vérification en lot",
+    "phoneNumber": "Numéro de téléphone",
+    "riskScore": "Score de risque",
+    "lastCheck": "Dernière vérification",
+    "reportCount": "Signalements",
+    "status": {
+      "securise": "Sécurisé",
+      "a_signaler": "À signaler",
+      "frauduleux": "Frauduleux",
+      "unknown": "Inconnu"
+    }
+  },
+  "reports": {
+    "title": "Signalements",
+    "create": "Signaler un numéro",
+    "reason": "Motif du signalement",
+    "validate": "Valider",
+    "reject": "Rejeter",
+    "submittedAt": "Soumis le",
+    "submittedBy": "Soumis par",
+    "status": {
+      "pending": "En attente",
+      "validated": "Validé",
+      "rejected": "Rejeté"
+    }
+  },
+  "ussd": {
+    "title": "USSD",
+    "countries": "Pays",
+    "operators": "Opérateurs",
+    "actions": "Actions USSD",
+    "addCountry": "Ajouter un pays",
+    "addOperator": "Ajouter un opérateur",
+    "addAction": "Ajouter une action",
+    "prefix": "Préfixe",
+    "countryCode": "Code pays",
+    "dialCode": "Indicatif"
+  },
+  "access": {
+    "title": "Contrôle d'accès",
+    "roles": "Rôles",
+    "permissions": "Permissions",
+    "addRole": "Ajouter un rôle",
+    "matrix": "Matrice des permissions"
+  }
+}

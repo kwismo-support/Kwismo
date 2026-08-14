@@ -1,0 +1,56 @@
+{
+  "appName": "Kwismo",
+  "loading": "Loading…",
+  "error": "An error occurred",
+  "retry": "Retry",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "add": "Add",
+  "search": "Search",
+  "filter": "Filter",
+  "back": "Back",
+  "next": "Next",
+  "confirm": "Confirm",
+  "close": "Close",
+  "yes": "Yes",
+  "no": "No",
+  "status": "Status",
+  "actions": {
+    "label": "Actions",
+    "logout": "Logout",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "add": "Add",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  },
+  "total": "Total",
+  "page": "Page",
+  "noData": "No data available",
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "numbers": "Numbers",
+    "reports": "Reports",
+    "users": "Users",
+    "partners": "Partners",
+    "ussd": "USSD",
+    "access": "Access Control",
+    "profile": "My Profile",
+    "notifications": "Notifications"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "of": "of",
+    "results": "results"
+  },
+  "table": {
+    "noResults": "No results",
+    "loading": "Loading data…"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "title": "Partner portal",
+  "welcome": "Welcome to your partner portal",
+  "overview": {
+    "title": "Overview",
+    "scopeNumbers": "Scope numbers",
+    "scopeUsers": "Scope users",
+    "totalReports": "Reports",
+    "fraudRate": "Fraud rate"
+  },
+  "partners": {
+    "title": "Partners",
+    "create": "New partner",
+    "edit": "Edit",
+    "delete": "Delete",
+    "name": "Name",
+    "email": "Email",
+    "country": "Country",
+    "apiKey": "API key",
+    "status": "Status",
+    "prefixes": "Prefixes",
+    "affiliation": "Affiliation rules",
+    "active": "Active",
+    "inactive": "Inactive",
+    "created": "Partner created",
+    "updated": "Partner updated",
+    "deleted": "Partner deleted"
+  },
+  "reports": {
+    "title": "Reports",
+    "export": "Export",
+    "period": "Period",
+    "format": "Format",
+    "generate": "Generate report"
+  },
+  "profile": {
+    "title": "My profile",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "language": "Language",
+    "updateSuccess": "Profile updated"
+  }
+}

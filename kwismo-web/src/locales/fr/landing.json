@@ -1,0 +1,106 @@
+{
+  "nav": {
+    "features": "Fonctionnalités",
+    "howItWorks": "Comment ça marche",
+    "pricing": "Tarifs",
+    "partners": "Partenaires",
+    "login": "Connexion",
+    "getStarted": "Commencer"
+  },
+  "hero": {
+    "badge": "Protection contre la fraude téléphonique",
+    "title": "Protégez-vous des appels frauduleux",
+    "subtitle": "KWISMO détecte, signale et bloque les numéros frauduleux en temps réel. Rejoignez la communauté qui protège l'Afrique.",
+    "cta": "Télécharger l'app",
+    "ctaSecondary": "Voir la démo",
+    "trustedBy": "Déjà utilisé par des milliers de personnes"
+  },
+  "problem": {
+    "title": "La fraude téléphonique, un fléau africain",
+    "subtitle": "Des millions d'appels frauduleux chaque jour sur le continent",
+    "stats": {
+      "fraud": "d'appels frauduleux détectés",
+      "victims": "de victimes par an",
+      "loss": "perdus en fraude mobile"
+    }
+  },
+  "comparison": {
+    "title": "Pourquoi KWISMO ?",
+    "subtitle": "Une solution pensée pour l'Afrique",
+    "features": {
+      "africaFocus": "Conçu pour l'Afrique",
+      "ussd": "Transfert USSD intégré",
+      "community": "Signalement communautaire",
+      "realtime": "Détection temps réel",
+      "whatsapp": "Alerte WhatsApp",
+      "offline": "Mode hors-ligne"
+    }
+  },
+  "features": {
+    "title": "Tout ce qu'il vous faut",
+    "subtitle": "Une suite complète de protection",
+    "items": {
+      "verify": {
+        "title": "Vérification instantanée",
+        "desc": "Vérifiez n'importe quel numéro en un clic avant de rappeler."
+      },
+      "detect": {
+        "title": "Détection automatique",
+        "desc": "L'app analyse chaque appel entrant et vous alerte immédiatement."
+      },
+      "transfer": {
+        "title": "Transfert USSD sécurisé",
+        "desc": "Envoyez de l'argent via USSD avec une vérification préalable du destinataire."
+      },
+      "report": {
+        "title": "Signalement communautaire",
+        "desc": "Signalez les numéros suspects et protégez votre communauté."
+      },
+      "whatsapp": {
+        "title": "Alerte WhatsApp",
+        "desc": "Prévenez vos contacts si votre compte est compromis."
+      },
+      "contacts": {
+        "title": "Contacts sécurisés",
+        "desc": "Chaque contact est évalué et badgé selon son niveau de risque."
+      }
+    }
+  },
+  "howItWorks": {
+    "title": "Comment ça marche",
+    "steps": {
+      "1": { "title": "Inscrivez-vous", "desc": "Créez votre compte en 30 secondes avec votre numéro." },
+      "2": { "title": "Vérifiez", "desc": "Saisissez n'importe quel numéro pour voir son score de risque." },
+      "3": { "title": "Soyez protégé", "desc": "Recevez des alertes en temps réel sur chaque appel entrant." }
+    }
+  },
+  "pricing": {
+    "title": "Tarifs API",
+    "subtitle": "Intégrez KWISMO dans vos services",
+    "price": "0,001 $",
+    "perCall": "par appel",
+    "features": {
+      "api": "Accès API complet",
+      "support": "Support technique dédié",
+      "sla": "SLA garanti 99,9 %",
+      "custom": "Périmètre personnalisable"
+    },
+    "cta": "Devenir partenaire"
+  },
+  "partners": {
+    "title": "Ils nous font confiance",
+    "subtitle": "Des opérateurs et institutions partenaires"
+  },
+  "download": {
+    "title": "Téléchargez KWISMO",
+    "subtitle": "Disponible sur iOS et Android",
+    "ios": "App Store",
+    "android": "Google Play"
+  },
+  "footer": {
+    "rights": "Tous droits réservés",
+    "privacy": "Confidentialité",
+    "terms": "CGU",
+    "contact": "Contact"
+  }
+}

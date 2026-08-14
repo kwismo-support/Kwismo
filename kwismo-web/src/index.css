@@ -1,3 +1,2 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Point d'entrée CSS — importe les styles globaux */
+@import './styles/globals.css';

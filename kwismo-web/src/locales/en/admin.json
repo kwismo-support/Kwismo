@@ -1,0 +1,75 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome",
+    "totalUsers": "Users",
+    "totalNumbers": "Numbers",
+    "totalReports": "Reports",
+    "fraudRate": "Fraud rate",
+    "trend": "Trend",
+    "byOperator": "By operator"
+  },
+  "users": {
+    "title": "Users",
+    "detail": "User detail",
+    "suspend": "Suspend",
+    "activate": "Activate",
+    "ban": "Ban",
+    "role": "Role",
+    "registeredAt": "Registered",
+    "lastLogin": "Last login",
+    "status": {
+      "active": "Active",
+      "suspended": "Suspended",
+      "banned": "Banned"
+    }
+  },
+  "numbers": {
+    "title": "Number registry",
+    "verify": "Verify a number",
+    "batchVerify": "Batch verification",
+    "phoneNumber": "Phone number",
+    "riskScore": "Risk score",
+    "lastCheck": "Last check",
+    "reportCount": "Reports",
+    "status": {
+      "securise": "Secure",
+      "a_signaler": "Suspicious",
+      "frauduleux": "Fraudulent",
+      "unknown": "Unknown"
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "create": "Report a number",
+    "reason": "Reason",
+    "validate": "Validate",
+    "reject": "Reject",
+    "submittedAt": "Submitted",
+    "submittedBy": "Submitted by",
+    "status": {
+      "pending": "Pending",
+      "validated": "Validated",
+      "rejected": "Rejected"
+    }
+  },
+  "ussd": {
+    "title": "USSD",
+    "countries": "Countries",
+    "operators": "Operators",
+    "actions": "USSD actions",
+    "addCountry": "Add country",
+    "addOperator": "Add operator",
+    "addAction": "Add action",
+    "prefix": "Prefix",
+    "countryCode": "Country code",
+    "dialCode": "Dial code"
+  },
+  "access": {
+    "title": "Access Control",
+    "roles": "Roles",
+    "permissions": "Permissions",
+    "addRole": "Add role",
+    "matrix": "Permissions matrix"
+  }
+}

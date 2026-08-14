@@ -125,6 +125,8 @@ kwismo-web/
 │  │  ├─ router.tsx                  # Définition des routes + lazy loading
 │  │  ├─ providers.tsx               # Query, Theme, i18n, Auth (composés)
 │  │  └─ guards/
+│  │     ├─ AuthGuard.tsx            # Vérifie la session au montage (fetchMe)
+│  │     ├─ GuestGuard.tsx           # Redirige si déjà connecté (pages /auth/*)
 │  │     ├─ ProtectedRoute.tsx       # Bloque l'accès si non authentifié
 │  │     └─ RoleGuard.tsx            # Bloque selon le rôle (admin/partner)
 │  │
@@ -269,6 +271,8 @@ kwismo-web/
 │  │  │  └─ useMediaQuery.ts
 │  │  ├─ lib/
 │  │  │  ├─ axios.ts                 # Instance Axios + intercepteurs (auth, refresh)
+│  │  │  ├─ api.ts                   # Helpers get/post/patch/put/delete (wrappent axios)
+│  │  │  ├─ i18n.ts                  # Initialisation i18next + namespaces + détecteur
 │  │  │  ├─ queryClient.ts           # Configuration TanStack Query
 │  │  │  ├─ utils.ts                 # cn() et helpers
 │  │  │  └─ formatters.ts            # Dates, nombres, devises (Intl)
@@ -280,9 +284,11 @@ kwismo-web/
 │  │  │  ├─ user.ts
 │  │  │  ├─ number.ts
 │  │  │  ├─ partner.ts
-│  │  │  └─ api.ts                   # ApiError, Paginated<T>…
+│  │  │  ├─ api.ts                   # ApiError, Paginated<T>…
+│  │  │  └─ index.ts                 # Barrel : re-exports de tous les types
 │  │  └─ constants/
-│  │     └─ roles.ts
+│  │     ├─ roles.ts                 # ROLE_LABELS, ROLE_COLORS
+│  │     └─ index.ts                 # Barrel : re-exports des constantes
 │  │
 │  ├─ styles/
 │  │  ├─ globals.css                 # Directives Tailwind + reset
@@ -323,14 +329,16 @@ kwismo-web/
 | Dossier | Rôle |
 | ------- | ---- |
 | `app/` | Câblage : router, providers, guards de routes. |
-| `app/guards/` | Protection par authentification et par rôle (admin/partner). |
+| `app/guards/` | 4 guards : `AuthGuard` (session), `ProtectedRoute` (auth), `RoleGuard` (rôle), `GuestGuard` (invité). |
 | `features/` | Une fonctionnalité = un dossier (components + hooks + services + schemas). |
 | `shared/ui/` | Composants de base habillés (boutons, champs, badges…). |
 | `shared/components/` | Layout (sidebar, topbar), DataTable, états (vide/erreur/chargement). |
-| `shared/lib/` | Axios (auth, refresh), TanStack Query, formatters. |
+| `shared/lib/` | Axios (auth, refresh), TanStack Query, i18next init, formatters, helpers API. |
 | `shared/store/` | État global léger (session, thème, langue). |
+| `shared/types/` | Types TypeScript partagés + barrel `index.ts`. |
+| `shared/constants/` | Constantes UI (labels/couleurs de rôles) + barrel `index.ts`. |
 | `styles/` | Directives Tailwind + design tokens (source unique des couleurs). |
-| `locales/` | Traductions FR/EN par namespace. |
+| `locales/` | Traductions FR/EN par namespace (`common`, `landing`, `auth`, `admin`, `partner`). |
 
 **Règle d'or** : une feature n'importe **jamais** le code interne d'une autre feature. Les échanges passent par `shared/`.
 

@@ -1,0 +1,73 @@
+/* ============================================================
+   KWISMO — Design Tokens
+   Source unique des couleurs, typographie, espacements, ombres.
+   ============================================================ */
+
+:root {
+  /* ── Palette principale ─────────────────────────────────── */
+  --color-primary-50:  #eeeef8;
+  --color-primary-100: #d4d4ef;
+  --color-primary-200: #a9a9df;
+  --color-primary-300: #7e7ecf;
+  --color-primary-400: #5353bf;
+  --color-primary-500: #2D2E83; /* Bleu KWISMO */
+  --color-primary-600: #262770;
+  --color-primary-700: #1e1f5c;
+  --color-primary-800: #171748;
+  --color-primary-900: #0f0f34;
+
+  /* ── Palette secondaire (orange) ────────────────────────── */
+  --color-secondary-50:  #fff4e5;
+  --color-secondary-100: #ffe0b2;
+  --color-secondary-500: #F39200; /* Orange KWISMO */
+  --color-secondary-600: #d07d00;
+
+  /* ── Couleurs sémantiques ────────────────────────────────── */
+  --color-success: #2FAC66; /* Vert KWISMO */
+  --color-danger:  #e53e3e;
+  --color-warning: #F39200;
+  --color-info:    #3182ce;
+
+  /* ── Fond & texte (mode clair) ───────────────────────────── */
+  --color-bg:        #f9fafb;
+  --color-bg-subtle: #ffffff;
+  --color-border:    #e5e7eb;
+  --color-text:      #111827;
+  --color-text-muted: #6b7280;
+
+  /* ── Typographie ─────────────────────────────────────────── */
+  --font-sans: 'Poppins', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ── Rayons ──────────────────────────────────────────────── */
+  --radius-sm:   0.25rem;
+  --radius:      0.5rem;
+  --radius-md:   0.75rem;
+  --radius-lg:   1rem;
+  --radius-full: 9999px;
+
+  /* ── Ombres ──────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow:    0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* ── Transitions ─────────────────────────────────────────── */
+  --transition-fast:   150ms ease-in-out;
+  --transition-base:   250ms ease-in-out;
+  --transition-slow:   400ms ease-in-out;
+}
+
+/* ── Mode sombre ────────────────────────────────────────────── */
+.dark {
+  --color-bg:        #0f1117;
+  --color-bg-subtle: #1a1d27;
+  --color-border:    #2d3148;
+  --color-text:      #f3f4f6;
+  --color-text-muted: #9ca3af;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow:    0 1px 3px 0 rgb(0 0 0 / 0.4), 0 1px 2px -1px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+}
