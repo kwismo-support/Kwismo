@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { api } from '@/shared/lib/api';
+import { api } from '@/shared/lib/axios';
 import { ENDPOINTS } from '@/config/endpoints';
 import { AUTH_USER_KEY } from '@/config/constants';
 import type { User } from '@/shared/types/user';
