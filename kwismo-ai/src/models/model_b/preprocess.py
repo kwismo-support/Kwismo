@@ -102,6 +102,17 @@ SLANG_NORMALIZATION = {
     "ave": "avez",
     "u": "vous",
     "ur": "votre",
+
+    # Témoignages & Descriptions d'utilisateurs (Camfranglais / Parler populaire)
+    "joss": "parler",
+    "joser": "parler",
+    "send": "envoyer",
+    "sender": "envoyer",
+    "do": "argent",
+    "doko": "argent",
+    "moni": "argent",
+    "malabar": "escroc",
+    "fou": "escroc",
 }
 
 # Définition des catégories stables d'escroqueries et de messages légitimes
@@ -109,26 +120,28 @@ CATEGORIES = {
     "fake_transfer_sms": [
         "vous avez reçu", "vous avez recu", "transfert effectué", "transfert effectue",
         "reçu par erreur", "recu par erreur", "renvoyer l'argent", "notification de transfert", "faux sms",
-        "crédités", "credites", "ajoutés à votre solde", "ajoutes a votre solde"
+        "crédités", "credites", "ajoutés à votre solde", "ajoutes a votre solde",
+        "m'a envoyé l'argent", "m'a envoye l'argent", "envoyé l'argent", "envoye l'argent", "fait l'erreur", "versé l'argent", "m'envoie l'argent"
     ],
     "fake_agent_otp": [
         "agent orange", "agent mtn", "compte bloqué", "compte bloque", "anomalie sur votre compte",
-        "donnez votre code", "tape le code", "composition du code", "mot de passe secret", "réclamer le code"
+        "donnez votre code", "tape le code", "composition du code", "mot de passe secret", "réclamer le code",
+        "service orange", "service mtn", "bloquer ma sim", "bloquer ma puce", "donne mon code", "donner mon code", "réclamer mon code"
     ],
     "lotto_winner_scam": [
         "félicitations", "felicitations", "loterie", "tirage au sort", "gagné", "gagne", "prime promo", "séjour à kribi",
-        "retirer votre lot", "frais de traitement", "grand gagnant"
+        "retirer votre lot", "frais de traitement", "grand gagnant", "gagné un prix", "gagne un prix", "acquisition du prix"
     ],
     "sim_swap_scam": [
         "sim swap", "reconduction de sim", "swap", "puce bloquée", "piratage de puce", "dupliquée"
     ],
     "recruitment_fee_scam": [
-        "recrutement", "recruteur", "offre d'emploi", "entretien à douala",
+        "recrutement", "recruteur", "offre d'emploi", "entretien à douala", "faux travail", "faux recrutement",
         "bourse d'étude", "bourse d'etude", "frais d'inscription", "concours administratif", "agence d'embauche"
     ],
     "identity_theft_social": [
         "usurpation d'identité", "usurpation d'identite", "faux profil", "arnaque amoureuse", "ami en détresse",
-        "militaire basé", "colis bloqué", "colis bloque"
+        "militaire basé", "colis bloqué", "colis bloque", "en danger", "send les do", "send l'argent", "envoyer l'argent", "accident", "usurpe"
     ],
     "legitimate_transaction": [
         "paiement de", "effectué avec succès", "effectue avec succes", "solde restant", "dépôt de", "depot de",
@@ -137,7 +150,7 @@ CATEGORIES = {
     ],
     "legitimate_chat": [
         "tu es où", "tu es ou", "on se voit", "envoie moi", "merci pour le transfert", "réunion", "reunion",
-        "embouteillages", "waka fine", "bonjour maman", "rendez-vous", "rendez vous", "billet de bus"
+        "embouteillages", "waka fine", "bonjour maman", "rendez-vous", "rendez vous", "billet de bus", "vérifier si ce numéro", "verifier si ce numero"
     ],
     "legitimate_info": [
         "sensibilisation", "règle d'or", "regle d'or", "conseils de sécurité", "conseils de securite",
