@@ -116,8 +116,9 @@ docker compose up --build ai
 | Commande | Effet |
 | -------- | ----- |
 | `uvicorn src.api.main:app --reload --port 8001` | Démarre le service d'inférence. |
+| `python -m src.data.clean` | Nettoie le dataset brut et extrait les cas de fraude → `data/processed/model_b_clean.jsonl`. |
 | `python -m src.models.model_a.train` | Entraîne le Modèle A (scoring). |
-| `python -m src.models.model_b.train` | Entraîne le Modèle B (NLP). |
+| `python -m src.models.model_b.train` | Entraîne le Modèle B (NLP & auto-catégorisation). |
 | `python -m src.evaluation.metrics` | Évalue les modèles (rappel, précision, F1). |
 | `python -m src.data.scrape` | Découvre des sources et scrape texte/image → `data/raw/scraped/`. |
 | `python -m src.data.scrape_social` | Scrape Facebook/Instagram/X. |
@@ -148,12 +149,13 @@ kwismo-ai/
 │  │  ├─ known_domains.json         # ★ Domaines découverts par le scraper — versionné
 │  │  └─ metrics/                   # ★ Historique + graphes de scraping — versionné
 │  └─ processed/                    # Données prêtes pour l'entraînement
-│     └─ .gitkeep
+│     ├─ model_b_clean.jsonl        # ★ Données nettoyées (504 extraits)
+│     └─ model_b_augmented.jsonl    # ★ Données augmentées synthétiques (1189 extraits)
 │
-├─ notebooks/                       # Exploration & entraînement (local + Colab)
-│  ├─ 01_exploration.ipynb          # Analyse exploratoire des données
+├─ notebooks/                       # Exploration & entraînement (local + Colab + Kaggle)
+│  ├─ 01_exploration.ipynb          # Analyse exploratoire des données (EDA)
 │  ├─ 02_train_model_a.ipynb        # Entraînement scoring (interactif)
-│  ├─ 03_train_model_b.ipynb        # Fine-tuning NLP AfroXLMR (Colab)
+│  ├─ 03_train_model_b.ipynb        # Fine-tuning NLP AfroXLMR (Colab / Kaggle)
 │  └─ 04_scraping.ipynb             # ★ Collecte + OCR + métriques (appelle src/data/)
 │
 ├─ src/                             # ★ Code source réutilisable
@@ -163,7 +165,8 @@ kwismo-ai/
 │  ├─ data/
 │  │  ├─ __init__.py
 │  │  ├─ collect.py                 # Réception des données depuis le backend
-│  │  ├─ clean.py                   # Nettoyage
+│  │  ├─ clean.py                   # Nettoyage et structuration des extraits de fraude
+│  │  ├─ augment.py                 # ★ Augmentation synthétique en Franglais/Pidgin
 │  │  ├─ features.py                # Construction des caractéristiques (Modèle A)
 │  │  ├─ scrape.py                  # ★ Découverte web dynamique + collecte texte/image
 │  │  ├─ scrape_social.py           # ★ Scraping Facebook/Instagram/X (Playwright)
@@ -182,9 +185,9 @@ kwismo-ai/
 │  │  │
 │  │  └─ model_b/                   # NLP multilingue (arnaque texte)
 │  │     ├─ __init__.py
-│  │     ├─ preprocess.py           # Prétraitement franglais/pidgin
-│  │     ├─ train.py                # Fine-tuning AfroXLMR (PEFT/LoRA) — Colab/PC
-│  │     ├─ predict.py              # Inférence (probabilité d'arnaque)
+│  │     ├─ preprocess.py           # Prétraitement franglais/pidgin & NER (montants, USSD)
+│  │     ├─ train.py                # Fine-tuning AfroXLMR (PEFT/LoRA) — Colab/PC/Kaggle
+│  │     ├─ predict.py              # Inférence (probabilité d'arnaque + catégorie)
 │  │     └─ fallback.py             # Repli TF-IDF + régression logistique
 │  │
 │  ├─ evaluation/
@@ -193,24 +196,25 @@ kwismo-ai/
 │  │
 │  └─ api/                          # ★ Service d'inférence (FastAPI)
 │     ├─ __init__.py
-│     ├─ main.py                    # ★ 5 routes : /predict/number, /predict/text, /feedback, /health, /version
-│     ├─ schemas.py                 # ★ Contrat d'API PARTAGÉ, identique à kwismo-backend/app/modules/ai_gateway/schemas.py
-│     ├─ errors.py                  # ★ slowapi (anti-surcharge) + gestionnaires d'erreurs globaux (anti-crash)
-│     ├─ middleware.py              # ★ Limite de taille de requête (texte trop long → 413)
-│     └─ loader.py                  # Charge la dernière version du modèle
+│     ├─ main.py                    # ★ Routes : /predict/number, /predict/text, /predict/batch_reports, /feedback
+│     ├─ schemas.py                 # ★ Contrat d'API PARTAGÉ avec kwismo-backend
+│     ├─ errors.py                  # ★ slowapi (anti-surcharge) + gestionnaires d'erreurs
+│     ├─ middleware.py              # ★ Limite de taille de requête
+│     └─ loader.py                  # ★ Charge les modèles avec Rollback automatique
 │
 ├─ models/                          # ★ Artefacts entraînés (partagés au backend)
 │  ├─ model_a/
-│  │  └─ .gitkeep                   # ex. model_a_v3.pkl (généré à l'entraînement)
+│  │  └─ .gitkeep                   # ex. model_a_v3.pkl
 │  ├─ model_b/
-│  │  └─ .gitkeep                   # modèle NLP quantifié
-│  └─ registry.json                 # Versions + métriques (versioning)
+│  │  └─ .gitkeep                   # modèles NLP quantifiés & fallback joblib
+│  └─ registry.json                 # Versions + métriques + historique de rollback
 │
 ├─ tests/
 │  ├─ __init__.py
 │  ├─ test_features.py
 │  ├─ test_model_a.py
 │  ├─ test_model_b.py
+│  ├─ test_model_b_extended.py      # ★ Suite étendue à 52 scénarios réels
 │  └─ test_api.py
 │
 ├─ scripts/
@@ -224,7 +228,8 @@ kwismo-ai/
 ├─ Dockerfile                       # Image du service d'inférence
 ├─ requirements.txt                 # scikit-learn, lightgbm, transformers, playwright, easyocr…
 ├─ pyproject.toml                   # requires-python + dependencies (pip install -e .)
-├─ COLAB.md                         # ★ Guide complet : lancer les notebooks sur Google Colab
+├─ COLAB.md                         # Guide d'exécution Google Colab
+├─ KAGGLE.md                        # ★ Guide d'exécution Kaggle Notebooks
 └─ README.md                        # Ce fichier
 ```
 
