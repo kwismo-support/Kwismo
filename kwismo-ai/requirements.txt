@@ -33,6 +33,7 @@ imagehash>=4.3          # dédoublonnage d'images quasi identiques
 Pillow>=10.0
 duckduckgo_search>=6.0 # découverte dynamique de sites (recherche web, sans clé API)
 matplotlib>=3.8         # graphes d'évolution de la collecte (src/data/metrics.py)
+seaborn>=0.13.0        # visualisations graphiques avancées des notebooks
 
 # --- Notebooks (exploration & entraînement local/Colab/Kaggle) ---
 jupyter>=1.0
