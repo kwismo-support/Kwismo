@@ -19,7 +19,7 @@ dist/
 .env
 
 # Donnees
-data/raw/*
+#data/raw/*
 !data/raw/.gitkeep
 !data/raw/scraped/
 data/raw/scraped/images/
