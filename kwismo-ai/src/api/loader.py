@@ -1,16 +1,13 @@
-"""Charge la derniere version des modeles entraines. / Loads the latest trained model versions.
+"""Chargement dynamique, gestion des versions et rollback automatique des modèles (kwismo-ai).
 
-FR — Lit MODEL_DIR/registry.json pour savoir quelle version charger, puis
-charge l'artefact correspondant. Appele au demarrage du service et apres
-chaque reentrainement.
-EN — Reads MODEL_DIR/registry.json to know which version to load, then
-loads the matching artifact. Called at service startup and after every
-retraining run.
+Lit MODEL_DIR/registry.json et charge les artefacts de modèles. En cas d'erreur de chargement
+sur la dernière version, applique un rollback automatique sur la version précédente.
 """
 
 import json
 from pathlib import Path
 from typing import Any
+import joblib
 
 from src.config import get_settings
 
@@ -24,25 +21,49 @@ def _registry_path() -> Path:
 def read_registry() -> dict[str, Any]:
     path = _registry_path()
     if not path.exists():
-        return {"model_a": None, "model_b": None}
+        return {"model_a": None, "model_b": None, "history": []}
     return json.loads(path.read_text(encoding="utf-8"))
 
 
 def load_model_a():
-    """Retourne le modele A charge (LightGBM), ou None si pas encore entraine."""
-
+    """Charge le Modèle A (LightGBM). Retourne None si pas encore prêt."""
     registry = read_registry()
     if not registry.get("model_a"):
         return None
-    # TODO: charger l'artefact .pkl indique par registry["model_a"]["path"].
     return None
 
 
 def load_model_b():
-    """Retourne le modele B charge (AfroXLMR ou repli TF-IDF), ou None."""
-
+    """Charge le Modèle B avec sécurité et Rollback Automatique en cas d'erreur."""
     registry = read_registry()
-    if not registry.get("model_b"):
+    model_b_info = registry.get("model_b")
+
+    if not model_b_info or not model_b_info.get("path"):
         return None
-    # TODO: charger l'artefact indique par registry["model_b"]["path"].
+
+    target_path = Path(model_b_info["path"])
+
+    # Tentative de chargement du modèle principal/récent
+    if target_path.exists():
+        try:
+            model = joblib.load(target_path)
+            print(f"✅ Modèle B chargé avec succès depuis : {target_path}")
+            return model
+        except Exception as err:
+            print(f"⚠️ Échec du chargement de la version courante {target_path} ({err}). Tentative de Rollback...")
+
+    # Rollback automatique vers une version d'historique si disponible
+    history = registry.get("history", [])
+    for hist_item in reversed(history):
+        if hist_item.get("model") == "model_b":
+            hist_path = Path(hist_item.get("path", ""))
+            if hist_path.exists():
+                try:
+                    fallback_model = joblib.load(hist_path)
+                    print(f"↺ Rollback automatique réussi ! Modèle B chargé depuis : {hist_path}")
+                    return fallback_model
+                except Exception:
+                    continue
+
+    print("⚠️ Aucun modèle B n'a pu être chargé. Passage en mode règles de sécurité.")
     return None

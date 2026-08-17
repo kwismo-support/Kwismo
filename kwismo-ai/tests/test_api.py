@@ -1,7 +1,6 @@
-"""Tests de l'API d'inference. / Inference API tests."""
+"""Tests de l'API d'inférence (FastAPI)."""
 
 from fastapi.testclient import TestClient
-
 from src.api.main import app
 
 client = TestClient(app)
@@ -13,6 +12,33 @@ def test_health() -> None:
     assert response.json()["status"] == "ok"
 
 
-def test_predict_number_not_implemented_yet() -> None:
-    response = client.post("/predict/number", json={"numero": "+237690000000"})
-    assert response.status_code == 501
+def test_predict_number() -> None:
+    response = client.post("/predict/number", json={"numero": "+237690000000", "nombre_signalements": 4})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["statut"] == "frauduleux"
+    assert data["score_risque"] > 0.8
+
+
+def test_predict_text() -> None:
+    response = client.post("/predict/text", json={"texte": "Vous avez gagné 50000 FCFA, tapez le code OTP"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["est_arnaque"] is True
+    assert data["categorie_detectee"] == "fake_agent_otp"
+
+
+def test_predict_batch_reports() -> None:
+    payload = {
+        "reports": [
+            {"id_signalement": "sig_1", "description": "Faux SMS de transfert reçu"},
+            {"id_signalement": "sig_2", "description": "Appel d'un prétendu agent"}
+        ],
+        "cache_categories": {"sig_0": "existing_cat"}
+    }
+    response = client.post("/predict/batch_reports", json=payload)
+    assert response.status_code == 200
+    cats = response.json()["categories"]
+    assert "sig_1" in cats
+    assert "sig_2" in cats
+    assert cats["sig_0"] == "existing_cat"
