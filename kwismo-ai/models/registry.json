@@ -4,8 +4,8 @@
     "version": "v1",
     "type": "fallback_tfidf",
     "path": "models\\model_b\\model_b_fallback_v1.joblib",
-    "total_samples": 1184,
-    "trained_at": "2026-08-17T15:53:18.875642+00:00"
+    "total_samples": 1179,
+    "trained_at": "2026-08-17T16:28:59.119951+00:00"
   },
   "history": [
     {
@@ -23,6 +23,22 @@
       "path": "models\\model_b\\model_b_fallback_v1.joblib",
       "total_samples": 1189,
       "trained_at": "2026-08-17T13:51:36.172329+00:00"
+    },
+    {
+      "model": "model_b",
+      "version": "v1",
+      "type": "fallback_tfidf",
+      "path": "models\\model_b\\model_b_fallback_v1.joblib",
+      "total_samples": 1184,
+      "trained_at": "2026-08-17T15:53:18.875642+00:00"
+    },
+    {
+      "model": "model_b",
+      "version": "v1",
+      "type": "fallback_tfidf",
+      "path": "models\\model_b\\model_b_fallback_v1.joblib",
+      "total_samples": 1184,
+      "trained_at": "2026-08-17T16:19:37.009755+00:00"
     }
   ]
 }
