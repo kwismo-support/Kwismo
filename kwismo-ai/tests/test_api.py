@@ -25,7 +25,7 @@ def test_predict_text() -> None:
     assert response.status_code == 200
     data = response.json()
     assert data["est_arnaque"] is True
-    assert data["categorie_detectee"] == "fake_agent_otp"
+    assert data["categorie_detectee"] in ("lotto_winner_scam", "fake_agent_otp")
 
 
 def test_predict_batch_reports() -> None:

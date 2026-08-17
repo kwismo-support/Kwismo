@@ -104,31 +104,40 @@ SLANG_NORMALIZATION = {
     "ur": "votre",
 }
 
-# Définition des catégories stables d'escroqueries
+# Définition des catégories stables d'escroqueries et de messages légitimes
 CATEGORIES = {
     "fake_transfer_sms": [
-        "vous avez reçu", "vous avez recu", "nouveau solde", "transfert effectué", "transfert effectue",
+        "vous avez reçu", "vous avez recu", "transfert effectué", "transfert effectue",
         "reçu par erreur", "recu par erreur", "renvoyer l'argent", "notification de transfert", "faux sms",
         "crédités", "credites", "ajoutés à votre solde", "ajoutes a votre solde"
     ],
     "fake_agent_otp": [
-        "agent orange", "agent mtn", "service client", "compte bloqué", "compte bloque", "anomalie sur votre compte",
-        "donnez votre code", "code secret", "tape le code", "composition du code", "mot de passe", "réclamer le code"
+        "agent orange", "agent mtn", "compte bloqué", "compte bloque", "anomalie sur votre compte",
+        "donnez votre code", "tape le code", "composition du code", "mot de passe secret", "réclamer le code"
     ],
     "lotto_winner_scam": [
         "félicitations", "felicitations", "loterie", "tirage au sort", "gagné", "gagne", "prime promo", "séjour à kribi",
         "retirer votre lot", "frais de traitement", "grand gagnant"
     ],
     "sim_swap_scam": [
-        "sim swap", "carte sim", "puce sim", "reconduction de sim", "swap", "puce bloquée", "piratage de puce", "dupliquée"
+        "sim swap", "reconduction de sim", "swap", "puce bloquée", "piratage de puce", "dupliquée"
     ],
     "recruitment_fee_scam": [
-        "recrutement", "recruteur", "offre d'emploi", "entretien à douala", "frais de dossier",
-        "bourse d'étude", "bourse d'etude", "frais d'inscription", "concours", "concours administratif", "agence d'embauche"
+        "recrutement", "recruteur", "offre d'emploi", "entretien à douala",
+        "bourse d'étude", "bourse d'etude", "frais d'inscription", "concours administratif", "agence d'embauche"
     ],
     "identity_theft_social": [
         "usurpation d'identité", "usurpation d'identite", "faux profil", "arnaque amoureuse", "ami en détresse",
         "militaire basé", "colis bloqué", "colis bloque"
+    ],
+    "legitimate_transaction": [
+        "paiement de", "effectué avec succès", "effectue avec succes", "solde restant", "dépôt de", "depot de",
+        "solde disponible", "réglée avec succès", "reglee avec succes", "réussi", "reussi", "forfait internet",
+        "souscrit au forfait", "frais:", "frais :"
+    ],
+    "legitimate_chat": [
+        "tu es où", "tu es ou", "on se voit", "envoie moi", "merci pour le transfert", "réunion", "reunion",
+        "embouteillages", "waka fine", "bonjour maman", "rendez-vous", "rendez vous", "billet de bus"
     ],
     "legitimate_info": [
         "sensibilisation", "règle d'or", "regle d'or", "conseils de sécurité", "conseils de securite",

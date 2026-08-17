@@ -1,0 +1,25 @@
+{"id_signalement": "legit_001", "texte": "Paiement de 2000 FCFA à la superette effectué avec succès. Solde restant: 15400 FCFA. Ref: 48291048.", "type_origine": "texte", "source_origine": "sms_operateur"}
+{"id_signalement": "legit_002", "texte": "Dépôt de 10000 FCFA réussi sur votre compte Orange Money. Solde disponible: 32000 FCFA.", "type_origine": "texte", "source_origine": "sms_operateur"}
+{"id_signalement": "legit_003", "texte": "Votre solde MoMo est de 4500 FCFA. Pour souscrire aux forfaits internet tapez *126#.", "type_origine": "texte", "source_origine": "sms_operateur"}
+{"id_signalement": "legit_004", "texte": "Recharge de 1000 FCFA effectuée. Vous avez reçu 100% de bonus crédit communication.", "type_origine": "texte", "source_origine": "sms_operateur"}
+{"id_signalement": "legit_005", "texte": "Sensibilisation officielle ANTIC : Ne communiquez jamais votre code secret PIN MoMo à un tiers.", "type_origine": "texte", "source_origine": "alerte_officielle"}
+{"id_signalement": "legit_006", "texte": "Facture Eneo de 12500 FCFA réglée avec succès via Mobile Money. Transaction N° 9812401.", "type_origine": "texte", "source_origine": "sms_operateur"}
+{"id_signalement": "legit_007", "texte": "Salut bro, tu es où ? On se voit à Bastos ce soir vers 19h ?", "type_origine": "texte", "source_origine": "discussion_personnelle"}
+{"id_signalement": "legit_008", "texte": "Stp envoie moi le document PDF par WhatsApp quand tu arrives au bureau.", "type_origine": "texte", "source_origine": "discussion_personnelle"}
+{"id_signalement": "legit_009", "texte": "Merci pour le transfert d'hier, j'ai bien reçu les fonds sur mon compte.", "type_origine": "texte", "source_origine": "discussion_personnelle"}
+{"id_signalement": "legit_010", "texte": "Bonjour monsieur, à quelle heure commence la réunion de projet demain matin ?", "type_origine": "texte", "source_origine": "discussion_personnelle"}
+{"id_signalement": "legit_011", "texte": "Pardonne-moi du retard, j'étais coincé dans les embouteillages à Ndokoti.", "type_origine": "texte", "source_origine": "discussion_personnelle"}
+{"id_signalement": "legit_012", "texte": "Confirmation de paiement Camwater : 8500 FCFA réglés par Orange Money le 15/08.", "type_origine": "texte", "source_origine": "sms_operateur"}
+{"id_signalement": "legit_013", "texte": "Vous avez souscrit au forfait Internet Yamo 2Go valable 7 jours pour 1000 FCFA.", "type_origine": "texte", "source_origine": "sms_operateur"}
+{"id_signalement": "legit_014", "texte": "Conseil de sécurité CIRT-CM : Aucun agent MTN ou Orange ne vous demandera votre mot de passe.", "type_origine": "texte", "source_origine": "alerte_officielle"}
+{"id_signalement": "legit_015", "texte": "Transfert de 5000 FCFA envoyé à Paul avec succès. Frais: 50 FCFA. Solde: 12000 FCFA.", "type_origine": "texte", "source_origine": "sms_operateur"}
+{"id_signalement": "legit_016", "texte": "J'ai déposé le colis chez le gardien à l'entrée de la maison.", "type_origine": "texte", "source_origine": "discussion_personnelle"}
+{"id_signalement": "legit_017", "texte": "Merci d'avoir contacté le service client Orange Cameroun. Bonne journée !", "type_origine": "texte", "source_origine": "sms_operateur"}
+{"id_signalement": "legit_018", "texte": "Votre demande de renouvellement de pièce d'identité a été enregistrée.", "type_origine": "texte", "source_origine": "service_public"}
+{"id_signalement": "legit_019", "texte": "Waka fine bro! On se rappelle plus tard quand je finis le travail.", "type_origine": "texte", "source_origine": "discussion_personnelle"}
+{"id_signalement": "legit_020", "texte": "Rappel de rendez-vous médical demain à 10h à l'hôpital général de Yaoundé.", "type_origine": "texte", "source_origine": "notification_service"}
+{"id_signalement": "legit_021", "texte": "Paiement Canal+ de 15000 FCFA effectué. Vos chaînes seront réactivées dans 5 minutes.", "type_origine": "texte", "source_origine": "sms_operateur"}
+{"id_signalement": "legit_022", "texte": "Votre solde de points de fidélité est de 450 points. Tapez *123# pour échanger.", "type_origine": "texte", "source_origine": "sms_operateur"}
+{"id_signalement": "legit_023", "texte": "Bonjour Maman, j'ai bien reçu les vivres que tu as envoyés par l'agence de voyage.", "type_origine": "texte", "source_origine": "discussion_personnelle"}
+{"id_signalement": "legit_024", "texte": "Information MTN : Interruption de service programmée ce dimanche de 02h à 04h pour maintenance.", "type_origine": "texte", "source_origine": "sms_operateur"}
+{"id_signalement": "legit_025", "texte": "Merci d'avoir acheté votre billet de bus Douala - Yaoundé. Départ prévu à 08h00.", "type_origine": "texte", "source_origine": "notification_service"}
