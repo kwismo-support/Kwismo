@@ -57,13 +57,28 @@ SEARCH_KEYWORDS = [
     "phishing whatsapp cameroun",
     "scam cameroon mobile money",
     "identity theft cameroon fraud",
+    "escroquerie orange money cameroun",
+    "code validation mobile money arnaque",
+    "frais de retrait mobile money arnaque",
+    "faux transfert mtn momo cameroun",
+    "usurpation de compte whatsapp cameroun",
+    "arnaque concours recrutement cameroun mobile money",
+    "compte bloque mtn momo cameroun",
+    "arnaque tontine en ligne cameroun",
+    "piratage sim swap cameroun",
+    "code secret mtn 126 arnaque",
+    "code secret orange 150 arnaque",
+    "temoignage victime arnaque momo",
+    "sms frauduleux banque cameroun",
+    "usurpation identite antic cameroun",
 ]
 
 # Presence d'au moins un de ces mots dans le texte d'une page = jugee pertinente.
 RELEVANCE_KEYWORDS = [
     "arnaque", "scam", "escroquerie", "fraude", "pirat", "usurp", "vol ",
     "vide", "otp", "code secret", "momo", "mobile money", "orange money",
-    "phishing", "hameconnage", "hameçonnage",
+    "phishing", "hameconnage", "hameçonnage", "transfert", "sim swap",
+    "tontine", "recrutement", "depot", "dépôt", "frais", "gain", "gagné",
 ]
 
 MAX_IMAGES_PER_PAGE = 10

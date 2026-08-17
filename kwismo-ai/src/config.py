@@ -23,13 +23,13 @@ class Settings(BaseSettings):
 
     # Scraping
     scraper_user_agent: str = "KWISMO-DataCollector/1.0"
-    scraper_delay_seconds: float = 3.0
-    scraper_max_concurrency: int = 2
+    scraper_delay_seconds: float = 2.0
+    scraper_max_concurrency: int = 3
     scraper_timeout_seconds: float = 15.0
     scraper_max_retries: int = 3
     scraper_proxy_url: str = ""  # optionnel : proxy legitime deja detenu par l'entreprise
     scraper_search_region: str = "fr-fr"
-    scraper_max_results_per_keyword: int = 10
+    scraper_max_results_per_keyword: int = 30
 
     # Comptes dedies au scraping, plusieurs par plateforme possibles :
     # "user1:pass1,user2:pass2" — essayes dans l'ordre, jamais de bascule
