@@ -1,18 +1,14 @@
-"""Contrat d'API partage avec kwismo-backend (module ai_gateway). / Shared API contract with kwismo-backend (ai_gateway module).
+"""Contrat d'API partagé avec kwismo-backend (module ai_gateway). / Shared API contract with kwismo-backend (ai_gateway module).
 
-FR — Doit rester identique a
-kwismo-backend/app/modules/ai_gateway/schemas.py : aucun des deux services
+FR — Doit rester identique à kwismo-backend/app/modules/ai_gateway/schemas.py : aucun des deux services
 ne doit deviner le format de l'autre.
-EN — Must stay identical to
-kwismo-backend/app/modules/ai_gateway/schemas.py: neither service should
-ever guess the other's format.
 """
 
 from pydantic import BaseModel, Field
 
 
 class NumberFeaturesIn(BaseModel):
-    """Caracteristiques recues par POST /predict/number (Modele A). / Features received by POST /predict/number (Model A)."""
+    """Caractéristiques reçues par POST /predict/number (Modèle A)."""
 
     numero: str
     nombre_signalements: int = Field(0, ge=0)
@@ -34,20 +30,36 @@ class PredictNumberOut(BaseModel):
 
 
 class TextIn(BaseModel):
-    """Message reçu par POST /predict/text (Modèle B). / Message received by POST /predict/text (Model B)."""
+    """Message reçu par POST /predict/text (Modèle B)."""
 
-    texte: str = Field(..., examples=["Felicitation ! Vous avez gagné 500000F, envoyez le code OTP pour recevoir."])
+    texte: str = Field(..., examples=["Felicitation ! Vous avez gagné 50000F, envoyez le code OTP pour recevoir."])
     langue: str | None = Field(None, examples=["fr"], description="Indice de langue, détection automatique sinon.")
 
 
 class PredictTextOut(BaseModel):
     probabilite_arnaque: float = Field(..., ge=0, le=1)
     est_arnaque: bool
-    modele_utilise: str = Field(..., examples=["afroxlmr_v2"], description="Ou 'tfidf_fallback' en repli.")
+    categorie_detectee: str = Field("unknown_scam_pattern", examples=["fake_agent_otp"])
+    entites_extraites: dict[str, list[str]] = Field(default_factory=dict, description="Montants, codes USSD et numéros cibles (NER).")
+    modele_utilise: str = Field("model_b_v1", examples=["model_b_v1"])
+
+
+class ReportItemIn(BaseModel):
+    id_signalement: str
+    description: str
+
+
+class BatchReportIn(BaseModel):
+    reports: list[ReportItemIn]
+    cache_categories: dict[str, str] = Field(default_factory=dict)
+
+
+class BatchReportOut(BaseModel):
+    categories: dict[str, str]
 
 
 class FeedbackIn(BaseModel):
-    """Nouvelle donnée étiquetée reçue pour l'apprentissage continu. / New labeled data received for continuous learning."""
+    """Nouvelle donnée étiquetée reçue pour l'apprentissage continu."""
 
     type: str = Field(..., examples=["number"], description="'number' ou 'text'.")
     numero: str | None = None

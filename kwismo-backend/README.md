@@ -256,7 +256,9 @@ kwismo-backend/
 │  │     ├─ client.py                # Appels HTTP vers l'IA (/predict, /feedback) + timeout
 │  │     ├─ schemas.py               # ★ Contrat d'API PARTAGÉ, identique à kwismo-ai/src/api/schemas.py
 │  │     ├─ fallback_rules.py        # Règles expertes de repli si l'IA est indisponible
-│  │     └─ queue.py                 # Envoi asynchrone des signalements (apprentissage continu)
+│  │     ├─ queue.py                 # Envoi asynchrone des signalements (apprentissage continu)
+│  │     ├─ service.py               # ★ Modération et gestion des catégories d'arnaques
+│  │     └─ router.py                # ★ 2 routes /admin/scam-categories (GET, PATCH)
 │  │
 │  ├─ locales/                       # Traductions servies par le backend
 │  │  ├─ fr.json                     # errors.*, notifications.*, emails.*

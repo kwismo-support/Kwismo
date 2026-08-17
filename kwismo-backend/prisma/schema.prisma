@@ -184,15 +184,16 @@ model Contact {
 }
 
 model Report {
-  id              String     @id @default(cuid())
+  id              String           @id @default(cuid())
   userId          String
-  user            User       @relation(fields: [userId], references: [id])
+  user            User             @relation(fields: [userId], references: [id])
   numeroId        String
-  numero          Numero     @relation(fields: [numeroId], references: [id])
+  numero          Numero           @relation(fields: [numeroId], references: [id])
   motif           String
-  dateSignalement DateTime   @default(now())
-  statut          String     @default("pending") // pending | validated | rejected
+  dateSignalement DateTime         @default(now())
+  statut          String           @default("pending") // pending | validated | rejected
   feedbacks       Feedback[]
+  categories      ReportCategory[]
 
   @@index([userId])
   @@index([numeroId])
@@ -431,3 +432,31 @@ model Feedback {
   @@index([userId])
   @@index([reportId])
 }
+
+// ---------------------------------------------------------------------------
+// Catégories d'arnaques découvertes dynamiquement par l'IA
+// ---------------------------------------------------------------------------
+
+model ScamCategory {
+  id          String   @id @default(cuid())
+  nomCode     String   @unique // ex: "fake_agent_otp", "fake_transfer_sms"
+  libelle     String?
+  description String?
+  createdAt   DateTime @default(now())
+
+  reportCategories ReportCategory[]
+}
+
+model ReportCategory {
+  id             String       @id @default(cuid())
+  reportId       String
+  report         Report       @relation(fields: [reportId], references: [id])
+  scamCategoryId String
+  scamCategory   ScamCategory @relation(fields: [scamCategoryId], references: [id])
+  createdAt      DateTime     @default(now())
+
+  @@unique([reportId, scamCategoryId])
+  @@index([reportId])
+  @@index([scamCategoryId])
+}
+
