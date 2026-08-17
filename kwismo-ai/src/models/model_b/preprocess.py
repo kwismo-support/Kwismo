@@ -5,6 +5,8 @@ dans des catégories stables d'escroqueries sans recalculer les descriptions dé
 """
 
 import re
+import json
+from pathlib import Path
 from typing import Any
 
 # Nettoyage des répétitions ex: "gagnéééé" -> "gagné"
@@ -15,105 +17,19 @@ _AMOUNT_RE = re.compile(r"\b\d+[\d\s\.]*\s*(?:fcfa|f cfa|cfa|f)\b", re.IGNORECAS
 _USSD_RE = re.compile(r"\*(?:\d+\*)*\d+#")
 _PHONE_RE = re.compile(r"\b(?:237)?6[5-9]\d{7}\b")
 
-# Dictionnaire étendu de normalisation des raccourcis SMS / Argot local / Pidgin
-SLANG_NORMALIZATION = {
-    # Abbréviations Mobile Money & Télécoms
-    "momo": "mobile money",
-    "momos": "mobile money",
-    "om": "orange money",
-    "oms": "orange money",
-    "watsap": "whatsapp",
-    "watsapp": "whatsapp",
-    "wassap": "whatsapp",
-    "whatapp": "whatsapp",
-    "mtn": "mtn mobile money",
-    "orange": "orange money",
+# Chargement dynamique de la ressource externe de normalisation (slang_dictionary.json)
+_SLANG_FILE = Path(__file__).resolve().parent.parent.parent / "data" / "slang_dictionary.json"
 
-    # Salutations & Mots de politesse
-    "slm": "salut",
-    "slt": "salut",
-    "bjr": "bonjour",
-    "bsr": "bonsoir",
-    "stp": "s'il te plaît",
-    "svp": "s'il vous plaît",
-    "mrc": "merci",
-    "mrci": "merci",
-    "cc": "coucou",
+def _load_slang_dictionary() -> dict[str, str]:
+    if _SLANG_FILE.exists():
+        try:
+            data = json.loads(_SLANG_FILE.read_text(encoding="utf-8"))
+            return data.get("terms", {})
+        except Exception:
+            pass
+    return {}
 
-    # Mots de fraude & Sécurité
-    "gagne": "gagné",
-    "gagnéé": "gagné",
-    "gagnééé": "gagné",
-    "gagnr": "gagné",
-    "flicitation": "félicitations",
-    "felicitation": "félicitations",
-    "felicitations": "félicitations",
-    "frs": "fcfa",
-    "f cfa": "fcfa",
-    "cfa": "fcfa",
-    "code pin": "code secret",
-    "pin": "code secret",
-    "otp": "code secret",
-    "otpp": "code secret",
-    "kod": "code",
-    "kode": "code",
-    "sekrè": "secret",
-    "sékré": "secret",
-    "skret": "secret",
-
-    # SMS shortcuts & Grammaire SMS courante
-    "recu": "reçu",
-    "recue": "reçu",
-    "reçue": "reçu",
-    "recus": "reçu",
-    "transfer": "transfert",
-    "transfrt": "transfert",
-    "transfere": "transfert",
-    "transfére": "transfert",
-    "depot": "dépôt",
-    "dépô": "dépôt",
-    "retrai": "retrait",
-    "retraite": "retrait",
-    "kmpte": "compte",
-    "compt": "compte",
-    "cpte": "compte",
-    "moni": "argent",
-    "do": "argent",
-    "doko": "argent",
-    "cmbn": "combien",
-    "pck": "parce que",
-    "parss": "parce que",
-    "pq": "pourquoi",
-    "tjr": "toujours",
-    "tjrs": "toujours",
-    "drr": "de rien",
-    "stt": "surtout",
-    "bcp": "beaucoup",
-    "msg": "message",
-    "num": "numéro",
-    "nume": "numéro",
-    "nber": "numéro",
-    "tél": "téléphone",
-    "tel": "téléphone",
-    "tfkn": "téléphone",
-    "vou": "vous",
-    "vouz": "vous",
-    "avé": "avez",
-    "ave": "avez",
-    "u": "vous",
-    "ur": "votre",
-
-    # Témoignages & Descriptions d'utilisateurs (Camfranglais / Parler populaire)
-    "joss": "parler",
-    "joser": "parler",
-    "send": "envoyer",
-    "sender": "envoyer",
-    "do": "argent",
-    "doko": "argent",
-    "moni": "argent",
-    "malabar": "escroc",
-    "fou": "escroc",
-}
+SLANG_NORMALIZATION = _load_slang_dictionary()
 
 # Définition des catégories stables d'escroqueries et de messages légitimes
 CATEGORIES = {
