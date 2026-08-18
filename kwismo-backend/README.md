@@ -4,7 +4,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.11+-2FAC66)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.11x-2D2E83)](https://fastapi.tiangolo.com)
-[![Prisma](https://img.shields.io/badge/Prisma-Client%20Python-F39200)](https://prisma-client-py.readthedocs.io)
+[![Prisma](<https://img.shields.io/badge/Prisma-Client%20Python-F39200>)](https://prisma-client-py.readthedocs.io)
 
 ---
 
@@ -13,17 +13,17 @@
 1. [Description](#1-description)
 2. [Stack technique](#2-stack-technique)
 3. [Prérequis](#3-prérequis)
-4. [Installation & démarrage](#4-installation--démarrage)
+4. [Installation &amp; démarrage](#4-installation--démarrage)
 5. [Commandes utiles](#5-commandes-utiles)
 6. [Structure complète des dossiers et fichiers](#6-structure-complète-des-dossiers-et-fichiers)
 7. [Rôle de chaque dossier](#7-rôle-de-chaque-dossier)
 8. [Base de données (Prisma)](#8-base-de-données-prisma)
-9. [Modules & routes API](#9-modules--routes-api)
+9. [Modules &amp; routes API](#9-modules--routes-api)
 10. [Sécurité](#10-sécurité)
 11. [Internationalisation](#11-internationalisation)
 12. [Communication avec le service IA](#12-communication-avec-le-service-ia)
 13. [Tests](#13-tests)
-14. [Variables d'environnement](#14-variables-denvironnement)
+14. [Variables d&#39;environnement](#14-variables-denvironnement)
 
 ---
 
@@ -42,19 +42,19 @@ Il est **hybride** : le même code fonctionne sur SQLite (défaut), PostgreSQL o
 
 ## 2. Stack technique
 
-| Domaine | Technologie |
-| ------- | ----------- |
-| Langage | Python 3.11+ |
-| Framework API | FastAPI |
-| Serveur ASGI | Uvicorn (+ Gunicorn en prod) |
-| ORM | Prisma Client Python |
-| Validation | Pydantic v2 |
+| Domaine          | Technologie                              |
+| ---------------- | ---------------------------------------- |
+| Langage          | Python 3.11+                             |
+| Framework API    | FastAPI                                  |
+| Serveur ASGI     | Uvicorn (+ Gunicorn en prod)             |
+| ORM              | Prisma Client Python                     |
+| Validation       | Pydantic v2                              |
 | Authentification | JWT (python-jose) + Argon2 (argon2-cffi) |
-| Documentation | Swagger UI + ReDoc (auto-générés) |
-| Cache / files | Redis (optionnel) |
-| Tests | pytest + httpx |
-| Qualité | Ruff + Black + mypy |
-| Conteneurisation | Docker + docker-compose |
+| Documentation    | Swagger UI + ReDoc (auto-générés)     |
+| Cache / files    | Redis (optionnel)                        |
+| Tests            | pytest + httpx                           |
+| Qualité         | Ruff + Black + mypy                      |
+| Conteneurisation | Docker + docker-compose                  |
 
 ---
 
@@ -117,16 +117,16 @@ docker compose up --build backend
 
 ## 5. Commandes utiles
 
-| Commande | Effet |
-| -------- | ----- |
-| `uvicorn app.main:app --reload` | Démarre l'API en mode développement (rechargement auto). |
-| `prisma generate` | Régénère le client Prisma après modification du schéma. |
-| `prisma migrate dev --name <nom>` | Crée et applique une migration. |
-| `prisma studio` | Ouvre une interface visuelle de la base. |
-| `python scripts/seed.py` | Insère des données de test. |
-| `pytest` | Lance la suite de tests. |
-| `ruff check . && black . && mypy app` | Vérifie la qualité du code. |
-| `gunicorn app.main:app -k uvicorn.workers.UvicornWorker` | Démarre en mode production. |
+| Commande                                                   | Effet                                                        |
+| ---------------------------------------------------------- | ------------------------------------------------------------ |
+| `uvicorn app.main:app --reload`                          | Démarre l'API en mode développement (rechargement auto).   |
+| `prisma generate`                                        | Régénère le client Prisma après modification du schéma. |
+| `prisma migrate dev --name <nom>`                        | Crée et applique une migration.                             |
+| `prisma studio`                                          | Ouvre une interface visuelle de la base.                     |
+| `python scripts/seed.py`                                 | Insère des données de test.                                |
+| `pytest`                                                 | Lance la suite de tests.                                     |
+| `ruff check . && black . && mypy app`                    | Vérifie la qualité du code.                                |
+| `gunicorn app.main:app -k uvicorn.workers.UvicornWorker` | Démarre en mode production.                                 |
 
 ---
 
@@ -141,15 +141,19 @@ kwismo-backend/
 │  │
 │  ├─ core/                          # Cœur transverse (partagé par tous les modules)
 │  │  ├─ __init__.py
-│  │  ├─ config.py                   # Settings Pydantic (lecture des variables .env)
-│  │  ├─ security.py                 # Schéma Bearer + get_current_user (squelette JWT)
-│  │  ├─ permissions.py              # RBAC : require_roles("admin"), require_roles("partner")
-│  │  ├─ schemas.py                  # Page[T], ErrorResponse, Message, HealthOut (bilingues)
-│  │  ├─ rate_limit.py               # ★ slowapi : limite globale + AUTH/OTP_RATE_LIMIT (anti brute-force)
-│  │  ├─ middleware.py               # ★ En-têtes de sécurité HTTP + limite de taille de requête
+│  │  ├─ audit_log.py                # Logging d'audit et AuditLogMiddleware
+│  │  ├─ cache.py                    # Gestion du cache Redis et helpers d'invalidation
+│  │  ├─ config.py                   # Settings Pydantic (lecture des variables .env, SMTP, Twilio)
 │  │  ├─ exceptions.py               # ★ not_implemented() + gestionnaires globaux (anti-crash)
 │  │  ├─ i18n.py                     # Chargement des traductions, résolution de la langue
-│  │  └─ logging.py                  # Configuration des logs structurés (JSON)
+│  │  ├─ lang.py                     # Dépendance d'extraction de la langue (Accept-Language)
+│  │  ├─ logging.py                  # Configuration des logs structurés (JSON)
+│  │  ├─ middleware.py               # ★ En-têtes de sécurité HTTP + limite de taille de requête
+│  │  ├─ permissions.py              # RBAC : require_roles("admin", "partner", "user")
+│  │  ├─ rate_limit.py               # ★ slowapi : limite globale + AUTH/OTP_RATE_LIMIT (anti brute-force)
+│  │  ├─ schemas.py                  # Page[T], ErrorResponse, Message, HealthOut (bilingues)
+│  │  ├─ security.py                 # Hachage Argon2, génération et validation des tokens JWT
+│  │  └─ token_store.py              # Gestion et révocation des tokens (blacklist Redis/mémoire)
 │  │
 │  ├─ db/
 │  │  ├─ __init__.py
@@ -185,10 +189,17 @@ kwismo-backend/
 │  │  │  ├─ router.py                # ★ 6 routes /users/me/phones/* (ajout, OTP SMS, compromission)
 │  │  │  └─ schemas.py               # UserPhoneOut, UserPhoneAddIn, CompromiseIncidentOut…
 │  │  │
-│  │  ├─ contacts/                   # ★ Ajouté (voir note §9 plus bas)
+│  │  ├─ contacts/                   # Carnet de contacts à insignes
 │  │  │  ├─ __init__.py
 │  │  │  ├─ router.py                # ★ 4 routes /contacts/* (liste à insignes)
-│  │  │  └─ schemas.py               # ContactOut, ContactAddIn
+│  │  │  ├─ schemas.py               # ContactOut, ContactAddIn
+│  │  │  └─ service.py               # Gestion du carnet de contacts
+│  │  │
+│  │  ├─ devices/                    # Appareils connectés
+│  │  │  ├─ __init__.py
+│  │  │  ├─ router.py                # ★ 1 route GET /devices
+│  │  │  ├─ schemas.py               # DeviceOut
+│  │  │  └─ service.py               # Gestion et déconnexion des appareils
 │  │  │
 │  │  ├─ numbers/
 │  │  │  ├─ __init__.py
@@ -266,10 +277,14 @@ kwismo-backend/
 │  │
 │  └─ utils/
 │     ├─ __init__.py
-│     ├─ phone.py                    # Normalisation/validation de numéros
+│     ├─ crypto.py                   # Chiffrement/déchiffrement de champs sensibles Fernet
+│     ├─ dates.py                    # Helpers de dates UTC et d'expiration
+│     ├─ email.py                    # ★ Envoi d'emails avec chaîne de secours : Resend -> Google SMTP -> Console
+│     ├─ feedback.py                 # File d'attente d'apprentissage continu des signalements
+│     ├─ i18n.py                     # Dictionnaire de clés et messages bilingues
+│     ├─ otp.py                      # ★ Centralisation unique OTP (SMS Twilio -> Email Resend -> Google SMTP -> Console)
 │     ├─ pagination.py               # Helpers de pagination
-│     ├─ dates.py
-│     └─ crypto.py                   # Chiffrement de champs sensibles
+│     └─ phone.py                    # Normalisation E.164 et validation des numéros
 │
 ├─ prisma/
 │  ├─ schema.prisma                  # ★ Schéma unique = toutes les tables/collections
@@ -282,12 +297,17 @@ kwismo-backend/
 │
 ├─ tests/
 │  ├─ __init__.py
-│  ├─ conftest.py                    # Fixtures pytest (client de test, base en mémoire)
-│  ├─ test_auth.py
-│  ├─ test_numbers.py
-│  ├─ test_partners.py
-│  ├─ test_ussd.py
-│  └─ test_ai_gateway.py
+│  ├─ conftest.py                    # Fixtures pytest (client de test FastAPI)
+│  ├─ test_ai_gateway.py             # Tests du module ai_gateway (schémas et contrats)
+│  ├─ test_auth.py                   # Tests d'authentification et inscription
+│  ├─ test_devices.py                # Tests du module devices
+│  ├─ test_numbers.py                # Tests de vérification de numéros
+│  ├─ test_otp.py                    # Tests de génération et envoi OTP
+│  ├─ test_partners.py               # Tests du module partenaires
+│  ├─ test_reports.py                # Tests de création et gestion des signalements
+│  ├─ test_user_phones.py            # Tests de raccordement des numéros de téléphone
+│  ├─ test_users.py                  # Tests du profil utilisateur /users/me
+│  └─ test_ussd.py                   # Tests des routes USSD et pays
 │
 ├─ scripts/
 │  ├─ seed.py                        # Peuple la base (pays, opérateurs, admin par défaut)
@@ -311,14 +331,14 @@ kwismo-backend/
 
 ## 7. Rôle de chaque dossier
 
-| Dossier | Rôle | Point de vigilance |
-| ------- | ---- | ------------------ |
-| `app/core/` | Fonctions transverses (sécurité, config, i18n, erreurs). | Source unique de l'auth ; jamais dupliquée. |
-| `app/db/repositories/` | Accès aux données via Prisma. | Isole le métier de la base ; facilite le changement de BD. |
-| `app/modules/` | Un domaine métier par dossier (router + schemas + service). | Chaque route déclare explicitement le rôle requis. |
-| `app/modules/ai_gateway/` | Unique point de communication avec l'IA. | Applique délais + repli par règles. |
-| `app/locales/` | Textes FR/EN. | Aucun message utilisateur en dur dans le code. |
-| `prisma/` | Modèle de données + migrations. | Toute évolution passe par une migration versionnée. |
+| Dossier                     | Rôle                                                        | Point de vigilance                                          |
+| --------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------- |
+| `app/core/`               | Fonctions transverses (sécurité, config, i18n, erreurs).   | Source unique de l'auth ; jamais dupliquée.                |
+| `app/db/repositories/`    | Accès aux données via Prisma.                              | Isole le métier de la base ; facilite le changement de BD. |
+| `app/modules/`            | Un domaine métier par dossier (router + schemas + service). | Chaque route déclare explicitement le rôle requis.        |
+| `app/modules/ai_gateway/` | Unique point de communication avec l'IA.                     | Applique délais + repli par règles.                       |
+| `app/locales/`            | Textes FR/EN.                                                | Aucun message utilisateur en dur dans le code.              |
+| `prisma/`                 | Modèle de données + migrations.                            | Toute évolution passe par une migration versionnée.       |
 
 **Pattern d'un module** : chaque dossier de `modules/` suit toujours le même triptyque —
 `router.py` (présentation/routes) → `service.py` (logique métier) → `schemas.py` (validation Pydantic).
@@ -346,11 +366,11 @@ python scripts/sync_db_provider.py --generate
 prisma migrate dev --name init
 ```
 
-| `DB_TYPE`         | `DATABASE_URL`                                  |
-| ----------------- | ----------------------------------------------- |
-| `sqlite` (défaut) | `file:./dev.db`                                 |
-| `postgresql`      | `postgresql://user:pass@localhost:5432/kwismo`  |
-| `mysql`           | `mysql://user:pass@localhost:3306/kwismo`       |
+| `DB_TYPE`          | `DATABASE_URL`                                 |
+| -------------------- | ------------------------------------------------ |
+| `sqlite` (défaut) | `file:./dev.db`                                |
+| `postgresql`       | `postgresql://user:pass@localhost:5432/kwismo` |
+| `mysql`            | `mysql://user:pass@localhost:3306/kwismo`      |
 
 > **Cassandra et MongoDB ne sont pas dans le périmètre.** Cassandra n'est pas supportée par Prisma. MongoDB l'est en théorie, mais son connecteur exige que le champ `@id` de chaque modèle soit mappé sur `_id` (`@map("_id")`) — un changement qui toucherait aussi les colonnes des bases SQL si on le généralisait au schéma unique. Choix assumé : KWISMO reste sur SQLite/PostgreSQL/MySQL.
 
@@ -360,22 +380,22 @@ prisma migrate dev --name init
 
 Toutes les routes sont documentées dans Swagger (`/docs`). Aperçu :
 
-| Module | Routes principales | Rôle |
-| ------ | ------------------ | ---- |
-| auth (9) | `/auth/register`, `/auth/email/verify`, `/auth/login`, `/auth/device/verify`, `/auth/refresh`, `/auth/password/*`, `/auth/logout` | public / auth |
-| users (5) | `/users/me`, `/users`, `/users/{id}`, `/users/{id}/status` | user / admin / partner |
-| user_phones (6) | `/users/me/phones`, `/users/me/phones/{id}/verify`, `/…/resend`, `/…/compromise` | user |
-| contacts (4) | `/contacts`, `/contacts/{id}/refresh` — *voir note ci-dessous | user |
-| numbers (5) | `/numbers/verify`, `/numbers/batch-verify`, `/numbers`, `/numbers/{id}/status` | user / admin / partner |
-| reports (3) | `/reports`, `/reports/{id}/validate` | user / admin |
-| transactions (3) | `/transactions/prepare`, `/transactions`, `/transactions/{id}` | user |
-| ussd (12) | `/countries`, `/operators`, `/ussd-actions` (+ CRUD) | user (lecture) / admin (CRUD) |
-| partners (8) | `/partners`, `/partners/{id}/affiliation-rules`, `/partner/scope/*` | admin / partner |
-| whatsapp_alert (2) | `/whatsapp-alerts/incident`, `/broadcast` | user |
-| surveys (2) | `/surveys/active`, `/surveys/{id}/answer` | user |
-| kpi (2) | `/kpi/global`, `/kpi/partner` | admin / partner |
-| access_control (4) | `/roles`, `/access-rights` | admin |
-| notifications (1) | `/notifications` | user |
+| Module             | Routes principales                                                                                                                              | Rôle                         |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| auth (9)           | `/auth/register`, `/auth/email/verify`, `/auth/login`, `/auth/device/verify`, `/auth/refresh`, `/auth/password/*`, `/auth/logout` | public / auth                 |
+| users (5)          | `/users/me`, `/users`, `/users/{id}`, `/users/{id}/status`                                                                              | user / admin / partner        |
+| user_phones (6)    | `/users/me/phones`, `/users/me/phones/{id}/verify`, `/…/resend`, `/…/compromise`                                                      | user                          |
+| contacts (4)       | `/contacts`, `/contacts/{id}/refresh` — *voir note ci-dessous                                                                              | user                          |
+| numbers (5)        | `/numbers/verify`, `/numbers/batch-verify`, `/numbers`, `/numbers/{id}/status`                                                          | user / admin / partner        |
+| reports (3)        | `/reports`, `/reports/{id}/validate`                                                                                                        | user / admin                  |
+| transactions (3)   | `/transactions/prepare`, `/transactions`, `/transactions/{id}`                                                                            | user                          |
+| ussd (12)          | `/countries`, `/operators`, `/ussd-actions` (+ CRUD)                                                                                      | user (lecture) / admin (CRUD) |
+| partners (8)       | `/partners`, `/partners/{id}/affiliation-rules`, `/partner/scope/*`                                                                       | admin / partner               |
+| whatsapp_alert (2) | `/whatsapp-alerts/incident`, `/broadcast`                                                                                                   | user                          |
+| surveys (2)        | `/surveys/active`, `/surveys/{id}/answer`                                                                                                   | user                          |
+| kpi (2)            | `/kpi/global`, `/kpi/partner`                                                                                                               | admin / partner               |
+| access_control (4) | `/roles`, `/access-rights`                                                                                                                  | admin                         |
+| notifications (1)  | `/notifications`                                                                                                                              | user                          |
 
 *⁠ ⁠`contacts` a été ajouté pour que la table `Contact` et la "liste de contacts à insignes" soient utilisables par `/whatsapp-alerts/broadcast`. Voir le commentaire en tête de `app/modules/contacts/schemas.py`.
 
@@ -432,15 +452,15 @@ Les tests utilisent une base SQLite en mémoire (rapide, isolée) via les fixtur
 
 ## 14. Variables d'environnement
 
-| Variable | Exemple | Description |
-| -------- | ------- | ----------- |
-| `DATABASE_URL` | `file:./dev.db` | Connexion à la base (change selon la BD). |
-| `JWT_SECRET` | *(aléatoire long)* | Clé de signature des JWT. |
-| `JWT_ACCESS_EXPIRE_MIN` | `15` | Durée de vie du token d'accès. |
-| `JWT_REFRESH_EXPIRE_DAYS` | `7` | Durée de vie du token de rafraîchissement. |
-| `AI_SERVICE_URL` | `http://localhost:8001` | URL du service IA. |
-| `OTP_EXPIRE_MIN` | `5` | Durée de vie d'un OTP. |
-| `CORS_ORIGINS` | `http://localhost:5173` | Origines autorisées. |
-| `REDIS_URL` | `redis://localhost:6379` | Cache / files (optionnel). |
+| Variable                    | Exemple                    | Description                                  |
+| --------------------------- | -------------------------- | -------------------------------------------- |
+| `DATABASE_URL`            | `file:./dev.db`          | Connexion à la base (change selon la BD).   |
+| `JWT_SECRET`              | *(aléatoire long)*      | Clé de signature des JWT.                   |
+| `JWT_ACCESS_EXPIRE_MIN`   | `15`                     | Durée de vie du token d'accès.             |
+| `JWT_REFRESH_EXPIRE_DAYS` | `7`                      | Durée de vie du token de rafraîchissement. |
+| `AI_SERVICE_URL`          | `http://localhost:8001`  | URL du service IA.                           |
+| `OTP_EXPIRE_MIN`          | `5`                      | Durée de vie d'un OTP.                      |
+| `CORS_ORIGINS`            | `http://localhost:5173`  | Origines autorisées.                        |
+| `REDIS_URL`               | `redis://localhost:6379` | Cache / files (optionnel).                   |
 
 > Copie toujours `.env.example` → `.env` et ne committe jamais `.env`.
