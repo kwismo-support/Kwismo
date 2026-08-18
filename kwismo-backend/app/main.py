@@ -114,15 +114,16 @@ async def _seed_defaults() -> None:
     """
     from app.db.prisma_client import db as _db
 
-    # Roles
+    from app.core.security import hash_password
+    roles = {}
     for nom_role in ("user", "partner", "admin"):
-        await _db.role.upsert(
+        role = await _db.role.upsert(
             where={"nomRole": nom_role},
             data={"create": {"nomRole": nom_role}, "update": {}},
         )
+        roles[nom_role] = role
 
     # Cameroun par defaut — seul pays amorce au demarrage.
-    # Cameroon by default — only country seeded at startup.
     await _db.country.upsert(
         where={"codePays": "+237"},
         data={
@@ -134,7 +135,34 @@ async def _seed_defaults() -> None:
             "update": {},
         },
     )
-    _logger.info("Seed par defaut applique (roles + Cameroun).")
+
+    # Comptes de test par defaut (user, partner, admin) — mot de passe: Password123!
+    default_users = [
+        ("user@kwismo.com", "User", "Test", "user", None),
+        ("partner@kwismo.com", "Partner", "Test", "partner", "KWISMO Partner Test"),
+        ("admin@kwismo.com", "KWISMO", "Admin", "admin", None),
+    ]
+
+    for email, nom, prenom, role_nom, partner_nom in default_users:
+        existing = await _db.user.find_unique(where={"email": email})
+        if not existing:
+            user_data = {
+                "nom": nom,
+                "prenom": prenom,
+                "email": email,
+                "motDePasse": hash_password("Password123!"),
+                "emailVerifie": True,
+                "role": {"connect": {"id": roles[role_nom].id}},
+            }
+            if partner_nom:
+                partner_entity = await _db.partner.find_first(where={"nomEntreprise": partner_nom})
+                if not partner_entity:
+                    partner_entity = await _db.partner.create(data={"nomEntreprise": partner_nom, "typePartenariat": "Fintech"})
+                user_data["partner"] = {"connect": {"id": partner_entity.id}}
+
+            await _db.user.create(data=user_data)
+
+    _logger.info("Seed par defaut applique (roles, Cameroun, comptes de test user/partner/admin).")
 
 
 @asynccontextmanager

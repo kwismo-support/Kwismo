@@ -82,10 +82,47 @@ async def seed_ussd_actions(operator_ids: dict[str, str]) -> None:
         )
 
 
+async def seed_users() -> None:
+    from app.core.security import hash_password
+
+    roles = {}
+    for nom in DEFAULT_ROLES:
+        role = await db.role.find_first(where={"nomRole": nom})
+        if role:
+            roles[nom] = role
+
+    default_users = [
+        ("user@kwismo.com", "User", "Test", "user", None),
+        ("partner@kwismo.com", "Partner", "Test", "partner", "KWISMO Partner Test"),
+        ("admin@kwismo.com", "KWISMO", "Admin", "admin", None),
+    ]
+
+    for email, nom, prenom, role_nom, partner_nom in default_users:
+        existing = await db.user.find_unique(where={"email": email})
+        if not existing:
+            user_data = {
+                "nom": nom,
+                "prenom": prenom,
+                "email": email,
+                "motDePasse": hash_password("Password123!"),
+                "emailVerifie": True,
+                "role": {"connect": {"id": roles[role_nom].id}},
+            }
+            if partner_nom:
+                partner_entity = await db.partner.find_first(where={"nomEntreprise": partner_nom})
+                if not partner_entity:
+                    partner_entity = await db.partner.create(data={"nomEntreprise": partner_nom, "typePartenariat": "Fintech"})
+                user_data["partner"] = {"connect": {"id": partner_entity.id}}
+
+            await db.user.create(data=user_data)
+            print(f"Compte de test créé : {email} ({role_nom})")
+
+
 async def main() -> None:
     await connect_db()
     try:
         await seed_roles()
+        await seed_users()
         country_ids = await seed_countries()
         operator_ids = await seed_operators(country_ids)
         await seed_ussd_actions(operator_ids)
