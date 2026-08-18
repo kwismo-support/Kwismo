@@ -2,16 +2,23 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
-# Prisma a besoin d'OpenSSL pour son moteur de requetes.
-RUN apt-get update && apt-get install -y --no-install-recommends openssl \
+# Dépendances système requises (OpenSSL pour Prisma Engine, curl pour Healthchecks)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssl \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
+
+# Génération initiale du client Prisma Python
 RUN prisma generate
+
+# Droits d'exécution sur l'entrypoint
+RUN chmod +x ./entrypoint.sh
 
 EXPOSE 8000
 
-CMD ["gunicorn", "app.main:app", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
+ENTRYPOINT ["./entrypoint.sh"]
