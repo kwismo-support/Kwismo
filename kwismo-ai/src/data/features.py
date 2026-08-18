@@ -1,7 +1,7 @@
 """Construction des caractéristiques comportementales, temporelles et anti-fraude du Modèle A.
 
 Implémente :
-1. Analyse fine des séquences complètes d'horodatages et calcul des intervallies (en secondes).
+1. Analyse fine des séquences complètes d'horodatages et calcul des intervalles (en secondes).
 2. Décroissance temporelle exponentielle (Exponential Time Decay, demi-vie = 30 jours).
 3. Anti-vengeance & déduplication d'appareils (Device Fingerprints & IP hashes).
 4. Trust Rank des signaleurs.
@@ -9,6 +9,8 @@ Implémente :
 6. Pondération par gravité des catégories du Modèle B.
 """
 
+import ast
+import json
 import math
 from datetime import datetime, timezone
 from typing import Any
@@ -53,13 +55,25 @@ def build_features(reports: pd.DataFrame) -> pd.DataFrame:
     return grouped.reset_index()
 
 
-def parse_timestamps(ts_list: list[str]) -> list[datetime]:
-    """Parse une liste de chaînes horodatées ISO8601 en objets datetime UTC triés chronologiquement."""
-    parsed = []
-    if not ts_list or not isinstance(ts_list, list):
+def parse_timestamps(ts_input: Any) -> list[datetime]:
+    """Parse une liste ou une chaîne JSON de chaînes horodatées ISO8601 en objets datetime UTC triés chronologiquement."""
+    if not ts_input:
         return []
 
-    for ts in ts_list:
+    if isinstance(ts_input, str):
+        try:
+            ts_input = json.loads(ts_input)
+        except Exception:
+            try:
+                ts_input = ast.literal_eval(ts_input)
+            except Exception:
+                ts_input = [ts_input]
+
+    if not isinstance(ts_input, list):
+        return []
+
+    parsed = []
+    for ts in ts_input:
         try:
             dt = datetime.fromisoformat(str(ts).replace("Z", "+00:00"))
             if dt.tzinfo is None:
@@ -143,48 +157,51 @@ def compute_temporal_features(data: dict[str, Any]) -> dict[str, Any]:
 
     vitesse_sigs = float(recent_sigs_24h) if recent_sigs_24h > 0 else float(num_signalements) / float(anciennete)
 
-    # 3. Anti-Vengeance & Déduplication par Device ID / Fingerprint
-    devices = data.get("device_fingerprints", [])
-    if devices and isinstance(devices, list):
-        diversite_devices = len(set(devices))
+    # 3. Anti-vengeance : Déduplication par Device Fingerprint / IP Hash
+    device_fingerprints = data.get("device_fingerprints", [])
+    if device_fingerprints and isinstance(device_fingerprints, list):
+        unique_devices = len(set(device_fingerprints))
     else:
-        diversite_devices = num_signalements
+        unique_devices = int(data.get("diversite_devices", num_signalements))
 
-    sig_effectifs_ponderes = min(sig_ponderes, float(diversite_devices)) if diversite_devices > 0 else sig_ponderes
+    diversite_sig = int(data.get("diversite_signaleurs", num_signalements))
 
-    # 4. Ratio de Paresse (Vérifications nombreuses sans signalement rédigé)
-    ratio_verif_sig = verifs_ponderees / max(sig_effectifs_ponderes, 1.0)
-
-    # 5. Diversité des signaleurs
-    diversite_signaleurs = int(data.get("diversite_signaleurs", num_signalements))
-
-    # 6. Gravité des catégories attribuées par le Modèle B
-    categories = data.get("categories", {})
-    if isinstance(categories, dict):
-        cat_list = list(categories.values())
-    elif isinstance(categories, list):
-        cat_list = categories
+    if num_signalements > 1 and unique_devices == 1:
+        sig_ponderes = min(sig_ponderes, 1.0)
+        is_anti_vengeance = True
     else:
-        cat_list = []
+        is_anti_vengeance = False
 
-    if cat_list:
-        max_severity = max([CATEGORY_SEVERITY_WEIGHTS.get(cat, 0.5) for cat in cat_list], default=0.0)
+    # 4. Pondération par la gravité des catégories du Modèle B
+    cat_dict = data.get("categories", {})
+    if isinstance(cat_dict, dict) and cat_dict:
+        weights = [CATEGORY_SEVERITY_WEIGHTS.get(cat, 0.5) for cat in cat_dict.values()]
+        gravite_max = max(weights) if weights else 0.0
     else:
-        max_severity = 0.5 if num_signalements > 0 else 0.0
+        gravite_max = float(data.get("gravite_categories", 0.0))
+
+    ratio_verif_sig = verifs_ponderees / max(sig_ponderes, 1.0)
+
+    # Réduction si le numéro est un marchand / service officiel vérifié
+    if statut_admin == "verifie_officiel":
+        sig_ponderes *= 0.5
+        gravite_max *= 0.5
 
     return {
+        "numero": str(data.get("numero", "")),
         "nombre_signalements": num_signalements,
-        "signalements_effectifs_ponderes": round(sig_effectifs_ponderes, 2),
+        "signalements_effectifs_ponderes": round(sig_ponderes, 2),
         "vitesse_signalements": round(vitesse_sigs, 2),
         "anciennete_jours": anciennete,
-        "diversite_signaleurs": diversite_signaleurs,
-        "diversite_devices": diversite_devices,
+        "diversite_signaleurs": diversite_sig,
+        "diversite_devices": unique_devices,
         "nombre_verifications": num_verifications,
         "verifications_ponderees": round(verifs_ponderees, 2),
         "vitesse_verifications": round(vitesse_verifs, 2),
         "ratio_verif_signalement": round(ratio_verif_sig, 2),
+        "gravite_categories": round(gravite_max, 2),
         "intervalle_moyen_verif_sec": round(intervalle_moyen_verif_sec, 1),
         "intervalle_min_verif_sig_sec": round(intervalle_min_verif_sig_sec, 1),
-        "gravite_categories": max_severity,
+        "is_anti_vengeance": is_anti_vengeance,
         "statut_communautaire": statut_admin,
     }
