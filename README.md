@@ -123,17 +123,25 @@ kwismo/
 │     │  ├─ logo-vertical.png
 │     │  └─ app-icon.png
 │     └─ brand.md             # Codes couleurs, typographies officielles
-├─ docs/                      # Cahiers des charges (Word) & planning
+├─ branding/                  # Éléments d'identité visuelle et charte graphique
+├─ cadrage/                   # Documents de cadrage stratégique et fonctionnel
+├─ cahiers des charges/       # Spécifications détaillées du projet
+├─ diagrammes/                # Diagrammes d'architecture, de séquence et de flux
+├─ docs/                      # Documentation projet, cahiers des charges (Word) & planning
 │  ├─ cahier-web.docx
 │  ├─ cahier-mobile.docx
 │  ├─ cahier-backend.docx
 │  ├─ cahier-ia.docx
 │  └─ planification.docx
+├─ maquettes/                 # Maquettes UI/UX des interfaces web et mobile
+├─ marketing/                 # Supports et ressources de communication
+├─ reunions/                  # Comptes rendus et comptes d'équipe
 ├─ docker-compose.yml         # ★ Orchestration : backend + BD + IA
+├─ render.yaml                # ★ Configuration de déploiement Render
 ├─ .gitignore
 ├─ .editorconfig              # Style de code commun (indentation, fins de ligne)
 ├─ .env.example               # Variables globales d'exemple
-└─ README.md                  # Ce fichier
+└─ README.md                  # Ce fichier (documentation principale du monorepo)
 ```
 
 > **Note** : chaque sous-dossier possède son propre `README.md` détaillé et sa propre configuration. Le présent fichier décrit l'ensemble.
