@@ -15,9 +15,7 @@ from app.modules.user_phones.schemas import (
 )
 from app.utils.dates import is_expired, minutes_from_now, utcnow
 from app.utils.i18n import t
-from app.utils.otp import generate_otp
-from app.utils.phone import is_valid_phone, normalize_phone
-from app.utils.sms import check_sms_otp, send_sms_otp
+from app.utils.otp import check_sms_otp, generate_otp, send_sms_otp
 
 logger = logging.getLogger("kwismo.backend")
 settings = get_settings()
@@ -147,8 +145,9 @@ async def add_my_phone(user_id: str, payload: UserPhoneAddIn, lang: str = "fr") 
             "estVerifie": False,  # Explicitly unverified on creation — OTP required before verification
         }
     )
-    # Twilio Verify owns the OTP — no need to store it in OtpCode
-    await send_sms_otp(valeur)
+    user = await db.user.find_unique(where={"id": user_id})
+    user_email = user.email if user else None
+    await send_sms_otp(valeur, email=user_email)
     return _to_out(phone)
 
 
@@ -195,8 +194,9 @@ async def resend_my_phone_otp(user_id: str, phone_id: str, lang: str = "fr"):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=t("phone_already_verified", lang),
         )
-    # Twilio Verify handles resend — just trigger again
-    await send_sms_otp(phone.valeur)
+    user = await db.user.find_unique(where={"id": user_id})
+    user_email = user.email if user else None
+    await send_sms_otp(phone.valeur, email=user_email)
     return Message(
         message_fr=t("success.otp_sms_resent", "fr"),
         message_en=t("success.otp_sms_resent", "en"),
