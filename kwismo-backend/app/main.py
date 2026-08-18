@@ -205,7 +205,13 @@ for router in (
     description="**FR** — Point de contrôle pour la supervision.\n\n**EN** — Health check for supervision/orchestration.",
 )
 async def health() -> HealthOut:
-    return HealthOut(status="ok")
+    from app.db.prisma_client import db
+    try:
+        await db.query_raw("SELECT 1")
+        return HealthOut(status="ok")
+    except Exception as exc:
+        _logger.error("Healthcheck DB failure: %s", exc)
+        return HealthOut(status="degraded")
 
 
 @app.get("/docs", include_in_schema=False)

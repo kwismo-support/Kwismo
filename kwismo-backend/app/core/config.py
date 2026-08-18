@@ -57,6 +57,14 @@ class Settings(BaseSettings):
     resend_api_key: str = ""
     email_from: str = "KWISMO <noreply@unphishable.org>"
 
+    # Email (Google SMTP - fallback if Resend is unavailable)
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = ""
+    smtp_use_tls: bool = True
+
     # SMS (Twilio Verify)
     twilio_account_sid: str = ""
     twilio_auth_token: str = ""

@@ -5,7 +5,7 @@ Seul point du backend qui parle au service IA. Anonymisation stricte (aucune don
 
 import httpx
 from app.core.config import get_settings
-from app.db.prisma import prisma
+from app.db.prisma_client import db
 from app.modules.ai_gateway.schemas import (
     BatchReportIn,
     BatchReportOut,

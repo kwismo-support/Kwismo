@@ -2,7 +2,7 @@
 """
 
 from typing import Any
-from app.db.prisma import prisma
+from app.db.prisma_client import db
 
 
 async def sync_discovered_categories(assigned_categories: dict[str, str]) -> None:
@@ -20,10 +20,10 @@ async def sync_discovered_categories(assigned_categories: dict[str, str]) -> Non
         if not code or code in ("unknown_scam_pattern", "legitimate_info", "legitimate_chat"):
             continue
 
-        existing = await prisma.scamcategory.find_unique(where={"nomCode": code})
+        existing = await db.scamcategory.find_unique(where={"nomCode": code})
         if not existing:
             libelle = code.replace("_", " ").title()
-            existing = await prisma.scamcategory.create(
+            existing = await db.scamcategory.create(
                 data={
                     "nomCode": code,
                     "libelle": libelle,
@@ -36,10 +36,10 @@ async def sync_discovered_categories(assigned_categories: dict[str, str]) -> Non
         if not cat_code or cat_code in ("unknown_scam_pattern", "legitimate_info", "legitimate_chat"):
             continue
 
-        scam_cat = await prisma.scamcategory.find_unique(where={"nomCode": cat_code})
+        scam_cat = await db.scamcategory.find_unique(where={"nomCode": cat_code})
         if scam_cat:
             try:
-                await prisma.reportcategory.upsert(
+                await db.reportcategory.upsert(
                     where={
                         "reportId_scamCategoryId": {
                             "reportId": report_id,
@@ -60,7 +60,7 @@ async def sync_discovered_categories(assigned_categories: dict[str, str]) -> Non
 
 async def list_scam_categories() -> list[dict[str, Any]]:
     """Liste toutes les catégories d'arnaques enregistrées en BD avec leur nombre de signalements."""
-    categories = await prisma.scamcategory.find_many(
+    categories = await db.scamcategory.find_many(
         include={"reportCategories": True},
         order={"createdAt": "desc"}
     )
@@ -87,7 +87,7 @@ async def update_scam_category(category_id: str, libelle: str | None = None, des
     if description is not None:
         update_data["description"] = description
 
-    updated = await prisma.scamcategory.update(
+    updated = await db.scamcategory.update(
         where={"id": category_id},
         data=update_data
     )
