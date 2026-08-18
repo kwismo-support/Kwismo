@@ -293,6 +293,25 @@ CREATE TABLE "Feedback" (
     CONSTRAINT "Feedback_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+-- CreateTable
+CREATE TABLE "ScamCategory" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "nomCode" TEXT NOT NULL,
+    "libelle" TEXT,
+    "description" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "ReportCategory" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "reportId" TEXT NOT NULL,
+    "scamCategoryId" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "ReportCategory_reportId_fkey" FOREIGN KEY ("reportId") REFERENCES "Report" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "ReportCategory_scamCategoryId_fkey" FOREIGN KEY ("scamCategoryId") REFERENCES "ScamCategory" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
@@ -436,3 +455,16 @@ CREATE INDEX "Feedback_userId_idx" ON "Feedback"("userId");
 
 -- CreateIndex
 CREATE INDEX "Feedback_reportId_idx" ON "Feedback"("reportId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ScamCategory_nomCode_key" ON "ScamCategory"("nomCode");
+
+-- CreateIndex
+CREATE INDEX "ReportCategory_reportId_idx" ON "ReportCategory"("reportId");
+
+-- CreateIndex
+CREATE INDEX "ReportCategory_scamCategoryId_idx" ON "ReportCategory"("scamCategoryId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ReportCategory_reportId_scamCategoryId_key" ON "ReportCategory"("reportId", "scamCategoryId");
+
