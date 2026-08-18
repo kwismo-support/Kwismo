@@ -295,6 +295,7 @@ kwismo-backend/
 │  ├─ check_python_version.py        # Vérif Python 3.13 (utilisé par check_python.bat)
 │  └─ sync_db_provider.py            # Bascule le provider Prisma selon DB_TYPE (.env)
 │
+├─ entrypoint.sh                     # ★ Script d'initialisation Docker (auto-config DB, seed & gunicorn)
 ├─ check_python.bat                  # Vérifie Python 3.13 avant de démarrer
 ├─ .env                              # Variables réelles (NON versionné)
 ├─ .env.example                      # Modèle de variables (versionné)

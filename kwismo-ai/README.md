@@ -226,6 +226,7 @@ kwismo-ai/
 ├─ scripts/
 │  └─ check_python_version.py       # Fichier de vérification de Python 3.13
 │
+├─ entrypoint.sh                    # ★ Script d'initialisation Docker (génération/entraînement auto & uvicorn)
 ├─ check_python.bat                 # Vérifie Python 3.13 avant de démarrer
 ├─ .env                             # Variables réelles (NON versionné)
 ├─ .env.example
