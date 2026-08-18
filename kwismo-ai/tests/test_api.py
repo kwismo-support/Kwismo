@@ -16,8 +16,10 @@ def test_predict_number() -> None:
     response = client.post("/predict/number", json={"numero": "+237690000000", "nombre_signalements": 4})
     assert response.status_code == 200
     data = response.json()
-    assert data["statut"] == "frauduleux"
-    assert data["score_risque"] > 0.8
+    assert "score_risque" in data
+    assert 0.0 <= data["score_risque"] <= 1.0
+    assert "explications" in data
+    assert "modele_utilise" in data
 
 
 def test_predict_text() -> None:
@@ -42,3 +44,21 @@ def test_predict_batch_reports() -> None:
     assert "sig_1" in cats
     assert "sig_2" in cats
     assert cats["sig_0"] == "existing_cat"
+
+
+def test_predict_full_analysis() -> None:
+    payload = {
+        "numero": "237690000099",
+        "nombre_verifications": 12,
+        "horodatages_verifications": ["2026-08-18T00:00:00Z"],
+        "nombre_signalements": 1,
+        "reports": [{"id_signalement": "sig_100", "description": "Le malabar me joss que mon compte va être bloqué"}],
+        "cache_categories": {}
+    }
+    response = client.post("/predict/full_analysis", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["numero"] == "237690000099"
+    # Single report safety cap rule check: score MUST NOT exceed 0.69!
+    assert data["score_risque"] <= 0.69
+    assert "sig_100" in data["categories"]

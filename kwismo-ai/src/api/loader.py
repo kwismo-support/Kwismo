@@ -28,8 +28,17 @@ def read_registry() -> dict[str, Any]:
 def load_model_a():
     """Charge le Modèle A (LightGBM). Retourne None si pas encore prêt."""
     registry = read_registry()
-    if not registry.get("model_a"):
+    model_a_info = registry.get("model_a")
+    if not model_a_info or not model_a_info.get("path"):
         return None
+
+    target_path = Path(model_a_info["path"])
+    if target_path.exists():
+        try:
+            return joblib.load(target_path)
+        except Exception as err:
+            print(f"⚠️ Erreur lors du chargement du Modèle A ({target_path}) : {err}")
+            return None
     return None
 
 
@@ -43,27 +52,22 @@ def load_model_b():
 
     target_path = Path(model_b_info["path"])
 
-    # Tentative de chargement du modèle principal/récent
     if target_path.exists():
         try:
-            model = joblib.load(target_path)
-            print(f"✅ Modèle B chargé avec succès depuis : {target_path}")
-            return model
+            return joblib.load(target_path)
         except Exception as err:
-            print(f"⚠️ Échec du chargement de la version courante {target_path} ({err}). Tentative de Rollback...")
+            print(f"⚠️ Erreur lors du chargement de la version courante de Modèle B ({target_path}) : {err}")
 
-    # Rollback automatique vers une version d'historique si disponible
+    # Tentative de rollback sur l'historique
     history = registry.get("history", [])
-    for hist_item in reversed(history):
-        if hist_item.get("model") == "model_b":
-            hist_path = Path(hist_item.get("path", ""))
-            if hist_path.exists():
+    for old_entry in reversed(history):
+        if old_entry.get("model") == "model_b" and old_entry.get("path"):
+            old_path = Path(old_entry["path"])
+            if old_path.exists():
                 try:
-                    fallback_model = joblib.load(hist_path)
-                    print(f"↺ Rollback automatique réussi ! Modèle B chargé depuis : {hist_path}")
-                    return fallback_model
+                    print(f"🔄 Rollback automatique du Modèle B vers la version antérieure : {old_path}")
+                    return joblib.load(old_path)
                 except Exception:
                     continue
 
-    print("⚠️ Aucun modèle B n'a pu être chargé. Passage en mode règles de sécurité.")
     return None

@@ -11,6 +11,8 @@ from app.modules.ai_gateway.schemas import (
     BatchReportOut,
     FeedbackAck,
     FeedbackIn,
+    FullAnalysisIn,
+    FullAnalysisOut,
     NumberFeaturesIn,
     PredictNumberOut,
     PredictTextOut,
@@ -42,6 +44,14 @@ async def predict_batch_reports(payload: BatchReportIn) -> BatchReportOut:
         return BatchReportOut.model_validate(response.json())
 
 
+async def predict_full_analysis(payload: FullAnalysisIn) -> FullAnalysisOut:
+    """Appelle la passerelle d'inférence intégrée (Modèle B -> Modèle A)."""
+    async with httpx.AsyncClient(base_url=settings.ai_service_url, timeout=settings.ai_service_timeout_seconds) as client:
+        response = await client.post("/predict/full_analysis", json=payload.model_dump())
+        response.raise_for_status()
+        return FullAnalysisOut.model_validate(response.json())
+
+
 async def send_feedback(payload: FeedbackIn) -> FeedbackAck:
     async with httpx.AsyncClient(base_url=settings.ai_service_url, timeout=settings.ai_service_timeout_seconds) as client:
         response = await client.post("/feedback", json=payload.model_dump())
@@ -51,23 +61,20 @@ async def send_feedback(payload: FeedbackIn) -> FeedbackAck:
 
 async def categorize_and_sync_reports(reports: list[dict[str, str]]) -> dict[str, str]:
     """Anonymise les signalements, appelle l'IA, crée les catégories manquantes en BD et lie les clés étrangères."""
-    # 1. Anonymisation (uniquement id_signalement et description)
     anonymized_items = [
         ReportItemIn(id_signalement=r["id_signalement"], description=r["description"])
         for r in reports
     ]
 
-    # 2. Appel du service IA avec batching et cache
     batch_in = BatchReportIn(reports=anonymized_items)
     batch_out = await predict_batch_reports(batch_in)
     categories_map = batch_out.categories
 
-    # 3. Synchronisation avec la base de données (ScamCategory & ReportCategory)
+    # Synchronisation avec la base de données (ScamCategory & ReportCategory)
     for report_id, cat_code in categories_map.items():
         if not cat_code or cat_code in ("unknown_scam_pattern", "uncategorized_empty"):
             continue
 
-        # Créer la catégorie d'arnaque si elle n'existe pas en BD
         scam_cat = await prisma.scamcategory.find_unique(where={"nomCode": cat_code})
         if not scam_cat:
             scam_cat = await prisma.scamcategory.create(
@@ -78,7 +85,6 @@ async def categorize_and_sync_reports(reports: list[dict[str, str]]) -> dict[str
                 }
             )
 
-        # Lier le signalement à la catégorie en BD (si le reportId existe dans la BD)
         try:
             db_report = await prisma.report.find_unique(where={"id": report_id})
             if db_report:
@@ -90,6 +96,6 @@ async def categorize_and_sync_reports(reports: list[dict[str, str]]) -> dict[str
                     },
                 )
         except Exception:
-            pass  # Si l'ID est un ID virtuel/test
+            pass
 
     return categories_map

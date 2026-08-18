@@ -14,18 +14,16 @@ class NumberFeaturesIn(BaseModel):
     nombre_signalements: int = Field(0, ge=0)
     vitesse_signalements: float = Field(0, ge=0, description="Signalements récents / jour.")
     anciennete_jours: int = Field(0, ge=0)
-    operateur: str | None = None
-    prefixe: str | None = None
-    pays: str | None = None
     diversite_signaleurs: int = Field(0, ge=0, description="Nombre d'utilisateurs distincts ayant signalé.")
     nombre_verifications: int = Field(0, ge=0)
-    statut_communautaire: str | None = Field(None, description="Dernier verdict admin validé, le cas échéant.")
+    vitesse_verifications: float = Field(0, ge=0, description="Vérifications récentes / jour.")
+    horodatages_verifications: list[str] = Field(default_factory=list, description="Liste ISO8601 des vérifications.")
+    horodatages_signalements: list[str] = Field(default_factory=list, description="Liste ISO8601 des signalements.")
 
 
 class PredictNumberOut(BaseModel):
     score_risque: float = Field(..., ge=0, le=1)
-    statut: str = Field(..., examples=["a_signaler"], description="securise | a_signaler | frauduleux")
-    modele_utilise: str = Field(..., examples=["lightgbm_v3"], description="Nom+version du modèle, ou 'regles_expertes' en repli.")
+    modele_utilise: str = Field(..., examples=["lightgbm_v1"], description="Nom+version du modèle, ou 'regles_expertes' en repli.")
     explications: list[str] = Field(default_factory=list, description="Facteurs principaux (explicabilité).")
 
 
@@ -58,9 +56,29 @@ class BatchReportOut(BaseModel):
     categories: dict[str, str]
 
 
-class FeedbackIn(BaseModel):
-    """Nouvelle donnée étiquetée transmise pour l'apprentissage continu."""
+class FullAnalysisIn(BaseModel):
+    """Payload complet reçu de la passerelle backend pour analyse intégrée."""
 
+    numero: str
+    nombre_verifications: int = Field(0, ge=0)
+    horodatages_verifications: list[str] = Field(default_factory=list)
+    nombre_signalements: int = Field(0, ge=0)
+    horodatages_signalements: list[str] = Field(default_factory=list)
+    reports: list[ReportItemIn] = Field(default_factory=list)
+    cache_categories: dict[str, str] = Field(default_factory=dict)
+
+
+class FullAnalysisOut(BaseModel):
+    """Résultat renvoyé au backend sans accès direct BD."""
+
+    numero: str
+    score_risque: float = Field(..., ge=0, le=1)
+    explications: list[str] = Field(default_factory=list)
+    categories: dict[str, str] = Field(default_factory=dict, description="Attribution IDs -> Catégories pour le backend Prisma")
+    modele_utilise: str = Field("kwismo_ai_gateway_v1")
+
+
+class FeedbackIn(BaseModel):
     type: str = Field(..., examples=["number"], description="'number' ou 'text'.")
     numero: str | None = None
     texte: str | None = None
@@ -79,5 +97,5 @@ class AiHealthOut(BaseModel):
 
 
 class AiVersionOut(BaseModel):
-    model_a_version: str = Field(..., examples=["v3"])
-    model_b_version: str = Field(..., examples=["v2"])
+    model_a_version: str = Field(..., examples=["v1"])
+    model_b_version: str = Field(..., examples=["v1"])

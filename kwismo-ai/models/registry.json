@@ -1,12 +1,64 @@
 {
-  "model_a": null,
+  "model_a": {
+    "version": "v1",
+    "type": "lightgbm",
+    "path": "models\\model_a\\model_a_v1.joblib",
+    "metrics": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "roc_auc": 1.0
+    },
+    "trained_at": "2026-08-18T00:57:21.987749+00:00"
+  },
   "model_b": {
     "version": "v1",
     "type": "fallback_tfidf",
     "path": "models\\model_b\\model_b_fallback_v1.joblib",
-    "total_samples": 1190,
-    "trained_at": "2026-08-17T16:36:36.216326+00:00"
+    "total_samples": 1463,
+    "trained_at": "2026-08-17T22:52:26.959305+00:00"
   },
   "history": [
+    {
+      "model": "model_b",
+      "version": "v1",
+      "type": "fallback_tfidf",
+      "path": "models\\model_b\\model_b_fallback_v1.joblib",
+      "total_samples": 1190,
+      "trained_at": "2026-08-17T16:36:36.216326+00:00"
+    },
+    {
+      "model": "model_b",
+      "version": "v1",
+      "type": "fallback_tfidf",
+      "path": "models\\model_b\\model_b_fallback_v1.joblib",
+      "total_samples": 1468,
+      "trained_at": "2026-08-17T21:21:57.077301+00:00"
+    },
+    {
+      "model": "model_b",
+      "version": "v1",
+      "type": "fallback_tfidf",
+      "path": "models\\model_b\\model_b_fallback_v1.joblib",
+      "total_samples": 1477,
+      "trained_at": "2026-08-17T21:54:30.006870+00:00"
+    },
+    {
+      "model": "model_b",
+      "version": "v1",
+      "type": "fallback_tfidf",
+      "path": "models\\model_b\\model_b_fallback_v1.joblib",
+      "total_samples": 1450,
+      "trained_at": "2026-08-17T22:35:39.383480+00:00"
+    },
+    {
+      "model": "model_b",
+      "version": "v1",
+      "type": "fallback_tfidf",
+      "path": "models\\model_b\\model_b_fallback_v1.joblib",
+      "total_samples": 1469,
+      "trained_at": "2026-08-17T22:42:53.176828+00:00"
+    }
   ]
 }

@@ -17,12 +17,15 @@ from src.api.schemas import (
     BatchReportOut,
     FeedbackAck,
     FeedbackIn,
+    FullAnalysisIn,
+    FullAnalysisOut,
     NumberFeaturesIn,
     PredictNumberOut,
     PredictTextOut,
     TextIn,
 )
 from src.config import get_settings
+from src.models.model_a.predict import predict as predict_model_a
 from src.models.model_b.preprocess import categorize_description, extract_entities, process_report_batch
 
 DESCRIPTION = """
@@ -32,7 +35,7 @@ Appelé uniquement par le backend via l'API Gateway.
 """
 
 TAGS_METADATA = [
-    {"name": "Prediction", "description": "Inférence Modèle A / Modèle B."},
+    {"name": "Prediction", "description": "Inférence Modèle A / Modèle B / Gateway Intégrée."},
     {"name": "Feedback", "description": "Apprentissage continu."},
     {"name": "System", "description": "Santé & version du modèle chargé."},
 ]
@@ -61,26 +64,13 @@ app.add_middleware(MaxBodySizeMiddleware)
     "/predict/number",
     response_model=PredictNumberOut,
     tags=["Prediction"],
-    summary="Score a number / Scorer un numéro",
+    summary="Score a number / Scorer un numéro (Modèle A)",
 )
 async def predict_number(payload: NumberFeaturesIn) -> PredictNumberOut:
-    score = 0.0
-    statut = "securise"
-    explications = []
-
-    if payload.nombre_signalements >= 3:
-        score = 0.85
-        statut = "frauduleux"
-        explications.append("Nombre élevé de signalements d'utilisateurs distincts.")
-    elif payload.nombre_signalements >= 1 or payload.nombre_verifications >= 5:
-        score = 0.55
-        statut = "a_signaler"
-        explications.append("Pics de vérifications récents ou signalement suspect.")
-
+    score, explications, modele_utilise = predict_model_a(payload.model_dump())
     return PredictNumberOut(
         score_risque=score,
-        statut=statut,
-        modele_utilise="regles_expertes_v1",
+        modele_utilise=modele_utilise,
         explications=explications,
     )
 
@@ -94,7 +84,7 @@ async def predict_number(payload: NumberFeaturesIn) -> PredictNumberOut:
 async def predict_text(payload: TextIn) -> PredictTextOut:
     cat = categorize_description(payload.texte)
     entities = extract_entities(payload.texte)
-    est_arnaque = cat != "legitimate_info" and cat != "unknown_scam_pattern"
+    est_arnaque = not cat.startswith("legitimate_") and cat != "unknown_scam_pattern"
     prob = 0.95 if est_arnaque else 0.05
 
     return PredictTextOut(
@@ -110,12 +100,48 @@ async def predict_text(payload: TextIn) -> PredictTextOut:
     "/predict/batch_reports",
     response_model=BatchReportOut,
     tags=["Prediction"],
-    summary="Categorize batch of reports / Catégoriser un lot de signalements (Modèle B)",
+    summary="Categorize batch of reports / Catégoriser un lot de signalements (Modèle B avec Skip-Cache)",
 )
 async def predict_batch_reports(payload: BatchReportIn) -> BatchReportOut:
     reports_dict = [{"id_signalement": r.id_signalement, "description": r.description} for r in payload.reports]
     updated_categories = process_report_batch(reports_dict, payload.cache_categories)
     return BatchReportOut(categories=updated_categories)
+
+
+@app.post(
+    "/predict/full_analysis",
+    response_model=FullAnalysisOut,
+    tags=["Prediction"],
+    summary="Passerelle IA Intégrée / Séquence Modèle B -> Modèle A sans accès direct BD",
+)
+async def predict_full_analysis(payload: FullAnalysisIn) -> FullAnalysisOut:
+    """Orchestration globale pour le backend :
+    1. Traite les descriptions avec le Modèle B (skip-cache sur les déjà catégorisées).
+    2. Transmet les catégories et la dynamique temporelle des vérifications/signalements au Modèle A.
+    3. Renvoie au backend le score du numéro (0.0-1.0), les explications et les catégories attribuées aux IDs.
+    """
+    # 1. Traitement NLP Modèle B
+    reports_dict = [{"id_signalement": r.id_signalement, "description": r.description} for r in payload.reports]
+    assigned_categories = process_report_batch(reports_dict, payload.cache_categories)
+
+    # 2. Scoring comportemental & temporel Modèle A
+    model_a_input = {
+        "numero": payload.numero,
+        "nombre_verifications": payload.nombre_verifications,
+        "horodatages_verifications": payload.horodatages_verifications,
+        "nombre_signalements": payload.nombre_signalements or len(payload.reports),
+        "horodatages_signalements": payload.horodatages_signalements,
+        "categories": assigned_categories,
+    }
+    score, explications, _ = predict_model_a(model_a_input)
+
+    return FullAnalysisOut(
+        numero=payload.numero,
+        score_risque=score,
+        explications=explications,
+        categories=assigned_categories,
+        modele_utilise="kwismo_ai_gateway_v1",
+    )
 
 
 @app.post(
