@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     jwt_secret: str = "changeme"
     jwt_access_expire_min: int = 480
     jwt_refresh_expire_days: int = 7
+    jwt_reset_expire_min: int = 30
 
     # Chiffrement des champs sensibles (Fernet, cle via `Fernet.generate_key()`)
     field_encryption_key: str = "changeme-generate-with-Fernet.generate_key()"

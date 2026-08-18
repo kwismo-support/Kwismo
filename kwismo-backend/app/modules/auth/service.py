@@ -273,7 +273,7 @@ async def forgot_password(payload: PasswordForgotIn) -> Message:
             "sub": user.id,
             "type": "reset",
             "jti": str(uuid.uuid4()),
-            "exp": datetime.now(UTC) + timedelta(minutes=30),
+            "exp": datetime.now(UTC) + timedelta(minutes=settings.jwt_reset_expire_min),
         },
         settings.jwt_secret,
         algorithm="HS256",
