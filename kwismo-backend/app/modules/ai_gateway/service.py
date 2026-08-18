@@ -1,8 +1,61 @@
-"""Service de gestion et modération des catégories d'arnaques découvertes par l'IA (kwismo-backend).
+"""Service de gestion, modération et synchronisation dynamique des catégories d'arnaques découvertes par l'IA (kwismo-backend).
 """
 
 from typing import Any
 from app.db.prisma import prisma
+
+
+async def sync_discovered_categories(assigned_categories: dict[str, str]) -> None:
+    """Synchronise dynamiquement les catégories découvertes par l'IA avec la base de données.
+
+    Si le Modèle B renvoie une nouvelle catégorie non enregistrée dans la table `ScamCategory`,
+    celle-ci est créée automatiquement en base de données sans aucune interruption de service.
+    """
+    if not assigned_categories:
+        return
+
+    unique_codes = set(assigned_categories.values())
+
+    for code in unique_codes:
+        if not code or code in ("unknown_scam_pattern", "legitimate_info", "legitimate_chat"):
+            continue
+
+        existing = await prisma.scamcategory.find_unique(where={"nomCode": code})
+        if not existing:
+            libelle = code.replace("_", " ").title()
+            existing = await prisma.scamcategory.create(
+                data={
+                    "nomCode": code,
+                    "libelle": libelle,
+                    "description": f"Catégorie d'escroquerie découverte automatiquement par le Modèle B IA ({code}).",
+                }
+            )
+
+    # Association des catégories aux signalements en BD
+    for report_id, cat_code in assigned_categories.items():
+        if not cat_code or cat_code in ("unknown_scam_pattern", "legitimate_info", "legitimate_chat"):
+            continue
+
+        scam_cat = await prisma.scamcategory.find_unique(where={"nomCode": cat_code})
+        if scam_cat:
+            try:
+                await prisma.reportcategory.upsert(
+                    where={
+                        "reportId_scamCategoryId": {
+                            "reportId": report_id,
+                            "scamCategoryId": scam_cat.id,
+                        }
+                    },
+                    data={
+                        "create": {
+                            "reportId": report_id,
+                            "scamCategoryId": scam_cat.id,
+                        },
+                        "update": {},
+                    },
+                )
+            except Exception:
+                pass
 
 
 async def list_scam_categories() -> list[dict[str, Any]]:

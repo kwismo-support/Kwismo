@@ -19,6 +19,7 @@ from app.modules.ai_gateway.schemas import (
     ReportItemIn,
     TextIn,
 )
+from app.modules.ai_gateway.service import sync_discovered_categories
 
 settings = get_settings()
 
@@ -45,11 +46,20 @@ async def predict_batch_reports(payload: BatchReportIn) -> BatchReportOut:
 
 
 async def predict_full_analysis(payload: FullAnalysisIn) -> FullAnalysisOut:
-    """Appelle la passerelle d'inférence intégrée (Modèle B -> Modèle A)."""
+    """Appelle la passerelle d'inférence intégrée (Modèle B -> Modèle A) et synchronise dynamiquement les catégories découvertes."""
     async with httpx.AsyncClient(base_url=settings.ai_service_url, timeout=settings.ai_service_timeout_seconds) as client:
         response = await client.post("/predict/full_analysis", json=payload.model_dump())
         response.raise_for_status()
-        return FullAnalysisOut.model_validate(response.json())
+        out = FullAnalysisOut.model_validate(response.json())
+        
+        # Synchronisation automatique des nouvelles catégories découvertes avec la BD
+        if out.categories:
+            try:
+                await sync_discovered_categories(out.categories)
+            except Exception as err:
+                print(f"⚠️ Avertissement : Impossible de synchroniser les catégories en BD : {err}")
+                
+        return out
 
 
 async def send_feedback(payload: FeedbackIn) -> FeedbackAck:
@@ -71,31 +81,5 @@ async def categorize_and_sync_reports(reports: list[dict[str, str]]) -> dict[str
     categories_map = batch_out.categories
 
     # Synchronisation avec la base de données (ScamCategory & ReportCategory)
-    for report_id, cat_code in categories_map.items():
-        if not cat_code or cat_code in ("unknown_scam_pattern", "uncategorized_empty"):
-            continue
-
-        scam_cat = await prisma.scamcategory.find_unique(where={"nomCode": cat_code})
-        if not scam_cat:
-            scam_cat = await prisma.scamcategory.create(
-                data={
-                    "nomCode": cat_code,
-                    "libelle": cat_code.replace("_", " ").title(),
-                    "description": f"Catégorie détectée dynamiquement par le Modèle B: {cat_code}",
-                }
-            )
-
-        try:
-            db_report = await prisma.report.find_unique(where={"id": report_id})
-            if db_report:
-                await prisma.reportcategory.upsert(
-                    where={"reportId_scamCategoryId": {"reportId": report_id, "scamCategoryId": scam_cat.id}},
-                    data={
-                        "create": {"reportId": report_id, "scamCategoryId": scam_cat.id},
-                        "update": {},
-                    },
-                )
-        except Exception:
-            pass
-
+    await sync_discovered_categories(categories_map)
     return categories_map

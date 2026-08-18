@@ -1,10 +1,11 @@
 """Règles expertes — Démarrage à froid & Filet de sécurité du Modèle A.
 
 Implémente :
+- Analyse fine des séquences d'intervalles d'horodatages.
 - Anti-Vengeance (Déduplication Device Fingerprint).
 - Décroissance Temporelle Exponentielle.
 - Risque Émergent (Ratio de paresse Vérification / Signalement).
-- Reduction Admin (-50%).
+- Réduction Admin (-50%).
 - Plafonnement absolu de sécurité (<= 0.69 en cas de signalement unique).
 """
 
@@ -18,11 +19,12 @@ def calculate_expert_score(features: dict[str, Any]) -> tuple[float, list[str]]:
     num_verif = int(features.get("nombre_verifications", 0))
     verif_pond = float(features.get("verifications_ponderees", num_verif))
     vitesse_verif = float(features.get("vitesse_verifications", 0.0))
-    vitesse_sig = float(features.get("vitesse_signalements", 0.0))
     ratio_paresse = float(features.get("ratio_verif_signalement", 0.0))
     gravite = float(features.get("gravite_categories", 0.0))
     diversite_devices = int(features.get("diversite_devices", num_sig))
     statut_admin = str(features.get("statut_communautaire", "aucun"))
+    intervalle_verif_sec = float(features.get("intervalle_moyen_verif_sec", 86400.0))
+    intervalle_min_verif_sig_sec = float(features.get("intervalle_min_verif_sig_sec", 86400.0))
 
     explications = []
     base_score = 0.05
@@ -31,10 +33,13 @@ def calculate_expert_score(features: dict[str, Any]) -> tuple[float, list[str]]:
     if num_sig > diversite_devices and diversite_devices > 0:
         explications.append(f"Anti-Vengeance activé : {num_sig} signalements regroupés sur {diversite_devices} appareil(s) distinct(s).")
 
-    # 2. Analyse des vérifications récentes (paresse & pic récent)
-    if ratio_paresse >= 15.0 and vitesse_verif >= 3.0:
+    # 2. Analyse des vérifications et des intervalles temporels
+    if intervalle_verif_sec <= 300.0 and num_verif >= 5:
         base_score += 0.25
-        explications.append(f"Alerte Risque Émergent : Pic soudain de {num_verif} vérifications sans signalements rédigés.")
+        explications.append(f"Pic temporel critique : {num_verif} vérifications très rapprochées (< 5 min d'intervalle).")
+    elif ratio_paresse >= 15.0 and vitesse_verif >= 3.0:
+        base_score += 0.25
+        explications.append(f"Alerte Risque Émergent : Pic de {num_verif} vérifications récurrentes sans signalements rédigés.")
     elif verif_pond >= 10.0 or vitesse_verif >= 4.0:
         base_score += 0.20
         explications.append(f"Volume élevé de vérifications d'utilisateurs ({num_verif} recherches).")
@@ -42,7 +47,12 @@ def calculate_expert_score(features: dict[str, Any]) -> tuple[float, list[str]]:
         base_score += 0.10
         explications.append("Vérifications récurrentes enregistrées sur ce numéro.")
 
-    # 3. Signalements pondérés & Décroissance temporelle
+    # 3. Correlation temporelle entre vérification et signalement
+    if intervalle_min_verif_sig_sec <= 600.0 and num_sig > 0:
+        base_score += 0.10
+        explications.append("Confirmation temporelle : Signalement rédigé dans la foulée immédiate d'une vérification (< 10 min).")
+
+    # 4. Signalements pondérés & Décroissance temporelle
     if sig_eff >= 4.0:
         base_score += 0.40
         explications.append(f"Numéro confirmé suspect par des signalements récents ({sig_eff:.1f} signalements pondérés).")
@@ -53,7 +63,7 @@ def calculate_expert_score(features: dict[str, Any]) -> tuple[float, list[str]]:
         base_score += 0.15
         explications.append("Premier signalement enregistré sur ce numéro.")
 
-    # 4. Prise en compte de la gravité des catégories du Modèle B
+    # 5. Prise en compte de la gravité des catégories du Modèle B
     if gravite >= 0.9:
         base_score += 0.25
         explications.append("Tentative de fraude critique détectée par l'IA (vol de PIN OTP / SIM Swap).")
@@ -63,7 +73,7 @@ def calculate_expert_score(features: dict[str, Any]) -> tuple[float, list[str]]:
 
     score_final = min(max(base_score, 0.05), 1.0)
 
-    # 5. Réduction si statut administrateur / marchand vérifié
+    # 6. Réduction si statut administrateur / marchand vérifié
     if statut_admin in ("verifie_officiel", "marchand_agrée"):
         score_final = score_final * 0.5
         explications.append("Réduction de score appliquée (Marchand / Compte Officiel vérifié).")

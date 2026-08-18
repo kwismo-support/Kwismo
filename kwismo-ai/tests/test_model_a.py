@@ -1,4 +1,4 @@
-"""Suite complète de tests du Modèle A (50+ scénarios réels, métriques temporelles & règles de sécurité)."""
+"""Suite complète de tests du Modèle A (50+ scénarios réels, métriques d'intervalles d'horodatages & règles de sécurité)."""
 
 import pytest
 from src.data.features import compute_temporal_features
@@ -6,7 +6,64 @@ from src.data.graph import record_number_link, register_known_scammer
 from src.models.model_a import predict, rules
 
 # =====================================================================
-# 1. TESTS DES RÈGLES DE SÉCURITÉ ABSOLUES (PLAFONNEMENT <= 0.69)
+# 1. TESTS DES INTERVALLES DE DATES & SÉQUENCES COMPLÈTES DE TIMESTAMPS
+# =====================================================================
+
+def test_timestamp_intervals_close_vs_spread() -> None:
+    """Démontre la prévention des faux positifs : 10 vérifications très resserrées (< 5 min) déclenchent une alerte de pic temporel,
+    tandis que 10 vérifications étalées sur 6 mois restent parfaitement calmes et sécurisées.
+    """
+    # 10 vérifications très resserrées (espacées de 30 secondes)
+    rapid_ts = [f"2026-08-18T08:0{i//2}:{(i%2)*30:02d}Z" for i in range(10)]
+    rapid_data = {
+        "numero": "237699112233",
+        "nombre_verifications": 10,
+        "horodatages_verifications": rapid_ts,
+        "nombre_signalements": 0,
+    }
+    rapid_feats = compute_temporal_features(rapid_data)
+    assert rapid_feats["intervalle_moyen_verif_sec"] < 300.0
+    rapid_score, rapid_expl, _ = predict.predict(rapid_data)
+    assert any("Pic temporel" in exp or "rapprochées" in exp for exp in rapid_expl)
+
+    # 10 vérifications étalées sur 6 mois (espacées de 18 jours)
+    spread_ts = [
+        "2026-01-01T08:00:00Z", "2026-01-20T08:00:00Z", "2026-02-10T08:00:00Z",
+        "2026-03-01T08:00:00Z", "2026-03-20T08:00:00Z", "2026-04-10T08:00:00Z",
+        "2026-05-01T08:00:00Z", "2026-05-20T08:00:00Z", "2026-06-10T08:00:00Z",
+        "2026-07-01T08:00:00Z"
+    ]
+    spread_data = {
+        "numero": "237699112244",
+        "nombre_verifications": 10,
+        "horodatages_verifications": spread_ts,
+        "nombre_signalements": 0,
+    }
+    spread_feats = compute_temporal_features(spread_data)
+    assert spread_feats["intervalle_moyen_verif_sec"] > 86400.0  # Plus d'un jour d'écart moyen
+    spread_score, _, _ = predict.predict(spread_data)
+    
+    # 🛡️ Prévention du faux positif : Le score étalé reste inférieur au score resserré
+    assert spread_score < rapid_score
+
+
+def test_timestamp_interval_min_verif_to_signalement() -> None:
+    """Vérifie la corrélation temporelle lorsqu'un signalement est rédigé dans la foulée immédiate d'une vérification (< 10 min)."""
+    data = {
+        "numero": "237699556677",
+        "horodatages_verifications": ["2026-08-18T08:00:00Z"],
+        "horodatages_signalements": ["2026-08-18T08:05:00Z"],  # 5 minutes après !
+        "nombre_signalements": 1,
+        "nombre_verifications": 1,
+    }
+    feats = compute_temporal_features(data)
+    assert feats["intervalle_min_verif_sig_sec"] == 300.0  # 5 min = 300 s
+    score, explications, _ = predict.predict(data)
+    assert any("foulée" in exp or "Confirmation temporelle" in exp for exp in explications)
+
+
+# =====================================================================
+# 2. TESTS DES RÈGLES DE SÉCURITÉ ABSOLUES (PLAFONNEMENT <= 0.69)
 # =====================================================================
 
 @pytest.mark.parametrize("num_verif,gravite,vitesse_verif", [
@@ -45,7 +102,7 @@ def test_safety_cap_zero_reports_never_exceeds_0_69(num_verif: int) -> None:
 
 
 # =====================================================================
-# 2. TESTS ANTI-VENGEANCE & DÉDUPLICATION PAR DEVICE ID
+# 3. TESTS ANTI-VENGEANCE & DÉDUPLICATION PAR DEVICE ID
 # =====================================================================
 
 def test_anti_vengeance_same_device_capped() -> None:
@@ -53,7 +110,7 @@ def test_anti_vengeance_same_device_capped() -> None:
     data = {
         "numero": "237670000099",
         "nombre_signalements": 10,
-        "device_fingerprints": ["device_hash_xyz"] * 10,  # Même appareil !
+        "device_fingerprints": ["device_hash_xyz"] * 10,
         "nombre_verifications": 10,
     }
     score, explications, _ = predict.predict(data)
@@ -66,7 +123,7 @@ def test_anti_vengeance_multiple_distinct_devices() -> None:
     data = {
         "numero": "237670000088",
         "nombre_signalements": 10,
-        "device_fingerprints": [f"device_hash_{i}" for i in range(10)],  # 10 appareils distincts !
+        "device_fingerprints": [f"device_hash_{i}" for i in range(10)],
         "nombre_verifications": 10,
         "categories": {"r1": "fake_agent_otp", "r2": "sim_swap_scam"},
     }
@@ -75,7 +132,7 @@ def test_anti_vengeance_multiple_distinct_devices() -> None:
 
 
 # =====================================================================
-# 3. TESTS DE DÉCROISSANCE TEMPORELLE EXPONENTIELLE (TIME DECAY)
+# 4. TESTS DE DÉCROISSANCE TEMPORELLE EXPONENTIELLE (TIME DECAY)
 # =====================================================================
 
 def test_time_decay_recent_vs_old_reports() -> None:
@@ -89,7 +146,7 @@ def test_time_decay_recent_vs_old_reports() -> None:
     old_data = {
         "numero": "237680000002",
         "nombre_signalements": 3,
-        "horodatages_signalements": ["2025-08-18T00:00:00Z", "2025-08-18T01:00:00Z", "2025-08-18T02:00:00Z"],  # 1 an d'ancienneté !
+        "horodatages_signalements": ["2025-08-18T00:00:00Z", "2025-08-18T01:00:00Z", "2025-08-18T02:00:00Z"],
         "categories": {"r1": "fake_transfer_sms"},
     }
     recent_score, _, _ = predict.predict(recent_data)
@@ -98,7 +155,7 @@ def test_time_decay_recent_vs_old_reports() -> None:
 
 
 # =====================================================================
-# 4. TESTS DU RATIO DE PARESSE & RISQUE ÉMERGENT
+# 5. TESTS DU RATIO DE PARESSE & RISQUE ÉMERGENT
 # =====================================================================
 
 def test_emerging_risk_spike_high_checks_ratio() -> None:
@@ -107,15 +164,15 @@ def test_emerging_risk_spike_high_checks_ratio() -> None:
         "numero": "237650000077",
         "nombre_signalements": 0,
         "nombre_verifications": 40,
-        "horodatages_verifications": ["2026-08-18T00:00:00Z"] * 40,  # 40 vérifications récentes !
+        "horodatages_verifications": ["2026-08-18T00:00:00Z"] * 40,
     }
     score, explications, _ = predict.predict(data)
     assert any("Alerte Risque Émergent" in exp for exp in explications)
-    assert 0.20 <= score <= 0.69  # Hausse sans dépasser le plafonnement
+    assert 0.20 <= score <= 0.69
 
 
 # =====================================================================
-# 5. TESTS D'ANALYSE DE GRAPHE DE RÉSEAU (LINK BONUS)
+# 6. TESTS D'ANALYSE DE GRAPHE DE RÉSEAU (LINK BONUS)
 # =====================================================================
 
 def test_scam_ring_network_graph_bonus() -> None:
@@ -137,7 +194,7 @@ def test_scam_ring_network_graph_bonus() -> None:
 
 
 # =====================================================================
-# 6. TESTS DE RÉDUCTION POUR STATUT MARCHAND / OFFICIEL
+# 7. TESTS DE RÉDUCTION POUR STATUT MARCHAND / OFFICIEL
 # =====================================================================
 
 def test_official_merchant_status_score_reduction() -> None:
@@ -161,11 +218,10 @@ def test_official_merchant_status_score_reduction() -> None:
 
 
 # =====================================================================
-# 7. SUITE DE 50 SCÉNARIOS DE TEST PARAMÉTRÉS SUR LE MODÈLE A
+# 8. SUITE DE 50 SCÉNARIOS DE TEST PARAMÉTRÉS SUR LE MODÈLE A
 # =====================================================================
 
 SCENARIOS_50 = [
-    # (id, num_sig, num_verif, gravite, est_officiel, max_expected_score, min_expected_score)
     ("sc_01", 0, 0, 0.0, False, 0.15, 0.0),
     ("sc_02", 0, 1, 0.0, False, 0.25, 0.0),
     ("sc_03", 0, 5, 0.0, False, 0.40, 0.0),
@@ -190,11 +246,11 @@ SCENARIOS_50 = [
     ("sc_19", 12, 50, 1.0, False, 0.95, 0.60),
     ("sc_20", 20, 100, 1.0, False, 0.95, 0.65),
     
-    ("sc_21", 1, 0, 0.0, True, 0.45, 0.0),    # Officiel
-    ("sc_22", 2, 5, 0.75, True, 0.55, 0.05),   # Officiel
-    ("sc_23", 5, 20, 1.0, True, 0.60, 0.10),   # Officiel
-    ("sc_24", 10, 50, 1.0, True, 0.65, 0.15),  # Officiel
-    ("sc_25", 0, 30, 0.0, True, 0.45, 0.0),    # Officiel
+    ("sc_21", 1, 0, 0.0, True, 0.45, 0.0),
+    ("sc_22", 2, 5, 0.75, True, 0.55, 0.05),
+    ("sc_23", 5, 20, 1.0, True, 0.60, 0.10),
+    ("sc_24", 10, 50, 1.0, True, 0.65, 0.15),
+    ("sc_25", 0, 30, 0.0, True, 0.45, 0.0),
     
     ("sc_26", 1, 0, 0.0, False, 0.69, 0.0),
     ("sc_27", 1, 2, 0.5, False, 0.69, 0.0),
