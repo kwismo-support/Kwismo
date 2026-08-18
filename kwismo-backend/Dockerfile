@@ -2,10 +2,11 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
-# Dépendances système requises (OpenSSL pour Prisma Engine, curl pour Healthchecks)
+# Dépendances système requises (OpenSSL & libatomic pour Prisma Engine/Node, curl pour Healthchecks)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     openssl \
     curl \
+    libatomic1 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .

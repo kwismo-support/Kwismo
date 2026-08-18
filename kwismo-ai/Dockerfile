@@ -2,7 +2,9 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
+# Dépendances système requises (libgomp1 pour LightGBM OpenMP, curl pour Healthchecks)
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgomp1 \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
