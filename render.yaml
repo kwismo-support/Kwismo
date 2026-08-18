@@ -1,0 +1,41 @@
+services:
+  # 1. Service IA (Python / FastAPI)
+  - type: web
+    name: kwismo-ai
+    runtime: docker
+    dockerfilePath: Dockerfile
+    rootDir: kwismo-ai
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8001
+      - key: LOG_LEVEL
+        value: info
+
+  # 2. Service Backend (Python / Prisma)
+  - type: web
+    name: kwismo-backend
+    runtime: docker
+    dockerfilePath: Dockerfile
+    rootDir: kwismo-backend
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: DB_TYPE
+        value: postgresql
+      - key: DATABASE_URL
+        value: postgresql://neondb_owner:npg_Jof3TgG5UNbr@ep-spring-queen-ayomvlq5-pooler.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+      - key: AI_SERVICE_URL
+        value: http://kwismo-ai:8001
+      - key: JWT_SECRET
+        generateValue: true
+
+  # 3. Frontend Web (Static Site React / Vite)
+  - type: web
+    name: kwismo-web
+    runtime: static
+    rootDir: kwismo-web
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    plan: free

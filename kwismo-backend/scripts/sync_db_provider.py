@@ -10,6 +10,7 @@ Usage
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import subprocess
 import sys
@@ -37,11 +38,11 @@ DATASOURCE_PROVIDER_RE = re.compile(
 
 
 def read_db_type() -> str:
-    db_type = (dotenv_values(ENV_FILE).get("DB_TYPE") or "sqlite").strip().lower()
+    db_type = (os.getenv("DB_TYPE") or dotenv_values(ENV_FILE).get("DB_TYPE") or "sqlite").strip().lower()
     if db_type not in PROVIDERS:
         allowed = ", ".join(sorted(set(PROVIDERS) - {"postgres"}))
         raise SystemExit(
-            f"DB_TYPE='{db_type}' invalide dans {ENV_FILE}. Valeurs acceptees : {allowed}."
+            f"DB_TYPE='{db_type}' invalide. Valeurs acceptees : {allowed}."
         )
     return db_type
 
