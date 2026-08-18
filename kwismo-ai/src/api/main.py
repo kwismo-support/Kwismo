@@ -4,7 +4,9 @@ Ce service ne se connecte jamais à la base de données : il reçoit ses donnée
 du backend et lui renvoie ses prédictions.
 """
 
-from fastapi import FastAPI, HTTPException, status
+import json
+from pathlib import Path
+from fastapi import FastAPI, BackgroundTasks, HTTPException, status
 from fastapi.middleware.gzip import GZipMiddleware
 from slowapi.middleware import SlowAPIMiddleware
 
@@ -26,7 +28,10 @@ from src.api.schemas import (
 )
 from src.config import get_settings
 from src.models.model_a.predict import predict as predict_model_a
+from src.models.model_a.train import train_model_a
 from src.models.model_b.preprocess import categorize_description, extract_entities, process_report_batch
+
+FEEDBACK_STORE_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "interim" / "feedback_store.jsonl"
 
 DESCRIPTION = """
 **FR** — Service d'inférence KWISMO : Modèle A (scoring de réputation des numéros)
@@ -36,7 +41,7 @@ Appelé uniquement par le backend via l'API Gateway.
 
 TAGS_METADATA = [
     {"name": "Prediction", "description": "Inférence Modèle A / Modèle B / Gateway Intégrée."},
-    {"name": "Feedback", "description": "Apprentissage continu."},
+    {"name": "Feedback", "description": "Apprentissage continu & auto-entraînement."},
     {"name": "System", "description": "Santé & version du modèle chargé."},
 ]
 
@@ -58,6 +63,16 @@ register_error_handlers(app)
 app.add_middleware(GZipMiddleware, minimum_size=1024)
 app.add_middleware(SlowAPIMiddleware)
 app.add_middleware(MaxBodySizeMiddleware)
+
+
+def auto_retrain_task() -> None:
+    """Tâche d'arrière-plan ré-entraînant les modèles automatiquement lors de l'accumulation de feedback."""
+    try:
+        print("🔄 Auto-Retraining Pipeline déclenché en arrière-plan...")
+        train_model_a()
+        print("✅ Auto-Retraining du Modèle A exécuté avec succès.")
+    except Exception as err:
+        print(f"⚠️ Erreur lors de l'auto-entraînement : {err}")
 
 
 @app.post(
@@ -148,9 +163,21 @@ async def predict_full_analysis(payload: FullAnalysisIn) -> FullAnalysisOut:
     "/feedback",
     response_model=FeedbackAck,
     tags=["Feedback"],
-    summary="Send labeled feedback / Transmettre une donnée étiquetée",
+    summary="Send labeled feedback / Transmettre une donnée étiquetée & Auto-Retraining",
 )
-async def feedback(payload: FeedbackIn) -> FeedbackAck:
+async def feedback(payload: FeedbackIn, background_tasks: BackgroundTasks) -> FeedbackAck:
+    # 1. Enregistrement de la donnée étiquetée
+    FEEDBACK_STORE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(FEEDBACK_STORE_PATH, "a", encoding="utf-8") as f:
+        f.write(json.dumps(payload.model_dump()) + "\n")
+
+    # 2. Comptage des feedbacks accumulés
+    lines_count = sum(1 for _ in open(FEEDBACK_STORE_PATH, "r", encoding="utf-8")) if FEEDBACK_STORE_PATH.exists() else 0
+
+    # 3. Déclenchement automatique de l'auto-entraînement si le seuil de feedback est atteint (ou par défaut)
+    if lines_count >= 10:
+        background_tasks.add_task(auto_retrain_task)
+
     return FeedbackAck(recu=True)
 
 

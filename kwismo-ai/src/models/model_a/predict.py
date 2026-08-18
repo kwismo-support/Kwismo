@@ -1,4 +1,4 @@
-"""Inférence du Modèle A (scoring de réputation comportemental et temporel).
+"""Inférence du Modèle A (scoring de réputation comportemental, temporel & analyse de graphe).
 
 Le modèle A renvoie uniquement (score_risque, explications, modele_utilise).
 Le statut (securise | a_signaler | frauduleux) est géré exclusivement par le backend.
@@ -12,11 +12,13 @@ import pandas as pd
 
 from src.api.loader import load_model_a
 from src.data.features import FEATURE_COLUMNS, compute_temporal_features
+from src.data.graph import get_network_risk_bonus
 from src.models.model_a.rules import calculate_expert_score
 
 
 def predict(data: dict[str, Any]) -> tuple[float, list[str], str]:
     """Inférence du Modèle A (Score de réputation 0.0 - 1.0 + Explications)."""
+    numero = str(data.get("numero", ""))
     features = compute_temporal_features(data)
     num_sig = features["nombre_signalements"]
     statut_admin = features.get("statut_communautaire", "aucun")
@@ -52,6 +54,13 @@ def predict(data: dict[str, Any]) -> tuple[float, list[str], str]:
     else:
         score_final, explications = calculate_expert_score(features)
         modele_utilise = "regles_expertes"
+
+    # Analyse de Graphe (Bonus contrôlé de réseau +0.0 à +0.15)
+    net_bonus, net_expl = get_network_risk_bonus(numero)
+    if net_bonus > 0.0:
+        score_final = round(min(score_final + net_bonus, 1.0), 2)
+        if net_expl:
+            explications.append(net_expl)
 
     # Réduction si marchand/officiel
     if statut_admin in ("verifie_officiel", "marchand_agrée"):
