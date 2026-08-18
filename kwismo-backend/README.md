@@ -379,22 +379,24 @@ prisma migrate dev --name init
 Le backend inclut un script d'ensemencement complet (`scripts/seed.py`) qui alimente la base de données avec des jeux de données réalistes couvrant l'intégralité des modules (utilisateurs, rôles, numéros, signalements, transactions, contacts, appareils, catégories d'arnaques, KPIs, etc.) pour pouvoir tester immédiatement toutes les routes API (Swagger `/docs`).
 
 #### Exécuter le seed en local :
+
 ```bash
 python scripts/seed.py
 ```
 
 #### Exécuter le seed dans un conteneur Docker :
+
 ```bash
 docker compose exec backend python scripts/seed.py
 ```
 
 #### Comptes de test générés par le seed :
 
-| Rôle | Email | Mot de passe | Description |
-| :--- | :--- | :--- | :--- |
-| **`user`** | `user@kwismo.com` | `Password123!` | Compte utilisateur standard avec numéro de téléphone raccordé |
-| **`partner`** | `partner@kwismo.com` | `Password123!` | Compte partenaire associé à *"KWISMO Partner Test"* |
-| **`admin`** | `admin@kwismo.com` | `Password123!` | Compte Administrateur (toutes les permissions d'administration) |
+| Rôle                 | Email                  | Mot de passe     | Description                                                       |
+| :-------------------- | :--------------------- | :--------------- | :---------------------------------------------------------------- |
+| **`user`**    | `user@kwismo.com`    | `Password123!` | Compte utilisateur standard avec numéro de téléphone raccordé |
+| **`partner`** | `partner@kwismo.com` | `Password123!` | Compte partenaire associé à*"KWISMO Partner Test"*            |
+| **`admin`**   | `admin@kwismo.com`   | `Password123!` | Compte Administrateur (toutes les permissions d'administration)   |
 
 ---
 

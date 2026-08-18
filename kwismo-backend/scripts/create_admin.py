@@ -5,6 +5,12 @@ Usage: python scripts/create_admin.py <email> <mot_de_passe> <nom> <prenom>
 
 import asyncio
 import sys
+from pathlib import Path
+
+# Resolution automatique de la racine du backend (kwismo-backend) dans sys.path
+BACKEND_DIR = Path(__file__).resolve().parent.parent
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
 
 from argon2 import PasswordHasher
 
