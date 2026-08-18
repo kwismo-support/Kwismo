@@ -8,10 +8,14 @@ def test_rules_single_report_safety_cap() -> None:
     """Vérifie qu'un numéro avec 1 seul signalement ne peut JAMAIS dépasser un score de 0.69."""
     features = {
         "nombre_signalements": 1,
+        "signalements_effectifs_ponderes": 1.0,
         "nombre_verifications": 100,  # 100 vérifications !
+        "verifications_ponderees": 100.0,
         "vitesse_verifications": 10.0,
         "gravite_categories": 1.0,
         "diversite_signaleurs": 1,
+        "diversite_devices": 1,
+        "ratio_verif_signalement": 100.0,
     }
     score, explications = rules.calculate_expert_score(features)
     assert score <= 0.69
@@ -30,7 +34,7 @@ def test_compute_temporal_features() -> None:
     assert feats["nombre_signalements"] == 3
     assert feats["nombre_verifications"] == 10
     assert feats["gravite_categories"] == 1.0
-    assert feats["ratio_verif_signalement"] == 3.3333333333333335
+    assert feats["ratio_verif_signalement"] == 3.33
 
 
 def test_predict_model_a_returns_score_and_explications() -> None:

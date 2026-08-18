@@ -150,13 +150,15 @@ kwismo-ai/
 │  │  └─ metrics/                   # ★ Historique + graphes de scraping — versionné
 │  └─ processed/                    # Données prêtes pour l'entraînement
 │     ├─ model_b_clean.jsonl        # ★ Données nettoyées (504 extraits)
-│     └─ model_b_augmented.jsonl    # ★ Données augmentées synthétiques (1189 extraits)
+│     ├─ model_b_augmented.jsonl    # ★ Données augmentées synthétiques (1477 extraits)
+│     ├─ legit_examples.jsonl       # ★ Exemples de transactions & chats légitimes réels
+│     └─ model_a_dataset.csv        # ★ Dataset comportemental & temporel (1000 numéros)
 │
 ├─ notebooks/                       # Exploration & entraînement (local + Colab + Kaggle)
-│  ├─ 01_exploration.ipynb          # Analyse exploratoire des données (EDA)
-│  ├─ 02_train_model_a.ipynb        # Entraînement scoring (interactif)
-│  ├─ 03_train_model_b.ipynb        # Fine-tuning NLP AfroXLMR (Colab / Kaggle)
-│  └─ 04_scraping.ipynb             # ★ Collecte + OCR + métriques (appelle src/data/)
+│  ├─ 01_exploration.ipynb          # Analyse exploratoire des données (EDA + 4 graphes)
+│  ├─ 02_train_model_a.ipynb        # Entraînement scoring Modèle A (interactive + 4 graphes)
+│  ├─ 03_train_model_b.ipynb        # Fine-tuning NLP AfroXLMR & métriques (Colab / Kaggle + 4 graphes)
+│  └─ 04_scraping.ipynb             # ★ Collecte + OCR + métriques (appelle src/data/ + 2 graphes)
 │
 ├─ src/                             # ★ Code source réutilisable
 │  ├─ __init__.py                   # Signale une erreur si mauvaise version Python
@@ -167,7 +169,9 @@ kwismo-ai/
 │  │  ├─ collect.py                 # Réception des données depuis le backend
 │  │  ├─ clean.py                   # Nettoyage et structuration des extraits de fraude
 │  │  ├─ augment.py                 # ★ Augmentation synthétique en Franglais/Pidgin
-│  │  ├─ features.py                # Construction des caractéristiques (Modèle A)
+│  │  ├─ generate_model_a_data.py   # ★ Générateur de dataset comportemental & temporel Modèle A
+│  │  ├─ slang_dictionary.json      # ★ Dictionnaire évolutif de normalisation camfranglais/pidgin
+│  │  ├─ features.py                # Construction des caractéristiques & métriques temporelles (Modèle A)
 │  │  ├─ scrape.py                  # ★ Découverte web dynamique + collecte texte/image
 │  │  ├─ scrape_social.py           # ★ Scraping Facebook/Instagram/X (Playwright)
 │  │  ├─ ocr.py                     # ★ Texte depuis capture d'écran (EasyOCR)
@@ -177,15 +181,15 @@ kwismo-ai/
 │  ├─ models/
 │  │  ├─ __init__.py
 │  │  │
-│  │  ├─ model_a/                   # Scoring de réputation des numéros
+│  │  ├─ model_a/                   # Scoring de réputation des numéros (Temporel & Comportemental)
 │  │  │  ├─ __init__.py
-│  │  │  ├─ train.py                # Entraînement LightGBM
-│  │  │  ├─ predict.py              # Inférence (score + statut)
-│  │  │  └─ rules.py                # Règles expertes (démarrage à froid / repli)
+│  │  │  ├─ train.py                # Entraînement LightGBM & sérialisation joblib
+│  │  │  ├─ predict.py              # Inférence score_risque (0.0-1.0) + explications (cap 0.69)
+│  │  │  └─ rules.py                # Règles expertes temporelles (démarrage à froid / repli)
 │  │  │
-│  │  └─ model_b/                   # NLP multilingue (arnaque texte)
+│  │  └─ model_b/                   # NLP multilingue (arnaque texte & auto-catégorisation)
 │  │     ├─ __init__.py
-│  │     ├─ preprocess.py           # Prétraitement franglais/pidgin & NER (montants, USSD)
+│  │     ├─ preprocess.py           # Prétraitement franglais/pidgin, NER & skip-cache
 │  │     ├─ train.py                # Fine-tuning AfroXLMR (PEFT/LoRA) — Colab/PC/Kaggle
 │  │     ├─ predict.py              # Inférence (probabilité d'arnaque + catégorie)
 │  │     └─ fallback.py             # Repli TF-IDF + régression logistique
@@ -196,7 +200,7 @@ kwismo-ai/
 │  │
 │  └─ api/                          # ★ Service d'inférence (FastAPI)
 │     ├─ __init__.py
-│     ├─ main.py                    # ★ Routes : /predict/number, /predict/text, /predict/batch_reports, /feedback
+│     ├─ main.py                    # ★ Routes : /predict/number, /predict/text, /predict/full_analysis
 │     ├─ schemas.py                 # ★ Contrat d'API PARTAGÉ avec kwismo-backend
 │     ├─ errors.py                  # ★ slowapi (anti-surcharge) + gestionnaires d'erreurs
 │     ├─ middleware.py              # ★ Limite de taille de requête
@@ -204,9 +208,11 @@ kwismo-ai/
 │
 ├─ models/                          # ★ Artefacts entraînés (partagés au backend)
 │  ├─ model_a/
-│  │  └─ .gitkeep                   # ex. model_a_v3.pkl
+│  │  ├─ .gitkeep
+│  │  └─ model_a_v1.joblib          # ★ Modèle LightGBM entraîné
 │  ├─ model_b/
-│  │  └─ .gitkeep                   # modèles NLP quantifiés & fallback joblib
+│  │  ├─ .gitkeep
+│  │  └─ model_b_fallback_v1.joblib # ★ Modèle NLP TF-IDF de repli
 │  └─ registry.json                 # Versions + métriques + historique de rollback
 │
 ├─ tests/
@@ -226,7 +232,7 @@ kwismo-ai/
 ├─ .gitignore
 ├─ .dockerignore
 ├─ Dockerfile                       # Image du service d'inférence
-├─ requirements.txt                 # scikit-learn, lightgbm, transformers, playwright, easyocr…
+├─ requirements.txt                 # scikit-learn, lightgbm, transformers, playwright, easyocr, seaborn…
 ├─ pyproject.toml                   # requires-python + dependencies (pip install -e .)
 ├─ COLAB.md                         # Guide d'exécution Google Colab
 ├─ KAGGLE.md                        # ★ Guide d'exécution Kaggle Notebooks
