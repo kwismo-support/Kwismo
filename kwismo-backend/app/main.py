@@ -114,55 +114,40 @@ async def _seed_defaults() -> None:
     """
     from app.db.prisma_client import db as _db
 
-    from app.core.security import hash_password
-    roles = {}
-    for nom_role in ("user", "partner", "admin"):
-        role = await _db.role.upsert(
-            where={"nomRole": nom_role},
-            data={"create": {"nomRole": nom_role}, "update": {}},
-        )
-        roles[nom_role] = role
-
-    # Cameroun par defaut — seul pays amorce au demarrage.
-    await _db.country.upsert(
-        where={"codePays": "+237"},
-        data={
-            "create": {
-                "nom": "Cameroun",
-                "codePays": "+237",
-                "estParDefaut": True,
-            },
-            "update": {},
-        },
+    from scripts.seed import (
+        seed_roles_and_permissions,
+        seed_partners,
+        seed_users,
+        seed_countries,
+        seed_operators,
+        seed_ussd_actions,
+        seed_numeros,
+        seed_user_phones,
+        seed_devices,
+        seed_contacts,
+        seed_scam_categories,
+        seed_reports,
+        seed_transactions,
+        seed_notifications_and_kpis,
+        seed_audit_logs,
     )
+    role_ids = await seed_roles_and_permissions()
+    partner_ids = await seed_partners()
+    user_ids = await seed_users(role_ids, partner_ids)
+    country_ids = await seed_countries()
+    operator_ids = await seed_operators(country_ids)
+    await seed_ussd_actions(operator_ids)
+    numero_ids = await seed_numeros(country_ids, operator_ids)
+    await seed_user_phones(user_ids, country_ids, operator_ids, numero_ids)
+    await seed_devices(user_ids)
+    await seed_contacts(user_ids, numero_ids)
+    scam_cat_ids = await seed_scam_categories()
+    await seed_reports(user_ids, numero_ids, scam_cat_ids)
+    await seed_transactions(user_ids, numero_ids)
+    await seed_notifications_and_kpis(user_ids, partner_ids)
+    await seed_audit_logs(user_ids)
 
-    # Comptes de test par defaut (user, partner, admin) — mot de passe: Password123!
-    default_users = [
-        ("user@kwismo.com", "User", "Test", "user", None),
-        ("partner@kwismo.com", "Partner", "Test", "partner", "KWISMO Partner Test"),
-        ("admin@kwismo.com", "KWISMO", "Admin", "admin", None),
-    ]
-
-    for email, nom, prenom, role_nom, partner_nom in default_users:
-        existing = await _db.user.find_unique(where={"email": email})
-        if not existing:
-            user_data = {
-                "nom": nom,
-                "prenom": prenom,
-                "email": email,
-                "motDePasse": hash_password("Password123!"),
-                "emailVerifie": True,
-                "role": {"connect": {"id": roles[role_nom].id}},
-            }
-            if partner_nom:
-                partner_entity = await _db.partner.find_first(where={"nomEntreprise": partner_nom})
-                if not partner_entity:
-                    partner_entity = await _db.partner.create(data={"nomEntreprise": partner_nom, "typePartenariat": "Fintech"})
-                user_data["partner"] = {"connect": {"id": partner_entity.id}}
-
-            await _db.user.create(data=user_data)
-
-    _logger.info("Seed par defaut applique (roles, Cameroun, comptes de test user/partner/admin).")
+    _logger.info("Seed par defaut applique avec succes (comptes, pays, operateurs, signalements, contacts, etc.).")
 
 
 @asynccontextmanager

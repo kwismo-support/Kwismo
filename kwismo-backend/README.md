@@ -374,6 +374,28 @@ prisma migrate dev --name init
 
 > **Cassandra et MongoDB ne sont pas dans le périmètre.** Cassandra n'est pas supportée par Prisma. MongoDB l'est en théorie, mais son connecteur exige que le champ `@id` de chaque modèle soit mappé sur `_id` (`@map("_id")`) — un changement qui toucherait aussi les colonnes des bases SQL si on le généralisait au schéma unique. Choix assumé : KWISMO reste sur SQLite/PostgreSQL/MySQL.
 
+### 🌿 Initialisation et jeu de données de test (Seed)
+
+Le backend inclut un script d'ensemencement complet (`scripts/seed.py`) qui alimente la base de données avec des jeux de données réalistes couvrant l'intégralité des modules (utilisateurs, rôles, numéros, signalements, transactions, contacts, appareils, catégories d'arnaques, KPIs, etc.) pour pouvoir tester immédiatement toutes les routes API (Swagger `/docs`).
+
+#### Exécuter le seed en local :
+```bash
+python scripts/seed.py
+```
+
+#### Exécuter le seed dans un conteneur Docker :
+```bash
+docker compose exec backend python scripts/seed.py
+```
+
+#### Comptes de test générés par le seed :
+
+| Rôle | Email | Mot de passe | Description |
+| :--- | :--- | :--- | :--- |
+| **`user`** | `user@kwismo.com` | `Password123!` | Compte utilisateur standard avec numéro de téléphone raccordé |
+| **`partner`** | `partner@kwismo.com` | `Password123!` | Compte partenaire associé à *"KWISMO Partner Test"* |
+| **`admin`** | `admin@kwismo.com` | `Password123!` | Compte Administrateur (toutes les permissions d'administration) |
+
 ---
 
 ## 9. Modules & routes API
