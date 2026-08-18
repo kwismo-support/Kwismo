@@ -1,16 +1,16 @@
 {
   "model_a": {
     "version": "v1",
-    "type": "lightgbm",
+    "type": "lightgbm_calibrated",
     "path": "models\\model_a\\model_a_v1.joblib",
     "metrics": {
-      "accuracy": 1.0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
-      "roc_auc": 1.0
+      "accuracy": 0.8625,
+      "precision": 0.8817,
+      "recall": 0.9198,
+      "f1": 0.9003,
+      "roc_auc": 0.9477
     },
-    "trained_at": "2026-08-18T01:35:07.570602+00:00"
+    "trained_at": "2026-08-18T02:06:34.140956+00:00"
   },
   "model_b": {
     "version": "v1",

@@ -23,43 +23,35 @@ def predict(data: dict[str, Any]) -> tuple[float, list[str], str]:
     num_sig = features["nombre_signalements"]
     statut_admin = features.get("statut_communautaire", "aucun")
 
+    expert_score, explications = calculate_expert_score(features)
+
     model = load_model_a()
     if model is not None:
         try:
             df_feat = pd.DataFrame([features])[FEATURE_COLUMNS]
-            prob = float(model.predict_proba(df_feat)[0][1])
-            score_final = round(prob, 2)
+            prob_lgb = float(model.predict_proba(df_feat)[0][1])
+            
+            # Équilibrage d'ensemble (65% ML calibré + 35% Heuristiques comportementales)
+            blended_score = 0.65 * prob_lgb + 0.35 * expert_score
+            score_final = round(min(max(blended_score, 0.05), 0.95), 2)
             modele_utilise = "lightgbm_v1"
 
-            # Génération d'explications d'explicabilité
-            explications = []
+            # Enrichissement des explications
             if features["ratio_verif_signalement"] >= 15.0 and features["vitesse_verifications"] >= 3.0:
-                explications.append(f"Alerte Risque Émergent : Pic soudain de {features['nombre_verifications']} vérifications récurrentes.")
-            elif features["nombre_verifications"] >= 10:
-                explications.append(f"Forte hausse des recherches d'utilisateurs ({features['nombre_verifications']} vérifications).")
-
-            if num_sig > features["diversite_devices"] and features["diversite_devices"] > 0:
-                explications.append(f"Anti-Vengeance activé ({num_sig} signalements issus de {features['diversite_devices']} appareil(s)).")
-
-            if num_sig >= 2:
-                explications.append(f"Numéro signalé par {features['diversite_signaleurs']} personnes distinctes ({features['signalements_effectifs_ponderes']} signalements récents).")
-            elif num_sig == 1:
-                explications.append("Signalement unique enregistré sur ce numéro.")
-
-            if features["gravite_categories"] >= 0.7:
-                explications.append("Détection de manœuvres d'escroquerie par l'analyse NLP.")
+                if "Alerte Risque Émergent" not in " ".join(explications):
+                    explications.append(f"Alerte Risque Émergent : Pic de {features['nombre_verifications']} vérifications récurrentes.")
         except Exception:
-            score_final, explications = calculate_expert_score(features)
+            score_final = expert_score
             modele_utilise = "regles_expertes"
     else:
-        score_final, explications = calculate_expert_score(features)
+        score_final = expert_score
         modele_utilise = "regles_expertes"
 
-    # Analyse de Graphe (Bonus contrôlé de réseau +0.0 à +0.15)
+    # Analyse de Graphe (Bonus réseau contrôlé +0.0 à +0.15)
     net_bonus, net_expl = get_network_risk_bonus(numero)
     if net_bonus > 0.0:
-        score_final = round(min(score_final + net_bonus, 1.0), 2)
-        if net_expl:
+        score_final = round(min(score_final + net_bonus, 0.95), 2)
+        if net_expl and net_expl not in explications:
             explications.append(net_expl)
 
     # Réduction si marchand/officiel
