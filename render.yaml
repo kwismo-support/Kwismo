@@ -38,4 +38,3 @@ services:
     rootDir: kwismo-web
     buildCommand: npm install && npm run build
     staticPublishPath: dist
-    plan: free
