@@ -39,8 +39,9 @@ coverage/
 *.log
 logs/
 
-# --- Editeurs / OS ---
+# --- Editeurs / OS / Scratch ---
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+scratch/

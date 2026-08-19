@@ -223,8 +223,12 @@ kwismo-ai/
 │  ├─ test_model_b_extended.py      # ★ Suite étendue à 52 scénarios réels
 │  └─ test_api.py
 │
+├─ logs/
+│  └─ test_all_routes.log           # Logs d'audit d'exécution des tests d'inférence (succès/échecs)
+│
 ├─ scripts/
-│  └─ check_python_version.py       # Fichier de vérification de Python 3.13
+│  ├─ check_python_version.py       # Fichier de vérification de Python 3.13
+│  └─ test_all_routes.py            # ★ Script d'audit et de test automatisé de TOUTES les routes d'inférence IA
 │
 ├─ entrypoint.sh                    # ★ Script d'initialisation Docker (génération/entraînement auto & uvicorn)
 ├─ check_python.bat                 # Vérifie Python 3.13 avant de démarrer
@@ -295,6 +299,27 @@ Le cycle est le même pour les deux modèles :
 | `GET /version` | Version du modèle chargé. |
 
 Documentation interactive : **[API Docs](http://localhost:8001/docs)**.
+
+### 🚀 Audit et test automatisé de TOUTES les routes IA (`test_all_routes.py`)
+
+Un script autonome d'audit complet est disponible dans `scripts/test_all_routes.py`. Il teste le service d'inférence en cours d'exécution (`uvicorn src.api.main:app --port 8001`) :
+
+- Test de santé et version (`/health`, `/version`).
+- Validation du **Modèle A** : scoring temporel et fréquentiel de numéros (`/predict/number`).
+- Validation du **Modèle B** : catégorisation NLP multilingue de signalements (`/predict/text`, `/predict/batch_reports`).
+- Validation de l'**Orchestrateur Général** : analyse combinée complète (`/predict/full_analysis`).
+- Validation de la boucle de feedback (`/feedback`).
+- Journalisation structurée dans **`logs/test_all_routes.log`**.
+
+#### Conditions à remplir pour démarrer :
+1. Le service IA doit être démarré : `uvicorn src.api.main:app --port 8001` (ou `docker compose up`).
+2. Les modèles doivent être chargés (ou entraînés automatiquement via `entrypoint.sh`).
+
+#### Commande d'exécution :
+```bash
+python scripts/test_all_routes.py
+```
+Les logs et détails de l'audit sont consultables directement dans : `logs/test_all_routes.log`.
 
 ---
 

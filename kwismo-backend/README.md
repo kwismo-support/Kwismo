@@ -309,8 +309,12 @@ kwismo-backend/
 │  ├─ test_users.py                  # Tests du profil utilisateur /users/me
 │  └─ test_ussd.py                   # Tests des routes USSD et pays
 │
+├─ logs/
+│  └─ test_all_routes.log            # Logs d'audit d'exécution des tests (succès/échecs)
+│
 ├─ scripts/
 │  ├─ seed.py                        # Peuple la base (pays, opérateurs, admin par défaut)
+│  ├─ test_all_routes.py             # ★ Script d'audit et de test automatisé de TOUTES les routes
 │  ├─ create_admin.py                # Crée un compte administrateur
 │  ├─ check_python_version.py        # Vérif Python 3.13 (utilisé par check_python.bat)
 │  └─ sync_db_provider.py            # Bascule le provider Prisma selon DB_TYPE (.env)
@@ -463,6 +467,8 @@ La langue est déterminée par l'en-tête `Accept-Language` ou la préférence d
 
 ## 13. Tests
 
+### Suite de tests unitaires et d'intégration (pytest)
+
 ```bash
 pytest                      # tous les tests
 pytest tests/test_auth.py   # un fichier
@@ -471,6 +477,25 @@ pytest --cov=app            # avec couverture
 ```
 
 Les tests utilisent une base SQLite en mémoire (rapide, isolée) via les fixtures de `conftest.py`.
+
+### 🚀 Audit et test automatisé de TOUTES les routes (`test_all_routes.py`)
+
+Un script autonome d'audit complet est disponible à la racine dans `scripts/test_all_routes.py`. Il s'exécute sur un serveur en cours de fonctionnement (`uvicorn app.main:app`) et effectue les opérations suivantes :
+
+- Authentification automatique avec tous les rôles (`user`, `partner`, `admin`) et test des routes publiques.
+- Exécution d'actions réelles (`GET`, `POST`, `PATCH`, `DELETE`) sur les **49+ endpoints** de l'API.
+- Enregistrement des résultats (succès HTTP 200/201, erreurs et temps de réponse) dans le fichier de journalisation **`logs/test_all_routes.log`**.
+- **Nettoyage et réinitialisation automatique** à la fin du test : toutes les ressources créées pendant les tests (contacts, téléphones temporaires, signalements) sont supprimées pour garantir que la base revient à son état initial et permettre une ré-exécution infinie et idempotente.
+
+#### Conditions à remplir pour démarrer :
+1. Le backend doit être démarré : `uvicorn app.main:app --port 8000` (ou `docker compose up`).
+2. Les données de seed doivent être insérées : `python scripts/seed.py`.
+
+#### Commande d'exécution :
+```bash
+python scripts/test_all_routes.py
+```
+Les logs et détails de l'audit sont consultables directement dans : `logs/test_all_routes.log`.
 
 ---
 
