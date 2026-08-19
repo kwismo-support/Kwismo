@@ -24,6 +24,7 @@
 12. [Intégration avec le backend](#12-intégration-avec-le-backend)
 13. [Variables d'environnement](#13-variables-denvironnement)
 14. [Collecte de données (scraping) & entraînement sur Google Colab](#14-collecte-de-données-scraping--entraînement-sur-google-colab)
+15. [Tests unitaires, d'intégration & audit d'IA](#15-tests-unitaires-dintégration--audit-dia)
 
 ---
 
@@ -395,3 +396,40 @@ python -m src.data.metrics          # régénère les graphes d'évolution
 ### Entraînement sur Google Colab
 
 Guide complet, pas-à-pas, gratuit et payant : **[COLAB.md](./COLAB.md)**.
+
+---
+
+## 15. Tests unitaires, d'intégration & audit d'IA
+
+### Suite de tests unitaires et d'intégration (pytest)
+
+```bash
+pytest                      # tous les tests unitaires et d'inférence (79+ tests)
+pytest tests/test_model_a.py   # tests du Modèle A (scoring)
+pytest tests/test_model_b.py   # tests du Modèle B (NLP)
+pytest --cov=src            # avec couverture de code
+```
+
+Les tests valident les prétraitements, l'inférence des modèles A & B, le comportement de secours et l'API FastAPI.
+
+### 🚀 Audit et test automatisé de TOUTES les routes IA (`test_all_routes.py`)
+
+Un script autonome d'audit est disponible dans `scripts/test_all_routes.py`. Il s'exécute sur le service IA en fonctionnement (`uvicorn src.api.main:app --port 8001`) et teste l'intégralité des routes d'inférence :
+
+- **Santé & Version** (`/health`, `/version`).
+- **Modèle A (Scoring de numéros)** (`POST /predict/number`).
+- **Modèle B (Catégorisation NLP)** (`POST /predict/text`, `POST /predict/batch_reports`).
+- **Orchestrateur Général (Analyse complète)** (`POST /predict/full_analysis`).
+- **Boucle d'apprentissage continu** (`POST /feedback`).
+
+Les résultats de l'audit sont consignés dans **`logs/test_all_routes.log`**.
+
+#### Conditions à remplir pour démarrer :
+1. Le service IA doit être démarré : `uvicorn src.api.main:app --port 8001` (ou `docker compose up`).
+2. Les modèles doivent être chargés (ou entraînés automatiquement via `entrypoint.sh`).
+
+#### Commande d'exécution :
+```bash
+python scripts/test_all_routes.py
+```
+
