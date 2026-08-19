@@ -507,6 +507,18 @@ async def seed_audit_logs(user_ids: dict[str, str]) -> None:
             )
 
 
+async def seed_surveys() -> None:
+    """Cree des enquetes de satisfaction actives."""
+    s = await db.survey.find_first(where={"question": "Comment évaluez-vous la précision des alertes anti-escroquerie KWISMO ?"})
+    if not s:
+        await db.survey.create(
+            data={
+                "question": "Comment évaluez-vous la précision des alertes anti-escroquerie KWISMO ?",
+                "actif": True,
+            }
+        )
+
+
 async def main() -> None:
     await connect_db()
     try:
@@ -525,6 +537,7 @@ async def main() -> None:
         await seed_reports(user_ids, numero_ids, scam_cat_ids)
         await seed_transactions(user_ids, numero_ids)
         await seed_notifications_and_kpis(user_ids, partner_ids)
+        await seed_surveys()
         await seed_audit_logs(user_ids)
         print("[SEED] Base de donnees initialisee et chargee avec succes avec toutes les donnees de test.")
     finally:

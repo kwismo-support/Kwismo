@@ -406,7 +406,10 @@ docker compose exec backend python scripts/seed.py
 
 ## 9. Modules & routes API
 
-Toutes les routes sont documentées dans Swagger (`/docs`). Aperçu :
+Toutes les routes sont documentées dans Swagger (`/docs`). Retrouvez le **catalogue exhaustif des réponses, messages FR/EN et schémas JSON de toutes les routes** dans :
+👉 **[`docs/API_RESPONSES_CATALOG.md`](./docs/API_RESPONSES_CATALOG.md)**
+
+Aperçu des modules :
 
 | Module             | Routes principales                                                                                                                              | Rôle                         |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
