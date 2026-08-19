@@ -21,3 +21,14 @@ dependencies = { file = ["requirements.txt"] }
 
 [tool.setuptools.packages.find]
 include = ["app*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore:.*StarletteDeprecationWarning.*",
+    "ignore:.*HTTP_422_UNPROCESSABLE_ENTITY.*",
+    "ignore:.*starlette.testclient.*",
+    "ignore::DeprecationWarning:starlette.*",
+    "ignore::DeprecationWarning:fastapi.*"
+]
+

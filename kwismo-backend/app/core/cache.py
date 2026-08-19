@@ -58,7 +58,7 @@ async def get_cached(
     
     if client:
         try:
-            await client.setex(key, ttl, json.dumps(value, default=str))
+            await client.set(key, json.dumps(value, default=str), ex=ttl)
         except Exception as e:
             logger.warning(f"Redis set failed for {key}: {e}")
     else:
