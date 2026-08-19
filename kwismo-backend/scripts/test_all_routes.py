@@ -2,6 +2,7 @@
 
 - Teste l'intégralité des 49+ routes (GET, POST, PATCH, DELETE) avec tous les rôles (public, user, partner, admin).
 - Écrit les logs détaillés (succès et erreurs) dans `logs/test_all_routes.log`.
+- Exporte TOUTES les réponses JSON réelles renvoyées par chaque route dans `logs/test_all_routes_responses.json` et `docs/test_all_routes_responses.json`.
 - Réinitialise et nettoie les données créées pendant le test à la fin de l'exécution
   afin de permettre une ré-exécution infinie et idempotente.
 """
@@ -20,7 +21,10 @@ sys.path.insert(0, str(BACKEND_DIR))
 
 BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000")
 LOG_DIR = BACKEND_DIR / "logs"
+DOCS_DIR = BACKEND_DIR / "docs"
 LOG_FILE = LOG_DIR / "test_all_routes.log"
+RESPONSES_JSON_LOG = LOG_DIR / "test_all_routes_responses.json"
+RESPONSES_JSON_DOCS = DOCS_DIR / "test_all_routes_responses.json"
 
 
 def get_items(data):
@@ -33,6 +37,7 @@ def get_items(data):
 
 def run_full_backend_test_suite():
     LOG_DIR.mkdir(parents=True, exist_ok=True)
+    DOCS_DIR.mkdir(parents=True, exist_ok=True)
     log_fp = open(LOG_FILE, "w", encoding="utf-8")
 
     def log_entry(msg: str):
@@ -49,6 +54,7 @@ def run_full_backend_test_suite():
     log_entry("==========================================================================")
 
     results = []
+    responses_catalog = []
     created_resources = {
         "contacts": [],
         "user_phones": [],
@@ -64,6 +70,11 @@ def run_full_backend_test_suite():
             detail = resp.text
             status_str = "[OK]" if is_ok else "[FAIL]"
             
+            try:
+                parsed_response = resp.json()
+            except Exception:
+                parsed_response = detail
+
             msg = f"{status_str} {method:<6} {path:<45} ({role:<7}) -> HTTP {status_code} | {detail[:90]}"
             log_entry(msg)
             
@@ -75,6 +86,17 @@ def run_full_backend_test_suite():
                 "is_ok": is_ok,
                 "detail": detail
             })
+
+            responses_catalog.append({
+                "endpoint": path,
+                "method": method,
+                "role": role,
+                "status_code": status_code,
+                "request_payload": json_payload,
+                "request_params": params,
+                "response_data": parsed_response
+            })
+
             return resp
         except Exception as e:
             msg = f"[FAIL] {method:<6} {path:<45} ({role:<7}) -> EXCEPTION | {str(e)[:100]}"
@@ -87,23 +109,31 @@ def run_full_backend_test_suite():
                 "is_ok": False,
                 "detail": f"Exception: {str(e)}"
             })
+            responses_catalog.append({
+                "endpoint": path,
+                "method": method,
+                "role": role,
+                "status_code": 500,
+                "request_payload": json_payload,
+                "response_data": {"error": str(e)}
+            })
             return None
 
     def login_account(client, email, device_id):
         log_entry(f"\n---> [AUTH] Connexion au compte {email} (Device: {device_id})...")
-        resp = client.post("/auth/login", json={
+        resp = safe_req(client, "POST", "/auth/login", "auth", json_payload={
             "email": email,
             "mot_de_passe": "Password123!",
             "device_id": device_id,
             "device_name": "Audit Terminal"
         })
-        if resp.status_code == 200 and "access_token" in resp.json():
+        if resp and resp.status_code == 200 and "access_token" in resp.json():
             token = resp.json()["access_token"]
             role_name = resp.json().get("user", {}).get("role", "unknown")
             log_entry(f"---> [AUTH] Connexion réussie pour {email} (Rôle: {role_name})")
             return f"Bearer {token}"
         else:
-            log_entry(f"---> [AUTH] Échec de connexion pour {email}: {resp.text}")
+            log_entry(f"---> [AUTH] Échec de connexion pour {email}")
             return None
 
     with httpx.Client(base_url=BASE_URL, timeout=25.0) as client:
@@ -251,6 +281,7 @@ def run_full_backend_test_suite():
             safe_req(client, "GET", "/kpi/global", "admin", admin_auth)
             safe_req(client, "GET", "/roles", "admin", admin_auth)
             safe_req(client, "GET", "/access-rights", "admin", admin_auth)
+            safe_req(client, "GET", "/admin/scam-categories", "admin", admin_auth)
 
             safe_req(client, "POST", "/auth/logout", "admin", admin_auth, json_payload={"refresh_token": "dummy_refresh_token"}, expected_codes=(200, 400, 401))
 
@@ -263,6 +294,11 @@ def run_full_backend_test_suite():
                 safe_req(client, "DELETE", f"/users/me/phones/{ph_id}", "cleanup", user_auth, expected_codes=(200, 404))
             log_entry("[CLEANUP] Les ressources de test temporaires ont été supprimées avec succès.")
 
+    # Exportation du dictionnaire complet des réponses JSON exécutées
+    json_str = json.dumps(responses_catalog, indent=2, ensure_ascii=False)
+    RESPONSES_JSON_LOG.write_text(json_str, encoding="utf-8")
+    RESPONSES_JSON_DOCS.write_text(json_str, encoding="utf-8")
+
     total = len(results)
     success = sum(1 for r in results if r["is_ok"])
     failures = sum(1 for r in results if not r["is_ok"])
@@ -272,6 +308,7 @@ def run_full_backend_test_suite():
     log_entry(f"   Total des requêtes exécutées : {total}")
     log_entry(f"   Succès (HTTP 200 / 201 attendus) : {success}")
     log_entry(f"   Échecs / Erreurs : {failures}")
+    log_entry(f"   Catalogue des réponses JSON exporté : {RESPONSES_JSON_LOG}")
     log_entry("==========================================================================")
 
     log_fp.close()

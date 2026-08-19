@@ -30,6 +30,7 @@ from app.core.rate_limit import limiter, rate_limit_exceeded_handler
 from app.core.schemas import HealthOut
 from app.db.prisma_client import connect_db, disconnect_db
 from app.modules.access_control.router import router as access_control_router
+from app.modules.ai_gateway.router import router as ai_gateway_router
 from app.modules.auth.router import router as auth_router
 from app.modules.contacts.router import router as contacts_router
 from app.modules.devices.router import router as devices_router
@@ -202,6 +203,7 @@ for router in (
     access_control_router,
     notifications_router,
     devices_router,
+    ai_gateway_router,
 ):
     app.include_router(router)
 
