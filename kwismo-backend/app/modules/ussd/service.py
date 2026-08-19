@@ -89,8 +89,15 @@ async def update_country(country_id: str, payload: CountryIn, lang: str = "fr") 
     country = await db.country.find_unique(where={"id": country_id})
     if country is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("country_not_found", lang))
+    if payload.code_pays != country.codePays:
+        existing = await db.country.find_unique(where={"codePays": payload.code_pays})
+        if existing and existing.id != country_id:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=t("country_dial_code_exists", lang))
     if payload.est_par_defaut:
-        await db.country.update_many(where={"estParDefaut": True}, data={"estParDefaut": False})
+        try:
+            await db.country.update_many(where={"estParDefaut": True}, data={"estParDefaut": False})
+        except Exception:
+            pass
     country = await db.country.update(
         where={"id": country_id},
         data={"nom": payload.nom, "codePays": payload.code_pays, "estParDefaut": payload.est_par_defaut},

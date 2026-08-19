@@ -16,6 +16,7 @@ from app.modules.user_phones.schemas import (
 from app.utils.dates import is_expired, minutes_from_now, utcnow
 from app.utils.i18n import t
 from app.utils.otp import check_sms_otp, generate_otp, send_sms_otp
+from app.utils.phone import is_valid_phone, normalize_phone
 
 logger = logging.getLogger("kwismo.backend")
 settings = get_settings()
@@ -147,7 +148,10 @@ async def add_my_phone(user_id: str, payload: UserPhoneAddIn, lang: str = "fr") 
     )
     user = await db.user.find_unique(where={"id": user_id})
     user_email = user.email if user else None
-    await send_sms_otp(valeur, email=user_email)
+    try:
+        await send_sms_otp(valeur, email=user_email)
+    except Exception as exc:
+        logger.warning("Notification OTP SMS/Email non envoyee pour %s : %s", valeur, exc)
     return _to_out(phone)
 
 

@@ -304,6 +304,7 @@ async def seed_devices(user_ids: dict[str, str]) -> None:
     """Cree des appareils enregistres."""
     devs = [
         ("user@kwismo.com", "android_device_user_1", "Samsung Galaxy S22"),
+        ("partner@kwismo.com", "partner_device_1", "Partner Terminal"),
         ("admin@kwismo.com", "ios_device_admin_1", "iPhone 15 Pro"),
     ]
     for email, ident, nom in devs:

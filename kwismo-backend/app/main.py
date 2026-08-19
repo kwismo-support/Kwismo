@@ -49,17 +49,12 @@ DESCRIPTION = """
 **FR** — API centrale hybride de KWISMO : authentification, gestion des
 comptes et de leurs numéros, vérification de réputation (via le service IA),
 signalements, transferts protégés par code USSD, partenaires, alertes
-WhatsApp, enquêtes, KPI et administration des rôles. Le backend est la seule
-porte d'accès à la base de données. La plupart des routes ci-dessous
-répondent **501** tant que leur logique métier n'est pas encore écrite —
-c'est un squelette d'API délibéré, pas un bug.
+WhatsApp, enquêtes, KPI et administration des rôles.
 
 **EN** — KWISMO's hybrid central API: authentication, accounts and their
 phone numbers, reputation checks (via the AI service), reports, USSD-code
 protected transfers, partners, WhatsApp alerts, surveys, KPIs and role
-administration. The backend is the only door to the database. Most routes
-below return **501** until their business logic is written — this is a
-deliberate API skeleton, not a bug.
+administration.
 """
 
 TAGS_METADATA = [

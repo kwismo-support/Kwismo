@@ -113,6 +113,7 @@ async def remove_contact(user_id: str, contact_id: str, lang: str = "fr"):
     if contact is None or contact.userId != user_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("contact_not_found", lang))
 
+    await db.whatsappalertrecipient.delete_many(where={"contactId": contact_id})
     await db.contact.delete(where={"id": contact_id})
     return Message(
         message_fr=t("contact_removed", "fr"),

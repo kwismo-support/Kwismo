@@ -1,6 +1,6 @@
 """Routes /users/me/phones/*. / "My numbers" routes."""
 
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Depends, Request, Response, status
 
 from app.core.permissions import require_roles
 from app.core.rate_limit import AUTH_RATE_LIMIT, OTP_RATE_LIMIT, limiter
@@ -43,7 +43,7 @@ async def list_my_phones(user=Depends(require_roles("user"))) -> list[UserPhoneO
 )
 @limiter.limit(AUTH_RATE_LIMIT)
 async def add_my_phone(
-    request: Request, payload: UserPhoneAddIn, user=Depends(require_roles("user"))
+    request: Request, response: Response, payload: UserPhoneAddIn, user=Depends(require_roles("user"))
 ) -> UserPhoneOut:
     return await service.add_my_phone(user.id, payload, user.langue)
 
@@ -57,7 +57,7 @@ async def add_my_phone(
 )
 @limiter.limit(OTP_RATE_LIMIT)
 async def verify_my_phone(
-    request: Request, phone_id: str, payload: UserPhoneVerifyIn, user=Depends(require_roles("user"))
+    request: Request, response: Response, phone_id: str, payload: UserPhoneVerifyIn, user=Depends(require_roles("user"))
 ) -> Message:
     return await service.verify_my_phone(user.id, phone_id, payload, user.langue)
 
@@ -71,7 +71,7 @@ async def verify_my_phone(
 )
 @limiter.limit(OTP_RATE_LIMIT)
 async def resend_my_phone_otp(
-    request: Request, phone_id: str, user=Depends(require_roles("user"))
+    request: Request, response: Response, phone_id: str, user=Depends(require_roles("user"))
 ) -> Message:
     return await service.resend_my_phone_otp(user.id, phone_id, user.langue)
 

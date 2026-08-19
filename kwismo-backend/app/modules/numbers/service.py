@@ -34,10 +34,12 @@ VALID_STATUTS = {"securise", "a_signaler", "frauduleux", "unknown"}
 # ---------------------------------------------------------------------------
 
 def _to_out(n) -> NumberOut:
+    raw = n.scoreRisque or 0.0
+    score = min(1.0, max(0.0, raw / 100.0 if raw > 1.0 else raw))
     return NumberOut(
         id=n.id,
         valeur=n.valeur,
-        score_risque=n.scoreRisque,
+        score_risque=score,
         statut=n.statut,
         date_derniere_verification=n.dateDerniereVerification,
         country_id=n.countryId,
@@ -46,10 +48,12 @@ def _to_out(n) -> NumberOut:
 
 
 def _to_detail_out(n, nombre_signalements: int) -> NumberDetailOut:
+    raw = n.scoreRisque or 0.0
+    score = min(1.0, max(0.0, raw / 100.0 if raw > 1.0 else raw))
     return NumberDetailOut(
         id=n.id,
         valeur=n.valeur,
-        score_risque=n.scoreRisque,
+        score_risque=score,
         statut=n.statut,
         date_derniere_verification=n.dateDerniereVerification,
         country_id=n.countryId,
@@ -58,6 +62,14 @@ def _to_detail_out(n, nombre_signalements: int) -> NumberDetailOut:
         updated_at=n.updatedAt,
         nombre_signalements=nombre_signalements,
     )
+
+
+def _statut_from_score(score: float) -> str:
+    if score >= 0.7:
+        return "frauduleux"
+    elif score >= 0.3:
+        return "suspect"
+    return "securise"
 
 
 async def _score_and_upsert(valeur: str, country_id: str | None = None) -> NumberOut:
@@ -110,10 +122,11 @@ async def _score_and_upsert(valeur: str, country_id: str | None = None) -> Numbe
             if resolved_operator_id:
                 break
 
-    # Compter les signalements existants.
-    nombre_signalements = await db.report.count(
-        where={"numero": {"is": {"valeur": valeur}}}
-    )
+    existing = await db.numero.find_unique(where={"valeur": valeur})
+    if existing:
+        nombre_signalements = await db.report.count(where={"numeroId": existing.id})
+    else:
+        nombre_signalements = 0
     
     coherence_ok = True
     if resolved_country_id:
@@ -122,16 +135,16 @@ async def _score_and_upsert(valeur: str, country_id: str | None = None) -> Numbe
             coherence_ok = False
 
     prediction = score_number_fallback(nombre_signalements, coherence_ok)
+    statut = _statut_from_score(prediction.score_risque)
     now = utcnow()
 
     # Upsert dans le registre Numero.
-    existing = await db.numero.find_unique(where={"valeur": valeur})
     if existing:
         numero = await db.numero.update(
             where={"valeur": valeur},
             data={
                 "scoreRisque": prediction.score_risque,
-                "statut": prediction.statut,
+                "statut": statut,
                 "dateDerniereVerification": now,
                 "countryId": resolved_country_id,
                 "operatorId": resolved_operator_id,
@@ -142,7 +155,7 @@ async def _score_and_upsert(valeur: str, country_id: str | None = None) -> Numbe
             data={
                 "valeur": valeur,
                 "scoreRisque": prediction.score_risque,
-                "statut": prediction.statut,
+                "statut": statut,
                 "dateDerniereVerification": now,
                 "countryId": resolved_country_id,
                 "operatorId": resolved_operator_id,
@@ -218,7 +231,7 @@ async def list_numbers(
         where=where,
         skip=skip,
         take=page_size,
-        order={"dateDerniereVerification": "desc"},
+        order={"updatedAt": "desc"},
     )
     return Page(items=[_to_out(n) for n in items], total=total, page=page, page_size=page_size)
 

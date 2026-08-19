@@ -111,12 +111,12 @@ async def list_users(page: int, page_size: int):
     users = await db.user.find_many(
         skip=skip,
         take=page_size,
-        include={"role": True, "_count": {"select": {"phones": True}}},
+        include={"role": True, "phones": True},
         order={"dateInscription": "desc"},
     )
     items = []
     for u in users:
-        phones_count = u._count.phones if hasattr(u, "_count") and u._count else 0
+        phones_count = len(u.phones or [])
         items.append(
             UserListItemOut(
                 id=u.id,
