@@ -121,6 +121,8 @@ async def broadcast_whatsapp_alert(user_id: str, payload: WhatsAppBroadcastIn, l
     return WhatsAppAlertOut(
         id=alert.id,
         contenu=contenu,
+        date_envoi=alert.dateEnvoi,
+        statut=alert.statut,
         recipients=recipients_out,
     )
 
