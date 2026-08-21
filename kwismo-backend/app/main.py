@@ -150,7 +150,7 @@ async def _seed_defaults() -> None:
 async def lifespan(app: FastAPI):
     _check_startup_config()
     await connect_db()
-    await _seed_defaults()
+    # Le seed est desormais execute une seule fois via entrypoint.sh
     yield
     await disconnect_db()
 

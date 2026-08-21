@@ -115,7 +115,7 @@ async def register(payload: RegisterIn) -> Message:
             "nom": payload.nom,
             "prenom": payload.prenom,
             "email": payload.email,
-            "motDePasse": hash_password(payload.mot_de_passe),
+            "motDePasse": await hash_password(payload.mot_de_passe),
             "roleId": role.id,
         }
     )
@@ -176,7 +176,7 @@ async def login(payload: LoginIn) -> TokenOut | DeviceVerificationRequiredOut:
     user = await db.user.find_unique(
         where={"email": payload.email}, include={"role": True}
     )
-    if user is None or not verify_password(payload.mot_de_passe, user.motDePasse):
+    if user is None or not await verify_password(payload.mot_de_passe, user.motDePasse):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Identifiants invalides / Invalid credentials.",
@@ -289,7 +289,7 @@ async def reset_password(payload: PasswordResetIn) -> Message:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utilisateur introuvable / User not found.")
     await db.user.update(
         where={"id": user.id},
-        data={"motDePasse": hash_password(payload.new_password)},
+        data={"motDePasse": await hash_password(payload.new_password)},
     )
     return Message(
         message_fr="Mot de passe reinitialise avec succes.",

@@ -1,5 +1,6 @@
 """Authentification JWT reelle. / Real JWT authentication."""
 
+import asyncio
 import logging
 import uuid
 from dataclasses import dataclass, field
@@ -39,13 +40,13 @@ class CurrentUser:
 # Hachage / Hash
 # ---------------------------------------------------------------------------
 
-def hash_password(plain: str) -> str:
-    return _ph.hash(plain)
+async def hash_password(plain: str) -> str:
+    return await asyncio.to_thread(_ph.hash, plain)
 
 
-def verify_password(plain: str, hashed: str) -> bool:
+async def verify_password(plain: str, hashed: str) -> bool:
     try:
-        return _ph.verify(hashed, plain)
+        return await asyncio.to_thread(_ph.verify, hashed, plain)
     except VerifyMismatchError:
         return False
 
