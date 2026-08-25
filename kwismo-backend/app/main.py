@@ -95,7 +95,7 @@ def _check_startup_config() -> None:
             "en multi-workers les limites de debit ne sont pas partagees. "
             "Passez RATE_LIMIT_STORAGE_URI a l'URL Redis pour la production."
         )
-    if hosts_open and settings.cors_origins != "http://localhost:5173":
+    if hosts_open and settings.cors_origins != settings.frontend_url:
         _logger.warning(
             "SECURITE — ALLOWED_HOSTS='*' avec des origines CORS non locales : "
             "restreignez ALLOWED_HOSTS en production."

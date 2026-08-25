@@ -96,7 +96,9 @@ async def send_otp_email(to: str, code: str, lang: str = "fr") -> None:
 
 async def send_password_reset_email(to: str, reset_token: str, lang: str = "fr") -> None:
     """Envoie un email de réinitialisation de mot de passe."""
-    reset_url = f"http://localhost:5173/reset-password?token={reset_token}"
+    from app.core.config import get_settings
+    settings = get_settings()
+    reset_url = f"{settings.frontend_url}/reset-password?token={reset_token}"
 
     if lang == "en":
         subject = "Reset your KWISMO password"

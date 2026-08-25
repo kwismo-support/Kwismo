@@ -24,12 +24,13 @@ services:
         value: 8000
       - key: DB_TYPE
         value: postgresql
-      - key: DATABASE_URL
-        value: postgresql://neondb_owner:npg_Jof3TgG5UNbr@ep-spring-queen-ayomvlq5-pooler.c-5.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+      # DATABASE_URL is set in Railway dashboard (Railway PostgreSQL addon)
       - key: AI_SERVICE_URL
         value: http://kwismo-ai:8001
       - key: JWT_SECRET
         generateValue: true
+      - key: FRONTEND_URL
+        value: https://app.kwismo.com
 
   # 3. Frontend Web (Static Site React / Vite)
   - type: web
@@ -38,3 +39,6 @@ services:
     rootDir: kwismo-web
     buildCommand: npm install && npm run build
     staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://api.kwismo.com

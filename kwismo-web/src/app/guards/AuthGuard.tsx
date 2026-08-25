@@ -4,7 +4,7 @@ import { useAuthStore } from '@/shared/store/authStore';
 import { LoadingSkeleton } from '@/shared/components/LoadingSkeleton';
 
 /**
- * Vérifie la session au montage (appel /auth/me).
+ * Vérifie la session au montage (appel /users/me).
  * Affiche un skeleton pendant la vérification,
  * puis laisse passer ou redirige selon le résultat.
  */

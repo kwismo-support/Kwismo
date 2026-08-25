@@ -8,7 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    backend_url: str = "http://localhost:8000"
+    backend_url: str = "https://api.kwismo.com"
     model_dir: str = "./models"
     model_a_version: str = "latest"
     model_b_version: str = "latest"

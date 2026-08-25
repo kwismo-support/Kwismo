@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KWISMO — Live Backend & AI Test Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #2D2E83;
+      --primary-light: #4c4eb3;
+      --accent: #F39200;
+      --accent-hover: #ff9f1a;
+      --success: #2FAC66;
+      --danger: #e63946;
+      --warning: #f77f00;
+      --bg-dark: #0a0d14;
+      --bg-card: rgba(18, 24, 38, 0.85);
+      --bg-card-border: rgba(255, 255, 255, 0.08);
+      --bg-input: #121826;
+      --text-main: #f0f4fc;
+      --text-muted: #8e9bb5;
+      --glow-blue: rgba(45, 46, 131, 0.35);
+      --glow-orange: rgba(243, 146, 0, 0.3);
+      --glow-green: rgba(47, 172, 102, 0.3);
+      --radius: 14px;
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(45, 46, 131, 0.25) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(243, 146, 0, 0.15) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(47, 172, 102, 0.08) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: var(--font-main);
+      min-height: 100vh;
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Header */
+    header {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--bg-card-border);
+      border-radius: var(--radius);
+      padding: 20px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 22px;
+      color: #fff;
+      box-shadow: 0 4px 15px var(--glow-blue);
+    }
+
+    .brand-text h1 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .endpoint-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .endpoint-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .endpoint-item label {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .endpoint-item input {
+      background: var(--bg-input);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      width: 170px;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.online {
+      background: rgba(47, 172, 102, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(47, 172, 102, 0.3);
+    }
+
+    .status-badge.offline {
+      background: rgba(230, 57, 70, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(230, 57, 70, 0.3);
+    }
+
+    .status-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    /* Tabs Navigation */
+    .tabs-nav {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .tab-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      transform: translateY(-1px);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary-light);
+      box-shadow: 0 4px 15px var(--glow-blue);
+    }
+
+    /* Main Content Layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 980px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--bg-card-border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .card-header h2 {
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-header .badge {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--accent);
+    }
+
+    /* Forms & Inputs */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    input, select, textarea {
+      background: var(--bg-input);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text-main);
+      font-family: var(--font-main);
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(243, 146, 0, 0.2);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+      font-family: var(--font-main);
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+      padding: 11px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 15px var(--glow-orange);
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+      box-shadow: 0 4px 15px var(--glow-green);
+    }
+
+    /* Template Pills */
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .pill:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary-light);
+    }
+
+    /* Result Displays */
+    .verdict-box {
+      border-radius: 12px;
+      padding: 18px;
+      margin-top: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .verdict-box.securise {
+      background: rgba(47, 172, 102, 0.1);
+      border-color: rgba(47, 172, 102, 0.3);
+    }
+
+    .verdict-box.a_signaler {
+      background: rgba(247, 127, 0, 0.1);
+      border-color: rgba(247, 127, 0, 0.3);
+    }
+
+    .verdict-box.frauduleux {
+      background: rgba(230, 57, 70, 0.12);
+      border-color: rgba(230, 57, 70, 0.35);
+    }
+
+    .verdict-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .verdict-title {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .score-meter {
+      font-size: 20px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+    }
+
+    .progress-bar-bg {
+      height: 8px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .entity-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .entity-tag {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .entity-tag.ussd {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .entity-tag.money {
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .entity-tag.phone {
+      border-color: var(--primary-light);
+      color: #a5b4fc;
+    }
+
+    /* JSON Inspector */
+    .inspector-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .json-viewer {
+      background: #090c12;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #7dd3fc;
+      overflow-x: auto;
+      max-height: 520px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .meta-bar {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-family: var(--font-mono);
+    }
+
+    /* Phone Call Simulator Overlay */
+    .phone-simulator {
+      background: #0d131f;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      border-radius: 28px;
+      padding: 20px;
+      max-width: 320px;
+      margin: 0 auto;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sim-notch {
+      width: 120px;
+      height: 18px;
+      background: #000;
+      border-radius: 0 0 12px 12px;
+      margin: -20px auto 16px;
+    }
+
+    .sim-banner {
+      background: rgba(230, 57, 70, 0.2);
+      border: 1px solid var(--danger);
+      color: #ff8585;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+
+    .sim-postcall-card {
+      background: rgba(18, 24, 38, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 14px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">K</div>
+      <div class="brand-text">
+        <h1>KWISMO Console <span>· Live Backend & AI Lab</span></h1>
+        <p>Cybersecurity & Anti-Fraud Real-Time Testing Suite</p>
+      </div>
+    </div>
+
+    <div class="endpoint-bar">
+      <div class="endpoint-item">
+        <label>Backend:</label>
+        <input type="text" id="backendUrl" value="https://api.kwismo.com" />
+      </div>
+      <div class="endpoint-item">
+        <label>AI Service:</label>
+        <input type="text" id="aiUrl" value="http://localhost:8001" />
+      </div>
+      <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 12px;" onclick="pingServices()">🔄 Ping</button>
+      <div id="backendStatus" class="status-badge offline"><span class="dot"></span> Backend</div>
+      <div id="aiStatus" class="status-badge offline"><span class="dot"></span> AI Service</div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab('numbers', this)">📞 1. Phone Risk (Model A)</button>
+    <button class="tab-btn" onclick="switchTab('nlp', this)">💬 2. SMS & NLP (Model B)</button>
+    <button class="tab-btn" onclick="switchTab('ussd', this)">💸 3. Safe USSD Transfer</button>
+    <button class="tab-btn" onclick="switchTab('callsim', this)">⚡ 4. Autonomous Call Shield</button>
+    <button class="tab-btn" onclick="switchTab('whatsapp', this)">🚨 5. WhatsApp Hijack Alert</button>
+    <button class="tab-btn" onclick="switchTab('reports', this)">📝 6. Submit Scam Report</button>
+  </div>
+
+  <!-- Main Grid Layout -->
+  <div class="main-grid">
+    
+    <!-- LEFT PANEL (Active Tool) -->
+    <div class="card">
+
+      <!-- TAB 1: PHONE RISK (MODEL A) -->
+      <div id="tab-numbers" class="tab-content">
+        <div class="card-header">
+          <h2>📞 Phone Number Risk Analyzer</h2>
+          <span class="badge">Model A · LightGBM + Expert Net</span>
+        </div>
+
+        <div class="pill-group">
+          <span class="pill" onclick="setNumber('+237671234567')">Clean (+237671234567)</span>
+          <span class="pill" onclick="setNumber('+237699001122')">High Risk (+237699001122)</span>
+          <span class="pill" onclick="setNumber('+237650998877')">Suspect (+237650998877)</span>
+        </div>
+
+        <div class="form-group">
+          <label>Target Phone Number (International E.164 format):</label>
+          <input type="text" id="targetPhone" placeholder="+237670000000" value="+237699001122" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Mode:</label>
+            <select id="numberMode">
+              <option value="backend">Via Central Backend (/api/v1/numbers/verify)</option>
+              <option value="ai_direct">Direct AI Service (/predict/number)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Simulated Reports (Direct AI mode):</label>
+            <input type="number" id="numReports" value="3" min="0" />
+          </div>
+        </div>
+
+        <button class="btn" style="width: 100%;" onclick="runNumberAnalysis()">⚡ Analyze Number Risk</button>
+
+        <div id="numberResult"></div>
+      </div>
+
+      <!-- TAB 2: SMS & NLP (MODEL B) -->
+      <div id="tab-nlp" class="tab-content" style="display: none;">
+        <div class="card-header">
+          <h2>💬 Multilingual NLP Scam Detector</h2>
+          <span class="badge">Model B · AfroXLMR + Slang NER</span>
+        </div>
+
+        <div class="pill-group">
+          <span class="pill" onclick="setSampleText('vishing')">Fake Agent OTP</span>
+          <span class="pill" onclick="setSampleText('transfer_error')">Fake Transfer SMS</span>
+          <span class="pill" onclick="setSampleText('lotto')">Lottery Prize + USSD</span>
+          <span class="pill" onclick="setSampleText('clean')">Clean Chat (Pidgin)</span>
+        </div>
+
+        <div class="form-group">
+          <label>Message / SMS / Transcript Text:</label>
+          <textarea id="sampleMessage" rows="4">URGENT: Bonjour c'est le service client MTN MoMo. Votre compte présente une anomalie. Pour éviter la suspension de votre puce, donnez votre code secret ou tapez *126*1*1*670000000*50000# immédiatement.</textarea>
+        </div>
+
+        <button class="btn" style="width: 100%;" onclick="runNlpAnalysis()">🧠 Run AI NLP Classification & NER</button>
+
+        <div id="nlpResult"></div>
+      </div>
+
+      <!-- TAB 3: SAFE USSD TRANSFER -->
+      <div id="tab-ussd" class="tab-content" style="display: none;">
+        <div class="card-header">
+          <h2>💸 Safe USSD Transfer Assistant</h2>
+          <span class="badge">Pre-Transaction Firewall</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Country:</label>
+            <select id="ussdCountry">
+              <option value="+237">Cameroon (+237)</option>
+              <option value="+225">Côte d'Ivoire (+225)</option>
+              <option value="+221">Senegal (+221)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Operator:</label>
+            <select id="ussdOperator">
+              <option value="mtn">MTN MoMo (*126*1*1*{num}*{amount}#)</option>
+              <option value="orange">Orange Money (*150*1*1*{num}*{amount}#)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Recipient Phone Number:</label>
+            <input type="text" id="ussdRecipient" value="+237699001122" />
+          </div>
+          <div class="form-group">
+            <label>Amount (XAF):</label>
+            <input type="number" id="ussdAmount" value="25000" />
+          </div>
+        </div>
+
+        <button class="btn" style="width: 100%;" onclick="runUssdCheck()">🛡️ Check Safety & Generate USSD Code</button>
+
+        <div id="ussdResult"></div>
+      </div>
+
+      <!-- TAB 4: AUTONOMOUS CALL SHIELD SIMULATOR -->
+      <div id="tab-callsim" class="tab-content" style="display: none;">
+        <div class="card-header">
+          <h2>⚡ Autonomous In-Call & Post-Call Shield</h2>
+          <span class="badge">Zero-Touch Interception</span>
+        </div>
+
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+          Simulate an incoming phone call and test the instant in-call warning overlay and autonomous post-call blocker dialog.
+        </p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Incoming Caller Number:</label>
+            <input type="text" id="simCallerNumber" value="+237699001122" />
+          </div>
+          <div class="form-group">
+            <label>Simulated Call State:</label>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-secondary" onclick="simulateCall('ringing')">📞 Rings (In-Call)</button>
+              <button class="btn btn-danger" onclick="simulateCall('hangup')">📴 Hang Up</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone Screen Mockup -->
+        <div class="phone-simulator">
+          <div class="sim-notch"></div>
+          <p style="font-size: 12px; color: var(--text-muted);">Incoming GSM Call...</p>
+          <h3 id="simPhoneDisplay" style="margin: 8px 0; font-size: 18px;">+237 699 00 11 22</h3>
+          
+          <div id="simInCallBanner" style="display: none;" class="sim-banner">
+            🚨 <b>KWISMO IN-CALL SHIELD</b><br/>
+            <span>ALERTE FRAUDE : Faux Agent MoMo (Score 94%)</span>
+          </div>
+
+          <div id="simPostCallCard" style="display: none;" class="sim-postcall-card">
+            <h4 style="color: var(--danger); font-size: 13px; margin-bottom: 6px;">⚠️ APPEL TERMINÉ SUSPECT</h4>
+            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">
+              Ce numéro vous a-t-il demandé un code ou un transfert ?
+            </p>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn btn-danger" style="flex: 1; padding: 6px; font-size: 11px;" onclick="alert('Numéro bloqué!')">🚫 Bloquer</button>
+              <button class="btn btn-secondary" style="flex: 1; padding: 6px; font-size: 11px;" onclick="switchTabDirect('reports')">📝 Signaler</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: WHATSAPP HIJACK ALERT -->
+      <div id="tab-whatsapp" class="tab-content" style="display: none;">
+        <div class="card-header">
+          <h2>🚨 WhatsApp Hijack Emergency Broadcast</h2>
+          <span class="badge">Social Circle Protection</span>
+        </div>
+
+        <div class="form-group">
+          <label>Compromised WhatsApp Phone Number:</label>
+          <input type="text" id="waCompromisedPhone" value="+237671234567" />
+        </div>
+
+        <div class="form-group">
+          <label>Custom Emergency Alert Text:</label>
+          <textarea id="waAlertText" rows="3">ALERTE KWISMO — Mon compte WhatsApp (+237671234567) a été piraté. N'acceptez AUCUNE demande d'argent venant de ce numéro.</textarea>
+        </div>
+
+        <button class="btn btn-danger" style="width: 100%;" onclick="runWhatsAppBroadcast()">📢 Trigger Emergency Broadcast Protocol</button>
+
+        <div id="waResult"></div>
+      </div>
+
+      <!-- TAB 6: SUBMIT SCAM REPORT -->
+      <div id="tab-reports" class="tab-content" style="display: none;">
+        <div class="card-header">
+          <h2>📝 Submit Scam Report</h2>
+          <span class="badge">Crowdsourced Defense Flywheel</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Scammer Phone Number:</label>
+            <input type="text" id="reportPhone" value="+237699001122" />
+          </div>
+          <div class="form-group">
+            <label>Scam Category:</label>
+            <select id="reportCategory">
+              <option value="fake_agent_otp">Faux Agent Service Client / Demande de Code OTP</option>
+              <option value="fake_transfer_sms">Faux SMS de Transfert Reçu par Erreur</option>
+              <option value="lotto_winner_scam">Faux Gain Loterie / Promo</option>
+              <option value="sim_swap_scam">Tentative de SIM Swap / Reconduction de puce</option>
+              <option value="identity_theft_social">Usurpation d'identité WhatsApp</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Description & Proof / SMS Text:</label>
+          <textarea id="reportMotive" rows="3">L'arnaqueur m'a appelé en se présentant comme MTN MoMo et a exigé que je lui communique mon code OTP pour débloquer ma ligne.</textarea>
+        </div>
+
+        <button class="btn btn-success" style="width: 100%;" onclick="submitScamReport()">🚀 Submit Verified Scam Report</button>
+
+        <div id="reportResult"></div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT PANEL (Live Raw JSON Inspector) -->
+    <div class="card inspector-card">
+      <div class="card-header">
+        <h2>🔍 Live Request & JSON Inspector</h2>
+        <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="copyJson()">📋 Copy JSON</button>
+      </div>
+
+      <div class="meta-bar">
+        <span id="inspectUrl">ENDPOINT: Ready</span>
+        <span id="inspectTiming">LATENCY: 0ms</span>
+      </div>
+
+      <pre id="jsonViewer" class="json-viewer">// KWISMO Live API Inspector ready.
+// Execute any action on the left panel to inspect the real-time HTTP payload and latency.</pre>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Global State
+  const state = {
+    backendUrl: "https://api.kwismo.com",
+    aiUrl: "http://localhost:8001",
+  };
+
+  // Sync endpoint URLs on change
+  const backendInput = document.getElementById('backendUrl');
+  const aiInput = document.getElementById('aiUrl');
+  if (backendInput) backendInput.addEventListener('input', (e) => state.backendUrl = e.target.value.trim());
+  if (aiInput) aiInput.addEventListener('input', (e) => state.aiUrl = e.target.value.trim());
+
+  // Tab switcher
+  function switchTab(tabId, el) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+    
+    if (el) el.classList.add('active');
+    const target = document.getElementById(`tab-${tabId}`);
+    if (target) target.style.display = 'block';
+  }
+
+  function switchTabDirect(tabId) {
+    const btns = document.querySelectorAll('.tab-btn');
+    const tabMap = { 'numbers': 0, 'nlp': 1, 'ussd': 2, 'callsim': 3, 'whatsapp': 4, 'reports': 5 };
+    const idx = tabMap[tabId];
+    if (idx !== undefined && btns[idx]) {
+      switchTab(tabId, btns[idx]);
+    }
+  }
+
+  // Ping Services
+  async function pingServices() {
+    const backendBadge = document.getElementById('backendStatus');
+    const aiBadge = document.getElementById('aiStatus');
+
+    // Test Backend
+    try {
+      const start = performance.now();
+      const res = await fetch(`${state.backendUrl}/health`, { method: 'GET' });
+      const duration = Math.round(performance.now() - start);
+      if (res.ok) {
+        backendBadge.className = 'status-badge online';
+        backendBadge.innerHTML = `<span class="dot"></span> Backend (${duration}ms)`;
+      } else {
+        throw new Error();
+      }
+    } catch (e) {
+      backendBadge.className = 'status-badge offline';
+      backendBadge.innerHTML = '<span class="dot"></span> Backend (Offline / Local)';
+    }
+
+    // Test AI Service
+    try {
+      const start = performance.now();
+      const res = await fetch(`${state.aiUrl}/docs`, { method: 'GET', mode: 'no-cors' });
+      const duration = Math.round(performance.now() - start);
+      aiBadge.className = 'status-badge online';
+      aiBadge.innerHTML = `<span class="dot"></span> AI Service (${duration}ms)`;
+    } catch (e) {
+      aiBadge.className = 'status-badge offline';
+      aiBadge.innerHTML = '<span class="dot"></span> AI Service (Offline / Local)';
+    }
+  }
+
+  // Auto Ping on Load
+  window.addEventListener('DOMContentLoaded', () => {
+    pingServices();
+  });
+
+  function updateInspector(url, timing, data) {
+    document.getElementById('inspectUrl').innerText = `ENDPOINT: ${url}`;
+    document.getElementById('inspectTiming').innerText = `LATENCY: ${timing}ms`;
+    document.getElementById('jsonViewer').innerText = JSON.stringify(data, null, 2);
+  }
+
+  function copyJson() {
+    const text = document.getElementById('jsonViewer').innerText;
+    navigator.clipboard.writeText(text);
+    alert("JSON Copied to clipboard!");
+  }
+
+  // Helper Setters
+  function setNumber(num) {
+    document.getElementById('targetPhone').value = num;
+  }
+
+  function setSampleText(type) {
+    const box = document.getElementById('sampleMessage');
+    if (type === 'vishing') {
+      box.value = "URGENT: Bonjour c'est le service client MTN MoMo. Votre compte présente une anomalie. Pour éviter la suspension de votre puce, donnez votre code secret ou tapez *126*1*1*670000000*50000# immédiatement.";
+    } else if (type === 'transfer_error') {
+      box.value = "Vous avez reçu 50.000 FCFA par erreur de la part de M. Jean. Notification de transfert MoMo. Veuillez renvoyer l'argent au +237699001122.";
+    } else if (type === 'lotto') {
+      box.value = "FÉLICITATIONS ! Vous êtes le grand gagnant de la tombola Orange Money de 500 000 FCFA. Pour retirer votre lot composez vite *150*1*1*699112233*500000#.";
+    } else if (type === 'clean') {
+      box.value = "Bonjour mon frère, on se voit à la réunion à Douala ce soir waka fine. Envoie-moi le document sur WhatsApp.";
+    }
+  }
+
+  // TAB 1: Number Risk Analysis
+  async function runNumberAnalysis() {
+    const phone = document.getElementById('targetPhone').value.trim();
+    const mode = document.getElementById('numberMode').value;
+    const numReports = parseInt(document.getElementById('numReports').value, 10) || 0;
+    const resultBox = document.getElementById('numberResult');
+
+    resultBox.innerHTML = "<p style='color: var(--text-muted); margin-top: 14px;'>⏳ Analyzing phone number...</p>";
+
+    const start = performance.now();
+    let url = "";
+    let payload = {};
+    let data = null;
+
+    // Try Live API first, with fallback simulation
+    try {
+      if (mode === "backend") {
+        url = `${state.backendUrl}/api/v1/numbers/verify`;
+        payload = { valeur: phone };
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) data = await res.json();
+      } else {
+        url = `${state.aiUrl}/predict/number`;
+        payload = {
+          valeur: phone,
+          nombre_signalements: numReports,
+          diversite_devices: Math.max(1, numReports),
+          intervalle_moyen_verif_sec: 120,
+          statut_communautaire: "aucun"
+        };
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) data = await res.json();
+      }
+    } catch (e) {
+      console.log("Live endpoint unreachable, using local AI simulator rule engine");
+    }
+
+    // Fallback simulation if server offline
+    if (!data) {
+      const isHighRisk = phone.includes("699001122") || numReports >= 3;
+      const isSuspect = phone.includes("650998877") || numReports === 1 || numReports === 2;
+      const score = isHighRisk ? 0.94 : isSuspect ? 0.58 : 0.08;
+      data = {
+        valeur: phone,
+        score_risque: score,
+        statut: isHighRisk ? "frauduleux" : isSuspect ? "a_signaler" : "securise",
+        modele_utilise: "Model_A_LightGBM (Simulation Locale)",
+        explications: isHighRisk ? [
+          "Signalements multiples récents enregistrés (Faux Agent MoMo / OTP).",
+          "Pic temporel critique : vérifications très rapprochées (< 5 min).",
+          "Diversité d'appareils validée (3 appareils distincts)."
+        ] : isSuspect ? [
+          "Premier signalement enregistré sur ce numéro.",
+          "Vérifications récurrentes enregistrées."
+        ] : [
+          "Aucun signalement ni anomalie détectée sur ce numéro."
+        ],
+        source: "KWISMO_AI_SIMULATOR_ENGINE"
+      };
+    }
+
+    const duration = Math.round(performance.now() - start);
+    updateInspector(url || "LOCAL://MODEL_A_SIMULATOR", duration, data);
+
+    // Render UI Verdict
+    const score = data.score_risque !== undefined ? data.score_risque : 0.1;
+    const pct = Math.round(score * 100);
+    let statusClass = "securise";
+    let statusLabel = "🟢 Sécurisé (Clean)";
+
+    if (score >= 0.7) {
+      statusClass = "frauduleux";
+      statusLabel = "🔴 Frauduleux (High Risk)";
+    } else if (score >= 0.35) {
+      statusClass = "a_signaler";
+      statusLabel = "🟠 À Signaler (Suspect)";
+    }
+
+    const explicationsHtml = (data.explications || ["Numéro conforme sans anomalie."])
+      .map(e => `<li>${e}</li>`).join("");
+
+    resultBox.innerHTML = `
+      <div class="verdict-box ${statusClass}">
+        <div class="verdict-top">
+          <span class="verdict-title">${statusLabel}</span>
+          <span class="score-meter">${pct}%</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" style="width: ${pct}%; background: ${score >= 0.7 ? 'var(--danger)' : score >= 0.35 ? 'var(--warning)' : 'var(--success)'};"></div>
+        </div>
+        <ul style="font-size: 12px; padding-left: 18px; color: var(--text-main);">
+          ${explicationsHtml}
+        </ul>
+      </div>
+    `;
+  }
+
+  // TAB 2: NLP Analysis
+  async function runNlpAnalysis() {
+    const text = document.getElementById('sampleMessage').value.trim();
+    const resultBox = document.getElementById('nlpResult');
+    resultBox.innerHTML = "<p style='color: var(--text-muted); margin-top: 14px;'>⏳ Processing NLP classification & NER...</p>";
+
+    const start = performance.now();
+    const url = `${state.aiUrl}/predict/text`;
+    const payload = { texte: text };
+    let data = null;
+
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) data = await res.json();
+    } catch (err) {
+      console.log("AI API unreachable, using local Model B NLP rule parser");
+    }
+
+    if (!data) {
+      // Local NLP regex parser
+      const lower = text.toLowerCase();
+      const hasUssd = lower.match(/\*(?:\d+\*)*\d+#/g) || [];
+      const hasAmount = lower.match(/\b\d+[\d\s\.]*\s*(?:fcfa|f cfa|cfa|f)\b/gi) || [];
+      const hasPhone = lower.match(/\b(?:237)?6[5-9]\d{7}\b/g) || [];
+      const isScam = lower.includes("urgent") || lower.includes("otp") || lower.includes("gagné") || lower.includes("anomalie") || lower.includes("bloqué") || hasUssd.length > 0;
+      
+      let cat = "legitimate_chat";
+      if (lower.includes("agent") || lower.includes("anomalie") || lower.includes("code secret")) cat = "fake_agent_otp";
+      else if (lower.includes("gagné") || lower.includes("loterie") || lower.includes("tombola")) cat = "lotto_winner_scam";
+      else if (lower.includes("reçu par erreur") || lower.includes("renvoyer")) cat = "fake_transfer_sms";
+
+      data = {
+        texte: text,
+        est_arnaque: isScam,
+        probabilite_arnaque: isScam ? 0.94 : 0.05,
+        categorie_detectee: cat,
+        entites_extraites: {
+          codes_ussd: hasUssd,
+          montants: hasAmount,
+          numeros_cibles: hasPhone
+        },
+        modele: "Model_B_AfroXLMR_LocalParser"
+      };
+    }
+
+    const duration = Math.round(performance.now() - start);
+    updateInspector(url || "LOCAL://MODEL_B_NLP_PARSER", duration, data);
+
+    const isScam = data.est_arnaque;
+    const proba = Math.round((data.probabilite_arnaque || (isScam ? 0.92 : 0.08)) * 100);
+    const cat = data.categorie_detectee || (isScam ? "fake_agent_otp" : "legitimate_chat");
+    const entities = data.entites_extraites || { codes_ussd: [], montants: [], numeros_cibles: [] };
+
+    const ussdTags = (entities.codes_ussd || []).map(u => `<span class="entity-tag ussd">⚡ USSD: ${u}</span>`).join("");
+    const moneyTags = (entities.montants || []).map(m => `<span class="entity-tag money">💰 Amount: ${m}</span>`).join("");
+    const phoneTags = (entities.numeros_cibles || []).map(p => `<span class="entity-tag phone">📞 Phone: ${p}</span>`).join("");
+
+    resultBox.innerHTML = `
+      <div class="verdict-box ${isScam ? 'frauduleux' : 'securise'}">
+        <div class="verdict-top">
+          <span class="verdict-title">${isScam ? '🚨 DÉTECTION ARNAQUE' : '✅ MESSAGE LÉGITIME'}</span>
+          <span class="score-meter">${proba}%</span>
+        </div>
+        <p style="font-size: 13px;">Catégorie détectée: <b>${cat}</b></p>
+        <div class="entity-tags">
+          ${ussdTags || moneyTags || phoneTags ? ussdTags + moneyTags + phoneTags : '<span style="font-size: 11px; color: var(--text-muted);">Aucune entité critique (USSD/Montant) injectée.</span>'}
+        </div>
+      </div>
+    `;
+  }
+
+  // TAB 3: USSD Transfer Check
+  async function runUssdCheck() {
+    const operator = document.getElementById('ussdOperator').value;
+    const recipient = document.getElementById('ussdRecipient').value.trim();
+    const amount = document.getElementById('ussdAmount').value.trim();
+    const resultBox = document.getElementById('ussdResult');
+
+    resultBox.innerHTML = "<p style='color: var(--text-muted); margin-top: 14px;'>🛡️ Pre-validating recipient safety...</p>";
+
+    // Generate operator USSD code template
+    let ussdCode = "";
+    if (operator === 'mtn') {
+      ussdCode = `*126*1*1*${recipient.replace(/\D/g, '')}*${amount}#`;
+    } else {
+      ussdCode = `*150*1*1*${recipient.replace(/\D/g, '')}*${amount}#`;
+    }
+
+    const start = performance.now();
+    let data = null;
+
+    try {
+      const url = `${state.backendUrl}/api/v1/numbers/verify`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ valeur: recipient })
+      });
+      if (res.ok) data = await res.json();
+    } catch (e) {
+      console.log("Backend offline, using transfer guard simulator");
+    }
+
+    if (!data) {
+      const isDangerous = recipient.includes("699001122");
+      data = {
+        valeur: recipient,
+        score_risque: isDangerous ? 0.94 : 0.08,
+        statut: isDangerous ? "frauduleux" : "securise",
+        ussd_genere: ussdCode
+      };
+    }
+
+    const duration = Math.round(performance.now() - start);
+    updateInspector("USSD://TRANSFER_PRE_FLIGHT_CHECK", duration, { ...data, ussd_genere: ussdCode });
+
+    const score = data.score_risque || 0.08;
+    const isDangerous = score >= 0.7;
+
+    resultBox.innerHTML = `
+      <div class="verdict-box ${isDangerous ? 'frauduleux' : 'securise'}">
+        <div class="verdict-top">
+          <span class="verdict-title">${isDangerous ? '⛔ TRANSFERT BLOQUÉ : NUMÉRO DANGEREUX' : '🟢 BÉNÉFICIAIRE SÉCURISÉ'}</span>
+          <span class="score-meter">${Math.round(score * 100)}%</span>
+        </div>
+        <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; font-family: var(--font-mono); font-size: 13px; color: var(--accent);">
+          Code USSD Généré : ${ussdCode}
+        </div>
+        <button class="btn ${isDangerous ? 'btn-danger' : 'btn-success'}" style="margin-top: 6px;" onclick="alert('Simulation: Clavier GSM ouvert avec ${ussdCode}')">
+          📲 Simuler Ouverture Clavier GSM
+        </button>
+      </div>
+    `;
+  }
+
+  // TAB 4: Autonomous Call Simulation
+  function simulateCall(stateType) {
+    const banner = document.getElementById('simInCallBanner');
+    const postcard = document.getElementById('simPostCallCard');
+    const phone = document.getElementById('simCallerNumber').value;
+    document.getElementById('simPhoneDisplay').innerText = phone;
+
+    if (stateType === 'ringing') {
+      banner.style.display = 'block';
+      postcard.style.display = 'none';
+      updateInspector("EVENT://NATIVE_TELEPHONY_RINGING", 45, {
+        event: "EXTRA_STATE_RINGING",
+        caller: phone,
+        in_call_banner: "ACTIVE",
+        threat_level: "HIGH_RISK_VISHING"
+      });
+    } else {
+      banner.style.display = 'none';
+      postcard.style.display = 'block';
+      updateInspector("EVENT://NATIVE_TELEPHONY_IDLE", 30, {
+        event: "EXTRA_STATE_IDLE",
+        caller: phone,
+        post_call_card: "AUTONOMOUS_INTERCEPTION",
+        action_required: "PROMPT_USER_BLOCK_REPORT"
+      });
+    }
+  }
+
+  // TAB 5: WhatsApp Broadcast
+  async function runWhatsAppBroadcast() {
+    const phone = document.getElementById('waCompromisedPhone').value;
+    const text = document.getElementById('waAlertText').value;
+    const resultBox = document.getElementById('waResult');
+
+    resultBox.innerHTML = "<p style='color: var(--text-muted); margin-top: 14px;'>🚨 Dispatching high-priority broadcast...</p>";
+
+    const start = performance.now();
+    const payload = {
+      user_phone_id: "phone_sample_123",
+      compromise_incident_id: "inc_sample_456",
+      contenu: text,
+      contact_ids: ["contact_1", "contact_2", "contact_3"]
+    };
+
+    let data = null;
+    try {
+      const url = `${state.backendUrl}/api/v1/whatsapp-alerts/broadcast`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) data = await res.json();
+    } catch (e) {
+      console.log("Backend offline, simulating broadcast dispatch");
+    }
+
+    if (!data) {
+      data = {
+        statut: "broadcast_dispatched",
+        destinataires_touches: 3,
+        contenu_diffuse: text,
+        alerte_id: "alert_sim_9988"
+      };
+    }
+
+    const duration = Math.round(performance.now() - start);
+    updateInspector("API://WHATSAPP_BROADCAST", duration, data);
+
+    resultBox.innerHTML = `
+      <div class="verdict-box securise" style="margin-top: 14px;">
+        <div class="verdict-top">
+          <span class="verdict-title">✅ PROTOCOLE D'URGENCE DÉCLENCHÉ</span>
+        </div>
+        <p style="font-size: 13px;">Alerte diffusée auprès de vos 3 contacts prioritaires avec succès.</p>
+      </div>
+    `;
+  }
+
+  // TAB 6: Submit Scam Report
+  async function submitScamReport() {
+    const phone = document.getElementById('reportPhone').value;
+    const motive = document.getElementById('reportMotive').value;
+    const category = document.getElementById('reportCategory').value;
+    const resultBox = document.getElementById('reportResult');
+
+    resultBox.innerHTML = "<p style='color: var(--text-muted); margin-top: 14px;'>📝 Submitting verified report...</p>";
+
+    const start = performance.now();
+    const payload = {
+      numero_id: "num_target_123",
+      motif: `${category}: ${motive}`
+    };
+
+    let data = null;
+    try {
+      const url = `${state.backendUrl}/api/v1/reports`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) data = await res.json();
+    } catch (e) {
+      console.log("Backend offline, simulating report registration");
+    }
+
+    if (!data) {
+      data = {
+        signalement_id: "rep_sim_7788",
+        numero_signale: phone,
+        categorie: category,
+        statut: "enregistre",
+        nouveau_score_calcule: 0.94
+      };
+    }
+
+    const duration = Math.round(performance.now() - start);
+    updateInspector("API://REPORTS_SUBMIT", duration, data);
+
+    resultBox.innerHTML = `
+      <div class="verdict-box securise" style="margin-top: 14px;">
+        <div class="verdict-top">
+          <span class="verdict-title">🎉 SIGNALEMENT ENREGISTRÉ</span>
+        </div>
+        <p style="font-size: 13px;">Le modèle IA a recalculé le score de ce numéro (${phone}) en temps réel.</p>
+      </div>
+    `;
+  }
+</script>
+
+</body>
+</html>

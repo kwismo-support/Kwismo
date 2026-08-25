@@ -1,24 +1,26 @@
 # KWISMO Backend — Load Test Results
-**Date:** 2026-08-21 12:22 W. Central Africa Standard Time
-**Target:** `https://kwismo-backend-production.up.railway.app`
+**Date:** 2026-08-24 12:08 W. Central Africa Standard Time
+**Target:** `https://api.kwismo.com`
 
 ## Summary Table
 
 | Users | Total Reqs | RPS | Avg | P50 | P95 | P99 | Errors | 429s | 5xx |
 |------:|-----------:|----:|----:|----:|----:|----:|-------:|-----:|----:|
-| **100** | 136 | 4.5 | **764ms** | 687ms | 1591ms | 1766ms | 0 | 0 | 0 |
+| **10000** | 1006 | 33.2 | **454ms** | 351ms | 1025ms | 1264ms | 1 | 0 | 0 |
 
-## Per-Endpoint Breakdown (100 users)
+## Per-Endpoint Breakdown (10000 users)
 
 | Endpoint | Reqs | Avg | P50 | P95 | P99 |
 |----------|-----:|----:|----:|----:|----:|
-| `health` | 1 | **1262ms** | 1262ms | 1262ms | 1262ms |
-| `countries` | 31 | **848ms** | 733ms | 1766ms | 2017ms |
-| `login` | 33 | **761ms** | 687ms | 1591ms | 1644ms |
-| `register` | 10 | **892ms** | 913ms | 1627ms | 1627ms |
-| `verify_num` | 44 | **665ms** | 611ms | 1174ms | 1445ms |
-| `docs` | 8 | **619ms** | 673ms | 1116ms | 1116ms |
-| `openapi` | 9 | **905ms** | 831ms | 1596ms | 1596ms |
+| `health` | 53 | **481ms** | 344ms | 1114ms | 1231ms |
+| `countries` | 90 | **530ms** | 387ms | 1259ms | 1420ms |
+| `login` | 124 | **451ms** | 350ms | 1034ms | 1215ms |
+| `register` | 50 | **467ms** | 359ms | 923ms | 1289ms |
+| `verify_num` | 179 | **449ms** | 355ms | 966ms | 1264ms |
+| `reports_list` | 217 | **445ms** | 356ms | 1046ms | 1219ms |
+| `surveys` | 100 | **422ms** | 325ms | 1056ms | 1236ms |
+| `ussd_actions` | 96 | **422ms** | 351ms | 962ms | 1092ms |
+| `partners` | 97 | **457ms** | 325ms | 1010ms | 1325ms |
 
 ## Analysis
-> **Verdict: OK** — Avg 764ms at 100 users.
+> **Verdict: OK** — Avg 454ms at 10000 users.

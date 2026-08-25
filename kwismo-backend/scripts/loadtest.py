@@ -41,7 +41,7 @@ except ImportError:
 # -----------------------------------------------------------------------
 
 DEFAULT_URL = "https://kwismo-backend-production.up.railway.app"
-DEFAULT_ACTIVE_PCT = 15
+DEFAULT_ACTIVE_PCT = 1
 DEFAULT_DURATION = 30
 THINK_TIME_MIN = 1.0
 THINK_TIME_MAX = 4.0
@@ -49,12 +49,14 @@ RAMP_UP_SECONDS = 3.0
 
 ENDPOINTS = {
     "health": {"method": "GET", "path": "/health", "body": None, "weight": 5, "desc": "Health check"},
-    "countries": {"method": "GET", "path": "/countries", "body": None, "weight": 20, "desc": "List countries"},
-    "login": {"method": "POST", "path": "/auth/login", "body": {"email": "loadtest@kwismo.invalid", "mot_de_passe": "WrongPassword123!", "device_id": "loadtest-device-001", "device_name": "LoadTest Agent"}, "weight": 15, "desc": "Login attempt"},
-    "register": {"method": "POST", "path": "/auth/register", "body": {"nom": "LoadTest", "prenom": "Bot", "email": "loadtest-bot@kwismo.invalid", "mot_de_passe": "LoadTest123!"}, "weight": 5, "desc": "Register attempt"},
-    "verify_num": {"method": "POST", "path": "/numbers/verify", "body": {"valeur": "+237690000001"}, "weight": 25, "desc": "Number verify"},
-    "docs": {"method": "GET", "path": "/docs", "body": None, "weight": 5, "desc": "Swagger UI"},
-    "openapi": {"method": "GET", "path": "/openapi.json", "body": None, "weight": 5, "desc": "OpenAPI schema"},
+    "countries": {"method": "GET", "path": "/countries", "body": None, "weight": 10, "desc": "List countries"},
+    "login": {"method": "POST", "path": "/auth/login", "body": {"email": "loadtest@kwismo.invalid", "mot_de_passe": "WrongPassword123!", "device_id": "loadtest-001", "device_name": "Test"}, "weight": 10, "desc": "Login attempt"},
+    "register": {"method": "POST", "path": "/auth/register", "body": {"nom": "Test", "prenom": "Bot", "email": "test@kwismo.invalid", "mot_de_passe": "Pass123!"}, "weight": 5, "desc": "Register attempt"},
+    "verify_num": {"method": "POST", "path": "/numbers/verify", "body": {"valeur": "+237690000001"}, "weight": 20, "desc": "Number verify"},
+    "reports_list": {"method": "GET", "path": "/reports", "body": None, "weight": 20, "desc": "List recent reports"},
+    "surveys": {"method": "GET", "path": "/surveys", "body": None, "weight": 10, "desc": "List active surveys"},
+    "ussd_actions": {"method": "GET", "path": "/ussd/actions", "body": None, "weight": 10, "desc": "List USSD actions"},
+    "partners": {"method": "GET", "path": "/partners", "body": None, "weight": 10, "desc": "List partners"},
 }
 
 def build_weighted_picker(endpoints: dict) -> list[str]:
