@@ -18,9 +18,16 @@
     "otpVerify": "OTP Verification",
     "otpSubtitle": "Enter the code sent by SMS",
     "validate": "Validate",
+    "send": "Send",
+    "reset": "Reset",
+    "signUp": "Sign Up",
+    "resend": "resend",
+    "alreadySent": "Already sent?",
+    "minCharRequirement": "At least 8 characters",
     "language": "Language",
     "french": "French",
-    "english": "English"
+    "english": "English",
+    "welcome": "Welcome"
   },
   "onboarding": {
     "slide1": "Verify every\nnumber before acting",
@@ -32,6 +39,13 @@
     "loginTitle": "Access your account",
     "loginSubtitle": "Enter your login credentials to access your account space.",
     "registerTitle": "Create an account",
-    "registerSubtitle": "Fill in the form below to create your account."
+    "registerSubtitle": "Fill in the form below to create your account.",
+    "forgotTitle": "Forgot\npassword?",
+    "forgotSubtitle": "Enter your email address and we will send you a link to reset your password.",
+    "resetTitle": "Reset\npassword",
+    "resetSubtitle": "Enter your new password below to secure your KWISMO account.",
+    "secureAccountTitle": "Secure your\naccount",
+    "secureAccountEmailSubtitle": "Please enter your email address to continue.",
+    "secureAccountOtpSubtitle": "A 6-digit code has been sent by email. Please enter it below."
   }
 }

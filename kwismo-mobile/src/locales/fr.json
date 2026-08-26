@@ -18,9 +18,16 @@
     "otpVerify": "Vérification OTP",
     "otpSubtitle": "Saisissez le code reçu par SMS",
     "validate": "Valider",
+    "send": "Envoyer",
+    "reset": "Réinitialiser",
+    "signUp": "S'inscrire",
+    "resend": "renvoyer",
+    "alreadySent": "Déjà envoyé ?",
+    "minCharRequirement": "Au moins 8 caractères",
     "language": "Langue",
     "french": "Français",
-    "english": "Anglais"
+    "english": "Anglais",
+    "welcome": "Welcome"
   },
   "onboarding": {
     "slide1": "Vérifiez chaque\nnuméro avant d'agir",
@@ -32,6 +39,13 @@
     "loginTitle": "Accédez à votre compte",
     "loginSubtitle": "Saisissez vos identifiants de connexion pour accéder à votre espace compte.",
     "registerTitle": "Créer un compte",
-    "registerSubtitle": "Remplissez le formulaire ci-dessous pour créer votre compte."
+    "registerSubtitle": "Remplissez le formulaire ci-dessous pour créer votre compte.",
+    "forgotTitle": "Mot de passe\noublié ?",
+    "forgotSubtitle": "Saisissez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+    "resetTitle": "Réinitialisation\ndu mot de passe",
+    "resetSubtitle": "Saisissez votre nouveau mot de passe ci-dessous pour sécuriser votre compte KWISMO.",
+    "secureAccountTitle": "Sécurisez votre\ncompte",
+    "secureAccountEmailSubtitle": "Veuillez saisir votre adresse e-mail pour continuer.",
+    "secureAccountOtpSubtitle": "Un code à 6 chiffres a été envoyé par e-mail. Veuillez le saisir ci-dessous."
   }
 }
