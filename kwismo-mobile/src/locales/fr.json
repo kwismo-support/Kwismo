@@ -1,0 +1,37 @@
+{
+  "common": {
+    "appName": "Kwismo",
+    "skip": "Passer",
+    "next": "Suivant",
+    "start": "Commencer",
+    "login": "Se connecter",
+    "register": "Créer un compte",
+    "registerButton": "Créer mon compte",
+    "or": "OU",
+    "email": "Adresse email",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmation",
+    "lastName": "Nom",
+    "firstName": "Prénom",
+    "rememberMe": "Se souvenir de moi",
+    "forgotPassword": "Mot de passe oublié ? Réinitialiser",
+    "otpVerify": "Vérification OTP",
+    "otpSubtitle": "Saisissez le code reçu par SMS",
+    "validate": "Valider",
+    "language": "Langue",
+    "french": "Français",
+    "english": "Anglais"
+  },
+  "onboarding": {
+    "slide1": "Vérifiez chaque\nnuméro avant d'agir",
+    "slide2": "Transférez de l'argent\nen toute sécurité",
+    "slide3": "Protégez vos proches\net signalez la fraude"
+  },
+  "auth": {
+    "welcomeTitle": "Bienvenue sur Kwismo",
+    "loginTitle": "Accédez à votre compte",
+    "loginSubtitle": "Saisissez vos identifiants de connexion pour accéder à votre espace compte.",
+    "registerTitle": "Créer un compte",
+    "registerSubtitle": "Remplissez le formulaire ci-dessous pour créer votre compte."
+  }
+}
