@@ -13,22 +13,25 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { Eye, EyeOff, Check } from 'lucide-react-native';
+import { Eye, EyeOff, Mail } from 'lucide-react-native';
 import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
-import { colors, fonts, typography } from '../../src/styles/tokens';
+import { colors, fonts } from '../../src/styles/tokens';
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
 
+  const [lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleLogin = () => {
-    router.replace('/(app)');
+  const handleRegister = () => {
+    router.replace('/(auth)/otp');
   };
 
   return (
@@ -37,7 +40,7 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.container}>
-        {/* Top Green to Light Background Gradient matching Image 3 */}
+        {/* Top Green to Light Background Gradient matching Image 4 */}
         <LinearGradient
           colors={['#32B07F', '#248563', '#205E51', '#335056', '#FFFFFF', '#FFFFFF']}
           locations={[0, 0.25, 0.45, 0.65, 0.85, 1]}
@@ -61,15 +64,37 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
         >
           {/* Header Title & Subtitle */}
-          <Text style={styles.title}>{t('auth.loginTitle')}</Text>
-          <Text style={styles.subtitle}>{t('auth.loginSubtitle')}</Text>
+          <Text style={styles.title}>{t('auth.registerTitle')}</Text>
+          <Text style={styles.subtitle}>{t('auth.registerSubtitle')}</Text>
 
-          {/* Form Card Inputs */}
+          {/* Form Inputs matching Image 4 */}
           <View style={styles.formContainer}>
-            {/* Email Field */}
+            {/* Row 1: Nom & Prénom half-width inputs */}
+            <View style={styles.row}>
+              <View style={[styles.inputCard, styles.halfCard]}>
+                <TextInput
+                  style={styles.input}
+                  placeholder={t('common.lastName')}
+                  placeholderTextColor={colors.inputPlaceholder}
+                  value={lastName}
+                  onChangeText={setLastName}
+                />
+              </View>
+              <View style={[styles.inputCard, styles.halfCard]}>
+                <TextInput
+                  style={styles.input}
+                  placeholder={t('common.firstName')}
+                  placeholderTextColor={colors.inputPlaceholder}
+                  value={firstName}
+                  onChangeText={setFirstName}
+                />
+              </View>
+            </View>
+
+            {/* Email Field with Mail Icon */}
             <View style={styles.inputCard}>
               <TextInput
-                style={styles.input}
+                style={[styles.input, { flex: 1 }]}
                 placeholder={t('common.email')}
                 placeholderTextColor={colors.inputPlaceholder}
                 value={email}
@@ -77,9 +102,10 @@ export default function LoginScreen() {
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
+              <Mail color="#A0AEC0" size={20} style={{ opacity: 0.7 }} />
             </View>
 
-            {/* Password Field */}
+            {/* Password Field with Eye Toggle Icon */}
             <View style={styles.inputCard}>
               <TextInput
                 style={[styles.input, { flex: 1 }]}
@@ -102,34 +128,36 @@ export default function LoginScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Forgot Password Link */}
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => router.push('/(auth)/forgot-password')}
-              style={styles.forgotWrapper}
-            >
-              <Text style={styles.forgotText}>Mot de passe oublier ? changer</Text>
-            </TouchableOpacity>
+            {/* Confirm Password Field with Eye Toggle Icon */}
+            <View style={styles.inputCard}>
+              <TextInput
+                style={[styles.input, { flex: 1 }]}
+                placeholder={t('common.confirmPassword')}
+                placeholderTextColor={colors.inputPlaceholder}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry={!showConfirmPassword}
+              />
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={styles.eyeIcon}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff color="#A0AEC0" size={22} />
+                ) : (
+                  <Eye color="#A0AEC0" size={22} />
+                )}
+              </TouchableOpacity>
+            </View>
 
-            {/* Remember Me Checkbox */}
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => setRememberMe(!rememberMe)}
-              style={styles.checkboxRow}
-            >
-              <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
-                {rememberMe && <Check color={colors.white} size={14} strokeWidth={3} />}
-              </View>
-              <Text style={styles.checkboxLabel}>{t('common.rememberMe')}</Text>
-            </TouchableOpacity>
-
-            {/* Primary Action Button: Se connecter */}
+            {/* Primary Button: Créer mon compte */}
             <TouchableOpacity
               activeOpacity={0.85}
-              onPress={handleLogin}
-              style={styles.loginButton}
+              onPress={handleRegister}
+              style={styles.registerButton}
             >
-              <Text style={styles.loginButtonText}>{t('common.login')}</Text>
+              <Text style={styles.registerButtonText}>{t('common.registerButton')}</Text>
             </TouchableOpacity>
 
             {/* Divider OU */}
@@ -139,13 +167,13 @@ export default function LoginScreen() {
               <View style={styles.dividerLine} />
             </View>
 
-            {/* Secondary Action Button: Créer un compte */}
+            {/* Secondary Button: Se connecter */}
             <TouchableOpacity
               activeOpacity={0.85}
-              onPress={() => router.push('/(auth)/register')}
-              style={styles.registerButton}
+              onPress={() => router.push('/(auth)/login')}
+              style={styles.loginButton}
             >
-              <Text style={styles.registerButtonText}>{t('common.register')}</Text>
+              <Text style={styles.loginButtonText}>{t('common.login')}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -181,11 +209,15 @@ const styles = StyleSheet.create({
     color: colors.white,
     opacity: 0.95,
     marginTop: 12,
-    marginBottom: 40,
+    marginBottom: 32,
     lineHeight: 22,
   },
   formContainer: {
     width: '100%',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   inputCard: {
     flexDirection: 'row',
@@ -203,6 +235,9 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 2,
   },
+  halfCard: {
+    width: '48%',
+  },
   input: {
     fontFamily: fonts.medium,
     fontSize: 15,
@@ -212,50 +247,18 @@ const styles = StyleSheet.create({
   eyeIcon: {
     padding: 6,
   },
-  forgotWrapper: {
-    alignSelf: 'flex-start',
-    marginBottom: 20,
-    marginTop: -4,
-  },
-  forgotText: {
-    fontFamily: fonts.medium,
-    fontSize: 13,
-    color: '#4A5568',
-  },
-  checkboxRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 28,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    borderWidth: 1.5,
-    borderColor: colors.navy,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
-  },
-  checkboxChecked: {
-    backgroundColor: colors.navy,
-  },
-  checkboxLabel: {
-    fontFamily: fonts.medium,
-    fontSize: 14,
-    color: colors.navy,
-  },
-  loginButton: {
+  registerButton: {
     width: '100%',
     height: 52,
     backgroundColor: colors.orange,
     borderRadius: 26,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 8,
     marginBottom: 24,
     elevation: 2,
   },
-  loginButtonText: {
+  registerButtonText: {
     fontFamily: fonts.medium,
     fontSize: 16,
     color: colors.white,
@@ -276,7 +279,7 @@ const styles = StyleSheet.create({
     color: '#4A5568',
     marginHorizontal: 16,
   },
-  registerButton: {
+  loginButton: {
     width: '100%',
     height: 52,
     backgroundColor: 'transparent',
@@ -286,7 +289,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  registerButtonText: {
+  loginButtonText: {
     fontFamily: fonts.medium,
     fontSize: 16,
     color: colors.navy,
