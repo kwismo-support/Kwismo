@@ -46,4 +46,5 @@ fi
 # Démarrage du serveur backend Gunicorn / Uvicorn sur $PORT (défaut 8000)
 PORT="${PORT:-8000}"
 echo "✅ Démarrage du serveur KWISMO Backend sur le port $PORT..."
-exec gunicorn app.main:app -k uvicorn.workers.UvicornWorker --bind "0.0.0.0:$PORT"
+WORKERS="${WEB_CONCURRENCY:-2}"
+exec gunicorn app.main:app -k uvicorn.workers.UvicornWorker --workers $WORKERS --timeout 120 --bind "0.0.0.0:$PORT"

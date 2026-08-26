@@ -24,7 +24,7 @@ export const useAuthStore = create<AuthState>()(
       fetchMe: async () => {
         set({ isLoading: true });
         try {
-          const user = await api.get<User>(ENDPOINTS.auth.me);
+          const user = await api.get<User>(ENDPOINTS.users.me);
           set({ user, isLoading: false });
         } catch {
           set({ user: null, isLoading: false });

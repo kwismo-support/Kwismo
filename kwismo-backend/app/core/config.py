@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     app_env: str = "development"  # development | staging | production
 
     # Base de donnees
-    db_type: str = "sqlite"
+    db_type: str = "postgresql"
     database_url: str = "file:./dev.db"
 
     # JWT
@@ -36,6 +36,7 @@ class Settings(BaseSettings):
 
     # Reseau / CORS
     cors_origins: str = "http://localhost:5173"
+    frontend_url: str = "https://app.kwismo.com"
     allowed_hosts: str = "*"
     redis_url: str = "redis://localhost:6379"
 

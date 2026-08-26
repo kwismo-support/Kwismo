@@ -86,7 +86,7 @@ async def seed_partners() -> dict[str, str]:
 
 async def seed_users(role_ids: dict[str, str], partner_ids: dict[str, str]) -> dict[str, str]:
     """Cree les comptes utilisateurs de test pour chaque role."""
-    pwd_hash = hash_password("Password123!")
+    pwd_hash = await hash_password("Password123!")
 
     users_data = [
         ("user@kwismo.com", "User", "Test", "user", None),
