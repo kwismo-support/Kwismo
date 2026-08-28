@@ -298,16 +298,21 @@ kwismo-backend/
 ├─ tests/
 │  ├─ __init__.py
 │  ├─ conftest.py                    # Fixtures pytest (client de test FastAPI)
+│  ├─ test_access_control.py         # Tests du module access_control (rôles et droits)
 │  ├─ test_ai_gateway.py             # Tests du module ai_gateway (schémas et contrats)
 │  ├─ test_auth.py                   # Tests d'authentification et inscription
 │  ├─ test_devices.py                # Tests du module devices
+│  ├─ test_kpi.py                    # Tests du module kpi (indicateurs globaux et partenaires)
 │  ├─ test_numbers.py                # Tests de vérification de numéros
 │  ├─ test_otp.py                    # Tests de génération et envoi OTP
 │  ├─ test_partners.py               # Tests du module partenaires
 │  ├─ test_reports.py                # Tests de création et gestion des signalements
+│  ├─ test_surveys.py                # Tests du module surveys (sondages)
+│  ├─ test_transactions.py           # Tests du module transactions
 │  ├─ test_user_phones.py            # Tests de raccordement des numéros de téléphone
 │  ├─ test_users.py                  # Tests du profil utilisateur /users/me
-│  └─ test_ussd.py                   # Tests des routes USSD et pays
+│  ├─ test_ussd.py                   # Tests des routes USSD et pays
+│  └─ test_whatsapp_alerts.py        # Tests du module whatsapp_alerts
 │
 ├─ logs/
 │  └─ test_all_routes.log            # Logs d'audit d'exécution des tests (succès/échecs)
