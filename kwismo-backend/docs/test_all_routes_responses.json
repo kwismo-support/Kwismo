@@ -7548,8 +7548,8 @@
     },
     "request_params": null,
     "response_data": {
-      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c2x3dWEwMDAzdmx3bThscmZrNTYzIiwicm9sZSI6InVzZXIiLCJ0eXBlIjoiYWNjZXNzIiwianRpIjoiZTViNzg0Y2YtYmMzZC00ZjlkLWI2YzctZjNiNzcxNjA3ZmQzIiwiZXhwIjoxNzg3MTY1MTQyfQ.dWSdoI5XQ6ajNNBaxcQV0gwmOqD4sqTuQ3wltGTI8C4",
-      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c2x3dWEwMDAzdmx3bThscmZrNTYzIiwicm9sZSI6InVzZXIiLCJ0eXBlIjoicmVmcmVzaCIsImp0aSI6ImE5Y2M4ZjBkLWI2MDgtNDM4Yi1hNzY5LWFlYTdmZjIzYjA4YSIsImV4cCI6MTc4Nzc0MTE0Mn0.EPto8mkjHO3QY6Mdev-wajWlO7P509oeu-5A8wfyazM",
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c2x3dWEwMDAzdmx3bThscmZrNTYzIiwicm9sZSI6InVzZXIiLCJ0eXBlIjoiYWNjZXNzIiwianRpIjoiZTU4YTdiYzAtYmJhNy00NDM3LWExNzYtODVjMWI4YTNlYTIxIiwiZXhwIjoxNzg3OTEwMjkzfQ.6jwVyUCaurpqrkUFWgqI68OhGa6eSnULuhbmVpzLU9w",
+      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c2x3dWEwMDAzdmx3bThscmZrNTYzIiwicm9sZSI6InVzZXIiLCJ0eXBlIjoicmVmcmVzaCIsImp0aSI6IjY0NzNmYTY3LTQ2NGEtNDEzYy04MjhiLTFhNzMxZjMwOTc0NCIsImV4cCI6MTc4ODQ4NjI5M30.Tv2Nl9wvME5h0Kr0D8r8ac2IiYhREklKcUrM_AMwiuI",
       "token_type": "bearer",
       "user": {
         "id": "cmsyslwua0003vlwm8lrfk563",
@@ -7579,15 +7579,15 @@
       "date_inscription": "2026-08-18T15:03:37.090000Z",
       "kpi": {
         "numeros_verifies": 9,
-        "signalements_effectues": 17,
-        "transferts_proteges": 18
+        "signalements_effectues": 18,
+        "transferts_proteges": 19
       },
       "devices": [
         {
           "id": "cmsysw7ei003c7jjyeltf3c86",
           "nom": "Audit Terminal",
           "premiere_connexion": "2026-08-18T15:11:37.339000Z",
-          "derniere_connexion": "2026-08-19T10:45:42.804000Z"
+          "derniere_connexion": "2026-08-28T01:44:53.231000Z"
         }
       ]
     }
@@ -7613,15 +7613,15 @@
       "date_inscription": "2026-08-18T15:03:37.090000Z",
       "kpi": {
         "numeros_verifies": 9,
-        "signalements_effectues": 17,
-        "transferts_proteges": 18
+        "signalements_effectues": 18,
+        "transferts_proteges": 19
       },
       "devices": [
         {
           "id": "cmsysw7ei003c7jjyeltf3c86",
           "nom": "Audit Terminal",
           "premiere_connexion": "2026-08-18T15:11:37.339000Z",
-          "derniere_connexion": "2026-08-19T10:45:42.804000Z"
+          "derniere_connexion": "2026-08-28T01:44:53.231000Z"
         }
       ]
     }
@@ -7732,18 +7732,18 @@
     "role": "user",
     "status_code": 201,
     "request_payload": {
-      "valeur": "+237673796994"
+      "valeur": "+237673274605"
     },
     "request_params": null,
     "response_data": {
-      "id": "cmszyu3k7004pwb2vs0df5b17",
-      "valeur": "+237673796994",
+      "id": "cmtcah9b9005xwb2v179alcck",
+      "valeur": "+237673274605",
       "country_id": "cmsyju7x40003icdyzt0zq5jx",
       "operator_id": "cmsysr3sa000eshwv3qubm6ec",
       "est_verifie": false,
       "date_verification": null,
       "est_compromis": false,
-      "created_at": "2026-08-19T10:45:42.920000Z"
+      "created_at": "2026-08-28T01:44:53.349000Z"
     }
   },
   {
@@ -7875,15 +7875,15 @@
     "status_code": 201,
     "request_payload": {
       "nom": "Contact Test Auto",
-      "numero": "+237677383637"
+      "numero": "+237675060138"
     },
     "request_params": null,
     "response_data": {
-      "id": "cmszyu3m3004twb2v3d63mwvt",
+      "id": "cmtcah9d30061wb2vp8wurc0d",
       "nom": "Contact Test Auto",
-      "numero": "+237677383637",
+      "numero": "+237675060138",
       "statut": null,
-      "created_at": "2026-08-19T10:45:42.988000Z"
+      "created_at": "2026-08-28T01:44:53.416000Z"
     }
   },
   {
@@ -7899,7 +7899,7 @@
         "identifiant": "android_device_user_1",
         "nom": "Audit Terminal",
         "date_premiere_connexion": "2026-08-18T15:11:37.339000Z",
-        "date_derniere_connexion": "2026-08-19T10:45:42.804000Z"
+        "date_derniere_connexion": "2026-08-28T01:44:53.231000Z"
       }
     ]
   },
@@ -7917,7 +7917,7 @@
       "valeur": "+237670999888",
       "score_risque": 0.1,
       "statut": "securise",
-      "date_derniere_verification": "2026-08-19T10:45:59.530000Z",
+      "date_derniere_verification": "2026-08-28T01:45:09.996000Z",
       "country_id": "cmsyju7x40003icdyzt0zq5jx",
       "operator_id": "cmsysr3sa000eshwv3qubm6ec"
     }
@@ -7940,7 +7940,7 @@
         "valeur": "+237670000001",
         "score_risque": 0.1,
         "statut": "securise",
-        "date_derniere_verification": "2026-08-19T10:46:16.382000Z",
+        "date_derniere_verification": "2026-08-28T01:45:26.553000Z",
         "country_id": "cmsyju7x40003icdyzt0zq5jx",
         "operator_id": "cmsysr3sa000eshwv3qubm6ec"
       },
@@ -7949,7 +7949,7 @@
         "valeur": "+237670999888",
         "score_risque": 0.1,
         "statut": "securise",
-        "date_derniere_verification": "2026-08-19T10:46:16.114000Z",
+        "date_derniere_verification": "2026-08-28T01:45:26.572000Z",
         "country_id": "cmsyju7x40003icdyzt0zq5jx",
         "operator_id": "cmsysr3sa000eshwv3qubm6ec"
       }
@@ -7966,11 +7966,11 @@
     },
     "request_params": null,
     "response_data": {
-      "id": "cmszyutei004vwb2vwgi5naq0",
+      "id": "cmtcahyyv0063wb2v4klvvq8c",
       "user_id": "cmsyslwua0003vlwm8lrfk563",
       "numero_id": "cmsysvmsh003dytq2lj4qyoi0",
       "motif": "Spam SMS répétitif",
-      "date_signalement": "2026-08-19T10:46:16.410000Z",
+      "date_signalement": "2026-08-28T01:45:26.599000Z",
       "statut": "pending"
     }
   },
@@ -8140,10 +8140,10 @@
     },
     "request_params": null,
     "response_data": {
-      "id": "cmszyvp4k004zwb2vaell5usp",
+      "id": "cmtcaiuo60067wb2vyb5iahf4",
       "numero_id": "cmsysulq50000laffaeyp1zo5",
       "montant": 1500.0,
-      "date_transaction": "2026-08-19T10:46:57.525000Z",
+      "date_transaction": "2026-08-28T01:46:07.686000Z",
       "statut": "prepared",
       "niveau_risque": "faible",
       "code_ussd_genere": "*123#"
@@ -8158,6 +8158,15 @@
     "request_params": null,
     "response_data": {
       "items": [
+        {
+          "id": "cmtcaiuo60067wb2vyb5iahf4",
+          "numero_id": "cmsysulq50000laffaeyp1zo5",
+          "montant": 1500.0,
+          "date_transaction": "2026-08-28T01:46:07.686000Z",
+          "statut": "prepared",
+          "niveau_risque": "faible",
+          "code_ussd_genere": "*123#"
+        },
         {
           "id": "cmszyvp4k004zwb2vaell5usp",
           "numero_id": "cmsysulq50000laffaeyp1zo5",
@@ -8330,23 +8339,23 @@
           "code_ussd_genere": "*126*15000*670000001#"
         }
       ],
-      "total": 19,
+      "total": 20,
       "page": 1,
       "page_size": 20
     }
   },
   {
-    "endpoint": "/transactions/cmszyvp4k004zwb2vaell5usp",
+    "endpoint": "/transactions/cmtcaiuo60067wb2vyb5iahf4",
     "method": "GET",
     "role": "user",
     "status_code": 200,
     "request_payload": null,
     "request_params": null,
     "response_data": {
-      "id": "cmszyvp4k004zwb2vaell5usp",
+      "id": "cmtcaiuo60067wb2vyb5iahf4",
       "numero_id": "cmsysulq50000laffaeyp1zo5",
       "montant": 1500.0,
-      "date_transaction": "2026-08-19T10:46:57.525000Z",
+      "date_transaction": "2026-08-28T01:46:07.686000Z",
       "statut": "prepared",
       "niveau_risque": "faible",
       "code_ussd_genere": "*123#"
@@ -8377,19 +8386,19 @@
     "request_payload": {
       "compromise_incident_id": "cmszmlyds003za68336wc76ya",
       "contact_ids": [
-        "cmszyu3m3004twb2v3d63mwvt"
+        "cmtcah9d30061wb2vp8wurc0d"
       ],
       "contenu": "Compte WhatsApp compromis"
     },
     "request_params": null,
     "response_data": {
-      "id": "cmszyvp6v0053wb2vimaz59on",
+      "id": "cmtcaiuqj006bwb2vr8qnx31w",
       "contenu": "Compte WhatsApp compromis",
-      "date_envoi": "2026-08-19T10:46:57.608000Z",
+      "date_envoi": "2026-08-28T01:46:07.772000Z",
       "statut": "sent",
       "recipients": [
         {
-          "contact_id": "cmszyu3m3004twb2v3d63mwvt",
+          "contact_id": "cmtcah9d30061wb2vp8wurc0d",
           "statut_accuse": "envoye"
         }
       ]
@@ -8404,6 +8413,12 @@
     "request_params": null,
     "response_data": {
       "items": [
+        {
+          "id": "cmszyvpks005jwb2vxxrkqjkz",
+          "texte": "Votre signalement a été validé par nos équipes.",
+          "lu": false,
+          "date": "2026-08-19T10:46:58.109000Z"
+        },
         {
           "id": "cmszymuqm004bwb2v3p3188wi",
           "texte": "Votre signalement a été validé par nos équipes.",
@@ -8507,7 +8522,7 @@
           "date": "2026-08-18T15:12:10.712000Z"
         }
       ],
-      "total": 17,
+      "total": 18,
       "page": 1,
       "page_size": 20
     }
@@ -8548,8 +8563,8 @@
     },
     "request_params": null,
     "response_data": {
-      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzY2swMDAzc2h3djZhaG9ycnUwIiwicm9sZSI6InBhcnRuZXIiLCJ0eXBlIjoiYWNjZXNzIiwianRpIjoiMjZjZjRjMmEtY2NmZS00ODMzLTlhMDMtM2U4NzEyYWU2MzEwIiwiZXhwIjoxNzg3MTY1MjE3LCJwYXJ0bmVyX2lkIjoiY21zeXNta3Q4MDAwM2o1ZTg2eGh0OWJuNCJ9.7CEF_IKZCOtRQfSL_q7lyV0L5Fh3j3sWqf1El0GEPjg",
-      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzY2swMDAzc2h3djZhaG9ycnUwIiwicm9sZSI6InBhcnRuZXIiLCJ0eXBlIjoicmVmcmVzaCIsImp0aSI6IjFhNGNiNzZkLWVlZTctNDA4Mi1hMDI5LTc5YTY5MjZiNjMzNyIsImV4cCI6MTc4Nzc0MTIxNywicGFydG5lcl9pZCI6ImNtc3lzbWt0ODAwMDNqNWU4NnhodDlibjQifQ.D-jHyycLE3qBauJTvQ1LoibBso2jTWi6VQn7Tce7uvw",
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzY2swMDAzc2h3djZhaG9ycnUwIiwicm9sZSI6InBhcnRuZXIiLCJ0eXBlIjoiYWNjZXNzIiwianRpIjoiZWNhYTU4YWUtZjIwMi00MzcxLTg3N2QtZTQ3M2I4OTEwZTU3IiwiZXhwIjoxNzg3OTEwMzY3LCJwYXJ0bmVyX2lkIjoiY21zeXNta3Q4MDAwM2o1ZTg2eGh0OWJuNCJ9.djWYz67gR4fDL20rd1m3pBVO3MtVFE3e5boMP3I-odg",
+      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzY2swMDAzc2h3djZhaG9ycnUwIiwicm9sZSI6InBhcnRuZXIiLCJ0eXBlIjoicmVmcmVzaCIsImp0aSI6IjlmZmI5NGMxLTUzODgtNGIxNS04NzVmLTgwMzJiMTdhNjYzNyIsImV4cCI6MTc4ODQ4NjM2NywicGFydG5lcl9pZCI6ImNtc3lzbWt0ODAwMDNqNWU4NnhodDlibjQifQ.VNIQCEthoIVNbYWL8k2XhB1MGCJAXW2BGdqVGXqVyJ8",
       "token_type": "bearer",
       "user": {
         "id": "cmsysr3ck0003shwv6ahorru0",
@@ -8647,8 +8662,8 @@
     },
     "request_params": null,
     "response_data": {
-      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzbHcwMDA0c2h3dnBlcDVya3p1Iiwicm9sZSI6ImFkbWluIiwidHlwZSI6ImFjY2VzcyIsImp0aSI6IjJjODZmOTM2LWI1NDYtNDRkZS1hNzgwLTNiM2RmNDg5NjMwZSIsImV4cCI6MTc4NzE2NTIxN30.KefVGbMuJY6MiYNJs_8H8IDw7NN2X_bXyCUeErPaZAA",
-      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzbHcwMDA0c2h3dnBlcDVya3p1Iiwicm9sZSI6ImFkbWluIiwidHlwZSI6InJlZnJlc2giLCJqdGkiOiJmZmJlMDQ0NC0wNWUzLTRkNWYtOGMyYi0wMzU2NTExMjM0NzIiLCJleHAiOjE3ODc3NDEyMTd9.ZsRkKXyewE0CwQkaq78Qq0d2A6nX1iqB3e05xBD8CBs",
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzbHcwMDA0c2h3dnBlcDVya3p1Iiwicm9sZSI6ImFkbWluIiwidHlwZSI6ImFjY2VzcyIsImp0aSI6IjI1MWZlODE2LWVhNTktNDhjYi04MDRmLTEyMTExOWNhMmRlMiIsImV4cCI6MTc4NzkxMDM2OH0.Tz56BF2-E8vqQmdnkdo5C-vBTfLm8XloVHmpmHeyx_M",
+      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzbHcwMDA0c2h3dnBlcDVya3p1Iiwicm9sZSI6ImFkbWluIiwidHlwZSI6InJlZnJlc2giLCJqdGkiOiI4NWY2ZDc4Yy04NGFhLTQ3MGUtODk2Ni00NWJhYzkyZGY1NjUiLCJleHAiOjE3ODg0ODYzNjh9.NLAkcaZOTQzbbIhKJpvbM2iRfL5Cy9PYzjNxj3dpdUw",
       "token_type": "bearer",
       "user": {
         "id": "cmsysr3lw0004shwvpep5rkzu",
@@ -8758,16 +8773,7 @@
           "valeur": "+237677889900",
           "score_risque": 0.7,
           "statut": "frauduleux",
-          "date_derniere_verification": "2026-08-19T10:46:33.011000Z",
-          "country_id": "cmsyju7x40003icdyzt0zq5jx",
-          "operator_id": "cmsysr3sa000eshwv3qubm6ec"
-        },
-        {
-          "id": "cmsysulq50000laffaeyp1zo5",
-          "valeur": "+237670000001",
-          "score_risque": 0.1,
-          "statut": "securise",
-          "date_derniere_verification": "2026-08-19T10:46:16.382000Z",
+          "date_derniere_verification": "2026-08-28T01:45:43.211000Z",
           "country_id": "cmsyju7x40003icdyzt0zq5jx",
           "operator_id": "cmsysr3sa000eshwv3qubm6ec"
         },
@@ -8776,9 +8782,27 @@
           "valeur": "+237670999888",
           "score_risque": 0.1,
           "statut": "securise",
-          "date_derniere_verification": "2026-08-19T10:46:16.114000Z",
+          "date_derniere_verification": "2026-08-28T01:45:26.572000Z",
           "country_id": "cmsyju7x40003icdyzt0zq5jx",
           "operator_id": "cmsysr3sa000eshwv3qubm6ec"
+        },
+        {
+          "id": "cmsysulq50000laffaeyp1zo5",
+          "valeur": "+237670000001",
+          "score_risque": 0.1,
+          "statut": "securise",
+          "date_derniere_verification": "2026-08-28T01:45:26.553000Z",
+          "country_id": "cmsyju7x40003icdyzt0zq5jx",
+          "operator_id": "cmsysr3sa000eshwv3qubm6ec"
+        },
+        {
+          "id": "cmtca93tp0001orivanejwims",
+          "valeur": "+237690000000",
+          "score_risque": 0.1,
+          "statut": "securise",
+          "date_derniere_verification": "2026-08-28T01:38:32.987000Z",
+          "country_id": "cmsyju7x40003icdyzt0zq5jx",
+          "operator_id": "cmsysr40h0012shwvm0evxmy8"
         },
         {
           "id": "cmsysvmug003gytq2brri8s4c",
@@ -8808,7 +8832,7 @@
           "operator_id": "cmsysr40h0012shwvm0evxmy8"
         }
       ],
-      "total": 6,
+      "total": 7,
       "page": 1,
       "page_size": 20
     }
@@ -8825,12 +8849,12 @@
       "valeur": "+237677889900",
       "score_risque": 0.7,
       "statut": "frauduleux",
-      "date_derniere_verification": "2026-08-19T10:46:33.011000Z",
+      "date_derniere_verification": "2026-08-28T01:45:43.211000Z",
       "country_id": "cmsyju7x40003icdyzt0zq5jx",
       "operator_id": "cmsysr3sa000eshwv3qubm6ec",
       "created_at": "2026-08-18T15:11:10.626000Z",
-      "updated_at": "2026-08-19T10:46:33.013000Z",
-      "nombre_signalements": 16
+      "updated_at": "2026-08-28T01:45:43.214000Z",
+      "nombre_signalements": 17
     }
   },
   {
@@ -8847,12 +8871,12 @@
       "valeur": "+237677889900",
       "score_risque": 0.7,
       "statut": "frauduleux",
-      "date_derniere_verification": "2026-08-19T10:46:58.048000Z",
+      "date_derniere_verification": "2026-08-28T01:46:08.195000Z",
       "country_id": "cmsyju7x40003icdyzt0zq5jx",
       "operator_id": "cmsysr3sa000eshwv3qubm6ec",
       "created_at": "2026-08-18T15:11:10.626000Z",
-      "updated_at": "2026-08-19T10:46:58.050000Z",
-      "nombre_signalements": 16
+      "updated_at": "2026-08-28T01:46:08.197000Z",
+      "nombre_signalements": 17
     }
   },
   {
@@ -8865,12 +8889,20 @@
     "response_data": {
       "items": [
         {
+          "id": "cmtcahyyv0063wb2v4klvvq8c",
+          "user_id": "cmsyslwua0003vlwm8lrfk563",
+          "numero_id": "cmsysvmsh003dytq2lj4qyoi0",
+          "motif": "Spam SMS répétitif",
+          "date_signalement": "2026-08-28T01:45:26.599000Z",
+          "statut": "pending"
+        },
+        {
           "id": "cmszyutei004vwb2vwgi5naq0",
           "user_id": "cmsyslwua0003vlwm8lrfk563",
           "numero_id": "cmsysvmsh003dytq2lj4qyoi0",
           "motif": "Spam SMS répétitif",
           "date_signalement": "2026-08-19T10:46:16.410000Z",
-          "statut": "pending"
+          "statut": "validated"
         },
         {
           "id": "cmszylyjo003nwb2vjfa8nmyt",
@@ -9017,13 +9049,13 @@
           "statut": "validated"
         }
       ],
-      "total": 19,
+      "total": 20,
       "page": 1,
       "page_size": 20
     }
   },
   {
-    "endpoint": "/reports/cmszyutei004vwb2vwgi5naq0/validate",
+    "endpoint": "/reports/cmtcahyyv0063wb2v4klvvq8c/validate",
     "method": "PATCH",
     "role": "admin",
     "status_code": 200,
@@ -9032,11 +9064,11 @@
     },
     "request_params": null,
     "response_data": {
-      "id": "cmszyutei004vwb2vwgi5naq0",
+      "id": "cmtcahyyv0063wb2v4klvvq8c",
       "user_id": "cmsyslwua0003vlwm8lrfk563",
       "numero_id": "cmsysvmsh003dytq2lj4qyoi0",
       "motif": "Spam SMS répétitif",
-      "date_signalement": "2026-08-19T10:46:16.410000Z",
+      "date_signalement": "2026-08-28T01:45:26.599000Z",
       "statut": "validated"
     }
   },
@@ -9335,28 +9367,28 @@
       {
         "id": "dyn_numeros",
         "nom_indicateur": "total_numeros_analyses",
-        "valeur": 6.0,
+        "valeur": 7.0,
         "periode": "2026-08",
         "portee": "global"
       },
       {
         "id": "dyn_reports",
         "nom_indicateur": "total_signalements",
-        "valeur": 19.0,
+        "valeur": 20.0,
         "periode": "2026-08",
         "portee": "global"
       },
       {
         "id": "dyn_fraude",
         "nom_indicateur": "taux_fraude_detectee",
-        "valeur": 0.1667,
+        "valeur": 0.1429,
         "periode": "2026-08",
         "portee": "global"
       },
       {
         "id": "dyn_tx",
         "nom_indicateur": "total_transferts_proteges",
-        "valeur": 19.0,
+        "valeur": 20.0,
         "periode": "2026-08",
         "portee": "global"
       }
@@ -9523,7 +9555,7 @@
     }
   },
   {
-    "endpoint": "/contacts/cmszyu3m3004twb2v3d63mwvt",
+    "endpoint": "/contacts/cmtcah9d30061wb2vp8wurc0d",
     "method": "DELETE",
     "role": "cleanup",
     "status_code": 200,
@@ -9535,7 +9567,7 @@
     }
   },
   {
-    "endpoint": "/users/me/phones/cmszyu3k7004pwb2vs0df5b17",
+    "endpoint": "/users/me/phones/cmtcah9b9005xwb2v179alcck",
     "method": "DELETE",
     "role": "cleanup",
     "status_code": 200,
