@@ -31,7 +31,7 @@ python scripts/sync_db_provider.py --generate || true
 
 # Application des tables en base de données
 echo "🔄 Synchronisation du schéma avec la base de données (prisma db push)..."
-prisma db push --accept-data-loss || true
+python -m prisma db push --accept-data-loss || prisma db push --accept-data-loss || true
 
 # Alimentation initiale de la base de données (Seed)
 echo "🌱 Exécution du seed initial (rôles, pays, opérateurs, USSD)..."
