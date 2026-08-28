@@ -206,9 +206,7 @@ def generate_markdown(all_runs: list[TestRun], target_url: str, filename: str = 
         ""
     ])
     
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines))
-    print(f"\n[OK] Saved markdown report to {filename}")
+    pass
 
 async def run_test(base_url: str, total_users: int, active_pct: int, duration_s: float, endpoints: dict) -> TestRun:
     active_users = max(1, int(total_users * active_pct / 100))
@@ -321,12 +319,6 @@ async def main():
     
     markdown_output = "\n".join(lines)
     print(markdown_output)
-    
-    # Still save it to a file as a bonus
-    filename = "loadtest_results.md"
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(markdown_output)
-    print(f"\n[OK] Markdown report also saved to {filename}")
     
 if __name__ == "__main__":
     asyncio.run(main())

@@ -150,7 +150,12 @@ async def _seed_defaults() -> None:
 async def lifespan(app: FastAPI):
     _check_startup_config()
     await connect_db()
-    # Le seed est desormais execute une seule fois via entrypoint.sh
+    from app.db.prisma_client import db as _db
+    try:
+        if not await _db.role.find_first():
+            await _seed_defaults()
+    except Exception as exc:
+        _logger.warning("Seed par défaut non appliqué au démarrage: %s", exc)
     yield
     await disconnect_db()
 

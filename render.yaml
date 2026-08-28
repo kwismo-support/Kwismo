@@ -24,7 +24,8 @@ services:
         value: 8000
       - key: DB_TYPE
         value: postgresql
-      # DATABASE_URL is set in Railway dashboard (Railway PostgreSQL addon)
+      - key: DATABASE_URL
+        sync: false
       - key: AI_SERVICE_URL
         value: http://kwismo-ai:8001
       - key: JWT_SECRET
