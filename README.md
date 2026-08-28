@@ -22,12 +22,12 @@
 6. [Démarrage rapide (tout le projet)](#6-démarrage-rapide-tout-le-projet)
 7. [Démarrage détaillé par partie](#7-démarrage-détaillé-par-partie)
 8. [Assurance Qualité & Automatisation CI/CD (GitHub Actions)](#8-assurance-qualité--automatisation-cicd-github-actions)
-8. [Variables d'environnement](#8-variables-denvironnement)
-9. [Conventions de développement](#9-conventions-de-développement)
-10. [Workflow Git](#10-workflow-git)
-11. [Équipe & rôles](#11-équipe--rôles)
-12. [Planning](#12-planning)
-13. [Licence](#13-licence)
+9. [Variables d'environnement](#8-variables-denvironnement)
+10. [Conventions de développement](#9-conventions-de-développement)
+11. [Workflow Git](#10-workflow-git)
+12. [Équipe & rôles](#11-équipe--rôles)
+13. [Planning](#12-planning)
+14. [Licence](#13-licence)
 
 ---
 
@@ -111,11 +111,7 @@ La fraude Mobile Money représente une source de pertes financières croissante 
 ```text
 kwismo/
 ├─ .github/
-│  └─ workflows/              # ★ Automation CI/CD GitHub Actions (Backend, IA, Web)
-│     ├─ backend-ci.yml       # Pytest 32 tests, audit 56 routes, Bandit SAST, loadtest, SonarQube
-│     ├─ ai-ci.yml            # Inférence IA, 52 scénarios de fraude, Pytest
-│     ├─ web-ci.yml           # TypeScript type-check, npm audit, Vite build
-│     └─ README.md            # Documentation détaillée des workflows
+│  └─ workflows/              # Automation CI/CD GitHub Actions (Backend, IA, Web)
 ├─ kwismo-backend/            # API centrale (Python / FastAPI / Prisma)
 ├─ kwismo-web/                # Site web (React / Vite / Tailwind)
 ├─ kwismo-mobile/             # Application mobile (React Native / Expo)
