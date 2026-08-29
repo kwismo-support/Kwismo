@@ -30,7 +30,6 @@ export default function OnboardingScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
 
-  // Mouse / Touch Drag State for Web Cursor Swipe Support
   const isDraggingRef = useRef(false);
   const startXRef = useRef(0);
   const currentScrollXRef = useRef(0);
@@ -41,7 +40,6 @@ export default function OnboardingScreen() {
     { id: 'slide-3', title: t('onboarding.slide3') },
   ];
 
-  // Continuous Animated.event for scrollX driving real-time dot transitions
   const handleScroll = Animated.event(
     [{ nativeEvent: { contentOffset: { x: scrollX } } }],
     {
@@ -82,7 +80,6 @@ export default function OnboardingScreen() {
     router.replace('/(auth)/welcome');
   };
 
-  // Keyboard Arrow Event Listener for Web
   useEffect(() => {
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
       const handleKeyDown = (e: KeyboardEvent) => {
@@ -97,7 +94,6 @@ export default function OnboardingScreen() {
     }
   }, [activeIndex]);
 
-  // Web Mouse Drag & Touch Event Handlers
   const onMouseDownWeb = (e: any) => {
     if (Platform.OS === 'web') {
       isDraggingRef.current = true;
@@ -153,12 +149,10 @@ export default function OnboardingScreen() {
           }
         : {})}
     >
-      {/* Top right language switcher overlay */}
       <View style={[styles.langOverlay, { top: Math.max(insets.top + 16, 20) }]}>
         <LanguageSwitcher darkTheme={true} />
       </View>
 
-      {/* Horizontal 100% Fullscreen Scrollable Onboarding Slides */}
       <ScrollView
         ref={scrollViewRef}
         horizontal
@@ -177,15 +171,13 @@ export default function OnboardingScreen() {
               { width: screenWidth, height: screenHeight },
             ]}
           >
-            {/* Background Image with Semi-Circle Dome Arch Gradient */}
             <OnboardingBackground slideIndex={index} />
 
-            {/* Slide Text Content positioned over the dome dark gradient zone */}
             <View
               style={[
                 styles.slideContentContainer,
                 {
-                  paddingBottom: Math.max(insets.bottom + 130, 155),
+                  paddingBottom: Math.max(insets.bottom + 175, 205),
                 },
               ]}
             >
@@ -195,7 +187,6 @@ export default function OnboardingScreen() {
         ))}
       </ScrollView>
 
-      {/* Floating Bottom UI Controls Overlay */}
       <View
         style={[
           styles.bottomOverlay,
@@ -207,7 +198,6 @@ export default function OnboardingScreen() {
         ]}
         pointerEvents="box-none"
       >
-        {/* Real-time Continuous Smooth Indicator Dots */}
         <View style={styles.indicatorRow}>
           {onboardingSlides.map((_, idx) => (
             <AnimatedIndicatorDot
@@ -221,7 +211,6 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
-        {/* Bottom Actions Row */}
         {activeIndex < onboardingSlides.length - 1 ? (
           <View style={styles.navRow}>
             <TouchableOpacity

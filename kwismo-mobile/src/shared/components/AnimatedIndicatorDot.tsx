@@ -17,7 +17,6 @@ export const AnimatedIndicatorDot: React.FC<AnimatedIndicatorDotProps> = ({
   isActive,
   onPress,
 }) => {
-  // Fallback animated value for programmatic click scrolling
   const fallbackAnim = useRef(new Animated.Value(isActive ? 1 : 0)).current;
 
   useEffect(() => {
@@ -28,7 +27,6 @@ export const AnimatedIndicatorDot: React.FC<AnimatedIndicatorDotProps> = ({
     }).start();
   }, [isActive, fallbackAnim]);
 
-  // Continuous interpolation during touch drag & scroll
   const inputRange = [
     (index - 1) * screenWidth,
     index * screenWidth,

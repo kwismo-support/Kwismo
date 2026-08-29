@@ -41,7 +41,6 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ darkTheme = 
         </Text>
       </TouchableOpacity>
 
-      {/* Clear, visible separator bar */}
       <View
         style={[
           styles.dividerBar,
