@@ -22,11 +22,7 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
-
-  // Calculate 100% responsive frame width: max 480px on desktop web, 100% on mobile
-  const slideWidth = Math.min(windowWidth, 480);
-  const slideHeight = Math.min(windowHeight, 920);
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -45,7 +41,7 @@ export default function OnboardingScreen() {
   // Scroll handler updating active slide index
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const contentOffset = event.nativeEvent.contentOffset.x;
-    const currentIndex = Math.round(contentOffset / slideWidth);
+    const currentIndex = Math.round(contentOffset / screenWidth);
     if (currentIndex !== activeIndex && currentIndex >= 0 && currentIndex < onboardingSlides.length) {
       setActiveIndex(currentIndex);
     }
@@ -54,7 +50,7 @@ export default function OnboardingScreen() {
   const scrollToSlide = (index: number) => {
     if (index >= 0 && index < onboardingSlides.length) {
       scrollViewRef.current?.scrollTo({
-        x: index * slideWidth,
+        x: index * screenWidth,
         animated: true,
       });
       setActiveIndex(index);
@@ -77,7 +73,7 @@ export default function OnboardingScreen() {
     router.replace('/(auth)/welcome');
   };
 
-  // Web Mouse Drag & Keyboard Event Handlers
+  // Keyboard Arrow Event Listener for Web
   useEffect(() => {
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
       const handleKeyDown = (e: KeyboardEvent) => {
@@ -92,11 +88,12 @@ export default function OnboardingScreen() {
     }
   }, [activeIndex]);
 
+  // Web Mouse Drag & Touch Event Handlers
   const onMouseDownWeb = (e: any) => {
     if (Platform.OS === 'web') {
       isDraggingRef.current = true;
       startXRef.current = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-      currentScrollXRef.current = activeIndex * slideWidth;
+      currentScrollXRef.current = activeIndex * screenWidth;
     }
   };
 
@@ -132,148 +129,139 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <View style={styles.outerWrapper}>
-      <View
-        style={[
-          styles.container,
-          { width: slideWidth, height: slideHeight },
-        ]}
-        {...(Platform.OS === 'web'
-          ? {
-              onMouseDown: onMouseDownWeb,
-              onMouseMove: onMouseMoveWeb,
-              onMouseUp: onMouseUpWeb,
-              onTouchStart: onMouseDownWeb,
-              onTouchMove: onMouseMoveWeb,
-              onTouchEnd: onMouseUpWeb,
-            }
-          : {})}
-      >
-        {/* Top right language switcher overlay */}
-        <View style={[styles.langOverlay, { top: Math.max(insets.top + 12, 16) }]}>
-          <LanguageSwitcher darkTheme={true} />
-        </View>
+    <View
+      style={styles.container}
+      {...(Platform.OS === 'web'
+        ? {
+            onMouseDown: onMouseDownWeb,
+            onMouseMove: onMouseMoveWeb,
+            onMouseUp: onMouseUpWeb,
+            onTouchStart: onMouseDownWeb,
+            onTouchMove: onMouseMoveWeb,
+            onTouchEnd: onMouseUpWeb,
+          }
+        : {})}
+    >
+      {/* Top right language switcher overlay */}
+      <View style={[styles.langOverlay, { top: Math.max(insets.top + 16, 20) }]}>
+        <LanguageSwitcher darkTheme={true} />
+      </View>
 
-        {/* Horizontal Scrollable Onboarding Slides */}
-        <ScrollView
-          ref={scrollViewRef}
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
-          bounces={false}
-          style={StyleSheet.absoluteFill}
-        >
-          {onboardingSlides.map((slide, index) => (
+      {/* Horizontal 100% Fullscreen Scrollable Onboarding Slides */}
+      <ScrollView
+        ref={scrollViewRef}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        bounces={false}
+        style={StyleSheet.absoluteFill}
+      >
+        {onboardingSlides.map((slide, index) => (
+          <View
+            key={slide.id}
+            style={[
+              styles.slideFrame,
+              { width: screenWidth, height: screenHeight },
+            ]}
+          >
+            {/* Background Image with Green Bottom Gradient */}
+            <OnboardingBackground slideIndex={index} />
+
+            {/* Slide Text Content */}
             <View
-              key={slide.id}
               style={[
-                styles.slideFrame,
-                { width: slideWidth, height: slideHeight },
+                styles.slideContentContainer,
+                {
+                  paddingBottom: Math.max(insets.bottom + 125, 140),
+                },
               ]}
             >
-              {/* Background Image / Illustration with Gradient Overlay */}
-              <OnboardingBackground slideIndex={index} />
-
-              {/* Slide Text Content */}
-              <View
-                style={[
-                  styles.slideContentContainer,
-                  {
-                    paddingBottom: Math.max(insets.bottom + 120, 140),
-                  },
-                ]}
-              >
-                <Text style={styles.slideTitle}>{slide.title}</Text>
-              </View>
+              <Text style={styles.slideTitle}>{slide.title}</Text>
             </View>
-          ))}
-        </ScrollView>
-
-        {/* Floating Bottom UI Controls Overlay */}
-        <View
-          style={[
-            styles.bottomOverlay,
-            {
-              paddingBottom: Math.max(insets.bottom, 24),
-              paddingLeft: 24,
-              paddingRight: 24,
-            },
-          ]}
-          pointerEvents="box-none"
-        >
-          {/* Clickable Pagination Indicators */}
-          <View style={styles.indicatorRow}>
-            {onboardingSlides.map((_, idx) => {
-              const isActive = idx === activeIndex;
-              return (
-                <TouchableOpacity
-                  key={`indicator-${idx}`}
-                  activeOpacity={0.7}
-                  onPress={() => scrollToSlide(idx)}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                >
-                  <View
-                    style={[
-                      styles.indicatorBase,
-                      isActive ? styles.indicatorActive : styles.indicatorInactive,
-                    ]}
-                  />
-                </TouchableOpacity>
-              );
-            })}
           </View>
+        ))}
+      </ScrollView>
 
-          {/* Bottom Actions Row */}
-          {activeIndex < onboardingSlides.length - 1 ? (
-            <View style={styles.navRow}>
+      {/* Floating Bottom UI Controls Overlay */}
+      <View
+        style={[
+          styles.bottomOverlay,
+          {
+            paddingBottom: Math.max(insets.bottom, 24),
+            paddingLeft: 24,
+            paddingRight: 24,
+          },
+        ]}
+        pointerEvents="box-none"
+      >
+        {/* Clickable 3 Pagination Indicator Dots */}
+        <View style={styles.indicatorRow}>
+          {onboardingSlides.map((_, idx) => {
+            const isActive = idx === activeIndex;
+            return (
               <TouchableOpacity
+                key={`indicator-${idx}`}
                 activeOpacity={0.7}
-                onPress={handleSkip}
-                style={styles.skipButton}
-                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                onPress={() => scrollToSlide(idx)}
+                hitSlop={{ top: 16, bottom: 16, left: 12, right: 12 }}
+                style={styles.indicatorTouch}
               >
-                <Text style={styles.skipText}>{t('common.skip')}</Text>
+                <View
+                  style={[
+                    styles.indicatorBase,
+                    isActive ? styles.indicatorActive : styles.indicatorInactive,
+                  ]}
+                />
               </TouchableOpacity>
-
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={handleNext}
-                style={styles.nextButton}
-                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-              >
-                <Text style={styles.nextText}>{t('common.next')}</Text>
-                <ArrowRight color={colors.white} size={20} style={{ marginLeft: 6 }} />
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.actionButtonWrapper}>
-              <TouchableOpacity
-                activeOpacity={0.85}
-                onPress={handleFinish}
-                style={styles.commencerButton}
-              >
-                <Text style={styles.commencerText}>{t('common.start')}</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+            );
+          })}
         </View>
+
+        {/* Bottom Actions Row */}
+        {activeIndex < onboardingSlides.length - 1 ? (
+          <View style={styles.navRow}>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={handleSkip}
+              style={styles.skipButton}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            >
+              <Text style={styles.skipText}>{t('common.skip')}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={handleNext}
+              style={styles.nextButton}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            >
+              <Text style={styles.nextText}>{t('common.next')}</Text>
+              <ArrowRight color={colors.white} size={20} style={{ marginLeft: 6 }} />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.actionButtonWrapper}>
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={handleFinish}
+              style={styles.commencerButton}
+            >
+              <Text style={styles.commencerText}>{t('common.start')}</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  outerWrapper: {
+  container: {
     flex: 1,
     backgroundColor: '#0F2B24',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  container: {
     position: 'relative',
-    backgroundColor: '#0F2B24',
     overflow: 'hidden',
     ...(Platform.OS === 'web'
       ? ({
@@ -320,10 +308,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 28,
   },
+  indicatorTouch: {
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
   indicatorBase: {
     height: 6,
     borderRadius: 3,
-    marginHorizontal: 4,
   },
   indicatorActive: {
     width: 28,

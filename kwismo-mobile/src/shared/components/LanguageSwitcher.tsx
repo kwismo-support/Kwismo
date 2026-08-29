@@ -41,7 +41,13 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ darkTheme = 
         </Text>
       </TouchableOpacity>
 
-      <View style={styles.divider} />
+      {/* Clear, visible separator bar */}
+      <View
+        style={[
+          styles.dividerBar,
+          darkTheme ? styles.dividerDark : styles.dividerLight,
+        ]}
+      />
 
       <TouchableOpacity
         activeOpacity={0.7}
@@ -69,44 +75,50 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 20,
-    paddingHorizontal: 4,
-    paddingVertical: 3,
-    borderWidth: 1,
+    borderRadius: 22,
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    borderWidth: 1.5,
   },
   containerDark: {
-    backgroundColor: 'rgba(22, 30, 51, 0.65)',
-    borderColor: 'rgba(255, 255, 255, 0.25)',
+    backgroundColor: 'rgba(15, 23, 42, 0.75)',
+    borderColor: 'rgba(255, 255, 255, 0.35)',
   },
   containerLight: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
-    borderColor: 'rgba(22, 30, 51, 0.15)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderColor: 'rgba(22, 30, 51, 0.25)',
   },
   btn: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 16,
   },
   btnActive: {
     backgroundColor: colors.orange,
   },
-  divider: {
-    width: 1,
-    height: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+  dividerBar: {
+    width: 1.5,
+    height: 16,
+    marginHorizontal: 2,
+  },
+  dividerDark: {
+    backgroundColor: 'rgba(255, 255, 255, 0.55)',
+  },
+  dividerLight: {
+    backgroundColor: 'rgba(22, 30, 51, 0.35)',
   },
   text: {
     fontFamily: fonts.bold,
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
   },
   textDark: {
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: '#FFFFFF',
   },
   textLight: {
     color: colors.navy,
   },
   textActive: {
-    color: colors.white,
+    color: '#FFFFFF',
   },
 });
