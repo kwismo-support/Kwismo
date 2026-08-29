@@ -138,6 +138,21 @@ export default function OnboardingScreen() {
     }
   };
 
+  // Continuous Smooth Cross-Fade Interpolations for Zero Flickering
+  const navRowOpacity = scrollX.interpolate({
+    inputRange: [0, screenWidth, screenWidth * 1.5, screenWidth * 2],
+    outputRange: [1, 1, 0.2, 0],
+    extrapolate: 'clamp',
+  });
+
+  const commencerOpacity = scrollX.interpolate({
+    inputRange: [0, screenWidth, screenWidth * 1.5, screenWidth * 2],
+    outputRange: [0, 0, 0.8, 1],
+    extrapolate: 'clamp',
+  });
+
+  const isLastSlide = activeIndex === onboardingSlides.length - 1;
+
   return (
     <View
       style={styles.container}
@@ -224,8 +239,16 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
+        {/* Fixed 52px Action Container with Continuous Smooth Cross-Fade */}
         <View style={styles.actionsFixedContainer}>
-          {activeIndex < onboardingSlides.length - 1 ? (
+          {/* Passer / Suivant Row (Fades out smoothly towards slide 3) */}
+          <Animated.View
+            style={[
+              styles.absoluteActionWrapper,
+              { opacity: navRowOpacity },
+            ]}
+            pointerEvents={isLastSlide ? 'none' : 'auto'}
+          >
             <View style={styles.navRow}>
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -246,7 +269,16 @@ export default function OnboardingScreen() {
                 <ArrowRight color={colors.white} size={20} style={{ marginLeft: 6 }} />
               </TouchableOpacity>
             </View>
-          ) : (
+          </Animated.View>
+
+          {/* Commencer Button (Fades in smoothly on slide 3) */}
+          <Animated.View
+            style={[
+              styles.absoluteActionWrapper,
+              { opacity: commencerOpacity },
+            ]}
+            pointerEvents={isLastSlide ? 'auto' : 'none'}
+          >
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={handleFinish}
@@ -254,7 +286,7 @@ export default function OnboardingScreen() {
             >
               <Text style={styles.commencerText}>{t('common.start')}</Text>
             </TouchableOpacity>
-          )}
+          </Animated.View>
         </View>
       </View>
     </View>
@@ -316,9 +348,16 @@ const styles = StyleSheet.create({
   actionsFixedContainer: {
     width: '100%',
     height: 52,
-    justifyContent: 'center',
-    alignItems: 'center',
+    position: 'relative',
     marginBottom: 12,
+  },
+  absoluteActionWrapper: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
   },
   navRow: {
     width: '100%',
