@@ -53,6 +53,7 @@ jobs:
       - name: Génération du client Prisma (SQLite test)
         run: |
           python scripts/sync_db_provider.py --generate
+          python -m prisma generate
 
       - name: Exécution des 32 Tests Unitaires (Pytest + Coverage)
         run: |
