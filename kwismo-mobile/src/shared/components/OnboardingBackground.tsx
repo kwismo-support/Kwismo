@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
-import Svg, { Rect, Circle, Path, G, Defs, LinearGradient as SvgLinearGradient, Stop } from 'react-native-svg';
+import Svg, { Rect, Defs, LinearGradient as SvgLinearGradient, Stop } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface OnboardingBackgroundProps {
@@ -23,7 +23,7 @@ export const OnboardingBackground: React.FC<OnboardingBackgroundProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Background Photo Image */}
+      {/* 1. Full Photo Background */}
       {activeImage ? (
         <Image
           source={{ uri: activeImage }}
@@ -32,68 +32,41 @@ export const OnboardingBackground: React.FC<OnboardingBackgroundProps> = ({
         />
       ) : (
         <View style={styles.fallbackContainer}>
-          {slideIndex === 0 && <Slide1Illustration />}
-          {slideIndex === 1 && <Slide2Illustration />}
-          {slideIndex === 2 && <Slide3Illustration />}
+          <FallbackSvgIllustration />
         </View>
       )}
 
       {/* 
-        Dark Teal-Green Gradient Overlay matching mockup images:
-        Vibrant green at bottom, blending into deep teal blue upwards.
+        2. 3-Phase Half-Screen Gradient Overlay matching the mockups:
+        - Phase 3 (Top half): Completely transparent (photo visible)
+        - Phase 2 (Middle half behind text): Deep teal/blue dark gradient (#0E312F) for text readability
+        - Phase 1 (Bottom half behind indicators & buttons): Lighter vibrant green (#22996E / #1C8561)
       */}
       <LinearGradient
         colors={[
-          'rgba(0, 0, 0, 0)',
-          'rgba(14, 45, 42, 0.25)',
-          'rgba(18, 64, 54, 0.75)',
-          '#155945',
-          '#1C7E5F',
+          'rgba(0, 0, 0, 0)',          // 0%: Sans dégradé (Transparent)
+          'rgba(14, 38, 38, 0.45)',    // 25%: Transitoire
+          'rgba(14, 45, 42, 0.88)',    // 50%: Dégradé bleu/canard sombre derrière le texte
+          '#145A47',                   // 75%: Transition vert
+          '#1F9870',                   // 100%: Dégradé vert plus clair tout en bas
         ]}
-        locations={[0, 0.4, 0.65, 0.85, 1.0]}
-        style={styles.gradientOverlay}
+        locations={[0, 0.25, 0.52, 0.78, 1.0]}
+        style={styles.halfScreenGradientOverlay}
       />
     </View>
   );
 };
 
-// Fallback SVG Illustrations if offline
-const Slide1Illustration = () => (
+const FallbackSvgIllustration = () => (
   <Svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice">
     <Defs>
-      <SvgLinearGradient id="bgGrad1" x1="0" y1="0" x2="0" y2="1">
+      <SvgLinearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
         <Stop offset="0%" stopColor="#2A5C50" />
         <Stop offset="50%" stopColor="#1C4038" />
         <Stop offset="100%" stopColor="#0F2B24" />
       </SvgLinearGradient>
     </Defs>
-    <Rect width="400" height="800" fill="url(#bgGrad1)" />
-  </Svg>
-);
-
-const Slide2Illustration = () => (
-  <Svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice">
-    <Defs>
-      <SvgLinearGradient id="bgGrad2" x1="0" y1="0" x2="1" y2="1">
-        <Stop offset="0%" stopColor="#1A2838" />
-        <Stop offset="60%" stopColor="#162D2E" />
-        <Stop offset="100%" stopColor="#0F2B24" />
-      </SvgLinearGradient>
-    </Defs>
-    <Rect width="400" height="800" fill="url(#bgGrad2)" />
-  </Svg>
-);
-
-const Slide3Illustration = () => (
-  <Svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice">
-    <Defs>
-      <SvgLinearGradient id="bgGrad3" x1="0" y1="0" x2="0" y2="1">
-        <Stop offset="0%" stopColor="#3B261D" />
-        <Stop offset="50%" stopColor="#1F352E" />
-        <Stop offset="100%" stopColor="#0F2B24" />
-      </SvgLinearGradient>
-    </Defs>
-    <Rect width="400" height="800" fill="url(#bgGrad3)" />
+    <Rect width="400" height="800" fill="url(#bgGrad)" />
   </Svg>
 );
 
@@ -111,11 +84,11 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: '#0F2B24',
   },
-  gradientOverlay: {
+  halfScreenGradientOverlay: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    height: '65%',
+    height: '58%', // Half-screen gradient overlay as shown in mockups
   },
 });

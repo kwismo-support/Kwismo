@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { ArrowRight } from 'lucide-react-native';
 import { OnboardingBackground } from '../src/shared/components/OnboardingBackground';
+import { AnimatedIndicatorDot } from '../src/shared/components/AnimatedIndicatorDot';
 import { LanguageSwitcher } from '../src/shared/components/LanguageSwitcher';
 import { colors, fonts } from '../src/styles/tokens';
 
@@ -166,15 +167,15 @@ export default function OnboardingScreen() {
               { width: screenWidth, height: screenHeight },
             ]}
           >
-            {/* Background Image with Green Bottom Gradient */}
+            {/* Background Image with 3-Phase Half-Screen Gradient */}
             <OnboardingBackground slideIndex={index} />
 
-            {/* Slide Text Content */}
+            {/* Slide Text Content positioned right at the half-screen dark gradient zone */}
             <View
               style={[
                 styles.slideContentContainer,
                 {
-                  paddingBottom: Math.max(insets.bottom + 125, 140),
+                  paddingBottom: Math.max(insets.bottom + 130, 155),
                 },
               ]}
             >
@@ -196,27 +197,15 @@ export default function OnboardingScreen() {
         ]}
         pointerEvents="box-none"
       >
-        {/* Clickable 3 Pagination Indicator Dots */}
+        {/* Animated Smooth Indicator Dots */}
         <View style={styles.indicatorRow}>
-          {onboardingSlides.map((_, idx) => {
-            const isActive = idx === activeIndex;
-            return (
-              <TouchableOpacity
-                key={`indicator-${idx}`}
-                activeOpacity={0.7}
-                onPress={() => scrollToSlide(idx)}
-                hitSlop={{ top: 16, bottom: 16, left: 12, right: 12 }}
-                style={styles.indicatorTouch}
-              >
-                <View
-                  style={[
-                    styles.indicatorBase,
-                    isActive ? styles.indicatorActive : styles.indicatorInactive,
-                  ]}
-                />
-              </TouchableOpacity>
-            );
-          })}
+          {onboardingSlides.map((_, idx) => (
+            <AnimatedIndicatorDot
+              key={`indicator-${idx}`}
+              isActive={idx === activeIndex}
+              onPress={() => scrollToSlide(idx)}
+            />
+          ))}
         </View>
 
         {/* Bottom Actions Row */}
@@ -292,6 +281,9 @@ const styles = StyleSheet.create({
     lineHeight: 34,
     color: colors.white,
     textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.4)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   bottomOverlay: {
     position: 'absolute',
@@ -307,22 +299,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 28,
-  },
-  indicatorTouch: {
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-  },
-  indicatorBase: {
-    height: 6,
-    borderRadius: 3,
-  },
-  indicatorActive: {
-    width: 28,
-    backgroundColor: colors.orange,
-  },
-  indicatorInactive: {
-    width: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.65)',
   },
   navRow: {
     width: '100%',
