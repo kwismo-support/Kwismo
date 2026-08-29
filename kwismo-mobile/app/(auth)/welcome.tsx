@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import Svg, { Path, Defs, LinearGradient as SvgLinearGradient, Stop } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
 import { KwismoLogo } from '../../src/shared/components/KwismoLogo';
 import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
@@ -15,39 +14,22 @@ export default function AuthWelcomeScreen() {
   const { t } = useTranslation();
   const { width: screenWidth } = useWindowDimensions();
 
-  const dynamicLogoSize = Math.min(Math.max(screenWidth * 0.52, 180), 260);
+  const dynamicLogoSize = Math.min(Math.max(screenWidth * 0.6, 200), 280);
 
   return (
     <View style={styles.container}>
-      {Platform.OS === 'web' ? (
-        <LinearGradient
-          colors={['#32B07F', '#248563', '#1C433D', '#161E33', '#FFFFFF']}
-          locations={[0, 0.28, 0.52, 0.72, 0.76]}
-          style={StyleSheet.absoluteFill}
-        />
-      ) : (
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Svg
-            width="100%"
-            height="100%"
-            viewBox="0 0 400 800"
-            preserveAspectRatio="none"
-          >
-            <Defs>
-              <SvgLinearGradient id="welcomeMobileDomeGrad" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0%" stopColor="#32B07F" />
-                <Stop offset="30%" stopColor="#248563" />
-                <Stop offset="60%" stopColor="#1C433D" />
-                <Stop offset="100%" stopColor="#161E33" />
-              </SvgLinearGradient>
-            </Defs>
-            <Path
-              d="M 0,0 L 0,550 Q 200,625 400,550 L 400,0 Z"
-              fill="url(#welcomeMobileDomeGrad)"
-            />
-          </Svg>
-        </View>
-      )}
+      <LinearGradient
+        colors={[
+          '#2CB677',
+          '#206E57',
+          '#1B2E3D',
+          '#687D92',
+          '#C4CED8',
+          '#FFFFFF',
+        ]}
+        locations={[0, 0.22, 0.45, 0.65, 0.78, 0.9]}
+        style={StyleSheet.absoluteFill}
+      />
 
       <View style={[styles.langWrapper, { top: Math.max(insets.top + 16, 20) }]}>
         <LanguageSwitcher darkTheme={true} />
@@ -97,7 +79,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 20,
   },
   bottomContainer: {
     paddingHorizontal: 24,
@@ -127,13 +108,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 26,
     borderWidth: 1.5,
-    borderColor: '#3D4C82',
+    borderColor: '#3B4E7A',
     alignItems: 'center',
     justifyContent: 'center',
   },
   registerText: {
     fontFamily: fonts.medium,
     fontSize: 16,
-    color: '#3D4C82',
+    color: '#3B4E7A',
   },
 });
