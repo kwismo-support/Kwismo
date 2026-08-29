@@ -15,7 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, Check } from 'lucide-react-native';
 import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
-import { colors, fonts, typography } from '../../src/styles/tokens';
+import { colors, fonts } from '../../src/styles/tokens';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -37,15 +37,20 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <View style={styles.container}>
-        {/* Top Green to Light Background Gradient matching Image 3 */}
         <LinearGradient
-          colors={['#32B07F', '#248563', '#205E51', '#335056', '#FFFFFF', '#FFFFFF']}
-          locations={[0, 0.25, 0.45, 0.65, 0.85, 1]}
+          colors={[
+            '#2CB677',
+            '#206E57',
+            '#1B2E3D',
+            '#687D92',
+            '#C4CED8',
+            '#FFFFFF',
+          ]}
+          locations={[0, 0.22, 0.45, 0.65, 0.78, 0.9]}
           style={StyleSheet.absoluteFill}
         />
 
-        {/* Top Right Language Switcher */}
-        <View style={[styles.langWrapper, { top: insets.top + 16 }]}>
+        <View style={[styles.langWrapper, { top: Math.max(insets.top + 16, 20) }]}>
           <LanguageSwitcher darkTheme={true} />
         </View>
 
@@ -53,25 +58,26 @@ export default function LoginScreen() {
           contentContainerStyle={[
             styles.scrollContent,
             {
-              paddingTop: insets.top + 70,
-              paddingBottom: insets.bottom + 24,
+              paddingTop: Math.max(insets.top + 60, 80),
+              paddingBottom: Math.max(insets.bottom + 24, 36),
             },
           ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Header Title & Subtitle */}
-          <Text style={styles.title}>{t('auth.loginTitle')}</Text>
-          <Text style={styles.subtitle}>{t('auth.loginSubtitle')}</Text>
+          <Text style={styles.title}>
+            Accédez à{'\n'}votre compte
+          </Text>
+          <Text style={styles.subtitle}>
+            Saisissez vos identifiants de connexion pour accéder à votre espace compte.
+          </Text>
 
-          {/* Form Card Inputs */}
           <View style={styles.formContainer}>
-            {/* Email Field */}
             <View style={styles.inputCard}>
               <TextInput
                 style={styles.input}
-                placeholder={t('common.email')}
-                placeholderTextColor={colors.inputPlaceholder}
+                placeholder="Adresse email"
+                placeholderTextColor="#A0AEC0"
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -79,12 +85,11 @@ export default function LoginScreen() {
               />
             </View>
 
-            {/* Password Field */}
             <View style={styles.inputCard}>
               <TextInput
                 style={[styles.input, { flex: 1 }]}
-                placeholder={t('common.password')}
-                placeholderTextColor={colors.inputPlaceholder}
+                placeholder="Mot de passe"
+                placeholderTextColor="#A0AEC0"
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -102,7 +107,6 @@ export default function LoginScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Forgot Password Link */}
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => router.push('/(auth)/forgot-password')}
@@ -111,7 +115,6 @@ export default function LoginScreen() {
               <Text style={styles.forgotText}>Mot de passe oublier ? changer</Text>
             </TouchableOpacity>
 
-            {/* Remember Me Checkbox */}
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => setRememberMe(!rememberMe)}
@@ -123,7 +126,6 @@ export default function LoginScreen() {
               <Text style={styles.checkboxLabel}>{t('common.rememberMe')}</Text>
             </TouchableOpacity>
 
-            {/* Primary Action Button: Se connecter */}
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={handleLogin}
@@ -132,14 +134,12 @@ export default function LoginScreen() {
               <Text style={styles.loginButtonText}>{t('common.login')}</Text>
             </TouchableOpacity>
 
-            {/* Divider OU */}
             <View style={styles.dividerRow}>
               <View style={styles.dividerLine} />
               <Text style={styles.dividerText}>{t('common.or')}</Text>
               <View style={styles.dividerLine} />
             </View>
 
-            {/* Secondary Action Button: Créer un compte */}
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={() => router.push('/(auth)/register')}
@@ -157,7 +157,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: '#FFFFFF',
   },
   langWrapper: {
     position: 'absolute',
@@ -169,20 +169,20 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: fonts.h2,
-    fontSize: 34,
+    fontSize: 32,
     fontWeight: '700',
     color: colors.white,
-    marginTop: 20,
-    lineHeight: 44,
+    marginTop: 10,
+    lineHeight: 40,
   },
   subtitle: {
     fontFamily: fonts.medium,
-    fontSize: 15,
+    fontSize: 14,
     color: colors.white,
     opacity: 0.95,
     marginTop: 12,
-    marginBottom: 40,
-    lineHeight: 22,
+    marginBottom: 32,
+    lineHeight: 20,
   },
   formContainer: {
     width: '100%',
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.white,
-    height: 54,
+    height: 52,
     borderRadius: 14,
     paddingHorizontal: 16,
     marginBottom: 16,
@@ -208,13 +208,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.navy,
     height: '100%',
+    width: '100%',
   },
   eyeIcon: {
     padding: 6,
   },
   forgotWrapper: {
     alignSelf: 'flex-start',
-    marginBottom: 20,
+    marginBottom: 18,
     marginTop: -4,
   },
   forgotText: {
@@ -225,25 +226,25 @@ const styles = StyleSheet.create({
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 24,
   },
   checkbox: {
     width: 20,
     height: 20,
     borderRadius: 4,
     borderWidth: 1.5,
-    borderColor: colors.navy,
+    borderColor: '#1D2A44',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
   },
   checkboxChecked: {
-    backgroundColor: colors.navy,
+    backgroundColor: '#1D2A44',
   },
   checkboxLabel: {
     fontFamily: fonts.medium,
     fontSize: 14,
-    color: colors.navy,
+    color: '#1D2A44',
   },
   loginButton: {
     width: '100%',
@@ -252,8 +253,12 @@ const styles = StyleSheet.create({
     borderRadius: 26,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
+    marginBottom: 20,
     elevation: 2,
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
   },
   loginButtonText: {
     fontFamily: fonts.medium,
@@ -263,7 +268,7 @@ const styles = StyleSheet.create({
   dividerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 20,
   },
   dividerLine: {
     flex: 1,
@@ -282,13 +287,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 26,
     borderWidth: 1.5,
-    borderColor: colors.navy,
+    borderColor: '#1D2A44',
     alignItems: 'center',
     justifyContent: 'center',
   },
   registerButtonText: {
     fontFamily: fonts.medium,
     fontSize: 16,
-    color: colors.navy,
+    color: '#1D2A44',
   },
 });
