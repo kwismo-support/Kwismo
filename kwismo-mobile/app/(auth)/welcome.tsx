@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Platform, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,13 +13,16 @@ export default function AuthWelcomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { width: screenWidth } = useWindowDimensions();
+
+  const dynamicLogoSize = Math.min(Math.max(screenWidth * 0.52, 180), 260);
 
   return (
     <View style={styles.container}>
       {Platform.OS === 'web' ? (
         <LinearGradient
-          colors={['#2EAF7D', '#238A64', '#223948', '#1B2B38', '#FFFFFF']}
-          locations={[0, 0.25, 0.55, 0.72, 0.76]}
+          colors={['#32B07F', '#248563', '#1C433D', '#161E33', '#FFFFFF']}
+          locations={[0, 0.28, 0.52, 0.72, 0.76]}
           style={StyleSheet.absoluteFill}
         />
       ) : (
@@ -32,10 +35,10 @@ export default function AuthWelcomeScreen() {
           >
             <Defs>
               <SvgLinearGradient id="welcomeMobileDomeGrad" x1="0" y1="0" x2="0" y2="1">
-                <Stop offset="0%" stopColor="#2EAF7D" />
-                <Stop offset="30%" stopColor="#238A64" />
-                <Stop offset="68%" stopColor="#223948" />
-                <Stop offset="100%" stopColor="#1B2B38" />
+                <Stop offset="0%" stopColor="#32B07F" />
+                <Stop offset="30%" stopColor="#248563" />
+                <Stop offset="60%" stopColor="#1C433D" />
+                <Stop offset="100%" stopColor="#161E33" />
               </SvgLinearGradient>
             </Defs>
             <Path
@@ -51,7 +54,7 @@ export default function AuthWelcomeScreen() {
       </View>
 
       <View style={styles.centerContainer}>
-        <KwismoLogo size={180} variant="white" />
+        <KwismoLogo size={dynamicLogoSize} variant="white" />
       </View>
 
       <View
@@ -94,7 +97,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 40,
+    paddingBottom: 20,
   },
   bottomContainer: {
     paddingHorizontal: 24,
