@@ -61,10 +61,11 @@ jobs:
           bandit -r app/ -x tests/ || true
           safety check || true
 
-      - name: Génération du client Prisma (SQLite test)
+      - name: Génération du client Prisma et création des tables (SQLite test)
         run: |
           python scripts/sync_db_provider.py --generate
           python -m prisma generate
+          python -m prisma db push --accept-data-loss
 
       - name: Exécution des 32 Tests Unitaires (Pytest + Coverage)
         run: |
