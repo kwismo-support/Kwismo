@@ -20,14 +20,18 @@ export default function AuthWelcomeScreen() {
     <View style={styles.container}>
       <LinearGradient
         colors={[
-          '#2CB677',
-          '#206E57',
-          '#1B2E3D',
-          '#687D92',
-          '#C4CED8',
+          '#2BB673',
+          '#28A86B',
+          '#249460',
+          '#207D53',
+          '#1E6548',
+          '#1D4D40',
+          '#1C3740',
+          '#65798C',
+          '#C5CFD8',
           '#FFFFFF',
         ]}
-        locations={[0, 0.22, 0.45, 0.65, 0.78, 0.9]}
+        locations={[0, 0.2, 0.35, 0.48, 0.58, 0.68, 0.78, 0.84, 0.88, 0.92]}
         style={StyleSheet.absoluteFill}
       />
 
