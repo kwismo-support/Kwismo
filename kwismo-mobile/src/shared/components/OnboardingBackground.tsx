@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
-import Svg, { Rect, Defs, RadialGradient as SvgRadialGradient, Stop } from 'react-native-svg';
+import { StyleSheet, View, Image, Platform } from 'react-native';
+import Svg, { Path, Defs, LinearGradient as SvgLinearGradient, Stop } from 'react-native-svg';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface OnboardingBackgroundProps {
   slideIndex: number;
@@ -29,29 +30,43 @@ export const OnboardingBackground: React.FC<OnboardingBackgroundProps> = ({
         />
       )}
 
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <Svg width="100%" height="100%">
-          <Defs>
-            <SvgRadialGradient
-              id="bottomGreenDomeGlow"
-              cx="50%"
-              cy="100%"
-              rx="150%"
-              ry="75%"
-              fx="50%"
-              fy="100%"
-              gradientUnits="userSpaceOnUse"
-            >
-              <Stop offset="0%" stopColor="#24A173" stopOpacity="0.98" />
-              <Stop offset="35%" stopColor="#197D5B" stopOpacity="0.9" />
-              <Stop offset="65%" stopColor="#12523E" stopOpacity="0.75" />
-              <Stop offset="85%" stopColor="#0B3026" stopOpacity="0.4" />
-              <Stop offset="100%" stopColor="#0B2B25" stopOpacity="0" />
-            </SvgRadialGradient>
-          </Defs>
-          <Rect width="100%" height="100%" fill="url(#bottomGreenDomeGlow)" />
-        </Svg>
-      </View>
+      {Platform.OS === 'web' ? (
+        <LinearGradient
+          colors={[
+            'rgba(0, 0, 0, 0)',
+            'rgba(14, 42, 36, 0.45)',
+            'rgba(16, 68, 54, 0.88)',
+            '#18785A',
+            '#24A173',
+          ]}
+          locations={[0, 0.28, 0.58, 0.82, 1.0]}
+          style={styles.webBandeauOverlay}
+          pointerEvents="none"
+        />
+      ) : (
+        <View style={styles.mobileDomeOverlay} pointerEvents="none">
+          <Svg
+            width="100%"
+            height="100%"
+            viewBox="0 0 400 500"
+            preserveAspectRatio="none"
+          >
+            <Defs>
+              <SvgLinearGradient id="mobileSemiCircleDome" x1="0" y1="0" x2="0" y2="1">
+                <Stop offset="0%" stopColor="#0B1C1A" stopOpacity="0" />
+                <Stop offset="18%" stopColor="#0E2D2A" stopOpacity="0.75" />
+                <Stop offset="52%" stopColor="#12473D" stopOpacity="0.95" />
+                <Stop offset="82%" stopColor="#177457" stopOpacity="0.99" />
+                <Stop offset="100%" stopColor="#229B6E" stopOpacity="1" />
+              </SvgLinearGradient>
+            </Defs>
+            <Path
+              d="M 0,200 A 200,150 0 0 1 400,200 L 400,500 L 0,500 Z"
+              fill="url(#mobileSemiCircleDome)"
+            />
+          </Svg>
+        </View>
+      )}
     </View>
   );
 };
@@ -66,5 +81,21 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     width: '100%',
     height: '100%',
+  },
+  webBandeauOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '62%',
+  },
+  mobileDomeOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '54%',
   },
 });
