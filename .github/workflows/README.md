@@ -1,10 +1,10 @@
-# 🚀 KWISMO — Workflows GitHub Actions (CI/CD Pipeline)
+# KWISMO — Workflows GitHub Actions (CI/CD Pipeline)
 
 Ce dossier contient l'intégralité des **pipelines d'intégration et de déploiement continus (CI/CD)** du monorepo KWISMO. Chaque sous-projet (`kwismo-backend`, `kwismo-ai`, `kwismo-web`) dispose de son propre workflow ciblé et optimisé afin d'assurer des builds rapides, parallèles et isolés.
 
 ---
 
-## 📋 Table des Matières
+## Table des Matières
 
 1. [Vue d'Ensemble des Workflows](#-vue-densemble-des-workflows)
 2. [Workflow 1 : Backend CI/CD (`backend-ci.yml`)](#-workflow-1--backend-cicd-backend-ciyml)
@@ -17,7 +17,7 @@ Ce dossier contient l'intégralité des **pipelines d'intégration et de déploi
 
 ---
 
-## 🎯 Vue d'Ensemble des Workflows
+## Vue d'Ensemble des Workflows
 
 | Workflow | Fichier | Événements Déclencheurs | Technologies | Actions Principales |
 | :--- | :--- | :--- | :--- | :--- |
@@ -27,9 +27,9 @@ Ce dossier contient l'intégralité des **pipelines d'intégration et de déploi
 
 ---
 
-## 🛠️ Description Détaillée des Workflows
+## Description Détaillée des Workflows
 
-### ⚙️ Workflow 1 : Backend CI/CD (`backend-ci.yml`)
+### Workflow 1 : Backend CI/CD (`backend-ci.yml`)
 
 Ce workflow prend en charge la sécurité, l'intégrité et la conformité du serveur Backend FastAPI :
 
@@ -56,7 +56,7 @@ graph TD
 
 ---
 
-### 🤖 Workflow 2 : Service IA CI/CD (`ai-ci.yml`)
+### Workflow 2 : Service IA CI/CD (`ai-ci.yml`)
 
 Ce workflow valide les pipelines de Machine Learning et d'Inférence NLP :
 
@@ -66,7 +66,7 @@ Ce workflow valide les pipelines de Machine Learning et d'Inférence NLP :
 
 ---
 
-### 💻 Workflow 3 : Frontend Web CI/CD (`web-ci.yml`)
+### Workflow 3 : Frontend Web CI/CD (`web-ci.yml`)
 
 Ce workflow garantit l'absence d'erreurs de typage et la compilabilité de l'application Web React/Vite :
 
@@ -77,7 +77,7 @@ Ce workflow garantit l'absence d'erreurs de typage et la compilabilité de l'app
 
 ---
 
-## 🔒 Intégration SonarQube & SonarCloud
+## Intégration SonarQube & SonarCloud
 
 Pour activer le balayage automatique SonarQube / SonarCloud sur GitHub :
 
@@ -89,7 +89,7 @@ Pour activer le balayage automatique SonarQube / SonarCloud sur GitHub :
 
 ---
 
-## ⚡ Stratégie de Cache & Performance
+## Stratégie de Cache & Performance
 
 Pour réduire le temps d'exécution sous les 2 minutes par job, les mécanismes suivants sont activés :
 - **Python pip cache** : `actions/setup-python@v5` avec `cache: 'pip'`.
@@ -98,7 +98,7 @@ Pour réduire le temps d'exécution sous les 2 minutes par job, les mécanismes 
 
 ---
 
-## 💻 Exécution Locale des Workflows (`act`)
+## Exécution Locale des Workflows (`act`)
 
 Vous pouvez simuler l'exécution des GitHub Actions directement sur votre machine locale grâce à l'outil **`act`** (nécessite Docker) :
 
@@ -112,7 +112,7 @@ act -W .github/workflows/web-ci.yml
 
 ---
 
-## 🚀 Couplage avec Railway & Render (Portes de Qualité)
+## Couplage avec Railway & Render (Portes de Qualité)
 
 Afin d'éviter tout déploiement cassé en production :
 

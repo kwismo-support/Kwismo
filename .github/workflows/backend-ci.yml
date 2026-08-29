@@ -22,43 +22,43 @@ jobs:
         working-directory: kwismo-backend
 
     steps:
-      - name: 📥 Checkout du code
+      - name: Checkout du code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: 🐍 Configuration de Python 3.13
+      - name: Configuration de Python 3.13
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
           cache: 'pip'
           cache-dependency-path: kwismo-backend/requirements.txt
 
-      - name: 📦 Installation des dépendances
+      - name: Installation des dépendances
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-asyncio pytest-cov bandit safety ruff black mypy
 
-      - name: 🔍 Validation du Linter & Style (Ruff & Black)
+      - name: Validation du Linter & Style (Ruff & Black)
         run: |
           ruff check app/ || true
           black --check app/ || true
 
-      - name: 🛡️ Audit de Sécurité SAST (Bandit & Safety)
+      - name: Audit de Sécurité SAST (Bandit & Safety)
         run: |
           bandit -r app/ -x tests/ || true
           safety check || true
 
-      - name: ⚙️ Génération du client Prisma (SQLite test)
+      - name: Génération du client Prisma (SQLite test)
         run: |
           python scripts/sync_db_provider.py --generate
 
-      - name: 🧪 Exécution des 32 Tests Unitaires (Pytest + Coverage)
+      - name: Exécution des 32 Tests Unitaires (Pytest + Coverage)
         run: |
           python -m pytest --cov=app --cov-report=xml --cov-report=term-missing
 
-      - name: 🔄 Test d'Intégration & Audit automatisé des 56 routes
+      - name: Test d'Intégration & Audit automatisé des 56 routes
         run: |
           python -m uvicorn app.main:app --port 8000 &
           SERVER_PID=$!
@@ -67,7 +67,7 @@ jobs:
           python scripts/test_all_routes.py
           kill $SERVER_PID
 
-      - name: ⚡ Test de Montée en Charge et Débit (Loadtest probe)
+      - name: Test de Montée en Charge et Débit (Loadtest probe)
         run: |
           python -m uvicorn app.main:app --port 8000 &
           SERVER_PID=$!
@@ -75,7 +75,7 @@ jobs:
           python scripts/loadtest.py --url http://127.0.0.1:8000 --users 10 20 --duration 3
           kill $SERVER_PID
 
-      - name: 📊 Scanner SonarQube / SonarCloud (Optionnel)
+      - name: Scanner SonarQube / SonarCloud (Optionnel)
         if: env.SONAR_TOKEN != ''
         uses: SonarSource/sonarcloud-github-action@v3
         env:

@@ -22,28 +22,28 @@ jobs:
         working-directory: kwismo-web
 
     steps:
-      - name: 📥 Checkout du code
+      - name: Checkout du code
         uses: actions/checkout@v4
 
-      - name: 🟢 Configuration de Node.js 20
+      - name: Configuration de Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
           cache-dependency-path: kwismo-web/package-lock.json
 
-      - name: 📦 Installation des dépendances npm
+      - name: Installation des dépendances npm
         run: |
           npm ci || npm install
 
-      - name: 🛡️ Audit de Sécurité des paquets npm
+      - name: Audit de Sécurité des paquets npm
         run: |
           npm audit --audit-level=high || true
 
-      - name: 🔍 Vérification stricte des types TypeScript
+      - name: Vérification stricte des types TypeScript
         run: |
           npx tsc --noEmit
 
-      - name: 🏗️ Compilation du bundle de production (Vite Build)
+      - name: Compilation du bundle de production (Vite Build)
         run: |
           npm run build
