@@ -26,6 +26,9 @@ export default function OnboardingScreen() {
   const { t } = useTranslation();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
+  const dynamicFontSize = Math.min(Math.max(screenWidth * 0.068, 28), 36);
+  const dynamicLineHeight = Math.round(dynamicFontSize * 1.3);
+
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const scrollX = useRef(new Animated.Value(0)).current;
@@ -177,11 +180,21 @@ export default function OnboardingScreen() {
               style={[
                 styles.slideContentContainer,
                 {
-                  paddingBottom: Math.max(insets.bottom + 175, 205),
+                  paddingBottom: Math.max(insets.bottom + 180, 210),
                 },
               ]}
             >
-              <Text style={styles.slideTitle}>{slide.title}</Text>
+              <Text
+                style={[
+                  styles.slideTitle,
+                  {
+                    fontSize: dynamicFontSize,
+                    lineHeight: dynamicLineHeight,
+                  },
+                ]}
+              >
+                {slide.title}
+              </Text>
             </View>
           </View>
         ))}
@@ -211,29 +224,29 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
-        {activeIndex < onboardingSlides.length - 1 ? (
-          <View style={styles.navRow}>
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={handleSkip}
-              style={styles.skipButton}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-            >
-              <Text style={styles.skipText}>{t('common.skip')}</Text>
-            </TouchableOpacity>
+        <View style={styles.actionsFixedContainer}>
+          {activeIndex < onboardingSlides.length - 1 ? (
+            <View style={styles.navRow}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={handleSkip}
+                style={styles.skipButton}
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              >
+                <Text style={styles.skipText}>{t('common.skip')}</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={handleNext}
-              style={styles.nextButton}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-            >
-              <Text style={styles.nextText}>{t('common.next')}</Text>
-              <ArrowRight color={colors.white} size={20} style={{ marginLeft: 6 }} />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.actionButtonWrapper}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={handleNext}
+                style={styles.nextButton}
+                hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+              >
+                <Text style={styles.nextText}>{t('common.next')}</Text>
+                <ArrowRight color={colors.white} size={20} style={{ marginLeft: 6 }} />
+              </TouchableOpacity>
+            </View>
+          ) : (
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={handleFinish}
@@ -241,8 +254,8 @@ export default function OnboardingScreen() {
             >
               <Text style={styles.commencerText}>{t('common.start')}</Text>
             </TouchableOpacity>
-          </View>
-        )}
+          )}
+        </View>
       </View>
     </View>
   );
@@ -278,9 +291,7 @@ const styles = StyleSheet.create({
   },
   slideTitle: {
     fontFamily: fonts.h3,
-    fontSize: 26,
     fontWeight: '700',
-    lineHeight: 34,
     color: colors.white,
     textAlign: 'center',
     textShadowColor: 'rgba(0, 0, 0, 0.4)',
@@ -302,13 +313,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 28,
   },
+  actionsFixedContainer: {
+    width: '100%',
+    height: 52,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
   navRow: {
     width: '100%',
+    height: 52,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 8,
-    marginBottom: 12,
   },
   skipButton: {
     paddingVertical: 10,
@@ -330,11 +348,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.medium,
     fontSize: 16,
     color: colors.white,
-  },
-  actionButtonWrapper: {
-    width: '100%',
-    alignItems: 'center',
-    marginBottom: 12,
   },
   commencerButton: {
     width: '100%',
