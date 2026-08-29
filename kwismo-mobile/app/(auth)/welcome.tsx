@@ -15,31 +15,33 @@ export default function AuthWelcomeScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Background Gradient matching Image 2 */}
       <LinearGradient
-        colors={['#32B07F', '#248563', '#1C433D', '#161E33', '#161E33']}
-        locations={[0, 0.3, 0.55, 0.8, 1]}
+        colors={[
+          '#2EAF7D',
+          '#238A64',
+          '#223948',
+          '#4D6274',
+          '#BDC9D4',
+          '#FFFFFF',
+        ]}
+        locations={[0, 0.22, 0.45, 0.65, 0.82, 0.93]}
         style={StyleSheet.absoluteFill}
       />
 
-      {/* Top right language switcher */}
-      <View style={[styles.langWrapper, { top: insets.top + 16 }]}>
+      <View style={[styles.langWrapper, { top: Math.max(insets.top + 16, 20) }]}>
         <LanguageSwitcher darkTheme={true} />
       </View>
 
-      {/* Center Kwismo Logo */}
       <View style={styles.centerContainer}>
-        <KwismoLogo size={150} variant="white" />
+        <KwismoLogo size={180} variant="white" />
       </View>
 
-      {/* Bottom Action Buttons matching Image 2 */}
       <View
         style={[
           styles.bottomContainer,
-          { paddingBottom: Math.max(insets.bottom + 24, 40) },
+          { paddingBottom: Math.max(insets.bottom + 24, 36) },
         ]}
       >
-        {/* Filled Orange Button: Se connecter */}
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.loginButton}
@@ -48,7 +50,6 @@ export default function AuthWelcomeScreen() {
           <Text style={styles.loginText}>{t('common.login')}</Text>
         </TouchableOpacity>
 
-        {/* Outline Button: Créer un compte */}
         <TouchableOpacity
           activeOpacity={0.85}
           style={styles.registerButton}
@@ -64,7 +65,7 @@ export default function AuthWelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.navy,
+    backgroundColor: '#FFFFFF',
   },
   langWrapper: {
     position: 'absolute',
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
   },
   bottomContainer: {
     paddingHorizontal: 24,
-    gap: 16,
+    gap: 14,
   },
   loginButton: {
     width: '100%',
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     shadowColor: colors.black,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.12,
     shadowRadius: 4,
   },
   loginText: {
@@ -104,13 +105,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 26,
     borderWidth: 1.5,
-    borderColor: '#3B5284',
+    borderColor: '#3D4C82',
     alignItems: 'center',
     justifyContent: 'center',
   },
   registerText: {
     fontFamily: fonts.medium,
     fontSize: 16,
-    color: '#3B5284',
+    color: '#3D4C82',
   },
 });
