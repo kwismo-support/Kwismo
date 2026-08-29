@@ -34,7 +34,8 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
       <View style={styles.container}>
         <LinearGradient
@@ -46,8 +47,9 @@ export default function LoginScreen() {
             '#C4CED8',
             '#FFFFFF',
           ]}
-          locations={[0, 0.22, 0.45, 0.65, 0.78, 0.9]}
-          style={StyleSheet.absoluteFill}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0.85, y: 0.55 }}
+          style={styles.gradientHeader}
         />
 
         <View style={[styles.langWrapper, { top: Math.max(insets.top + 16, 20) }]}>
@@ -58,8 +60,8 @@ export default function LoginScreen() {
           contentContainerStyle={[
             styles.scrollContent,
             {
-              paddingTop: Math.max(insets.top + 60, 80),
-              paddingBottom: Math.max(insets.bottom + 24, 36),
+              paddingTop: Math.max(insets.top + 40, 60),
+              paddingBottom: Math.max(insets.bottom + 40, 60),
             },
           ]}
           showsVerticalScrollIndicator={false}
@@ -159,6 +161,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+  gradientHeader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '52%',
+  },
   langWrapper: {
     position: 'absolute',
     right: 20,
@@ -166,6 +175,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 24,
+    flexGrow: 1,
   },
   title: {
     fontFamily: fonts.h2,
