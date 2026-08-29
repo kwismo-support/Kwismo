@@ -32,8 +32,9 @@ export const OnboardingBackground: React.FC<OnboardingBackgroundProps> = ({
       )}
 
       {/* 
-        2. Semi-Circle Curved Arch / Dome Gradient Overlay matching the mockups:
-        - Curved path Q 200,10 forming a smooth dome rising up in the middle
+        2. Perfectly Rounded & Lowered Semi-Circle Dome Arc Gradient Overlay:
+        - Positioned in the lower 52% of the screen
+        - Elliptical Arc A 200,160 producing a smooth, rounded semi-circle
         - Top of dome: Transparent -> Teal/Blue dark backdrop for text -> Vibrant green at bottom
       */}
       <View style={styles.overlayWrapper} pointerEvents="none">
@@ -46,15 +47,15 @@ export const OnboardingBackground: React.FC<OnboardingBackgroundProps> = ({
           <Defs>
             <SvgLinearGradient id="semiCircleDomeGrad" x1="0" y1="0" x2="0" y2="1">
               <Stop offset="0%" stopColor="#0B1C1A" stopOpacity="0" />
-              <Stop offset="22%" stopColor="#0E2D2A" stopOpacity="0.65" />
+              <Stop offset="20%" stopColor="#0E2D2A" stopOpacity="0.65" />
               <Stop offset="55%" stopColor="#12473D" stopOpacity="0.92" />
               <Stop offset="82%" stopColor="#177457" stopOpacity="0.98" />
               <Stop offset="100%" stopColor="#229B6E" stopOpacity="1" />
             </SvgLinearGradient>
           </Defs>
-          {/* Curved dome arch rising upwards in the center */}
+          {/* Smooth, rounded semi-circle dome path lowered gracefully */}
           <Path
-            d="M 0,140 Q 200,5 400,140 L 400,500 L 0,500 Z"
+            d="M 0,220 A 200,160 0 0 1 400,220 L 400,500 L 0,500 Z"
             fill="url(#semiCircleDomeGrad)"
           />
         </Svg>
@@ -79,6 +80,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    height: '62%', // Half-screen curved dome overlay
+    height: '52%', // Lowered overlay height matching lower half of screen
   },
 });
