@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
-import Svg, { Rect, Defs, LinearGradient as SvgLinearGradient, Stop } from 'react-native-svg';
-import { LinearGradient } from 'expo-linear-gradient';
+import Svg, { Path, Defs, LinearGradient as SvgLinearGradient, Stop } from 'react-native-svg';
 
 interface OnboardingBackgroundProps {
   slideIndex: number; // 0, 1, or 2
@@ -23,72 +22,63 @@ export const OnboardingBackground: React.FC<OnboardingBackgroundProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* 1. Full Photo Background */}
-      {activeImage ? (
+      {/* 1. Full Background Photo */}
+      {activeImage && (
         <Image
           source={{ uri: activeImage }}
           style={styles.backgroundImage}
           resizeMode="cover"
         />
-      ) : (
-        <View style={styles.fallbackContainer}>
-          <FallbackSvgIllustration />
-        </View>
       )}
 
       {/* 
-        2. 3-Phase Half-Screen Gradient Overlay matching the mockups:
-        - Phase 3 (Top half): Completely transparent (photo visible)
-        - Phase 2 (Middle half behind text): Deep teal/blue dark gradient (#0E312F) for text readability
-        - Phase 1 (Bottom half behind indicators & buttons): Lighter vibrant green (#22996E / #1C8561)
+        2. Semi-Circle Curved Arch / Dome Gradient Overlay matching the mockups:
+        - Curved path Q 200,10 forming a smooth dome rising up in the middle
+        - Top of dome: Transparent -> Teal/Blue dark backdrop for text -> Vibrant green at bottom
       */}
-      <LinearGradient
-        colors={[
-          'rgba(0, 0, 0, 0)',          // 0%: Sans dégradé (Transparent)
-          'rgba(14, 38, 38, 0.45)',    // 25%: Transitoire
-          'rgba(14, 45, 42, 0.88)',    // 50%: Dégradé bleu/canard sombre derrière le texte
-          '#145A47',                   // 75%: Transition vert
-          '#1F9870',                   // 100%: Dégradé vert plus clair tout en bas
-        ]}
-        locations={[0, 0.25, 0.52, 0.78, 1.0]}
-        style={styles.halfScreenGradientOverlay}
-      />
+      <View style={styles.overlayWrapper} pointerEvents="none">
+        <Svg
+          width="100%"
+          height="100%"
+          viewBox="0 0 400 500"
+          preserveAspectRatio="none"
+        >
+          <Defs>
+            <SvgLinearGradient id="semiCircleDomeGrad" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0%" stopColor="#0B1C1A" stopOpacity="0" />
+              <Stop offset="22%" stopColor="#0E2D2A" stopOpacity="0.65" />
+              <Stop offset="55%" stopColor="#12473D" stopOpacity="0.92" />
+              <Stop offset="82%" stopColor="#177457" stopOpacity="0.98" />
+              <Stop offset="100%" stopColor="#229B6E" stopOpacity="1" />
+            </SvgLinearGradient>
+          </Defs>
+          {/* Curved dome arch rising upwards in the center */}
+          <Path
+            d="M 0,140 Q 200,5 400,140 L 400,500 L 0,500 Z"
+            fill="url(#semiCircleDomeGrad)"
+          />
+        </Svg>
+      </View>
     </View>
   );
 };
-
-const FallbackSvgIllustration = () => (
-  <Svg width="100%" height="100%" viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice">
-    <Defs>
-      <SvgLinearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
-        <Stop offset="0%" stopColor="#2A5C50" />
-        <Stop offset="50%" stopColor="#1C4038" />
-        <Stop offset="100%" stopColor="#0F2B24" />
-      </SvgLinearGradient>
-    </Defs>
-    <Rect width="400" height="800" fill="url(#bgGrad)" />
-  </Svg>
-);
 
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     overflow: 'hidden',
+    backgroundColor: '#0F2B24',
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
     width: '100%',
     height: '100%',
   },
-  fallbackContainer: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: '#0F2B24',
-  },
-  halfScreenGradientOverlay: {
+  overlayWrapper: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    height: '58%', // Half-screen gradient overlay as shown in mockups
+    height: '62%', // Half-screen curved dome overlay
   },
 });

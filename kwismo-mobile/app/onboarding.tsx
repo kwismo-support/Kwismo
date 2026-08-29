@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Animated,
   useWindowDimensions,
   NativeSyntheticEvent,
   NativeScrollEvent,
@@ -27,6 +28,7 @@ export default function OnboardingScreen() {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
+  const scrollX = useRef(new Animated.Value(0)).current;
 
   // Mouse / Touch Drag State for Web Cursor Swipe Support
   const isDraggingRef = useRef(false);
@@ -39,14 +41,20 @@ export default function OnboardingScreen() {
     { id: 'slide-3', title: t('onboarding.slide3') },
   ];
 
-  // Scroll handler updating active slide index
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const contentOffset = event.nativeEvent.contentOffset.x;
-    const currentIndex = Math.round(contentOffset / screenWidth);
-    if (currentIndex !== activeIndex && currentIndex >= 0 && currentIndex < onboardingSlides.length) {
-      setActiveIndex(currentIndex);
+  // Continuous Animated.event for scrollX driving real-time dot transitions
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+    {
+      useNativeDriver: false,
+      listener: (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        const contentOffset = event.nativeEvent.contentOffset.x;
+        const currentIndex = Math.round(contentOffset / screenWidth);
+        if (currentIndex !== activeIndex && currentIndex >= 0 && currentIndex < onboardingSlides.length) {
+          setActiveIndex(currentIndex);
+        }
+      },
     }
-  };
+  );
 
   const scrollToSlide = (index: number) => {
     if (index >= 0 && index < onboardingSlides.length) {
@@ -102,8 +110,10 @@ export default function OnboardingScreen() {
     if (isDraggingRef.current && Platform.OS === 'web') {
       const currentX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
       const deltaX = startXRef.current - currentX;
+      const targetX = currentScrollXRef.current + deltaX;
+      scrollX.setValue(targetX);
       scrollViewRef.current?.scrollTo({
-        x: currentScrollXRef.current + deltaX,
+        x: targetX,
         animated: false,
       });
     }
@@ -167,10 +177,10 @@ export default function OnboardingScreen() {
               { width: screenWidth, height: screenHeight },
             ]}
           >
-            {/* Background Image with 3-Phase Half-Screen Gradient */}
+            {/* Background Image with Semi-Circle Dome Arch Gradient */}
             <OnboardingBackground slideIndex={index} />
 
-            {/* Slide Text Content positioned right at the half-screen dark gradient zone */}
+            {/* Slide Text Content positioned over the dome dark gradient zone */}
             <View
               style={[
                 styles.slideContentContainer,
@@ -197,11 +207,14 @@ export default function OnboardingScreen() {
         ]}
         pointerEvents="box-none"
       >
-        {/* Animated Smooth Indicator Dots */}
+        {/* Real-time Continuous Smooth Indicator Dots */}
         <View style={styles.indicatorRow}>
           {onboardingSlides.map((_, idx) => (
             <AnimatedIndicatorDot
               key={`indicator-${idx}`}
+              index={idx}
+              scrollX={scrollX}
+              screenWidth={screenWidth}
               isActive={idx === activeIndex}
               onPress={() => scrollToSlide(idx)}
             />

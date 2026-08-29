@@ -1,37 +1,50 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, TouchableOpacity, StyleSheet, Easing } from 'react-native';
+import { Animated, TouchableOpacity, StyleSheet } from 'react-native';
 import { colors } from '../../styles/tokens';
 
 interface AnimatedIndicatorDotProps {
+  index: number;
+  scrollX: Animated.Value;
+  screenWidth: number;
   isActive: boolean;
   onPress: () => void;
 }
 
 export const AnimatedIndicatorDot: React.FC<AnimatedIndicatorDotProps> = ({
+  index,
+  scrollX,
+  screenWidth,
   isActive,
   onPress,
 }) => {
-  const animValue = useRef(new Animated.Value(isActive ? 1 : 0)).current;
+  // Fallback animated value for programmatic click scrolling
+  const fallbackAnim = useRef(new Animated.Value(isActive ? 1 : 0)).current;
 
   useEffect(() => {
-    Animated.timing(animValue, {
+    Animated.timing(fallbackAnim, {
       toValue: isActive ? 1 : 0,
-      duration: 280,
-      easing: Easing.out(Easing.cubic),
+      duration: 250,
       useNativeDriver: false,
     }).start();
-  }, [isActive, animValue]);
+  }, [isActive, fallbackAnim]);
 
-  // Interpolate width from 6px (dot) to 28px (pill)
-  const width = animValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [6, 28],
+  // Continuous interpolation during touch drag & scroll
+  const inputRange = [
+    (index - 1) * screenWidth,
+    index * screenWidth,
+    (index + 1) * screenWidth,
+  ];
+
+  const width = scrollX.interpolate({
+    inputRange,
+    outputRange: [6, 28, 6],
+    extrapolate: 'clamp',
   });
 
-  // Interpolate background color from translucent white to active orange #FF9900
-  const backgroundColor = animValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['rgba(255, 255, 255, 0.65)', colors.orange],
+  const backgroundColor = scrollX.interpolate({
+    inputRange,
+    outputRange: ['rgba(255, 255, 255, 0.65)', colors.orange, 'rgba(255, 255, 255, 0.65)'],
+    extrapolate: 'clamp',
   });
 
   return (
