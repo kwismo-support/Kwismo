@@ -21,6 +21,12 @@ import sys
 import time
 from dataclasses import dataclass, field
 
+try:
+    import h2  # noqa: F401
+    HAS_H2 = True
+except ImportError:
+    HAS_H2 = False
+
 # Force UTF-8 on Windows
 if sys.platform == "win32":
     os.environ.setdefault("PYTHONUTF8", "1")
@@ -217,7 +223,7 @@ async def run_test(base_url: str, total_users: int, active_pct: int, duration_s:
 
     limits = httpx.Limits(max_connections=min(active_users + 20, 500), max_keepalive_connections=min(active_users, 200))
 
-    async with httpx.AsyncClient(limits=limits, timeout=httpx.Timeout(30.0, connect=10.0), follow_redirects=True, http2=True) as client:
+    async with httpx.AsyncClient(limits=limits, timeout=httpx.Timeout(30.0, connect=10.0), follow_redirects=True, http2=HAS_H2) as client:
         print(f"  Warming up {base_url} ...")
         try:
             r = await client.get(base_url + "/health")
