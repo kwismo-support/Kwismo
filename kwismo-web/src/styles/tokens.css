@@ -36,6 +36,8 @@
   --color-text-muted: #6b7280;
 
   /* ── Typographie ─────────────────────────────────────────── */
+  --font-title: 'Montserrat Alternates', system-ui, sans-serif;
+  --font-body: 'Ageo', system-ui, sans-serif;
   --font-sans: 'Poppins', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
