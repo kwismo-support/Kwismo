@@ -30,8 +30,9 @@ const config: Config = {
         info:    'var(--color-info)',
       },
       fontFamily: {
-        sans: ['var(--font-sans)'],
-        mono: ['var(--font-mono)'],
+        title: ["Montserrat Alternates", "sans-serif"],
+        body: ["Ageo", "sans-serif"],
+        mono: ["JetBrains Mono", "Fira Code", "monospace"],
       },
       borderRadius: {
         sm:   'var(--radius-sm)',

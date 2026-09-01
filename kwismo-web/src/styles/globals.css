@@ -7,35 +7,35 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Polices auto-hébergées ─────────────────────────────────── */
-@font-face {
+/* ── Polices auto-hébergées ───────────────────────────────────*/
+/*@font-face {
   font-family: 'Poppins';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
   src: url('/fonts/Poppins-Regular.woff2') format('woff2');
-}
-@font-face {
+}*/
+/*@font-face {
   font-family: 'Poppins';
   font-style: normal;
   font-weight: 500;
   font-display: swap;
   src: url('/fonts/Poppins-Medium.woff2') format('woff2');
-}
-@font-face {
+}*/
+/*@font-face {
   font-family: 'Poppins';
   font-style: normal;
   font-weight: 600;
   font-display: swap;
   src: url('/fonts/Poppins-SemiBold.woff2') format('woff2');
-}
-@font-face {
+}*/
+/*@font-face {
   font-family: 'Poppins';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
   src: url('/fonts/Poppins-Bold.woff2') format('woff2');
-}
+}*/
 
 /* Montserrat Alternates — Titres */
 @font-face {
@@ -75,6 +75,14 @@
   font-family: "Ageo";
   src: url("/fonts/AgeoTrial-Medium.woff2") format("woff2");
   font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Ageo";
+  src: url("/fonts/AgeoTrial-SemiBold.woff2") format("woff2");
+  font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
