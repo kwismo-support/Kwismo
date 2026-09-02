@@ -16,6 +16,8 @@ export interface AppThemeColors {
   primaryGreen: string;
   secondaryBorder: string;
   secondaryText: string;
+  disabled: string;
+  disabledText: string;
 }
 
 export function useAppTheme() {
@@ -49,6 +51,8 @@ export function useAppTheme() {
     primaryGreen: colors.green,
     secondaryBorder: isDark ? 'rgba(255, 255, 255, 0.7)' : '#3B4E7A',
     secondaryText: isDark ? '#FFFFFF' : '#3B4E7A',
+    disabled: isDark ? '#334155' : colors.disabled,
+    disabledText: isDark ? '#64748B' : colors.disabledText,
   };
 
   return {

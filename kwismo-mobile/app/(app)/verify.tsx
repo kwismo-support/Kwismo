@@ -271,9 +271,7 @@ export default function VerifyScreen() {
                   {
                     backgroundColor: isPhoneValid
                       ? colors.orange
-                      : isDark
-                      ? '#334155'
-                      : '#D1D5DB',
+                      : themeColors.disabled,
                   },
                 ]}
               >
@@ -283,9 +281,7 @@ export default function VerifyScreen() {
                     {
                       color: isPhoneValid
                         ? colors.white
-                        : isDark
-                        ? '#94A3B8'
-                        : '#64748B',
+                        : themeColors.disabledText,
                     },
                   ]}
                 >
@@ -378,7 +374,7 @@ export default function VerifyScreen() {
                   {t('common.analyzingSubtitle', 'Nous vérifions ce numéro dans notre base de données et auprès de la communauté')}
                 </Text>
 
-                {/* Liste des 4 étapes avec le spinner rotatif vert et les badges de statut */}
+                {/* Liste des 4 étapes avec les icônes officielles Iconify */}
                 <View style={[styles.stepsCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
                   {/* Étape 1 : Analyse de la base de données */}
                   <View style={styles.stepItem}>
@@ -386,15 +382,11 @@ export default function VerifyScreen() {
                       {t('common.dbAnalysis', 'Analyse de la base de données')}
                     </Text>
                     {analysisStep > 1 ? (
-                      <View style={styles.stepSuccessCircle}>
-                        <Icon name="solar:check-read-linear" color="#FFFFFF" size={14} />
-                      </View>
+                      <Icon name="solar:shield-check-bold" color={colors.green} size={24} />
                     ) : analysisStep === 1 ? (
-                      <OperationStepSpinner size={22} />
+                      <OperationStepSpinner size={24} />
                     ) : (
-                      <View style={styles.stepPendingCircle}>
-                        <View style={styles.stepPendingDash} />
-                      </View>
+                      <Icon name="solar:shield-minus-bold-duotone" color={themeColors.disabled} size={24} />
                     )}
                   </View>
 
@@ -404,15 +396,11 @@ export default function VerifyScreen() {
                       {t('common.reportsCheck', 'Vérification des signalements')}
                     </Text>
                     {analysisStep > 2 ? (
-                      <View style={styles.stepSuccessCircle}>
-                        <Icon name="solar:check-read-linear" color="#FFFFFF" size={14} />
-                      </View>
+                      <Icon name="solar:shield-check-bold" color={colors.green} size={24} />
                     ) : analysisStep === 2 ? (
-                      <OperationStepSpinner size={22} />
+                      <OperationStepSpinner size={24} />
                     ) : (
-                      <View style={styles.stepPendingCircle}>
-                        <View style={styles.stepPendingDash} />
-                      </View>
+                      <Icon name="solar:shield-minus-bold-duotone" color={themeColors.disabled} size={24} />
                     )}
                   </View>
 
@@ -422,15 +410,11 @@ export default function VerifyScreen() {
                       {t('common.communityCheck', 'Consultation de la communauté')}
                     </Text>
                     {analysisStep > 3 ? (
-                      <View style={styles.stepSuccessCircle}>
-                        <Icon name="solar:check-read-linear" color="#FFFFFF" size={14} />
-                      </View>
+                      <Icon name="solar:shield-check-bold" color={colors.green} size={24} />
                     ) : analysisStep === 3 ? (
-                      <OperationStepSpinner size={22} />
+                      <OperationStepSpinner size={24} />
                     ) : (
-                      <View style={styles.stepPendingCircle}>
-                        <View style={styles.stepPendingDash} />
-                      </View>
+                      <Icon name="solar:shield-minus-bold-duotone" color={themeColors.disabled} size={24} />
                     )}
                   </View>
 
@@ -440,22 +424,18 @@ export default function VerifyScreen() {
                       {t('common.riskCalculation', 'Calcul du score de risque')}
                     </Text>
                     {analysisStep > 4 ? (
-                      <View style={styles.stepSuccessCircle}>
-                        <Icon name="solar:check-read-linear" color="#FFFFFF" size={14} />
-                      </View>
+                      <Icon name="solar:shield-check-bold" color={colors.green} size={24} />
                     ) : analysisStep === 4 ? (
-                      <OperationStepSpinner size={22} />
+                      <OperationStepSpinner size={24} />
                     ) : (
-                      <View style={styles.stepPendingCircle}>
-                        <View style={styles.stepPendingDash} />
-                      </View>
+                      <Icon name="solar:shield-minus-bold-duotone" color={themeColors.disabled} size={24} />
                     )}
                   </View>
                 </View>
 
-                {/* Info bas */}
+                {/* Info bas avec duo-icons:info */}
                 <View style={[styles.infoCard, { backgroundColor: isDark ? '#1E293B' : '#EBF3FF' }]}>
-                  <Icon name="solar:info-circle-linear" color="#3B82F6" size={20} style={{ marginRight: 10 }} />
+                  <Icon name="duo-icons:info" color="#3B82F6" size={20} style={{ marginRight: 10 }} />
                   <Text style={[styles.infoText, { color: isDark ? '#93C5FD' : '#1D4ED8' }]}>
                     {t('common.operationTimeInfo', 'Cette opération prend généralement quelques secondes')}
                   </Text>
@@ -496,7 +476,7 @@ export default function VerifyScreen() {
                   </View>
                 </View>
 
-                {/* Historique communautaire */}
+                {/* Historique communautaire avec solar:alarm-sleep-bold et solar:chat-round-line-bold */}
                 <View style={styles.communitySection}>
                   <Text style={[styles.communityTitle, { color: themeColors.textPrimary }]}>
                     {t('common.communityHistory', 'Historique communautaire')}
@@ -504,7 +484,7 @@ export default function VerifyScreen() {
 
                   <View style={[styles.statRow, { borderBottomColor: themeColors.inputBorder }]}>
                     <View style={styles.iconCircleDark}>
-                      <Icon name="solar:bell-bold" color={colors.white} size={16} />
+                      <Icon name="solar:alarm-sleep-bold" color={colors.white} size={18} />
                     </View>
                     <Text style={[styles.statLabel, { color: themeColors.textSecondary }]}>
                       {t('common.reportsCount', 'Signalements')}
@@ -514,7 +494,7 @@ export default function VerifyScreen() {
 
                   <View style={[styles.statRow, { borderBottomColor: themeColors.inputBorder }]}>
                     <View style={styles.iconCircleDark}>
-                      <Icon name="solar:chat-dots-bold" color={colors.white} size={16} />
+                      <Icon name="solar:chat-round-line-bold" color={colors.white} size={18} />
                     </View>
                     <Text style={[styles.statLabel, { color: themeColors.textSecondary }]}>
                       {t('common.positiveComments', 'Commentaires positifs')}
@@ -522,17 +502,17 @@ export default function VerifyScreen() {
                     <Text style={[styles.statValue, { color: themeColors.textPrimary }]}>24</Text>
                   </View>
 
-                  <Text style={[styles.lastReportSub, { color: themeColors.textSecondary }]}>
+                  <Text style={[styles.lastReportSub, { color: themeColors.disabledText }]}>
                     {t('common.lastReportAgo', 'Dernier signalement il y a 8 mois')}
                   </Text>
                 </View>
 
-                {/* Deux boutons d'action du bas */}
+                {/* Deux boutons d'action du bas aux couleurs primaires */}
                 <View style={styles.dualActionsRow}>
                   <TouchableOpacity
                     activeOpacity={0.85}
                     onPress={() => router.push('/(app)/report')}
-                    style={styles.signalerBtn}
+                    style={[styles.signalerBtn, { backgroundColor: colors.orange }]}
                   >
                     <Text style={styles.actionBtnText}>{t('common.report', 'Signaler')}</Text>
                   </TouchableOpacity>
@@ -540,7 +520,7 @@ export default function VerifyScreen() {
                   <TouchableOpacity
                     activeOpacity={0.85}
                     onPress={() => router.push('/(app)/transfer')}
-                    style={styles.transfererBtn}
+                    style={[styles.transfererBtn, { backgroundColor: colors.navy }]}
                   >
                     <Text style={styles.actionBtnText}>{t('common.transfer', 'Transférer')}</Text>
                   </TouchableOpacity>
