@@ -14,7 +14,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { ArrowRight } from 'lucide-react-native';
+import { Icon } from '../src/shared/ui/Icon';
 import { OnboardingBackground } from '../src/shared/components/OnboardingBackground';
 import { AnimatedIndicatorDot } from '../src/shared/components/AnimatedIndicatorDot';
 import { LanguageSwitcher } from '../src/shared/components/LanguageSwitcher';
@@ -266,7 +266,7 @@ export default function OnboardingScreen() {
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
                 <Text style={styles.nextText}>{t('common.next')}</Text>
-                <ArrowRight color={colors.white} size={20} style={{ marginLeft: 6 }} />
+                <Icon name="solar:arrow-right-linear" color={colors.white} size={20} style={{ marginLeft: 6 }} />
               </TouchableOpacity>
             </View>
           </Animated.View>

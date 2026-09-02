@@ -3,49 +3,96 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
-  TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { Eye, EyeOff } from 'lucide-react-native';
+import { Icon } from '../../src/shared/ui/Icon';
 import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
+import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
+import { Input } from '../../src/shared/ui/Input';
+import { Button } from '../../src/shared/ui/Button';
+import { toast } from '../../src/shared/store/toastStore';
+import { validatePassword } from '../../src/shared/lib/validation';
 import { colors, fonts } from '../../src/styles/tokens';
 
 export default function ResetPasswordScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { isDark, colors: themeColors } = useAppTheme();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showEmailIcon, setShowEmailIcon] = useState(false);
-  const [showPasswordIcon, setShowPasswordIcon] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleResetConfirm = () => {
-    router.replace('/(auth)/otp');
+  // Inline errors state
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+  const passwordAnalysis = validatePassword(newPassword);
+
+  const validateForm = () => {
+    let isValid = true;
+    setPasswordError('');
+    setConfirmPasswordError('');
+
+    if (!newPassword) {
+      setPasswordError(t('validation.passwordRequired'));
+      isValid = false;
+    } else if (!passwordAnalysis.isValid) {
+      setPasswordError(t('validation.passwordCriteria'));
+      isValid = false;
+    }
+
+    if (!confirmPassword) {
+      setConfirmPasswordError(t('validation.required'));
+      isValid = false;
+    } else if (newPassword !== confirmPassword) {
+      setConfirmPasswordError(t('validation.passwordsDoNotMatch'));
+      isValid = false;
+    }
+
+    return isValid;
   };
+
+  const handleResetConfirm = async () => {
+    if (!validateForm()) return false;
+
+    toast.success(t('toasts.passwordResetSuccess'));
+    router.replace('/(auth)/login');
+    return true;
+  };
+
+  const headerGradientColors = isDark
+    ? ['#2BB673', '#249460', '#1B2E3D', '#162035', '#0F1626', '#0F1626']
+    : ['#2BB673', '#28A86B', '#249460', '#213E35', '#23303B', '#3C4A56', '#60707F', '#98A8B8', '#D8E2EC', '#FFFFFF', '#FFFFFF'];
+
+  const headerGradientLocations = isDark
+    ? [0, 0.25, 0.5, 0.7, 0.85, 1.0]
+    : [0, 0.10, 0.20, 0.30, 0.38, 0.46, 0.53, 0.60, 0.66, 0.72, 0.76, 1.0];
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={styles.container}>
-        {/* Top Green Gradient Background matching Image 2 */}
-        <LinearGradient
-          colors={['#32B07F', '#248563', '#205E51', '#335056', '#FFFFFF', '#FFFFFF']}
-          locations={[0, 0.25, 0.45, 0.65, 0.85, 1]}
-          style={StyleSheet.absoluteFill}
-        />
+      <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+        <StatusBar style="light" />
 
-        {/* Top Right Language Switcher */}
-        <View style={[styles.langWrapper, { top: insets.top + 16 }]}>
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+          <LinearGradient
+            colors={headerGradientColors}
+            locations={headerGradientLocations}
+            style={StyleSheet.absoluteFill}
+          />
+        </View>
+
+        <View style={[styles.langWrapper, { top: Math.max(insets.top + 16, 20) }]}>
           <LanguageSwitcher darkTheme={true} />
         </View>
 
@@ -53,88 +100,175 @@ export default function ResetPasswordScreen() {
           contentContainerStyle={[
             styles.scrollContent,
             {
-              paddingTop: insets.top + 70,
-              paddingBottom: insets.bottom + 24,
+              paddingTop: Math.max(insets.top + 50, 70),
+              paddingBottom: Math.max(insets.bottom + 30, 40),
             },
           ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Header Title & Subtitle */}
           <Text style={styles.title}>{t('auth.resetTitle')}</Text>
           <Text style={styles.subtitle}>{t('auth.resetSubtitle')}</Text>
 
-          {/* Input 1: Email */}
-          <View style={styles.inputCard}>
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              placeholder={t('common.email')}
-              placeholderTextColor={colors.inputPlaceholder}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => setShowEmailIcon(!showEmailIcon)}
-              style={styles.eyeIcon}
-            >
-              {showEmailIcon ? (
-                <EyeOff color="#A0AEC0" size={22} />
-              ) : (
-                <Eye color="#A0AEC0" size={22} />
-              )}
-            </TouchableOpacity>
-          </View>
+          {/* Nouveau mot de passe */}
+          <Input
+            placeholder={t('common.newPassword')}
+            value={newPassword}
+            onChangeText={(val) => {
+              setNewPassword(val);
+              if (passwordError) setPasswordError('');
+            }}
+            error={passwordError}
+            isPassword
+            leftIcon={<Icon name="solar:lock-password-linear" color={themeColors.inputPlaceholder} size={20} />}
+          />
 
-          {/* Input 2: Password */}
-          <View style={styles.inputCard}>
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              placeholder={t('common.password')}
-              placeholderTextColor={colors.inputPlaceholder}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPasswordIcon}
-            />
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => setShowPasswordIcon(!showPasswordIcon)}
-              style={styles.eyeIcon}
-            >
-              {showPasswordIcon ? (
-                <EyeOff color="#A0AEC0" size={22} />
-              ) : (
-                <Eye color="#A0AEC0" size={22} />
-              )}
-            </TouchableOpacity>
-          </View>
+          {/* Indicateur de force & 5 critères du mot de passe */}
+          {newPassword.length > 0 && (
+            <View style={styles.criteriaContainer}>
+              <View style={styles.criteriaBarsRow}>
+                {[1, 2, 3, 4, 5].map((idx) => (
+                  <View
+                    key={`crit-bar-${idx}`}
+                    style={[
+                      styles.criteriaBar,
+                      {
+                        backgroundColor:
+                          passwordAnalysis.score >= idx
+                            ? passwordAnalysis.score === 5
+                              ? colors.green
+                              : '#F59E0B'
+                            : themeColors.inputBorder,
+                      },
+                    ]}
+                  />
+                ))}
+              </View>
 
-          {/* Password Strength Requirement & Strength Bars */}
-          <View style={styles.strengthRow}>
-            <Text style={styles.strengthText}>{t('common.minCharRequirement')}</Text>
-            <View style={styles.barsContainer}>
-              {[1, 2, 3, 4, 5, 6].map((bar) => (
-                <View
-                  key={`bar-${bar}`}
-                  style={[
-                    styles.strengthBar,
-                    password.length >= bar * 1.5 && styles.strengthBarActive,
-                  ]}
-                />
-              ))}
+              <View style={styles.criteriaGrid}>
+                <View style={styles.criteriaItem}>
+                  <Icon
+                    name={passwordAnalysis.criteria.minLength ? "solar:check-circle-bold" : "solar:close-circle-linear"}
+                    size={14}
+                    color={passwordAnalysis.criteria.minLength ? colors.green : themeColors.inputPlaceholder}
+                  />
+                  <Text
+                    style={[
+                      styles.criteriaText,
+                      {
+                        color: passwordAnalysis.criteria.minLength
+                          ? colors.green
+                          : themeColors.textSecondary,
+                      },
+                    ]}
+                  >
+                    {t('validation.criteriaMinLength')}
+                  </Text>
+                </View>
+
+                <View style={styles.criteriaItem}>
+                  <Icon
+                    name={passwordAnalysis.criteria.hasUppercase ? "solar:check-circle-bold" : "solar:close-circle-linear"}
+                    size={14}
+                    color={passwordAnalysis.criteria.hasUppercase ? colors.green : themeColors.inputPlaceholder}
+                  />
+                  <Text
+                    style={[
+                      styles.criteriaText,
+                      {
+                        color: passwordAnalysis.criteria.hasUppercase
+                          ? colors.green
+                          : themeColors.textSecondary,
+                      },
+                    ]}
+                  >
+                    {t('validation.criteriaUppercase')}
+                  </Text>
+                </View>
+
+                <View style={styles.criteriaItem}>
+                  <Icon
+                    name={passwordAnalysis.criteria.hasLowercase ? "solar:check-circle-bold" : "solar:close-circle-linear"}
+                    size={14}
+                    color={passwordAnalysis.criteria.hasLowercase ? colors.green : themeColors.inputPlaceholder}
+                  />
+                  <Text
+                    style={[
+                      styles.criteriaText,
+                      {
+                        color: passwordAnalysis.criteria.hasLowercase
+                          ? colors.green
+                          : themeColors.textSecondary,
+                      },
+                    ]}
+                  >
+                    {t('validation.criteriaLowercase')}
+                  </Text>
+                </View>
+
+                <View style={styles.criteriaItem}>
+                  <Icon
+                    name={passwordAnalysis.criteria.hasNumber ? "solar:check-circle-bold" : "solar:close-circle-linear"}
+                    size={14}
+                    color={passwordAnalysis.criteria.hasNumber ? colors.green : themeColors.inputPlaceholder}
+                  />
+                  <Text
+                    style={[
+                      styles.criteriaText,
+                      {
+                        color: passwordAnalysis.criteria.hasNumber
+                          ? colors.green
+                          : themeColors.textSecondary,
+                      },
+                    ]}
+                  >
+                    {t('validation.criteriaNumber')}
+                  </Text>
+                </View>
+
+                <View style={styles.criteriaItem}>
+                  <Icon
+                    name={passwordAnalysis.criteria.hasSymbol ? "solar:check-circle-bold" : "solar:close-circle-linear"}
+                    size={14}
+                    color={passwordAnalysis.criteria.hasSymbol ? colors.green : themeColors.inputPlaceholder}
+                  />
+                  <Text
+                    style={[
+                      styles.criteriaText,
+                      {
+                        color: passwordAnalysis.criteria.hasSymbol
+                          ? colors.green
+                          : themeColors.textSecondary,
+                      },
+                    ]}
+                  >
+                    {t('validation.criteriaSymbol')}
+                  </Text>
+                </View>
+              </View>
             </View>
-          </View>
+          )}
 
-          {/* Action Button: Sign Up / Valider */}
-          <TouchableOpacity
-            activeOpacity={0.85}
+          {/* Confirmation mot de passe */}
+          <Input
+            placeholder={t('common.confirmPassword')}
+            value={confirmPassword}
+            onChangeText={(val) => {
+              setConfirmPassword(val);
+              if (confirmPasswordError) setConfirmPasswordError('');
+            }}
+            error={confirmPasswordError}
+            isPassword
+            leftIcon={<Icon name="solar:lock-password-linear" color={themeColors.inputPlaceholder} size={20} />}
+            containerStyle={{ marginBottom: 28 }}
+          />
+
+          <Button
+            title={t('common.signUp')}
             onPress={handleResetConfirm}
-            style={styles.submitButton}
-          >
-            <Text style={styles.submitButtonText}>{t('common.signUp')}</Text>
-          </TouchableOpacity>
+            variant="primary"
+            size="md"
+          />
         </ScrollView>
       </View>
     </KeyboardAvoidingView>
@@ -144,7 +278,6 @@ export default function ResetPasswordScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
   },
   langWrapper: {
     position: 'absolute',
@@ -153,6 +286,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 24,
+    zIndex: 10,
   },
   title: {
     fontFamily: fonts.h2,
@@ -168,71 +302,37 @@ const styles = StyleSheet.create({
     color: colors.white,
     opacity: 0.95,
     marginTop: 12,
-    marginBottom: 40,
+    marginBottom: 32,
     lineHeight: 22,
   },
-  inputCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    height: 54,
-    borderRadius: 14,
-    paddingHorizontal: 16,
+  criteriaContainer: {
+    marginTop: -8,
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
+    paddingHorizontal: 4,
   },
-  input: {
-    fontFamily: fonts.medium,
-    fontSize: 15,
-    color: colors.navy,
-    height: '100%',
-  },
-  eyeIcon: {
-    padding: 6,
-  },
-  strengthRow: {
+  criteriaBarsRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 36,
-    marginTop: 4,
+    gap: 6,
+    marginBottom: 10,
   },
-  strengthText: {
-    fontFamily: fonts.medium,
-    fontSize: 12,
-    color: '#4A5568',
-  },
-  barsContainer: {
-    flexDirection: 'row',
-    gap: 4,
-  },
-  strengthBar: {
-    width: 14,
+  criteriaBar: {
+    flex: 1,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#E2E8F0',
   },
-  strengthBarActive: {
-    backgroundColor: colors.green,
+  criteriaGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
   },
-  submitButton: {
-    width: '100%',
-    height: 52,
-    backgroundColor: colors.orange,
-    borderRadius: 26,
+  criteriaItem: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 2,
+    gap: 4,
+    marginRight: 10,
   },
-  submitButtonText: {
+  criteriaText: {
     fontFamily: fonts.medium,
-    fontSize: 16,
-    color: colors.white,
+    fontSize: 11,
   },
 });

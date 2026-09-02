@@ -11,21 +11,33 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { Mail } from 'lucide-react-native';
+import { Icon } from '../../src/shared/ui/Icon';
 import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
+import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
+import { Input } from '../../src/shared/ui/Input';
+import { Button } from '../../src/shared/ui/Button';
+import { toast } from '../../src/shared/store/toastStore';
+import { validateEmail } from '../../src/shared/lib/validation';
 import { colors, fonts } from '../../src/styles/tokens';
+import { scaleFont } from '../../src/shared/lib/responsive';
 
 export default function OtpScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { isDark, colors: themeColors } = useAppTheme();
 
   const [step, setStep] = useState<'email' | 'code'>('email');
   const [email, setEmail] = useState('');
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
   const [timer, setTimer] = useState(30);
+
+  // Inline errors
+  const [emailError, setEmailError] = useState('');
+  const [otpError, setOtpError] = useState('');
 
   const inputRefs = useRef<Array<TextInput | null>>([]);
 
@@ -39,17 +51,29 @@ export default function OtpScreen() {
     return () => clearInterval(interval);
   }, [step, timer]);
 
-  const handleSendEmail = () => {
+  const handleSendEmail = async () => {
+    setEmailError('');
+    if (!email.trim()) {
+      setEmailError(t('validation.emailRequired'));
+      return false;
+    }
+    if (!validateEmail(email)) {
+      setEmailError(t('validation.emailInvalid'));
+      return false;
+    }
+
     setStep('code');
     setTimer(30);
+    toast.info(t('toasts.otpSent'));
+    return true;
   };
 
   const handleOtpChange = (text: string, index: number) => {
+    if (otpError) setOtpError('');
     const newOtp = [...otpDigits];
     newOtp[index] = text;
     setOtpDigits(newOtp);
 
-    // Auto-advance to next box
     if (text && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -63,27 +87,49 @@ export default function OtpScreen() {
 
   const handleResend = () => {
     setTimer(30);
+    setOtpDigits(['', '', '', '', '', '']);
+    inputRefs.current[0]?.focus();
+    toast.success(t('toasts.otpResent'));
   };
 
-  const handleValidate = () => {
+  const handleValidate = async () => {
+    setOtpError('');
+    const enteredCode = otpDigits.join('');
+    if (enteredCode.length < 6) {
+      setOtpError(t('validation.otpIncomplete'));
+      return false;
+    }
+
+    toast.success(t('toasts.loginSuccess'));
     router.replace('/(app)');
+    return true;
   };
+
+  const headerGradientColors = isDark
+    ? ['#2BB673', '#249460', '#1B2E3D', '#162035', '#0F1626', '#0F1626']
+    : ['#2BB673', '#28A86B', '#249460', '#213E35', '#23303B', '#3C4A56', '#60707F', '#98A8B8', '#D8E2EC', '#FFFFFF', '#FFFFFF'];
+
+  const headerGradientLocations = isDark
+    ? [0, 0.25, 0.5, 0.7, 0.85, 1.0]
+    : [0, 0.10, 0.20, 0.30, 0.38, 0.46, 0.53, 0.60, 0.66, 0.72, 0.76, 1.0];
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={styles.container}>
-        {/* Top Green Gradient Background matching Images 3 & 4 */}
-        <LinearGradient
-          colors={['#32B07F', '#248563', '#205E51', '#335056', '#FFFFFF', '#FFFFFF']}
-          locations={[0, 0.25, 0.45, 0.65, 0.85, 1]}
-          style={StyleSheet.absoluteFill}
-        />
+      <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+        <StatusBar style="light" />
 
-        {/* Top Right Language Switcher */}
-        <View style={[styles.langWrapper, { top: insets.top + 16 }]}>
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+          <LinearGradient
+            colors={headerGradientColors}
+            locations={headerGradientLocations}
+            style={StyleSheet.absoluteFill}
+          />
+        </View>
+
+        <View style={[styles.langWrapper, { top: Math.max(insets.top + 16, 20) }]}>
           <LanguageSwitcher darkTheme={true} />
         </View>
 
@@ -91,54 +137,73 @@ export default function OtpScreen() {
           contentContainerStyle={[
             styles.scrollContent,
             {
-              paddingTop: insets.top + 70,
-              paddingBottom: insets.bottom + 24,
+              paddingTop: Math.max(insets.top + 50, 70),
+              paddingBottom: Math.max(insets.bottom + 30, 40),
             },
           ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Header Title */}
           <Text style={styles.title}>{t('auth.secureAccountTitle')}</Text>
 
           {step === 'email' ? (
-            /* STEP 1: EMAIL ENTRY (Image 3) */
             <>
-              <Text style={styles.subtitle}>{t('auth.secureAccountEmailSubtitle')}</Text>
+              <Text style={styles.subtitle}>
+                {t('auth.secureAccountEmailSubtitle')}
+              </Text>
 
-              <View style={styles.inputCard}>
-                <TextInput
-                  style={[styles.input, { flex: 1 }]}
-                  placeholder={t('common.email')}
-                  placeholderTextColor={colors.inputPlaceholder}
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-                <Mail color="#A0AEC0" size={20} style={{ opacity: 0.7 }} />
-              </View>
+              <Input
+                placeholder={t('common.email')}
+                value={email}
+                onChangeText={(val) => {
+                  setEmail(val);
+                  if (emailError) setEmailError('');
+                }}
+                error={emailError}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                leftIcon={<Icon name="solar:letter-linear" color={themeColors.inputPlaceholder} size={20} />}
+                containerStyle={{ marginBottom: 24 }}
+              />
 
-              <TouchableOpacity
-                activeOpacity={0.85}
+              <Button
+                title={t('common.send')}
                 onPress={handleSendEmail}
-                style={styles.submitButton}
-              >
-                <Text style={styles.submitButtonText}>{t('common.send')}</Text>
-              </TouchableOpacity>
+                variant="primary"
+                size="md"
+              />
             </>
           ) : (
-            /* STEP 2: 6-DIGIT OTP CODE ENTRY (Image 4) */
             <>
-              <Text style={styles.subtitle}>{t('auth.secureAccountOtpSubtitle')}</Text>
+              <Text style={styles.subtitle}>
+                {t('auth.secureAccountOtpSubtitle')}
+              </Text>
 
-              {/* 6 Digit Input Boxes */}
               <View style={styles.otpRow}>
                 {otpDigits.map((digit, index) => (
-                  <View key={`otp-${index}`} style={styles.otpBox}>
+                  <View
+                    key={`otp-${index}`}
+                    style={[
+                      styles.otpBox,
+                      {
+                        backgroundColor: themeColors.cardBg,
+                        borderColor: otpError
+                          ? '#EF4444'
+                          : digit
+                          ? colors.green
+                          : themeColors.inputBorder,
+                      },
+                    ]}
+                  >
                     <TextInput
                       ref={(el) => (inputRefs.current[index] = el)}
-                      style={styles.otpInput}
+                      style={[
+                        styles.otpInput,
+                        {
+                          color: themeColors.textPrimary,
+                          fontSize: scaleFont(22),
+                        },
+                      ]}
                       keyboardType="number-pad"
                       maxLength={1}
                       value={digit}
@@ -150,29 +215,44 @@ export default function OtpScreen() {
                 ))}
               </View>
 
-              {/* Resend Link & Timer Row */}
+              {/* Message d'erreur OTP inline */}
+              {otpError ? (
+                <View style={styles.otpErrorRow}>
+                  <Icon name="solar:danger-circle-bold" color="#EF4444" size={14} />
+                  <Text style={styles.otpErrorText}>{otpError}</Text>
+                </View>
+              ) : null}
+
               <View style={styles.resendRow}>
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={handleResend}
                   disabled={timer > 0}
                 >
-                  <Text style={styles.resendText}>
-                    {t('common.alreadySent')}{' '}
-                    <Text style={styles.resendLink}>{t('common.resend')}</Text>
+                  <Text style={[styles.resendText, { color: themeColors.textPrimary }]}>
+                    {t('auth.alreadySentQuestion')}{' '}
+                    <Text
+                      style={[
+                        styles.resendLink,
+                        { color: timer > 0 ? themeColors.textSecondary : colors.green },
+                      ]}
+                    >
+                      {t('auth.resendCode')}
+                    </Text>
                   </Text>
                 </TouchableOpacity>
 
-                <Text style={styles.timerText}>{timer}s</Text>
+                <Text style={[styles.timerText, { color: themeColors.textPrimary }]}>
+                  {timer}s
+                </Text>
               </View>
 
-              <TouchableOpacity
-                activeOpacity={0.85}
+              <Button
+                title={t('common.validate')}
                 onPress={handleValidate}
-                style={styles.submitButton}
-              >
-                <Text style={styles.submitButtonText}>{t('common.send')}</Text>
-              </TouchableOpacity>
+                variant="primary"
+                size="md"
+              />
             </>
           )}
         </ScrollView>
@@ -184,7 +264,6 @@ export default function OtpScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
   },
   langWrapper: {
     position: 'absolute',
@@ -193,6 +272,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 24,
+    zIndex: 10,
   },
   title: {
     fontFamily: fonts.h2,
@@ -208,43 +288,21 @@ const styles = StyleSheet.create({
     color: colors.white,
     opacity: 0.95,
     marginTop: 12,
-    marginBottom: 40,
+    marginBottom: 36,
     lineHeight: 22,
-  },
-  inputCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    height: 54,
-    borderRadius: 14,
-    paddingHorizontal: 16,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  input: {
-    fontFamily: fonts.medium,
-    fontSize: 15,
-    color: colors.navy,
-    height: '100%',
   },
   otpRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 16,
+    gap: 8,
   },
   otpBox: {
-    width: 48,
-    height: 54,
+    flex: 1,
+    height: 56,
+    maxWidth: 52,
     borderRadius: 12,
-    backgroundColor: colors.white,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: colors.black,
@@ -255,23 +313,32 @@ const styles = StyleSheet.create({
   },
   otpInput: {
     fontFamily: fonts.bold,
-    fontSize: 22,
-    color: colors.navy,
     textAlign: 'center',
     width: '100%',
     height: '100%',
+  },
+  otpErrorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 16,
+    paddingHorizontal: 4,
+  },
+  otpErrorText: {
+    fontFamily: fonts.medium,
+    fontSize: 12,
+    color: '#EF4444',
   },
   resendRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 36,
+    marginBottom: 32,
     paddingHorizontal: 4,
   },
   resendText: {
     fontFamily: fonts.medium,
     fontSize: 13,
-    color: colors.navy,
   },
   resendLink: {
     fontFamily: fonts.semiBold,
@@ -280,20 +347,6 @@ const styles = StyleSheet.create({
   timerText: {
     fontFamily: fonts.bold,
     fontSize: 14,
-    color: colors.navy,
-  },
-  submitButton: {
-    width: '100%',
-    height: 52,
-    backgroundColor: colors.orange,
-    borderRadius: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 2,
-  },
-  submitButtonText: {
-    fontFamily: fonts.medium,
-    fontSize: 16,
-    color: colors.white,
   },
 });
+

@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import '../src/locales/i18n'; // Initialize i18n support
+import { ToastContainer } from '../src/shared/ui/Toast';
 
 // Inject web Google Fonts link dynamically on Web
 if (Platform.OS === 'web' && typeof document !== 'undefined') {
@@ -82,6 +83,8 @@ export default function RootLayout() {
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(app)" options={{ headerShown: false }} />
       </Stack>
+      <ToastContainer />
     </SafeAreaProvider>
   );
 }
+

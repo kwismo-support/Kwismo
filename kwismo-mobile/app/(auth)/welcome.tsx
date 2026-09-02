@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { KwismoLogo } from '../../src/shared/components/KwismoLogo';
@@ -12,36 +13,44 @@ export default function AuthWelcomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { width: screenWidth } = useWindowDimensions();
-  const dynamicLogoSize = Math.min(Math.max(screenWidth * 0.6, 200), 280);
+
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={[
-          '#2BB673',
-          '#28A86B',
-          '#249460',
-          '#207852',
-          '#1E5E46',
-          '#1D4A40',
-          '#2a3a47ff',
-          '#2e3e49ff',
-          '#425161ff',
-          '#556374ff',
-          '#697a8aff',
-          '#808f9eff',
-          '#B5C2CE',
-          '#FFFFFF',
-        ]}
-        locations={[0, 0.10, 0.20, 0.30, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.73, 0.75]}
-        style={StyleSheet.absoluteFill}
-      />
+      <StatusBar style="light" />
+
+      {/* Full-width vertical linear gradient - smooth fade from emerald green top to navy slate middle to pure white bottom */}
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        <LinearGradient
+          colors={[
+            '#2BB673',
+            '#28A86B',
+            '#249460',
+            '#213E35',
+            '#23303B',
+            '#2A3742',
+            '#3C4A56',
+            '#60707F',
+            '#98A8B8',
+            '#D8E2EC',
+            '#FFFFFF',
+            '#FFFFFF',
+          ]}
+          locations={[0, 0.10, 0.20, 0.30, 0.38, 0.46, 0.53, 0.60, 0.66, 0.72, 0.76, 1.0]}
+          style={StyleSheet.absoluteFill}
+        />
+      </View>
+
+      {/* Top right language switcher */}
       <View style={[styles.langWrapper, { top: Math.max(insets.top + 16, 20) }]}>
         <LanguageSwitcher darkTheme={true} />
       </View>
+
+      {/* Centered Kwismo Logo */}
       <View style={styles.centerContainer}>
-        <KwismoLogo size={dynamicLogoSize} variant="white" />
+        <KwismoLogo size={200} variant="white" />
       </View>
+
+      {/* Bottom action buttons */}
       <View
         style={[
           styles.bottomContainer,
@@ -67,6 +76,7 @@ export default function AuthWelcomeScreen() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -81,10 +91,13 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 10,
   },
   bottomContainer: {
     paddingHorizontal: 24,
     gap: 14,
+    width: '100%',
+    zIndex: 10,
   },
   loginButton: {
     width: '100%',

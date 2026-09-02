@@ -3,45 +3,71 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
-  TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { Mail } from 'lucide-react-native';
+import { Icon } from '../../src/shared/ui/Icon';
 import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
+import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
+import { Input } from '../../src/shared/ui/Input';
+import { Button } from '../../src/shared/ui/Button';
+import { validateEmail } from '../../src/shared/lib/validation';
 import { colors, fonts } from '../../src/styles/tokens';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { isDark, colors: themeColors } = useAppTheme();
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
 
-  const handleReset = () => {
+  const handleReset = async () => {
+    setEmailError('');
+    if (!email.trim()) {
+      setEmailError(t('validation.emailRequired'));
+      return false;
+    }
+    if (!validateEmail(email)) {
+      setEmailError(t('validation.emailInvalid'));
+      return false;
+    }
+
     router.push('/(auth)/reset-password');
+    return true;
   };
+
+  const headerGradientColors = isDark
+    ? ['#2BB673', '#249460', '#1B2E3D', '#162035', '#0F1626', '#0F1626']
+    : ['#2BB673', '#28A86B', '#249460', '#213E35', '#23303B', '#3C4A56', '#60707F', '#98A8B8', '#D8E2EC', '#FFFFFF', '#FFFFFF'];
+
+  const headerGradientLocations = isDark
+    ? [0, 0.25, 0.5, 0.7, 0.85, 1.0]
+    : [0, 0.10, 0.20, 0.30, 0.38, 0.46, 0.53, 0.60, 0.66, 0.72, 0.76, 1.0];
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={styles.container}>
-        {/* Top Green Gradient Background matching Image 1 */}
-        <LinearGradient
-          colors={['#32B07F', '#248563', '#205E51', '#335056', '#FFFFFF', '#FFFFFF']}
-          locations={[0, 0.25, 0.45, 0.65, 0.85, 1]}
-          style={StyleSheet.absoluteFill}
-        />
+      <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+        <StatusBar style="light" />
 
-        {/* Top Right Language Switcher */}
-        <View style={[styles.langWrapper, { top: insets.top + 16 }]}>
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+          <LinearGradient
+            colors={headerGradientColors}
+            locations={headerGradientLocations}
+            style={StyleSheet.absoluteFill}
+          />
+        </View>
+
+        <View style={[styles.langWrapper, { top: Math.max(insets.top + 16, 20) }]}>
           <LanguageSwitcher darkTheme={true} />
         </View>
 
@@ -49,39 +75,37 @@ export default function ForgotPasswordScreen() {
           contentContainerStyle={[
             styles.scrollContent,
             {
-              paddingTop: insets.top + 70,
-              paddingBottom: insets.bottom + 24,
+              paddingTop: Math.max(insets.top + 50, 70),
+              paddingBottom: Math.max(insets.bottom + 30, 40),
             },
           ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Header Title & Subtitle */}
           <Text style={styles.title}>{t('auth.forgotTitle')}</Text>
           <Text style={styles.subtitle}>{t('auth.forgotSubtitle')}</Text>
 
-          {/* Email Input Field */}
-          <View style={styles.inputCard}>
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              placeholder={t('common.email')}
-              placeholderTextColor={colors.inputPlaceholder}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-            <Mail color="#A0AEC0" size={20} style={{ opacity: 0.7 }} />
-          </View>
+          {/* Email Input */}
+          <Input
+            placeholder={t('common.email')}
+            value={email}
+            onChangeText={(val) => {
+              setEmail(val);
+              if (emailError) setEmailError('');
+            }}
+            error={emailError}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            leftIcon={<Icon name="solar:letter-linear" color={themeColors.inputPlaceholder} size={20} />}
+            containerStyle={{ marginBottom: 24 }}
+          />
 
-          {/* Action Button: Reset */}
-          <TouchableOpacity
-            activeOpacity={0.85}
+          <Button
+            title={t('common.reset')}
             onPress={handleReset}
-            style={styles.resetButton}
-          >
-            <Text style={styles.resetButtonText}>{t('common.reset')}</Text>
-          </TouchableOpacity>
+            variant="primary"
+            size="md"
+          />
         </ScrollView>
       </View>
     </KeyboardAvoidingView>
@@ -91,7 +115,6 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
   },
   langWrapper: {
     position: 'absolute',
@@ -100,6 +123,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 24,
+    zIndex: 10,
   },
   title: {
     fontFamily: fonts.h2,
@@ -118,40 +142,5 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     lineHeight: 22,
   },
-  inputCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    height: 54,
-    borderRadius: 14,
-    paddingHorizontal: 16,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  input: {
-    fontFamily: fonts.medium,
-    fontSize: 15,
-    color: colors.navy,
-    height: '100%',
-  },
-  resetButton: {
-    width: '100%',
-    height: 52,
-    backgroundColor: colors.orange,
-    borderRadius: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 2,
-  },
-  resetButtonText: {
-    fontFamily: fonts.medium,
-    fontSize: 16,
-    color: colors.white,
-  },
 });
+
