@@ -5,112 +5,113 @@ export default function Hero() {
   return (
     <section
       id="accueil"
-      className="relative min-h-[438px] overflow-hidden bg-[#151D34]"
+      className="w-full overflow-hidden bg-[#151D34]"
     >
-      <div className="mx-auto grid min-h-[438px] max-w-[1200px] grid-cols-1 items-center px-6 lg:grid-cols-2">
+      <div className="grid min-h-[438px] w-full grid-cols-1 lg:grid-cols-2">
 
         {/* =====================================================
-            COLONNE GAUCHE
+            COLONNE GAUCHE 
         ====================================================== */}
-        <div className="relative z-10 flex flex-col items-start pt-10 lg:pt-0">
+        <div className="flex items-center justify-center px-[8%] py-12 lg:justify-end lg:py-0 lg:pr-[7%]">
 
-          {/* Titre */}
-          <h1 className="font-title max-w-[480px] text-[42px] font-bold leading-[1.18] tracking-tight text-white">
-            Sécurisez vos
-            <br />
-            transactions en
-            <br />
-            toute{' '}
-            <span className="text-[#31B58A]">
-              simplicité
-            </span>
-          </h1>
+          <div className="w-full max-w-[500px]">
 
-          {/* Description */}
-          <p className="mt-3 max-w-[390px] font-body text-[11px] font-medium leading-[1.45] text-white">
-            KWISMO protège vos transferts Orange Money et MTN
-            <br />
-            MoMo contre les arnaques et les erreurs de saisie.
-            <br />
-            Envoyez et recevez votre argent l'esprit tranquille.
-          </p>
+            {/* Titre */}
+            <h1 className="font-title m-0 text-[56px] font-bold leading-[72px] tracking-[-1px] text-white">
+              Sécurisez vos
+              <br />
+              transactions en
+              <br />
+              toute{' '}
+              <span className="text-[#31B58A]">
+                simplicité
+              </span>
+            </h1>
 
-          {/* Boutons */}
-          <div className="mt-7 flex items-center gap-4">
+            {/* Description */}
+            <p className="font-body mt-4 max-w-[430px] text-[16px] font-medium leading-[27px] text-white">
+              KWISMO protège vos transferts Orange Money et MTN
+              MoMo contre les arnaques et les erreurs de saisie.
+              Envoyez et recevez votre argent l'esprit tranquille.
+            </p>
 
-            <a
-              href="#download"
-              className="flex h-[36px] items-center gap-2 rounded-lg bg-[#31B58A] px-4 font-body text-[10px] font-semibold text-white no-underline transition hover:opacity-90"
-            >
-              <Download size={13} />
-              Télécharger l'application
-            </a>
+            {/* Boutons */}
+            <div className="mt-7 flex flex-wrap items-center gap-4">
 
-            <a
-              href="#partner"
-              className="flex h-[36px] items-center gap-2 rounded-lg bg-[#FF9900] px-4 font-body text-[10px] font-semibold text-white no-underline transition hover:bg-[#e88a00]"
-            >
-              Devenir partenaire
-              <ArrowRight size={14} />
-            </a>
+              <a
+                href="#download"
+                className="font-body flex h-[42px] items-center gap-2 rounded-lg bg-[#31B58A] px-5 text-[14px] font-semibold text-white no-underline transition-opacity hover:opacity-90"
+              >
+                <Download size={15} strokeWidth={2.2} />
+                <span>Télécharger l'application</span>
+              </a>
+
+              <a
+                href="#partner"
+                className="font-body flex h-[42px] items-center gap-2 rounded-lg bg-[#FF9900] px-5 text-[14px] font-semibold text-white no-underline transition-opacity hover:opacity-90"
+              >
+                <span>Devenir partenaire</span>
+                <ArrowRight size={15} strokeWidth={2.2} />
+              </a>
+
+            </div>
+
+            {/* =================================================
+                STATISTIQUES
+            ================================================== */}
+            <div className="mt-8 inline-flex h-[64px] items-center rounded-xl border border-white/10 bg-white/10 px-2 backdrop-blur-sm">
+
+              {/* 2.4M+ */}
+              <div className="flex min-w-[110px] flex-col items-center px-3">
+                <span className="font-title text-[20px] font-bold leading-[24px] text-white">
+                  2.4M+
+                </span>
+
+                <span className="font-body mt-1 text-[12px] font-normal leading-[16px] text-white/60">
+                  numéros vérifiés
+                </span>
+              </div>
+
+              <div className="h-[38px] w-px bg-white/20" />
+
+              {/* 98% */}
+              <div className="flex min-w-[90px] flex-col items-center px-3">
+                <span className="font-title text-[20px] font-bold leading-[24px] text-white">
+                  98 %
+                </span>
+
+                <span className="font-body mt-1 text-[12px] font-normal leading-[16px] text-white/60">
+                  Précision
+                </span>
+              </div>
+
+              <div className="h-[38px] w-px bg-white/20" />
+
+              {/* 50+ */}
+              <div className="flex min-w-[80px] flex-col items-center px-3">
+                <span className="font-title text-[20px] font-bold leading-[24px] text-white">
+                  50+
+                </span>
+
+                <span className="font-body mt-1 text-[12px] font-normal leading-[16px] text-white/60">
+                  Opérateurs
+                </span>
+              </div>
+
+            </div>
 
           </div>
-
-          {/* ===================================================
-              STATISTIQUES
-          ==================================================== */}
-          <div className="mt-7 flex h-[64px] items-center rounded-xl border border-white/10 bg-white/10 px-3 backdrop-blur-sm">
-
-            {/* Stat 1 */}
-            <div className="flex flex-col px-3">
-              <span className="font-title text-[20px] font-bold leading-none text-white">
-                2.4M+
-              </span>
-
-              <span className="mt-1 font-body text-[8px] text-white/60">
-                numéros vérifiés
-              </span>
-            </div>
-
-            <div className="h-9 w-px bg-white/20" />
-
-            {/* Stat 2 */}
-            <div className="flex flex-col px-3">
-              <span className="font-title text-[20px] font-bold leading-none text-white">
-                98 %
-              </span>
-
-              <span className="mt-1 font-body text-[8px] text-white/60">
-                Précision
-              </span>
-            </div>
-
-            <div className="h-9 w-px bg-white/20" />
-
-            {/* Stat 3 */}
-            <div className="flex flex-col px-3">
-              <span className="font-title text-[20px] font-bold leading-none text-white">
-                50+
-              </span>
-
-              <span className="mt-1 font-body text-[8px] text-white/60">
-                Opérateurs
-              </span>
-            </div>
-
-          </div>
-
         </div>
 
         {/* =====================================================
-            COLONNE DROITE — IMAGE HERO
+            COLONNE DROITE 
         ====================================================== */}
-        <div className="relative flex h-full items-end justify-center lg:justify-end">
+        <div className="relative flex min-h-[438px] items-end justify-center lg:justify-start">
 
           <img
             src={ImgHero}
-            alt="Solution KWISMO"
-            className="relative z-10 w-full max-w-[560px] object-contain object-bottom"
+            alt="KWISMO - Sécurisation des transactions"
+            className="h-auto w-full max-w-[620px] object-contain object-bottom"
           />
 
         </div>

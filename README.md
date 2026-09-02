@@ -21,12 +21,13 @@
 5. [Prérequis](#5-prérequis)
 6. [Démarrage rapide (tout le projet)](#6-démarrage-rapide-tout-le-projet)
 7. [Démarrage détaillé par partie](#7-démarrage-détaillé-par-partie)
-8. [Variables d'environnement](#8-variables-denvironnement)
-9. [Conventions de développement](#9-conventions-de-développement)
-10. [Workflow Git](#10-workflow-git)
-11. [Équipe & rôles](#11-équipe--rôles)
-12. [Planning](#12-planning)
-13. [Licence](#13-licence)
+8. [Assurance Qualité & Automatisation CI/CD (GitHub Actions)](#8-assurance-qualité--automatisation-cicd-github-actions)
+9. [Variables d'environnement](#8-variables-denvironnement)
+10. [Conventions de développement](#9-conventions-de-développement)
+11. [Workflow Git](#10-workflow-git)
+12. [Équipe & rôles](#11-équipe--rôles)
+13. [Planning](#12-planning)
+14. [Licence](#13-licence)
 
 ---
 
@@ -109,6 +110,8 @@ La fraude Mobile Money représente une source de pertes financières croissante 
 
 ```text
 kwismo/
+├─ .github/
+│  └─ workflows/              # Automation CI/CD GitHub Actions (Backend, IA, Web)
 ├─ kwismo-backend/            # API centrale (Python / FastAPI / Prisma)
 ├─ kwismo-web/                # Site web (React / Vite / Tailwind)
 ├─ kwismo-mobile/             # Application mobile (React Native / Expo)
@@ -262,7 +265,21 @@ uvicorn src.api.main:app --reload --port 8001        # http://localhost:8001
 
 ---
 
-## 8. Variables d'environnement
+## 8. Assurance Qualité & Automatisation CI/CD (GitHub Actions)
+
+La qualité du code, la sécurité et l'absence de régression sont assurées automatiquement à chaque `push` ou `pull_request` via **GitHub Actions** (`.github/workflows/`) :
+
+| Pipeline | Fichier Workflow | Validation & Couverture de Tests |
+| :--- | :--- | :--- |
+| **Backend CI** | [`.github/workflows/backend-ci.yml`](./.github/workflows/backend-ci.yml) | 32 tests Pytest, Audit d'intégration 56 routes (`scripts/test_all_routes.py`), Audit Sécurité SAST Bandit & Safety, Loadtest probe, SonarQube |
+| **AI Service CI** | [`.github/workflows/ai-ci.yml`](./.github/workflows/ai-ci.yml) | 52 scénarios de détection de fraude (Camfranglais/Pidgin), Audit d'inférence, SAST Bandit |
+| **Frontend Web CI** | [`.github/workflows/web-ci.yml`](./.github/workflows/web-ci.yml) | TypeScript type-check (`tsc --noEmit`), audit vulnérabilités npm, Vite Build |
+
+➡ Pour plus de détails sur la configuration des workflows et de SonarQube, consultez le [**README des Workflows CI/CD**](./.github/workflows/README.md).
+
+---
+
+## 9. Variables d'environnement
 
 Chaque partie possède son fichier `.env.example` à copier en `.env`. Variables globales principales :
 
@@ -279,7 +296,7 @@ Chaque partie possède son fichier `.env.example` à copier en `.env`. Variables
 
 ---
 
-## 9. Conventions de développement
+## 10. Conventions de développement
 
 | Aspect | Convention |
 | ------ | ---------- |
@@ -292,7 +309,7 @@ Chaque partie possède son fichier `.env.example` à copier en `.env`. Variables
 
 ---
 
-## 10. Workflow Git
+## 11. Workflow Git
 
 ```bash
 # Créer une branche par tâche (référence la clé Jira)
@@ -312,7 +329,7 @@ git push origin feat/BACK-3-users-crud
 
 ---
 
-## 11. Équipe & rôles
+## 12. Équipe & rôles
 
 | Rôle | Responsabilité |
 | ---- | -------------- |
@@ -325,7 +342,7 @@ git push origin feat/BACK-3-users-crud
 
 ---
 
-## 12. Planning
+## 13. Planning
 
 Le projet se déroule sur ~3 mois avec des sprints hebdomadaires (lundi → vendredi), à partir du **lundi 20 juillet 2026** :
 
@@ -341,7 +358,7 @@ Le projet se déroule sur ~3 mois avec des sprints hebdomadaires (lundi → vend
 
 ---
 
-## 13. Licence
+## 14. Licence
 
 Projet **propriétaire** — © 2026 Équipe KWISMO. Tous droits réservés.
 Toute reproduction ou distribution sans autorisation est interdite.

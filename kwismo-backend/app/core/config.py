@@ -36,6 +36,7 @@ class Settings(BaseSettings):
 
     # Reseau / CORS
     cors_origins: str = "http://localhost:5173"
+    frontend_url: str = "http://localhost:5173"
     allowed_hosts: str = "*"
     redis_url: str = "redis://localhost:6379"
 

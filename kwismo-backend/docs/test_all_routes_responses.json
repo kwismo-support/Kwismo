@@ -7548,8 +7548,8 @@
     },
     "request_params": null,
     "response_data": {
-      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c2x3dWEwMDAzdmx3bThscmZrNTYzIiwicm9sZSI6InVzZXIiLCJ0eXBlIjoiYWNjZXNzIiwianRpIjoiN2QxZTFkNzgtYjdjMC00MjRlLTk0ZTQtNTA2OWQzMDFlZGZkIiwiZXhwIjoxNzg3MTY0NzI5fQ.PN_m8J4dtquoyyVoCI00ebFv6ifEYcQlF2L1gZI8M84",
-      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c2x3dWEwMDAzdmx3bThscmZrNTYzIiwicm9sZSI6InVzZXIiLCJ0eXBlIjoicmVmcmVzaCIsImp0aSI6Ijk5YzVkMmY4LWU2ZWUtNGFkOS1hY2NlLTg0ZDljNTg5M2Y5OCIsImV4cCI6MTc4Nzc0MDcyOX0.DUerCBcUMIxUjAqPKSMrKJ-aE8jRKyAJb6HYCMQwopI",
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c2x3dWEwMDAzdmx3bThscmZrNTYzIiwicm9sZSI6InVzZXIiLCJ0eXBlIjoiYWNjZXNzIiwianRpIjoiZTU4YTdiYzAtYmJhNy00NDM3LWExNzYtODVjMWI4YTNlYTIxIiwiZXhwIjoxNzg3OTEwMjkzfQ.6jwVyUCaurpqrkUFWgqI68OhGa6eSnULuhbmVpzLU9w",
+      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c2x3dWEwMDAzdmx3bThscmZrNTYzIiwicm9sZSI6InVzZXIiLCJ0eXBlIjoicmVmcmVzaCIsImp0aSI6IjY0NzNmYTY3LTQ2NGEtNDEzYy04MjhiLTFhNzMxZjMwOTc0NCIsImV4cCI6MTc4ODQ4NjI5M30.Tv2Nl9wvME5h0Kr0D8r8ac2IiYhREklKcUrM_AMwiuI",
       "token_type": "bearer",
       "user": {
         "id": "cmsyslwua0003vlwm8lrfk563",
@@ -7579,15 +7579,15 @@
       "date_inscription": "2026-08-18T15:03:37.090000Z",
       "kpi": {
         "numeros_verifies": 9,
-        "signalements_effectues": 16,
-        "transferts_proteges": 17
+        "signalements_effectues": 18,
+        "transferts_proteges": 19
       },
       "devices": [
         {
           "id": "cmsysw7ei003c7jjyeltf3c86",
           "nom": "Audit Terminal",
           "premiere_connexion": "2026-08-18T15:11:37.339000Z",
-          "derniere_connexion": "2026-08-19T10:38:49.402000Z"
+          "derniere_connexion": "2026-08-28T01:44:53.231000Z"
         }
       ]
     }
@@ -7613,15 +7613,15 @@
       "date_inscription": "2026-08-18T15:03:37.090000Z",
       "kpi": {
         "numeros_verifies": 9,
-        "signalements_effectues": 16,
-        "transferts_proteges": 17
+        "signalements_effectues": 18,
+        "transferts_proteges": 19
       },
       "devices": [
         {
           "id": "cmsysw7ei003c7jjyeltf3c86",
           "nom": "Audit Terminal",
           "premiere_connexion": "2026-08-18T15:11:37.339000Z",
-          "derniere_connexion": "2026-08-19T10:38:49.402000Z"
+          "derniere_connexion": "2026-08-28T01:44:53.231000Z"
         }
       ]
     }
@@ -7732,18 +7732,18 @@
     "role": "user",
     "status_code": 201,
     "request_payload": {
-      "valeur": "+237671329857"
+      "valeur": "+237673274605"
     },
     "request_params": null,
     "response_data": {
-      "id": "cmszyl8kw003hwb2v6uywg0c1",
-      "valeur": "+237671329857",
+      "id": "cmtcah9b9005xwb2v179alcck",
+      "valeur": "+237673274605",
       "country_id": "cmsyju7x40003icdyzt0zq5jx",
       "operator_id": "cmsysr3sa000eshwv3qubm6ec",
       "est_verifie": false,
       "date_verification": null,
       "est_compromis": false,
-      "created_at": "2026-08-19T10:38:49.521000Z"
+      "created_at": "2026-08-28T01:44:53.349000Z"
     }
   },
   {
@@ -7875,15 +7875,15 @@
     "status_code": 201,
     "request_payload": {
       "nom": "Contact Test Auto",
-      "numero": "+237678377880"
+      "numero": "+237675060138"
     },
     "request_params": null,
     "response_data": {
-      "id": "cmszyl8mm003lwb2vgm7e9wrq",
+      "id": "cmtcah9d30061wb2vp8wurc0d",
       "nom": "Contact Test Auto",
-      "numero": "+237678377880",
+      "numero": "+237675060138",
       "statut": null,
-      "created_at": "2026-08-19T10:38:49.583000Z"
+      "created_at": "2026-08-28T01:44:53.416000Z"
     }
   },
   {
@@ -7899,7 +7899,7 @@
         "identifiant": "android_device_user_1",
         "nom": "Audit Terminal",
         "date_premiere_connexion": "2026-08-18T15:11:37.339000Z",
-        "date_derniere_connexion": "2026-08-19T10:38:49.402000Z"
+        "date_derniere_connexion": "2026-08-28T01:44:53.231000Z"
       }
     ]
   },
@@ -7917,7 +7917,7 @@
       "valeur": "+237670999888",
       "score_risque": 0.1,
       "statut": "securise",
-      "date_derniere_verification": "2026-08-19T10:39:06.237000Z",
+      "date_derniere_verification": "2026-08-28T01:45:09.996000Z",
       "country_id": "cmsyju7x40003icdyzt0zq5jx",
       "operator_id": "cmsysr3sa000eshwv3qubm6ec"
     }
@@ -7940,7 +7940,7 @@
         "valeur": "+237670000001",
         "score_risque": 0.1,
         "statut": "securise",
-        "date_derniere_verification": "2026-08-19T10:39:22.928000Z",
+        "date_derniere_verification": "2026-08-28T01:45:26.553000Z",
         "country_id": "cmsyju7x40003icdyzt0zq5jx",
         "operator_id": "cmsysr3sa000eshwv3qubm6ec"
       },
@@ -7949,7 +7949,7 @@
         "valeur": "+237670999888",
         "score_risque": 0.1,
         "statut": "securise",
-        "date_derniere_verification": "2026-08-19T10:39:23.147000Z",
+        "date_derniere_verification": "2026-08-28T01:45:26.572000Z",
         "country_id": "cmsyju7x40003icdyzt0zq5jx",
         "operator_id": "cmsysr3sa000eshwv3qubm6ec"
       }
@@ -7966,11 +7966,11 @@
     },
     "request_params": null,
     "response_data": {
-      "id": "cmszylyjo003nwb2vjfa8nmyt",
+      "id": "cmtcahyyv0063wb2v4klvvq8c",
       "user_id": "cmsyslwua0003vlwm8lrfk563",
       "numero_id": "cmsysvmsh003dytq2lj4qyoi0",
       "motif": "Spam SMS répétitif",
-      "date_signalement": "2026-08-19T10:39:23.173000Z",
+      "date_signalement": "2026-08-28T01:45:26.599000Z",
       "statut": "pending"
     }
   },
@@ -8140,10 +8140,10 @@
     },
     "request_params": null,
     "response_data": {
-      "id": "cmszymuax003rwb2vwzr9hj97",
+      "id": "cmtcaiuo60067wb2vyb5iahf4",
       "numero_id": "cmsysulq50000laffaeyp1zo5",
       "montant": 1500.0,
-      "date_transaction": "2026-08-19T10:40:04.329000Z",
+      "date_transaction": "2026-08-28T01:46:07.686000Z",
       "statut": "prepared",
       "niveau_risque": "faible",
       "code_ussd_genere": "*123#"
@@ -8158,6 +8158,24 @@
     "request_params": null,
     "response_data": {
       "items": [
+        {
+          "id": "cmtcaiuo60067wb2vyb5iahf4",
+          "numero_id": "cmsysulq50000laffaeyp1zo5",
+          "montant": 1500.0,
+          "date_transaction": "2026-08-28T01:46:07.686000Z",
+          "statut": "prepared",
+          "niveau_risque": "faible",
+          "code_ussd_genere": "*123#"
+        },
+        {
+          "id": "cmszyvp4k004zwb2vaell5usp",
+          "numero_id": "cmsysulq50000laffaeyp1zo5",
+          "montant": 1500.0,
+          "date_transaction": "2026-08-19T10:46:57.525000Z",
+          "statut": "prepared",
+          "niveau_risque": "faible",
+          "code_ussd_genere": "*123#"
+        },
         {
           "id": "cmszymuax003rwb2vwzr9hj97",
           "numero_id": "cmsysulq50000laffaeyp1zo5",
@@ -8321,23 +8339,23 @@
           "code_ussd_genere": "*126*15000*670000001#"
         }
       ],
-      "total": 18,
+      "total": 20,
       "page": 1,
       "page_size": 20
     }
   },
   {
-    "endpoint": "/transactions/cmszymuax003rwb2vwzr9hj97",
+    "endpoint": "/transactions/cmtcaiuo60067wb2vyb5iahf4",
     "method": "GET",
     "role": "user",
     "status_code": 200,
     "request_payload": null,
     "request_params": null,
     "response_data": {
-      "id": "cmszymuax003rwb2vwzr9hj97",
+      "id": "cmtcaiuo60067wb2vyb5iahf4",
       "numero_id": "cmsysulq50000laffaeyp1zo5",
       "montant": 1500.0,
-      "date_transaction": "2026-08-19T10:40:04.329000Z",
+      "date_transaction": "2026-08-28T01:46:07.686000Z",
       "statut": "prepared",
       "niveau_risque": "faible",
       "code_ussd_genere": "*123#"
@@ -8368,19 +8386,19 @@
     "request_payload": {
       "compromise_incident_id": "cmszmlyds003za68336wc76ya",
       "contact_ids": [
-        "cmszyl8mm003lwb2vgm7e9wrq"
+        "cmtcah9d30061wb2vp8wurc0d"
       ],
       "contenu": "Compte WhatsApp compromis"
     },
     "request_params": null,
     "response_data": {
-      "id": "cmszymud6003vwb2vse8iid75",
+      "id": "cmtcaiuqj006bwb2vr8qnx31w",
       "contenu": "Compte WhatsApp compromis",
-      "date_envoi": "2026-08-19T10:40:04.410000Z",
+      "date_envoi": "2026-08-28T01:46:07.772000Z",
       "statut": "sent",
       "recipients": [
         {
-          "contact_id": "cmszyl8mm003lwb2vgm7e9wrq",
+          "contact_id": "cmtcah9d30061wb2vp8wurc0d",
           "statut_accuse": "envoye"
         }
       ]
@@ -8395,6 +8413,18 @@
     "request_params": null,
     "response_data": {
       "items": [
+        {
+          "id": "cmszyvpks005jwb2vxxrkqjkz",
+          "texte": "Votre signalement a été validé par nos équipes.",
+          "lu": false,
+          "date": "2026-08-19T10:46:58.109000Z"
+        },
+        {
+          "id": "cmszymuqm004bwb2v3p3188wi",
+          "texte": "Votre signalement a été validé par nos équipes.",
+          "lu": false,
+          "date": "2026-08-19T10:40:04.894000Z"
+        },
         {
           "id": "cmszyco4c005f5rn2rep12qw8",
           "texte": "Votre signalement a été validé par nos équipes.",
@@ -8492,7 +8522,7 @@
           "date": "2026-08-18T15:12:10.712000Z"
         }
       ],
-      "total": 16,
+      "total": 18,
       "page": 1,
       "page_size": 20
     }
@@ -8533,8 +8563,8 @@
     },
     "request_params": null,
     "response_data": {
-      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzY2swMDAzc2h3djZhaG9ycnUwIiwicm9sZSI6InBhcnRuZXIiLCJ0eXBlIjoiYWNjZXNzIiwianRpIjoiZjExMDE1MDEtYWJmYS00ZTVlLThmMDYtM2E4ZmQxZGNlZmRiIiwiZXhwIjoxNzg3MTY0ODA0LCJwYXJ0bmVyX2lkIjoiY21zeXNta3Q4MDAwM2o1ZTg2eGh0OWJuNCJ9.Wb0IONupyEF73u3dKfLxukXZFP4Bv9rSJyAfGKrT204",
-      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzY2swMDAzc2h3djZhaG9ycnUwIiwicm9sZSI6InBhcnRuZXIiLCJ0eXBlIjoicmVmcmVzaCIsImp0aSI6IjE3ODAxZTQyLWY2ZGYtNGYzYy05MTc1LWM2OTcxMDAzNTdlNSIsImV4cCI6MTc4Nzc0MDgwNCwicGFydG5lcl9pZCI6ImNtc3lzbWt0ODAwMDNqNWU4NnhodDlibjQifQ.oeq_hXrZrdOMSDEGxE-UENd2XBo16klhQgCZOmF6BGs",
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzY2swMDAzc2h3djZhaG9ycnUwIiwicm9sZSI6InBhcnRuZXIiLCJ0eXBlIjoiYWNjZXNzIiwianRpIjoiZWNhYTU4YWUtZjIwMi00MzcxLTg3N2QtZTQ3M2I4OTEwZTU3IiwiZXhwIjoxNzg3OTEwMzY3LCJwYXJ0bmVyX2lkIjoiY21zeXNta3Q4MDAwM2o1ZTg2eGh0OWJuNCJ9.djWYz67gR4fDL20rd1m3pBVO3MtVFE3e5boMP3I-odg",
+      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzY2swMDAzc2h3djZhaG9ycnUwIiwicm9sZSI6InBhcnRuZXIiLCJ0eXBlIjoicmVmcmVzaCIsImp0aSI6IjlmZmI5NGMxLTUzODgtNGIxNS04NzVmLTgwMzJiMTdhNjYzNyIsImV4cCI6MTc4ODQ4NjM2NywicGFydG5lcl9pZCI6ImNtc3lzbWt0ODAwMDNqNWU4NnhodDlibjQifQ.VNIQCEthoIVNbYWL8k2XhB1MGCJAXW2BGdqVGXqVyJ8",
       "token_type": "bearer",
       "user": {
         "id": "cmsysr3ck0003shwv6ahorru0",
@@ -8632,8 +8662,8 @@
     },
     "request_params": null,
     "response_data": {
-      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzbHcwMDA0c2h3dnBlcDVya3p1Iiwicm9sZSI6ImFkbWluIiwidHlwZSI6ImFjY2VzcyIsImp0aSI6IjgxZjE4ODc5LTZlN2QtNDhhYi05NWI5LTdjYTZiY2YwMjczYSIsImV4cCI6MTc4NzE2NDgwNH0.VsedFARDcRQFJLuO5lx7wNQR2k-YM4CAyW24dRFRtOQ",
-      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzbHcwMDA0c2h3dnBlcDVya3p1Iiwicm9sZSI6ImFkbWluIiwidHlwZSI6InJlZnJlc2giLCJqdGkiOiJlNWZmYWUyOC0yZjU0LTQ5NjEtYWU5NS05Njk3OTE3N2ZiYjMiLCJleHAiOjE3ODc3NDA4MDR9.J8Nms645auEG640VvFYp2kOWb5mPVaMYX4Vw_3dpEac",
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzbHcwMDA0c2h3dnBlcDVya3p1Iiwicm9sZSI6ImFkbWluIiwidHlwZSI6ImFjY2VzcyIsImp0aSI6IjI1MWZlODE2LWVhNTktNDhjYi04MDRmLTEyMTExOWNhMmRlMiIsImV4cCI6MTc4NzkxMDM2OH0.Tz56BF2-E8vqQmdnkdo5C-vBTfLm8XloVHmpmHeyx_M",
+      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjbXN5c3IzbHcwMDA0c2h3dnBlcDVya3p1Iiwicm9sZSI6ImFkbWluIiwidHlwZSI6InJlZnJlc2giLCJqdGkiOiI4NWY2ZDc4Yy04NGFhLTQ3MGUtODk2Ni00NWJhYzkyZGY1NjUiLCJleHAiOjE3ODg0ODYzNjh9.NLAkcaZOTQzbbIhKJpvbM2iRfL5Cy9PYzjNxj3dpdUw",
       "token_type": "bearer",
       "user": {
         "id": "cmsysr3lw0004shwvpep5rkzu",
@@ -8743,7 +8773,7 @@
           "valeur": "+237677889900",
           "score_risque": 0.7,
           "statut": "frauduleux",
-          "date_derniere_verification": "2026-08-19T10:39:39.810000Z",
+          "date_derniere_verification": "2026-08-28T01:45:43.211000Z",
           "country_id": "cmsyju7x40003icdyzt0zq5jx",
           "operator_id": "cmsysr3sa000eshwv3qubm6ec"
         },
@@ -8752,7 +8782,7 @@
           "valeur": "+237670999888",
           "score_risque": 0.1,
           "statut": "securise",
-          "date_derniere_verification": "2026-08-19T10:39:23.147000Z",
+          "date_derniere_verification": "2026-08-28T01:45:26.572000Z",
           "country_id": "cmsyju7x40003icdyzt0zq5jx",
           "operator_id": "cmsysr3sa000eshwv3qubm6ec"
         },
@@ -8761,9 +8791,18 @@
           "valeur": "+237670000001",
           "score_risque": 0.1,
           "statut": "securise",
-          "date_derniere_verification": "2026-08-19T10:39:22.928000Z",
+          "date_derniere_verification": "2026-08-28T01:45:26.553000Z",
           "country_id": "cmsyju7x40003icdyzt0zq5jx",
           "operator_id": "cmsysr3sa000eshwv3qubm6ec"
+        },
+        {
+          "id": "cmtca93tp0001orivanejwims",
+          "valeur": "+237690000000",
+          "score_risque": 0.1,
+          "statut": "securise",
+          "date_derniere_verification": "2026-08-28T01:38:32.987000Z",
+          "country_id": "cmsyju7x40003icdyzt0zq5jx",
+          "operator_id": "cmsysr40h0012shwvm0evxmy8"
         },
         {
           "id": "cmsysvmug003gytq2brri8s4c",
@@ -8793,7 +8832,7 @@
           "operator_id": "cmsysr40h0012shwvm0evxmy8"
         }
       ],
-      "total": 6,
+      "total": 7,
       "page": 1,
       "page_size": 20
     }
@@ -8810,12 +8849,12 @@
       "valeur": "+237677889900",
       "score_risque": 0.7,
       "statut": "frauduleux",
-      "date_derniere_verification": "2026-08-19T10:39:39.810000Z",
+      "date_derniere_verification": "2026-08-28T01:45:43.211000Z",
       "country_id": "cmsyju7x40003icdyzt0zq5jx",
       "operator_id": "cmsysr3sa000eshwv3qubm6ec",
       "created_at": "2026-08-18T15:11:10.626000Z",
-      "updated_at": "2026-08-19T10:39:39.812000Z",
-      "nombre_signalements": 15
+      "updated_at": "2026-08-28T01:45:43.214000Z",
+      "nombre_signalements": 17
     }
   },
   {
@@ -8832,12 +8871,12 @@
       "valeur": "+237677889900",
       "score_risque": 0.7,
       "statut": "frauduleux",
-      "date_derniere_verification": "2026-08-19T10:40:04.839000Z",
+      "date_derniere_verification": "2026-08-28T01:46:08.195000Z",
       "country_id": "cmsyju7x40003icdyzt0zq5jx",
       "operator_id": "cmsysr3sa000eshwv3qubm6ec",
       "created_at": "2026-08-18T15:11:10.626000Z",
-      "updated_at": "2026-08-19T10:40:04.841000Z",
-      "nombre_signalements": 15
+      "updated_at": "2026-08-28T01:46:08.197000Z",
+      "nombre_signalements": 17
     }
   },
   {
@@ -8850,12 +8889,28 @@
     "response_data": {
       "items": [
         {
+          "id": "cmtcahyyv0063wb2v4klvvq8c",
+          "user_id": "cmsyslwua0003vlwm8lrfk563",
+          "numero_id": "cmsysvmsh003dytq2lj4qyoi0",
+          "motif": "Spam SMS répétitif",
+          "date_signalement": "2026-08-28T01:45:26.599000Z",
+          "statut": "pending"
+        },
+        {
+          "id": "cmszyutei004vwb2vwgi5naq0",
+          "user_id": "cmsyslwua0003vlwm8lrfk563",
+          "numero_id": "cmsysvmsh003dytq2lj4qyoi0",
+          "motif": "Spam SMS répétitif",
+          "date_signalement": "2026-08-19T10:46:16.410000Z",
+          "statut": "validated"
+        },
+        {
           "id": "cmszylyjo003nwb2vjfa8nmyt",
           "user_id": "cmsyslwua0003vlwm8lrfk563",
           "numero_id": "cmsysvmsh003dytq2lj4qyoi0",
           "motif": "Spam SMS répétitif",
           "date_signalement": "2026-08-19T10:39:23.173000Z",
-          "statut": "pending"
+          "statut": "validated"
         },
         {
           "id": "cmszybrvc004t5rn2rd2z4utj",
@@ -8994,13 +9049,13 @@
           "statut": "validated"
         }
       ],
-      "total": 18,
+      "total": 20,
       "page": 1,
       "page_size": 20
     }
   },
   {
-    "endpoint": "/reports/cmszylyjo003nwb2vjfa8nmyt/validate",
+    "endpoint": "/reports/cmtcahyyv0063wb2v4klvvq8c/validate",
     "method": "PATCH",
     "role": "admin",
     "status_code": 200,
@@ -9009,11 +9064,11 @@
     },
     "request_params": null,
     "response_data": {
-      "id": "cmszylyjo003nwb2vjfa8nmyt",
+      "id": "cmtcahyyv0063wb2v4klvvq8c",
       "user_id": "cmsyslwua0003vlwm8lrfk563",
       "numero_id": "cmsysvmsh003dytq2lj4qyoi0",
       "motif": "Spam SMS répétitif",
-      "date_signalement": "2026-08-19T10:39:23.173000Z",
+      "date_signalement": "2026-08-28T01:45:26.599000Z",
       "statut": "validated"
     }
   },
@@ -9312,28 +9367,28 @@
       {
         "id": "dyn_numeros",
         "nom_indicateur": "total_numeros_analyses",
-        "valeur": 6.0,
+        "valeur": 7.0,
         "periode": "2026-08",
         "portee": "global"
       },
       {
         "id": "dyn_reports",
         "nom_indicateur": "total_signalements",
-        "valeur": 18.0,
+        "valeur": 20.0,
         "periode": "2026-08",
         "portee": "global"
       },
       {
         "id": "dyn_fraude",
         "nom_indicateur": "taux_fraude_detectee",
-        "valeur": 0.1667,
+        "valeur": 0.1429,
         "periode": "2026-08",
         "portee": "global"
       },
       {
         "id": "dyn_tx",
         "nom_indicateur": "total_transferts_proteges",
-        "valeur": 18.0,
+        "valeur": 20.0,
         "periode": "2026-08",
         "portee": "global"
       }
@@ -9500,7 +9555,7 @@
     }
   },
   {
-    "endpoint": "/contacts/cmszyl8mm003lwb2vgm7e9wrq",
+    "endpoint": "/contacts/cmtcah9d30061wb2vp8wurc0d",
     "method": "DELETE",
     "role": "cleanup",
     "status_code": 200,
@@ -9512,7 +9567,7 @@
     }
   },
   {
-    "endpoint": "/users/me/phones/cmszyl8kw003hwb2v6uywg0c1",
+    "endpoint": "/users/me/phones/cmtcah9b9005xwb2v179alcck",
     "method": "DELETE",
     "role": "cleanup",
     "status_code": 200,

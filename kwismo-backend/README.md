@@ -298,16 +298,21 @@ kwismo-backend/
 ├─ tests/
 │  ├─ __init__.py
 │  ├─ conftest.py                    # Fixtures pytest (client de test FastAPI)
+│  ├─ test_access_control.py         # Tests du module access_control (rôles et droits)
 │  ├─ test_ai_gateway.py             # Tests du module ai_gateway (schémas et contrats)
 │  ├─ test_auth.py                   # Tests d'authentification et inscription
 │  ├─ test_devices.py                # Tests du module devices
+│  ├─ test_kpi.py                    # Tests du module kpi (indicateurs globaux et partenaires)
 │  ├─ test_numbers.py                # Tests de vérification de numéros
 │  ├─ test_otp.py                    # Tests de génération et envoi OTP
 │  ├─ test_partners.py               # Tests du module partenaires
 │  ├─ test_reports.py                # Tests de création et gestion des signalements
+│  ├─ test_surveys.py                # Tests du module surveys (sondages)
+│  ├─ test_transactions.py           # Tests du module transactions
 │  ├─ test_user_phones.py            # Tests de raccordement des numéros de téléphone
 │  ├─ test_users.py                  # Tests du profil utilisateur /users/me
-│  └─ test_ussd.py                   # Tests des routes USSD et pays
+│  ├─ test_ussd.py                   # Tests des routes USSD et pays
+│  └─ test_whatsapp_alerts.py        # Tests du module whatsapp_alerts
 │
 ├─ logs/
 │  └─ test_all_routes.log            # Logs d'audit d'exécution des tests (succès/échecs)
@@ -315,6 +320,8 @@ kwismo-backend/
 ├─ scripts/
 │  ├─ seed.py                        # Peuple la base (pays, opérateurs, admin par défaut)
 │  ├─ test_all_routes.py             # ★ Script d'audit et de test automatisé de TOUTES les routes
+│  ├─ loadtest.py                    # ★ Script de test de montée en charge
+│  ├─ api_probe.py                   # ★ Script de sonde de santé et latence des endpoints
 │  ├─ create_admin.py                # Crée un compte administrateur
 │  ├─ check_python_version.py        # Vérif Python 3.13 (utilisé par check_python.bat)
 │  └─ sync_db_provider.py            # Bascule le provider Prisma selon DB_TYPE (.env)
@@ -499,6 +506,28 @@ Un script autonome d'audit complet est disponible à la racine dans `scripts/tes
 python scripts/test_all_routes.py
 ```
 Les logs et détails de l'audit sont consultables directement dans : `logs/test_all_routes.log`.
+
+### ⚡ Test de montée en charge et de débit (`loadtest.py`)
+
+Un script de test de charge réaliste avec simulation d'utilisateurs virtuels concurrents et trafic pondéré est disponible dans `scripts/loadtest.py` :
+
+- Simulation de plusieurs niveaux de charge d'utilisateurs simultanés (ex: 50, 100, 500 utilisateurs).
+- Mesure des temps de réponse moyens, P50, P95, P99 et détection des taux d'erreur (429 / 5xx).
+- Affichage du bilan de performance directement en ligne de commande (console).
+
+#### Commande d'exécution :
+```bash
+python scripts/loadtest.py --url http://127.0.0.1:8000 --users 50 100 --duration 10
+```
+
+### 🔍 Sonde de santé et de performance des endpoints (`api_probe.py`)
+
+Un script de contrôle de santé et de mesure de latence des endpoints est disponible dans `scripts/api_probe.py`. Il teste les endpoints principaux et affiche les résultats directement en console.
+
+#### Commande d'exécution :
+```bash
+python scripts/api_probe.py --url http://127.0.0.1:8000 --repeat 3
+```
 
 ---
 

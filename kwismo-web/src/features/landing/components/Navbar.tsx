@@ -4,54 +4,54 @@ import Logo from '@/assets/logo/Logo_NavBar.png';
 export default function Navbar() {
   return (
     <nav className="w-full bg-[#31B58A]">
-      <div className="mx-auto flex h-[45px] max-w-[1200px] items-center justify-between px-6">
+      <div className="flex h-[45px] w-full items-center px-[7%]">
 
         {/* Logo */}
         <a
           href="/"
-          className="flex items-center gap-1.5 text-white no-underline"
+          className="flex shrink-0 items-center no-underline"
         >
           <img
             src={Logo}
-            alt="KWISMO Logo"
-            className="h-8"
+            alt="KWISMO"
+            className="h-[22px] w-auto object-contain"
           />
         </a>
 
         {/* Navigation */}
-        <div className="hidden items-center gap-8 md:flex">
+        <div className="mx-auto hidden items-center gap-[32px] lg:flex">
 
           <a
             href="#accueil"
-            className="text-[9px] font-medium text-white no-underline transition hover:opacity-80"
+            className="font-body text-[9px] font-semibold text-white no-underline"
           >
             Accueil
           </a>
 
           <a
             href="#about"
-            className="text-[9px] font-medium text-white no-underline transition hover:opacity-80"
+            className="font-body text-[9px] font-semibold text-white no-underline"
           >
             A propos de nous
           </a>
 
           <a
             href="#security"
-            className="text-[9px] font-medium text-white no-underline transition hover:opacity-80"
+            className="font-body text-[9px] font-semibold text-white no-underline"
           >
             Sécurité & Protection
           </a>
 
           <a
             href="#features"
-            className="text-[9px] font-medium text-white no-underline transition hover:opacity-80"
+            className="font-body text-[9px] font-semibold text-white no-underline"
           >
             Fonctionnalités
           </a>
 
           <a
             href="#contact"
-            className="text-[9px] font-medium text-white no-underline transition hover:opacity-80"
+            className="font-body text-[9px] font-semibold text-white no-underline"
           >
             Contact
           </a>
@@ -59,21 +59,21 @@ export default function Navbar() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-3">
 
           <a
             href="/auth"
-            className="rounded-full bg-[#151D34] px-5 py-2 text-[9px] font-semibold text-white no-underline transition hover:opacity-90"
+            className="flex h-[32px] items-center rounded-full bg-[#151D34] px-5 font-body text-[9px] font-semibold text-white no-underline transition-opacity hover:opacity-90"
           >
             Partenaire
           </a>
 
           <a
             href="/auth"
-            className="flex items-center gap-2 rounded-full bg-[#FF9900] px-5 py-2 text-[9px] font-semibold text-white no-underline transition hover:bg-[#e88a00]"
+            className="flex h-[32px] items-center gap-2 rounded-full bg-[#FF9900] px-5 font-body text-[9px] font-semibold text-white no-underline transition-opacity hover:opacity-90"
           >
-            Se connecter
-            <ArrowRight size={11} />
+            <span>Se connecter</span>
+            <ArrowRight size={11} strokeWidth={2} />
           </a>
 
         </div>

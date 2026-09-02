@@ -95,7 +95,7 @@ def _check_startup_config() -> None:
             "en multi-workers les limites de debit ne sont pas partagees. "
             "Passez RATE_LIMIT_STORAGE_URI a l'URL Redis pour la production."
         )
-    if hosts_open and settings.cors_origins != "http://localhost:5173":
+    if hosts_open and settings.cors_origins != settings.frontend_url:
         _logger.warning(
             "SECURITE — ALLOWED_HOSTS='*' avec des origines CORS non locales : "
             "restreignez ALLOWED_HOSTS en production."
@@ -150,7 +150,12 @@ async def _seed_defaults() -> None:
 async def lifespan(app: FastAPI):
     _check_startup_config()
     await connect_db()
-    await _seed_defaults()
+    from app.db.prisma_client import db as _db
+    try:
+        if not await _db.role.find_first():
+            await _seed_defaults()
+    except Exception as exc:
+        _logger.warning("Seed par défaut non appliqué au démarrage: %s", exc)
     yield
     await disconnect_db()
 

@@ -3,53 +3,39 @@ import { Facebook, Instagram, Mail, Phone, Twitter } from 'lucide-react';
 export default function ContactBar() {
   return (
     <div className="w-full bg-[#151D34] text-white">
-      <div className="mx-auto flex h-[30px] max-w-[1200px] items-center justify-between px-6 text-[9px] font-medium">
-        
-        {/* Informations de contact */}
+      <div className="mx-auto flex h-[30px] w-full items-center justify-between px-[7%]">
+
+        {/* Contact */}
         <div className="flex items-center gap-8">
-          
           <a
             href="mailto:kwismosupport@gmail.com"
-            className="flex items-center gap-2 text-white/80 transition hover:text-white"
+            className="flex items-center gap-2 font-body text-[9px] font-medium text-white no-underline"
           >
-            <Mail size={10} strokeWidth={2.5} />
+            <Mail size={10} strokeWidth={2} />
             <span>kwismosupport@gmail.com</span>
           </a>
 
           <a
             href="tel:+237698444388"
-            className="flex items-center gap-2 text-white/80 transition hover:text-white"
+            className="flex items-center gap-2 font-body text-[9px] font-medium text-white no-underline"
           >
-            <Phone size={10} strokeWidth={2.5} />
+            <Phone size={10} strokeWidth={2} />
             <span>+237 698 44 43 88</span>
           </a>
-
         </div>
 
         {/* Réseaux sociaux */}
-        <div className="flex items-center gap-4 text-white/80">
-          <a
-            href="#"
-            aria-label="Facebook"
-            className="transition hover:text-white"
-          >
-            <Facebook size={10} />
+        <div className="flex items-center gap-5">
+          <a href="#" aria-label="Facebook" className="text-white">
+            <Facebook size={10} strokeWidth={2} />
           </a>
 
-          <a
-            href="#"
-            aria-label="Twitter"
-            className="transition hover:text-white"
-          >
-            <Twitter size={10} />
+          <a href="#" aria-label="Twitter" className="text-white">
+            <Twitter size={10} strokeWidth={2} />
           </a>
 
-          <a
-            href="#"
-            aria-label="Instagram"
-            className="transition hover:text-white"
-          >
-            <Instagram size={10} />
+          <a href="#" aria-label="Instagram" className="text-white">
+            <Instagram size={10} strokeWidth={2} />
           </a>
         </div>
 

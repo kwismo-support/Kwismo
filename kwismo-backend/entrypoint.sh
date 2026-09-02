@@ -29,9 +29,14 @@ fi
 # Synchronisation du schéma Prisma avec le provider (SQLite vs PostgreSQL)
 python scripts/sync_db_provider.py --generate || true
 
-# Application des tables en base de données
-echo "🔄 Synchronisation du schéma avec la base de données (prisma db push)..."
-prisma db push --accept-data-loss || true
+# Application des tables en base de données selon l'environnement (Dev/Staging vs Production)
+if [ "$APP_ENV" = "production" ]; then
+    echo "🔒 Environnement PRODUCTION détecté : Application sécurisée des migrations (prisma migrate deploy)..."
+    python -m prisma migrate deploy || prisma migrate deploy || true
+else
+    echo "🔄 Environnement DEV/STAGING détecté : Synchronisation rapide du schéma (prisma db push)..."
+    python -m prisma db push --accept-data-loss || prisma db push --accept-data-loss || true
+fi
 
 # Alimentation initiale de la base de données (Seed)
 echo "🌱 Exécution du seed initial (rôles, pays, opérateurs, USSD)..."
@@ -46,4 +51,5 @@ fi
 # Démarrage du serveur backend Gunicorn / Uvicorn sur $PORT (défaut 8000)
 PORT="${PORT:-8000}"
 echo "✅ Démarrage du serveur KWISMO Backend sur le port $PORT..."
-exec gunicorn app.main:app -k uvicorn.workers.UvicornWorker --bind "0.0.0.0:$PORT"
+WORKERS="${WEB_CONCURRENCY:-2}"
+exec gunicorn app.main:app -k uvicorn.workers.UvicornWorker --workers $WORKERS --timeout 120 --bind "0.0.0.0:$PORT"

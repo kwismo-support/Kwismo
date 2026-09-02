@@ -1,23 +1,38 @@
 /**
  * Chemins des routes API backend.
  * Toujours préfixés par env.apiUrl (via l'instance axios).
+ *
+ * Aligné sur le schéma OpenAPI de https://api.kwismo.com/docs
  */
 export const ENDPOINTS = {
   /* ── Auth ──────────────────────────────────────────── */
   auth: {
-    login:         '/auth/login',
-    logout:        '/auth/logout',
-    me:            '/auth/me',
-    forgotPassword:'/auth/forgot-password',
-    resetPassword: '/auth/reset-password',
+    register:       '/auth/register',
+    emailVerify:    '/auth/email/verify',
+    emailResend:    '/auth/email/resend',
+    login:          '/auth/login',
+    deviceVerify:   '/auth/device/verify',
+    refresh:        '/auth/refresh',
+    forgotPassword: '/auth/password/forgot',
+    resetPassword:  '/auth/password/reset',
+    logout:         '/auth/logout',
   },
 
   /* ── Utilisateurs ───────────────────────────────────── */
   users: {
+    me:     '/users/me',
     list:   '/users',
     detail: (id: string) => `/users/${id}`,
     update: (id: string) => `/users/${id}`,
-    ban:    (id: string) => `/users/${id}/ban`,
+    status: (id: string) => `/users/${id}/status`,
+  },
+
+  /* ── Mes Numéros ─────────────────────────────────────── */
+  myPhones: {
+    list:   '/users/me/phones',
+    add:    '/users/me/phones',
+    verify: (phoneId: string) => `/users/me/phones/${phoneId}/verify`,
+    delete: (phoneId: string) => `/users/me/phones/${phoneId}`,
   },
 
   /* ── Numéros ────────────────────────────────────────── */

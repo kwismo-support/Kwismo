@@ -83,9 +83,12 @@ def main() -> None:
     db_type = read_db_type()
     changed = sync(db_type)
 
-    if args.generate and changed:
+    if args.generate:
         print("Lancement de `prisma generate`...")
-        subprocess.run([sys.executable, "-m", "prisma", "generate"], cwd=BACKEND_DIR, check=True)
+        env = dict(os.environ)
+        scripts_dir = str(Path(sys.executable).parent)
+        env["PATH"] = scripts_dir + os.pathsep + env.get("PATH", "")
+        subprocess.run([sys.executable, "-m", "prisma", "generate"], cwd=BACKEND_DIR, check=True, env=env)
 
 
 if __name__ == "__main__":

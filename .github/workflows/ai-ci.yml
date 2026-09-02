@@ -1,0 +1,78 @@
+name: KWISMO AI Service CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'kwismo-ai/**'
+      - '.github/workflows/ai-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'kwismo-ai/**'
+      - '.github/workflows/ai-ci.yml'
+
+jobs:
+  ai-test-and-security:
+    name: AI Service Test, Fraud Detection Scenarios & Security
+    runs-on: ubuntu-latest
+
+    env:
+      BACKEND_URL: "http://localhost:8000"
+      MODEL_DIR: "./models"
+
+    defaults:
+      run:
+        working-directory: kwismo-ai
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Préparation du fichier d'environnement (.env)
+        run: |
+          cp .env.example .env || true
+
+      - name: Configuration de Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+          cache-dependency-path: kwismo-ai/requirements.txt
+
+      - name: Installation des dépendances IA
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio pytest-cov bandit ruff
+
+      - name: Linter & Style (Ruff)
+        run: |
+          ruff check src/ || true
+
+      - name: Audit de Sécurité SAST (Bandit)
+        run: |
+          bandit -r src/ -x tests/ || true
+
+      - name: Entraînement des modèles de démonstration (Modèle A & B Fallback)
+        run: |
+          python -m src.data.generate_model_a_data
+          python -m src.models.model_a.train
+          python -m src.data.clean
+          python -m src.data.augment
+          python -m src.models.model_b.train
+
+      - name: Exécution des Tests IA & 52 Scénarios de Fraude (Pytest)
+        run: |
+          python -m pytest --cov=src --cov-report=xml --cov-report=term-missing
+
+      - name: Test d'Intégration de l'API d'inférence (test_all_routes.py)
+        run: |
+          python -m uvicorn src.api.main:app --port 8001 &
+          SERVER_PID=$!
+          echo "Attente du démarrage du service IA sur le port 8001..."
+          sleep 5
+          python scripts/test_all_routes.py
+          kill $SERVER_PID
