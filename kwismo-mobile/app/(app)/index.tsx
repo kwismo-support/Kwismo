@@ -14,7 +14,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
 import { HeaderActions } from '../../src/shared/components/HeaderActions';
-import { HomeSkeleton } from '../../src/shared/components/HomeSkeleton';
+import { Skeleton, SkeletonCircle } from '../../src/shared/ui/Skeleton';
 import { TabBar } from '../../src/shared/components/TabBar';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
@@ -36,19 +36,15 @@ export default function DashboardHomeScreen() {
   const { t } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
 
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState(0);
+  const [loading, setLoading] = useState(true);
   const unreadNotifications = 3;
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 600);
     return () => clearTimeout(timer);
   }, []);
-
-  if (loading) {
-    return <HomeSkeleton />;
-  }
 
   const filterTabs = [
     t('common.verifiedNumber'),
@@ -207,51 +203,73 @@ export default function DashboardHomeScreen() {
         </View>
 
         <View style={styles.activityList}>
-          {RECENT_ACTIVITIES.map((item) => {
-            const badgeStyle = getStatusStyle(item.statusType);
-            return (
-              <TouchableOpacity
-                key={item.id}
-                activeOpacity={0.7}
-                onPress={() => router.push('/(app)/verify')}
-                style={[
-                  styles.activityRow,
-                  {
-                    backgroundColor: themeColors.cardBg,
-                    borderColor: themeColors.inputBorder,
-                    borderWidth: isDark ? 1 : 0,
-                  },
-                ]}
-              >
-                <View style={styles.itemAvatar} />
-
-                <View style={styles.itemDetails}>
-                  <Text style={[styles.itemPhone, { color: themeColors.textPrimary }]}>
-                    {item.phone}
-                  </Text>
-                  <Text style={[styles.itemType, { color: themeColors.textSecondary }]}>
-                    {item.type}
-                  </Text>
-                </View>
-
+          {loading
+            ? Array.from({ length: 5 }).map((_, idx) => (
                 <View
+                  key={`skel-activity-${idx}`}
                   style={[
-                    styles.statusBadge,
-                    { backgroundColor: badgeStyle.bg },
+                    styles.activityRow,
+                    {
+                      backgroundColor: themeColors.cardBg,
+                      borderColor: themeColors.inputBorder,
+                      borderWidth: isDark ? 1 : 0,
+                    },
                   ]}
                 >
-                  <Text style={[styles.statusText, { color: badgeStyle.text }]}>
-                    {item.status}
-                  </Text>
+                  <SkeletonCircle size={42} style={{ marginRight: 12 }} />
+                  <View style={{ flex: 1, gap: 6 }}>
+                    <Skeleton width="65%" height={16} borderRadius={4} />
+                    <Skeleton width="45%" height={12} borderRadius={4} />
+                  </View>
+                  <Skeleton width={55} height={22} borderRadius={11} style={{ marginRight: 8 }} />
+                  <Skeleton width={50} height={12} borderRadius={4} />
                 </View>
+              ))
+            : RECENT_ACTIVITIES.map((item) => {
+                const badgeStyle = getStatusStyle(item.statusType);
+                return (
+                  <TouchableOpacity
+                    key={item.id}
+                    activeOpacity={0.7}
+                    onPress={() => router.push('/(app)/verify')}
+                    style={[
+                      styles.activityRow,
+                      {
+                        backgroundColor: themeColors.cardBg,
+                        borderColor: themeColors.inputBorder,
+                        borderWidth: isDark ? 1 : 0,
+                      },
+                    ]}
+                  >
+                    <View style={styles.itemAvatar} />
 
-                <Text style={[styles.itemTime, { color: themeColors.textSecondary }]}>
-                  {item.time}
-                </Text>
-                <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
-              </TouchableOpacity>
-            );
-          })}
+                    <View style={styles.itemDetails}>
+                      <Text style={[styles.itemPhone, { color: themeColors.textPrimary }]}>
+                        {item.phone}
+                      </Text>
+                      <Text style={[styles.itemType, { color: themeColors.textSecondary }]}>
+                        {item.type}
+                      </Text>
+                    </View>
+
+                    <View
+                      style={[
+                        styles.statusBadge,
+                        { backgroundColor: badgeStyle.bg },
+                      ]}
+                    >
+                      <Text style={[styles.statusText, { color: badgeStyle.text }]}>
+                        {item.status}
+                      </Text>
+                    </View>
+
+                    <Text style={[styles.itemTime, { color: themeColors.textSecondary }]}>
+                      {item.time}
+                    </Text>
+                    <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
+                  </TouchableOpacity>
+                );
+              })}
         </View>
       </ScrollView>
 
