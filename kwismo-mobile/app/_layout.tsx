@@ -27,6 +27,11 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
     style.innerHTML = `
       * {
         -webkit-tap-highlight-color: transparent;
+        outline: none !important;
+      }
+      *:focus, input:focus, textarea:focus, select:focus, [contenteditable]:focus {
+        outline: none !important;
+        box-shadow: none !important;
       }
       body, html {
         margin: 0;

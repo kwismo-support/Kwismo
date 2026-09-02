@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -99,7 +100,7 @@ export default function DashboardHomeScreen() {
           <View style={styles.searchBar}>
             <Icon name="solar:magnifer-linear" color={colors.white} size={20} style={{ opacity: 0.9, marginRight: 10 }} />
             <TextInput
-              style={styles.searchInput}
+              style={[styles.searchInput, Platform.OS === 'web' ? ({ outline: 'none' } as any) : {}]}
               placeholder={t('common.search')}
               placeholderTextColor="rgba(255, 255, 255, 0.75)"
               value={searchQuery}

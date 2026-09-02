@@ -8,6 +8,7 @@ import {
   ScrollView,
   Animated,
   Easing,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -131,7 +132,11 @@ export default function VerifyScreen() {
                 </TouchableOpacity>
                 <View style={[styles.inputDivider, { backgroundColor: themeColors.inputBorder }]} />
                 <TextInput
-                  style={[styles.phoneInput, { color: themeColors.textPrimary }]}
+                  style={[
+                    styles.phoneInput,
+                    { color: themeColors.textPrimary },
+                    Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
+                  ]}
                   placeholder={t('common.phonePlaceholder')}
                   placeholderTextColor={themeColors.inputPlaceholder}
                   keyboardType="phone-pad"

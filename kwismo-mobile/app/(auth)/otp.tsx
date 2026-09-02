@@ -203,6 +203,7 @@ export default function OtpScreen() {
                           color: themeColors.textPrimary,
                           fontSize: scaleFont(22),
                         },
+                        Platform.OS === 'web' ? ({ outline: 'none', outlineStyle: 'none' } as any) : {},
                       ]}
                       keyboardType="number-pad"
                       maxLength={1}

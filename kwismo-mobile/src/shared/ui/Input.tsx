@@ -62,8 +62,6 @@ export const Input: React.FC<InputProps> = ({
   let borderColor = themeColors.inputBorder;
   if (error) {
     borderColor = '#EF4444';
-  } else if (isFocused) {
-    borderColor = colors.green;
   }
 
   const hasValue = value && value.length > 0;
@@ -95,7 +93,7 @@ export const Input: React.FC<InputProps> = ({
           {
             backgroundColor: themeColors.cardBg,
             borderColor,
-            borderWidth: isFocused || error ? 1.5 : 1,
+            borderWidth: 1,
           },
         ]}
       >
@@ -108,6 +106,7 @@ export const Input: React.FC<InputProps> = ({
               color: themeColors.textPrimary,
               fontFamily: fonts.medium,
             },
+            Platform.OS === 'web' ? ({ outline: 'none', outlineStyle: 'none' } as any) : {},
             textInputDynamicStyle,
             inputStyle,
           ]}
