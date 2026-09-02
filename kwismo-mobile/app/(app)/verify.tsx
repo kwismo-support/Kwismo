@@ -17,9 +17,24 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
 import { Button } from '../../src/shared/ui/Button';
 import { HeaderActions } from '../../src/shared/components/HeaderActions';
+import { CountryPickerModal } from '../../src/shared/components/CountryPickerModal';
+import { ContactPickerModal } from '../../src/shared/components/ContactPickerModal';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
+import {
+  COUNTRIES_LIST,
+  CountryInfo,
+  detectCountryByIP,
+  validatePhoneNumber,
+} from '../../src/shared/lib/countryData';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
+
+interface VerificationHistoryItem {
+  id: string;
+  phone: string;
+  countryCallingCode: string;
+  date: string;
+}
 
 export default function VerifyScreen() {
   const router = useRouter();
@@ -29,10 +44,24 @@ export default function VerifyScreen() {
 
   const [viewState, setViewState] = useState<'idle' | 'analyzing' | 'result'>('idle');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [countryCode, setCountryCode] = useState('+237');
+  const [selectedCountry, setSelectedCountry] = useState<CountryInfo>(COUNTRIES_LIST[0]);
   const [phoneError, setPhoneError] = useState('');
   const [analysisStep, setAnalysisStep] = useState(1);
+  const [countryModalVisible, setCountryModalVisible] = useState(false);
+  const [contactModalVisible, setContactModalVisible] = useState(false);
+  const [verificationHistory, setVerificationHistory] = useState<VerificationHistoryItem[]>([
+    { id: '1', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'hier, 21:47' },
+    { id: '2', phone: '6 77 12 34 56', countryCallingCode: '+237', date: '28 août, 14:12' },
+  ]);
+
   const spinValue = useState(new Animated.Value(0))[0];
+
+  useEffect(() => {
+    // Détection automatique du pays par IP au chargement
+    detectCountryByIP().then((c) => {
+      if (c) setSelectedCountry(c);
+    });
+  }, []);
 
   useEffect(() => {
     if (viewState === 'analyzing') {
@@ -49,19 +78,28 @@ export default function VerifyScreen() {
     }
   }, [viewState, spinValue]);
 
+  // Validation en temps réel avec libphonenumber-js
+  const validationResult = validatePhoneNumber(phoneNumber, selectedCountry.code);
+  const isPhoneValid = validationResult.isValid;
+
   const handleVerify = async () => {
     setPhoneError('');
-    if (!phoneNumber.trim()) {
-      setPhoneError(t('validation.required'));
-      return false;
-    }
-    if (phoneNumber.trim().length < 6) {
-      setPhoneError(t('validation.phoneNumberInvalid'));
+    if (!isPhoneValid) {
+      setPhoneError(t('validation.phoneNumberInvalid', 'Numéro de téléphone invalide pour ce pays'));
       return false;
     }
 
     setViewState('analyzing');
     setAnalysisStep(1);
+
+    // Ajout à l'historique
+    const newItem: VerificationHistoryItem = {
+      id: Date.now().toString(),
+      phone: phoneNumber,
+      countryCallingCode: selectedCountry.callingCode,
+      date: t('common.now', 'À l’instant'),
+    };
+    setVerificationHistory((prev) => [newItem, ...prev]);
 
     setTimeout(() => setAnalysisStep(2), 700);
     setTimeout(() => setAnalysisStep(3), 1500);
@@ -70,15 +108,24 @@ export default function VerifyScreen() {
     return true;
   };
 
+  const handleSelectContact = (phone: string, country?: CountryInfo) => {
+    setPhoneNumber(phone);
+    if (country) {
+      setSelectedCountry(country);
+    }
+    if (phoneError) setPhoneError('');
+  };
+
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
   });
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <View style={styles.container}>
       <StatusBar style="light" />
 
+      {/* Header vert Kwismo */}
       <View style={[styles.header, { paddingTop: Math.max(insets.top + 10, 20) }]}>
         <View style={styles.headerContent}>
           <TouchableOpacity
@@ -99,6 +146,7 @@ export default function VerifyScreen() {
         </View>
       </View>
 
+      {/* Feuille de contenu avec bordure supérieure gauche arrondie */}
       <View
         style={[
           styles.mainCardSheet,
@@ -114,23 +162,35 @@ export default function VerifyScreen() {
         >
           {viewState === 'idle' && (
             <View style={styles.idleContainer}>
+              {/* Carte de saisie de numéro sans séparateur vertical */}
               <View
                 style={[
                   styles.inputCard,
                   {
                     backgroundColor: themeColors.cardBg,
-                    borderColor: phoneError ? '#EF4444' : themeColors.inputBorder,
+                    borderColor: phoneError
+                      ? '#EF4444'
+                      : isPhoneValid
+                      ? colors.green
+                      : themeColors.inputBorder,
                   },
                 ]}
               >
-                <Icon name="solar:phone-linear" color={themeColors.inputPlaceholder} size={20} style={{ marginRight: 8 }} />
-                <TouchableOpacity activeOpacity={0.7} style={styles.countryPicker}>
+                <Icon name="solar:phone-linear" color={isPhoneValid ? colors.green : themeColors.inputPlaceholder} size={20} style={{ marginRight: 8 }} />
+
+                {/* Sélecteur de pays avec drapeau et indicatif */}
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => setCountryModalVisible(true)}
+                  style={styles.countryPicker}
+                >
+                  <Text style={styles.flagEmoji}>{selectedCountry.flag}</Text>
                   <Text style={[styles.countryCodeText, { color: themeColors.textPrimary }]}>
-                    {countryCode}
+                    {selectedCountry.callingCode}
                   </Text>
-                  <Icon name="solar:alt-arrow-down-linear" color={themeColors.inputPlaceholder} size={16} />
+                  <Icon name="solar:alt-arrow-down-linear" color={themeColors.inputPlaceholder} size={14} />
                 </TouchableOpacity>
-                <View style={[styles.inputDivider, { backgroundColor: themeColors.inputBorder }]} />
+
                 <TextInput
                   style={[
                     styles.phoneInput,
@@ -146,6 +206,10 @@ export default function VerifyScreen() {
                     if (phoneError) setPhoneError('');
                   }}
                 />
+
+                {isPhoneValid && (
+                  <Icon name="solar:check-circle-bold" color={colors.green} size={20} style={{ marginLeft: 6 }} />
+                )}
               </View>
 
               {phoneError ? (
@@ -155,28 +219,63 @@ export default function VerifyScreen() {
                 </View>
               ) : null}
 
+              {/* Bouton de vérification désactivé tant que le numéro n'est pas valide */}
               <Button
                 title={t('common.verify')}
                 onPress={handleVerify}
+                disabled={!isPhoneValid}
                 variant="primary"
                 size="md"
-                style={{ marginTop: 16, marginBottom: 24 }}
+                style={{ marginTop: 18, marginBottom: 26 }}
               />
 
-              <View style={styles.historyList}>
-                {Array.from({ length: 9 }).map((_, idx) => (
-                  <View key={`history-${idx}`} style={styles.historyRow}>
-                    <View style={styles.avatarCircle} />
-                    <View>
-                      <Text style={[styles.historyPhone, { color: themeColors.textPrimary }]}>
-                        +237 6 98 44 43 88
-                      </Text>
-                      <Text style={[styles.historySub, { color: themeColors.textSecondary }]}>
-                        {t('common.verifyNumber')}
-                      </Text>
-                    </View>
+              {/* Historique des vérifications */}
+              <View style={styles.historySection}>
+                <Text style={[styles.historySectionTitle, { color: themeColors.textPrimary }]}>
+                  {t('common.verificationHistory', 'Historique des vérifications')}
+                </Text>
+
+                {verificationHistory.length === 0 ? (
+                  <View style={styles.emptyHistoryBox}>
+                    <Icon name="solar:history-linear" color={themeColors.inputPlaceholder} size={36} style={{ marginBottom: 8 }} />
+                    <Text style={[styles.emptyHistoryText, { color: themeColors.textSecondary }]}>
+                      {t('common.noVerificationHistory', 'Aucune vérification récente pour le moment.')}
+                    </Text>
                   </View>
-                ))}
+                ) : (
+                  <View style={styles.historyList}>
+                    {verificationHistory.map((item) => (
+                      <TouchableOpacity
+                        key={item.id}
+                        activeOpacity={0.7}
+                        onPress={() => {
+                          setPhoneNumber(item.phone);
+                        }}
+                        style={[
+                          styles.historyRow,
+                          {
+                            backgroundColor: themeColors.cardBg,
+                            borderColor: themeColors.inputBorder,
+                            borderWidth: isDark ? 1 : 0,
+                          },
+                        ]}
+                      >
+                        <View style={styles.avatarCircle}>
+                          <Icon name="solar:user-linear" color={colors.white} size={18} />
+                        </View>
+                        <View style={{ flex: 1 }}>
+                          <Text style={[styles.historyPhone, { color: themeColors.textPrimary }]}>
+                            {item.countryCallingCode} {item.phone}
+                          </Text>
+                          <Text style={[styles.historySub, { color: themeColors.textSecondary }]}>
+                            {t('common.verifiedOn', 'Vérifié')} • {item.date}
+                          </Text>
+                        </View>
+                        <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
               </View>
             </View>
           )}
@@ -189,18 +288,18 @@ export default function VerifyScreen() {
                   { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder },
                 ]}
               >
-                <Icon name="solar:phone-linear" color={themeColors.inputPlaceholder} size={20} style={{ marginRight: 8 }} />
-                <Text style={[styles.countryCodeText, { color: themeColors.textPrimary }]}>
-                  {countryCode}
+                <Icon name="solar:phone-linear" color={colors.green} size={20} style={{ marginRight: 8 }} />
+                <Text style={styles.flagEmoji}>{selectedCountry.flag}</Text>
+                <Text style={[styles.countryCodeText, { color: themeColors.textPrimary, marginRight: 6 }]}>
+                  {selectedCountry.callingCode}
                 </Text>
-                <Icon name="solar:alt-arrow-down-linear" color={themeColors.inputPlaceholder} size={16} style={{ marginRight: 12 }} />
                 <Text style={[styles.phoneTextReadonly, { color: themeColors.textPrimary }]}>
                   {phoneNumber}
                 </Text>
               </View>
 
-              <View style={styles.graphicCircleBg}>
-                <View style={styles.innerShieldIcon}>
+              <View style={[styles.graphicCircleBg, { backgroundColor: isDark ? '#1E293B' : '#E6F7F0' }]}>
+                <View style={[styles.innerShieldIcon, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
                   <Icon name="solar:shield-check-bold" color={colors.green} size={64} />
                 </View>
               </View>
@@ -289,8 +388,8 @@ export default function VerifyScreen() {
                 <Text style={styles.statusPillText}>{t('common.secured')}</Text>
               </View>
 
-              <View style={styles.graphicCircleBg}>
-                <View style={styles.innerShieldIcon}>
+              <View style={[styles.graphicCircleBg, { backgroundColor: isDark ? '#1E293B' : '#E6F7F0' }]}>
+                <View style={[styles.innerShieldIcon, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
                   <Icon name="solar:shield-check-bold" color={colors.green} size={64} />
                 </View>
               </View>
@@ -369,6 +468,7 @@ export default function VerifyScreen() {
         </ScrollView>
       </View>
 
+      {/* Bouton fixe "Choisir dans contacts" */}
       {viewState === 'idle' && (
         <View
           style={[
@@ -378,7 +478,7 @@ export default function VerifyScreen() {
         >
           <TouchableOpacity
             activeOpacity={0.85}
-            onPress={() => router.push('/(app)/contacts')}
+            onPress={() => setContactModalVisible(true)}
             style={styles.contactsBtn}
           >
             <Icon name="solar:users-group-two-rounded-bold" color={colors.white} size={20} style={{ marginRight: 10 }} />
@@ -386,6 +486,25 @@ export default function VerifyScreen() {
           </TouchableOpacity>
         </View>
       )}
+
+      {/* Modale de sélection de pays */}
+      <CountryPickerModal
+        visible={countryModalVisible}
+        onClose={() => setCountryModalVisible(false)}
+        onSelect={(c) => {
+          setSelectedCountry(c);
+          if (phoneError) setPhoneError('');
+        }}
+        selectedCode={selectedCountry.code}
+      />
+
+      {/* Modale de sélection de contact */}
+      <ContactPickerModal
+        visible={contactModalVisible}
+        onClose={() => setContactModalVisible(false)}
+        onSelect={handleSelectContact}
+        defaultCountryCode={selectedCountry.code}
+      />
     </View>
   );
 }
@@ -414,9 +533,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.white,
   },
-  moreBtn: {
-    padding: 6,
-  },
   mainCardSheet: {
     flex: 1,
     borderTopLeftRadius: 36,
@@ -435,7 +551,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 54,
     borderRadius: 14,
-    borderWidth: 1,
+    borderWidth: 1.5,
     paddingHorizontal: 14,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -446,17 +562,16 @@ const styles = StyleSheet.create({
   countryPicker: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingRight: 8,
+    paddingRight: 10,
+    gap: 4,
+  },
+  flagEmoji: {
+    fontSize: 18,
+    marginRight: 2,
   },
   countryCodeText: {
     fontFamily: fonts.bold,
     fontSize: scaleFont(15),
-    marginRight: 4,
-  },
-  inputDivider: {
-    width: 1,
-    height: 24,
-    marginHorizontal: 8,
   },
   phoneInput: {
     flex: 1,
@@ -478,28 +593,55 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#EF4444',
   },
+  historySection: {
+    marginTop: 8,
+  },
+  historySectionTitle: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(16),
+    fontWeight: '700',
+    marginBottom: 14,
+  },
+  emptyHistoryBox: {
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyHistoryText: {
+    fontFamily: fonts.regular,
+    fontSize: scaleFont(13),
+    textAlign: 'center',
+  },
   historyList: {
-    marginTop: 10,
+    gap: 8,
   },
   historyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    padding: 12,
+    borderRadius: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
   },
   avatarCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#D1D5DB',
-    marginRight: 14,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#94A3B8',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
   },
   historyPhone: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(15),
+    fontFamily: fonts.semiBold,
+    fontSize: scaleFont(14),
   },
   historySub: {
     fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
+    fontSize: scaleFont(11),
     marginTop: 2,
   },
   analyzingContainer: {
@@ -513,31 +655,35 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 14,
     borderWidth: 1,
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     marginBottom: 28,
   },
   phoneTextReadonly: {
-    fontFamily: fonts.bold,
+    fontFamily: fonts.semiBold,
     fontSize: scaleFont(15),
   },
   graphicCircleBg: {
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: '#E6F7F0',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
   },
   innerShieldIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
   },
   analyzingTitle: {
-    fontFamily: fonts.h6,
+    fontFamily: fonts.headlineBold,
     fontSize: scaleFont(20),
     fontWeight: '700',
     marginBottom: 6,
@@ -545,23 +691,21 @@ const styles = StyleSheet.create({
   analyzingSub: {
     fontFamily: fonts.regular,
     fontSize: scaleFont(13),
-    textAlign: 'center',
-    lineHeight: 18,
     marginBottom: 24,
-    paddingHorizontal: 10,
+    textAlign: 'center',
   },
   stepsCard: {
     width: '100%',
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1,
     padding: 16,
+    gap: 16,
     marginBottom: 20,
   },
   stepItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 10,
   },
   stepText: {
     fontFamily: fonts.medium,
@@ -576,7 +720,7 @@ const styles = StyleSheet.create({
   },
   infoText: {
     flex: 1,
-    fontFamily: fonts.regular,
+    fontFamily: fonts.medium,
     fontSize: scaleFont(12),
     lineHeight: 18,
   },
@@ -584,20 +728,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statusPillBanner: {
-    width: '100%',
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 1.5,
-    borderColor: colors.green,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#E6F7F0',
+    paddingHorizontal: 18,
+    paddingVertical: 6,
+    borderRadius: 20,
     marginBottom: 20,
   },
   statusPillText: {
     fontFamily: fonts.bold,
-    fontSize: scaleFont(18),
+    fontSize: scaleFont(13),
     color: colors.green,
-    letterSpacing: 2,
   },
   riskCard: {
     width: '100%',
@@ -614,7 +754,7 @@ const styles = StyleSheet.create({
   },
   riskTitle: {
     fontFamily: fonts.bold,
-    fontSize: scaleFont(14),
+    fontSize: scaleFont(15),
     color: colors.white,
   },
   riskLevelBadge: {
@@ -624,8 +764,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   riskLevelText: {
-    fontFamily: fonts.medium,
-    fontSize: 11,
+    fontFamily: fonts.bold,
+    fontSize: scaleFont(11),
     color: colors.white,
   },
   gaugeContainer: {
@@ -638,7 +778,7 @@ const styles = StyleSheet.create({
   },
   gaugeVal: {
     fontFamily: fonts.medium,
-    fontSize: 12,
+    fontSize: 10,
     color: 'rgba(255, 255, 255, 0.85)',
   },
   gaugeBarBackground: {
@@ -646,21 +786,21 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    overflow: 'hidden',
   },
   gaugeBarFill: {
     height: '100%',
-    backgroundColor: colors.white,
     borderRadius: 4,
+    backgroundColor: colors.white,
   },
   communitySection: {
     width: '100%',
-    marginBottom: 24,
+    marginBottom: 28,
   },
   communityTitle: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(15),
-    marginBottom: 14,
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(16),
+    fontWeight: '700',
+    marginBottom: 12,
   },
   statRow: {
     flexDirection: 'row',
@@ -672,7 +812,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#1E293B',
+    backgroundColor: colors.navy,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -698,23 +838,23 @@ const styles = StyleSheet.create({
   },
   signalerBtn: {
     flex: 1,
-    height: 52,
-    backgroundColor: colors.orange,
-    borderRadius: 26,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#EF4444',
     alignItems: 'center',
     justifyContent: 'center',
   },
   transfererBtn: {
     flex: 1,
-    height: 52,
-    backgroundColor: '#1E293B',
-    borderRadius: 26,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: colors.green,
     alignItems: 'center',
     justifyContent: 'center',
   },
   actionBtnText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(15),
+    fontFamily: fonts.semiBold,
+    fontSize: scaleFont(14),
     color: colors.white,
   },
   bottomContactsWrapper: {
@@ -723,18 +863,22 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     paddingHorizontal: 20,
-    paddingTop: 10,
   },
   contactsBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     height: 52,
-    backgroundColor: '#1E293B',
-    borderRadius: 14,
+    borderRadius: 26,
+    backgroundColor: colors.orange,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 3,
   },
   contactsBtnText: {
-    fontFamily: fonts.bold,
+    fontFamily: fonts.semiBold,
     fontSize: scaleFont(15),
     color: colors.white,
   },
