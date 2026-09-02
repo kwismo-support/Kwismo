@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
@@ -9,46 +11,54 @@ import { scaleFont } from '../../src/shared/lib/responsive';
 
 export default function ReportScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { colors: themeColors } = useAppTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
-      <View style={styles.header}>
+    <View style={styles.container}>
+      <StatusBar style="light" />
+      <View style={[styles.header, { paddingTop: Math.max(insets.top + 10, 20) }]}>
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => router.back()}
           style={styles.backBtn}
         >
-          <Icon name="solar:arrow-left-linear" color={themeColors.textPrimary} size={22} />
+          <Icon name="solar:arrow-left-linear" color={colors.white} size={22} />
         </TouchableOpacity>
-        <Text style={[styles.title, { color: themeColors.textPrimary }]}>
-          {t('common.report')}
-        </Text>
+        <Text style={styles.title}>{t('common.report')}</Text>
       </View>
-      <View style={styles.content}>
-        <Icon name="solar:radar-2-linear" color={colors.green} size={48} />
+      <View style={[styles.content, { backgroundColor: themeColors.background }]}>
+        <Icon name="heroicons:signal-16-solid" color={colors.green} size={48} />
         <Text style={[styles.subtitle, { color: themeColors.textSecondary }]}>
           {t('common.reportsMade')}
         </Text>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
+  container: { flex: 1, backgroundColor: colors.green },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingBottom: 24,
     gap: 12,
   },
   backBtn: {
     padding: 4,
   },
-  content: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, gap: 16 },
-  title: { fontFamily: fonts.headlineBold, fontSize: scaleFont(20), fontWeight: '700' },
+  content: {
+    flex: 1,
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    gap: 16,
+  },
+  title: { fontFamily: fonts.h6, fontSize: scaleFont(18), fontWeight: '700', color: colors.white },
   subtitle: { fontFamily: fonts.medium, fontSize: scaleFont(15) },
 });

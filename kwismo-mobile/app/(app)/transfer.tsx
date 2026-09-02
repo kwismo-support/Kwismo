@@ -68,7 +68,7 @@ export default function TransferScreen() {
           </View>
         </View>
 
-        <View style={styles.content}>
+        <View style={[styles.content, { backgroundColor: themeColors.background }]}>
           <View style={styles.operatorRow}>
             <TouchableOpacity
               activeOpacity={0.8}
@@ -147,6 +147,7 @@ export default function TransferScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.green,
   },
   headerCard: {
     backgroundColor: colors.green,
@@ -166,8 +167,11 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   content: {
+    flex: 1,
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 0,
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 24,
   },
   operatorRow: {
     flexDirection: 'row',

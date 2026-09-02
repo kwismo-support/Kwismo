@@ -451,35 +451,40 @@ const styles = StyleSheet.create({
   },
   itemDetails: {
     flex: 1,
+    justifyContent: 'center',
   },
   itemPhone: {
     fontFamily: fonts.semiBold,
-    fontSize: scaleFont(15),
+    fontSize: scaleFont(14),
     fontWeight: '600',
   },
   itemType: {
     fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
+    fontSize: scaleFont(11),
     marginTop: 2,
   },
   statusCenterContainer: {
-    paddingHorizontal: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 6,
   },
   statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   statusText: {
     fontFamily: fonts.medium,
     fontSize: 11,
+    textAlign: 'center',
   },
   itemRight: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 6,
+    justifyContent: 'flex-end',
   },
   itemTime: {
     fontFamily: fonts.regular,

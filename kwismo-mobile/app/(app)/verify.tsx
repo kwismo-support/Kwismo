@@ -419,8 +419,8 @@ const styles = StyleSheet.create({
   },
   mainCardSheet: {
     flex: 1,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 0,
     overflow: 'hidden',
   },
   scrollBody: {
