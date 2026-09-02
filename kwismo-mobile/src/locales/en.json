@@ -101,7 +101,13 @@
     "resendCode": "resend",
     "logout": "Log Out",
     "acceptPrivacyPolicy": "I accept the Privacy Policy",
-    "acceptTermsOfService": "I accept the Terms of Service"
+    "acceptTermsOfService": "I accept the Terms of Service",
+    "acceptPrivacyPrefix": "I accept the",
+    "privacyPolicyLink": "Privacy Policy",
+    "acceptTermsPrefix": "I accept the",
+    "termsOfServiceLink": "Terms of Service",
+    "privacyPolicyTitle": "Privacy Policy",
+    "termsTitle": "Terms of Service"
   },
   "validation": {
     "required": "This field is required",

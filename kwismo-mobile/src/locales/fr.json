@@ -101,7 +101,13 @@
     "resendCode": "renvoyer",
     "logout": "Déconnexion",
     "acceptPrivacyPolicy": "J'accepte la politique de confidentialité",
-    "acceptTermsOfService": "J'accepte les conditions d'utilisation"
+    "acceptTermsOfService": "J'accepte les conditions d'utilisation",
+    "acceptPrivacyPrefix": "J'accepte la",
+    "privacyPolicyLink": "politique de confidentialité",
+    "acceptTermsPrefix": "J'accepte les",
+    "termsOfServiceLink": "conditions d'utilisation",
+    "privacyPolicyTitle": "Politique de confidentialité",
+    "termsTitle": "Conditions d'utilisation"
   },
   "validation": {
     "required": "Ce champ est obligatoire",

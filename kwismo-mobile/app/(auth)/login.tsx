@@ -247,8 +247,8 @@ const styles = StyleSheet.create({
   },
   forgotWrapper: {
     alignSelf: 'flex-start',
-    marginBottom: 18,
-    marginTop: -4,
+    marginBottom: 24,
+    marginTop: -2,
   },
   forgotText: {
     fontFamily: fonts.medium,
@@ -257,16 +257,16 @@ const styles = StyleSheet.create({
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 32,
   },
   checkbox: {
     width: 20,
     height: 20,
-    borderRadius: 4,
+    borderRadius: 6,
     borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
+    marginRight: 12,
   },
   checkboxLabel: {
     fontFamily: fonts.medium,

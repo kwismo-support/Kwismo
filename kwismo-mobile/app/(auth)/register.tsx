@@ -18,6 +18,7 @@ import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { Input } from '../../src/shared/ui/Input';
 import { Button } from '../../src/shared/ui/Button';
+import { LegalModal } from '../../src/shared/components/LegalModal';
 import { toast } from '../../src/shared/store/toastStore';
 import { validateEmail, validatePassword } from '../../src/shared/lib/validation';
 import { colors, fonts } from '../../src/styles/tokens';
@@ -36,6 +37,12 @@ export default function RegisterScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [acceptPrivacy, setAcceptPrivacy] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
+
+  // Legal modal state
+  const [legalModal, setLegalModal] = useState<{ visible: boolean; title: string }>({
+    visible: false,
+    title: '',
+  });
 
   // Inline errors state
   const [lastNameError, setLastNameError] = useState('');
@@ -355,15 +362,13 @@ export default function RegisterScreen() {
 
             {/* Cases obligatoires : Politique de confidentialité & Conditions d'utilisation */}
             <View style={styles.checkboxGroup}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => {
-                  setAcceptPrivacy(!acceptPrivacy);
-                  if (privacyError) setPrivacyError('');
-                }}
-                style={styles.checkboxRow}
-              >
-                <View
+              <View style={styles.checkboxRow}>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => {
+                    setAcceptPrivacy(!acceptPrivacy);
+                    if (privacyError) setPrivacyError('');
+                  }}
                   style={[
                     styles.checkboxBox,
                     {
@@ -371,13 +376,27 @@ export default function RegisterScreen() {
                       backgroundColor: acceptPrivacy ? colors.green : 'transparent',
                     },
                   ]}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
-                  {acceptPrivacy && <Icon name="solar:check-read-linear" size={14} color={colors.white} />}
-                </View>
+                  {acceptPrivacy && <Icon name="solar:check-read-linear" size={13} color={colors.white} />}
+                </TouchableOpacity>
+
                 <Text style={[styles.checkboxLabel, { color: themeColors.textPrimary }]}>
-                  {t('auth.acceptPrivacyPolicy')} <Text style={{ color: '#EF4444' }}>*</Text>
+                  {t('auth.acceptPrivacyPrefix')}{' '}
+                  <Text
+                    onPress={() =>
+                      setLegalModal({
+                        visible: true,
+                        title: t('auth.privacyPolicyTitle'),
+                      })
+                    }
+                    style={styles.legalLink}
+                  >
+                    {t('auth.privacyPolicyLink')}
+                  </Text>{' '}
+                  <Text style={{ color: '#EF4444' }}>*</Text>
                 </Text>
-              </TouchableOpacity>
+              </View>
               {privacyError ? (
                 <View style={styles.checkboxErrorRow}>
                   <Icon name="solar:danger-circle-bold" size={13} color="#EF4444" />
@@ -385,15 +404,13 @@ export default function RegisterScreen() {
                 </View>
               ) : null}
 
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => {
-                  setAcceptTerms(!acceptTerms);
-                  if (termsError) setTermsError('');
-                }}
-                style={[styles.checkboxRow, { marginTop: 10 }]}
-              >
-                <View
+              <View style={[styles.checkboxRow, { marginTop: 14 }]}>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => {
+                    setAcceptTerms(!acceptTerms);
+                    if (termsError) setTermsError('');
+                  }}
                   style={[
                     styles.checkboxBox,
                     {
@@ -401,13 +418,27 @@ export default function RegisterScreen() {
                       backgroundColor: acceptTerms ? colors.green : 'transparent',
                     },
                   ]}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
-                  {acceptTerms && <Icon name="solar:check-read-linear" size={14} color={colors.white} />}
-                </View>
+                  {acceptTerms && <Icon name="solar:check-read-linear" size={13} color={colors.white} />}
+                </TouchableOpacity>
+
                 <Text style={[styles.checkboxLabel, { color: themeColors.textPrimary }]}>
-                  {t('auth.acceptTermsOfService')} <Text style={{ color: '#EF4444' }}>*</Text>
+                  {t('auth.acceptTermsPrefix')}{' '}
+                  <Text
+                    onPress={() =>
+                      setLegalModal({
+                        visible: true,
+                        title: t('auth.termsTitle'),
+                      })
+                    }
+                    style={styles.legalLink}
+                  >
+                    {t('auth.termsOfServiceLink')}
+                  </Text>{' '}
+                  <Text style={{ color: '#EF4444' }}>*</Text>
                 </Text>
-              </TouchableOpacity>
+              </View>
               {termsError ? (
                 <View style={styles.checkboxErrorRow}>
                   <Icon name="solar:danger-circle-bold" size={13} color="#EF4444" />
@@ -422,7 +453,7 @@ export default function RegisterScreen() {
               onPress={handleRegister}
               variant="primary"
               size="md"
-              style={{ marginTop: 14, marginBottom: 20 }}
+              style={{ marginTop: 22, marginBottom: 20 }}
             />
 
             <View style={styles.dividerRow}>
@@ -443,6 +474,13 @@ export default function RegisterScreen() {
             />
           </View>
         </ScrollView>
+
+        {/* Modale d'affichage de la Politique ou des CGU */}
+        <LegalModal
+          visible={legalModal.visible}
+          title={legalModal.title}
+          onClose={() => setLegalModal({ visible: false, title: '' })}
+        />
       </View>
     </KeyboardAvoidingView>
   );
@@ -553,6 +591,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.medium,
     fontSize: scaleFont(13),
     flex: 1,
+  },
+  legalLink: {
+    fontFamily: fonts.semiBold,
+    color: colors.green,
+    textDecorationLine: 'underline',
   },
   checkboxErrorRow: {
     flexDirection: 'row',

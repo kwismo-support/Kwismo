@@ -60,8 +60,14 @@ export const Input: React.FC<InputProps> = ({
   };
 
   let borderColor = themeColors.inputBorder;
+  let activeIconColor = themeColors.inputPlaceholder;
+
   if (error) {
     borderColor = '#EF4444';
+    activeIconColor = '#EF4444';
+  } else if (isFocused) {
+    borderColor = colors.green;
+    activeIconColor = colors.green;
   }
 
   const hasValue = value && value.length > 0;
@@ -79,6 +85,13 @@ export const Input: React.FC<InputProps> = ({
         fontWeight: 'normal',
       };
 
+  // Render leftIcon with dynamic focus/error color if possible
+  const renderedLeftIcon = React.isValidElement(leftIcon)
+    ? React.cloneElement(leftIcon as React.ReactElement<any>, {
+        color: activeIconColor,
+      })
+    : leftIcon;
+
   return (
     <View style={[styles.wrapper, containerStyle]}>
       {label ? (
@@ -93,11 +106,11 @@ export const Input: React.FC<InputProps> = ({
           {
             backgroundColor: themeColors.cardBg,
             borderColor,
-            borderWidth: 1,
+            borderWidth: isFocused || error ? 1.5 : 1,
           },
         ]}
       >
-        {leftIcon ? <View style={styles.leftIconWrapper}>{leftIcon}</View> : null}
+        {renderedLeftIcon ? <View style={styles.leftIconWrapper}>{renderedLeftIcon}</View> : null}
 
         <TextInput
           style={[
@@ -105,6 +118,7 @@ export const Input: React.FC<InputProps> = ({
             {
               color: themeColors.textPrimary,
               fontFamily: fonts.medium,
+              backgroundColor: 'transparent',
             },
             Platform.OS === 'web' ? ({ outline: 'none', outlineStyle: 'none' } as any) : {},
             textInputDynamicStyle,

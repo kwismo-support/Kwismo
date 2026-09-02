@@ -33,6 +33,15 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
         outline: none !important;
         box-shadow: none !important;
       }
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover,
+      input:-webkit-autofill:focus,
+      input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+        -webkit-text-fill-color: inherit !important;
+        transition: background-color 5000s ease-in-out 0s !important;
+        background-color: transparent !important;
+      }
       body, html {
         margin: 0;
         padding: 0;
