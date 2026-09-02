@@ -112,7 +112,7 @@ export default function DashboardHomeScreen() {
             style={styles.actionItem}
           >
             <View style={[styles.actionIconCircle, { backgroundColor: isDark ? '#1E293B' : '#EBF7F2' }]}>
-              <Icon name="solar:user-id-linear" color={colors.green} size={28} />
+              <Icon name="ri:user-scan-fill" color={colors.green} size={28} />
             </View>
             <Text style={[styles.actionLabel, { color: themeColors.textSecondary }]}>
               {t('common.verifyNumber')}
@@ -125,7 +125,7 @@ export default function DashboardHomeScreen() {
             style={styles.actionItem}
           >
             <View style={[styles.actionIconCircle, { backgroundColor: isDark ? '#1E293B' : '#EBF7F2' }]}>
-              <Icon name="solar:round-transfer-horizontal-linear" color={colors.green} size={26} />
+              <Icon name="solar:square-transfer-horizontal-linear" color={colors.green} size={26} />
             </View>
             <Text style={[styles.actionLabel, { color: themeColors.textSecondary }]}>
               {t('common.moneyTransfer')}
@@ -151,7 +151,7 @@ export default function DashboardHomeScreen() {
             style={styles.actionItem}
           >
             <View style={[styles.actionIconCircle, { backgroundColor: isDark ? '#1E293B' : '#EBF7F2' }]}>
-              <Icon name="solar:radar-2-linear" color={colors.green} size={26} />
+              <Icon name="heroicons:signal-16-solid" color={colors.green} size={26} />
             </View>
             <Text style={[styles.actionLabel, { color: themeColors.textSecondary }]}>
               {t('common.report')}
@@ -172,19 +172,15 @@ export default function DashboardHomeScreen() {
               style={[
                 styles.filterPill,
                 {
-                  backgroundColor: themeColors.cardBg,
+                  backgroundColor: activeFilter === idx ? colors.green : themeColors.cardBg,
                   borderColor: activeFilter === idx ? colors.green : themeColors.inputBorder,
-                },
-                activeFilter === idx && {
-                  backgroundColor: isDark ? '#064E3B' : '#E6F7F0',
                 },
               ]}
             >
               <Text
                 style={[
                   styles.filterText,
-                  { color: themeColors.textSecondary },
-                  activeFilter === idx && { color: colors.green, fontWeight: '700' },
+                  { color: activeFilter === idx ? colors.white : themeColors.textSecondary },
                 ]}
               >
                 {tab}
@@ -224,7 +220,9 @@ export default function DashboardHomeScreen() {
                       <Skeleton width="65%" height={16} borderRadius={4} />
                       <Skeleton width="45%" height={12} borderRadius={4} />
                     </View>
-                    <Skeleton width={55} height={22} borderRadius={11} style={{ marginRight: 8 }} />
+                    <View style={styles.statusCenterContainer}>
+                      <Skeleton width={60} height={24} borderRadius={12} />
+                    </View>
                     <Skeleton width={50} height={12} borderRadius={4} />
                   </View>
                 ))}
@@ -258,21 +256,25 @@ export default function DashboardHomeScreen() {
                     </Text>
                   </View>
 
-                  <View
-                    style={[
-                      styles.statusBadge,
-                      { backgroundColor: badgeStyle.bg },
-                    ]}
-                  >
-                    <Text style={[styles.statusText, { color: badgeStyle.text }]}>
-                      {item.status}
-                    </Text>
+                  <View style={styles.statusCenterContainer}>
+                    <View
+                      style={[
+                        styles.statusBadge,
+                        { backgroundColor: badgeStyle.bg },
+                      ]}
+                    >
+                      <Text style={[styles.statusText, { color: badgeStyle.text }]}>
+                        {item.status}
+                      </Text>
+                    </View>
                   </View>
 
-                  <Text style={[styles.itemTime, { color: themeColors.textSecondary }]}>
-                    {item.time}
-                  </Text>
-                  <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
+                  <View style={styles.itemRight}>
+                    <Text style={[styles.itemTime, { color: themeColors.textSecondary }]}>
+                      {item.time}
+                    </Text>
+                    <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
+                  </View>
                 </TouchableOpacity>
               );
             })}
@@ -460,15 +462,24 @@ const styles = StyleSheet.create({
     fontSize: scaleFont(12),
     marginTop: 2,
   },
+  statusCenterContainer: {
+    paddingHorizontal: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   statusBadge: {
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
-    marginRight: 8,
   },
   statusText: {
     fontFamily: fonts.medium,
     fontSize: 11,
+  },
+  itemRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 6,
   },
   itemTime: {
     fontFamily: fonts.regular,
