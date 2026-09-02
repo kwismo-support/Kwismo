@@ -17,10 +17,10 @@ import { useTranslation } from 'react-i18next';
 import { parsePhoneNumberFromString, getCountryCallingCode, CountryCode } from 'libphonenumber-js/min';
 import countries from 'i18n-iso-countries';
 import { Icon } from '../../src/shared/ui/Icon';
+import { HeaderBar } from '../../src/shared/components/HeaderBar';
 import { CountryPickerModal, CountryItem } from '../../src/shared/components/CountryPickerModal';
 import { CountryFlag } from '../../src/shared/components/CountryFlag';
 import { ContactPickerModal } from '../../src/shared/components/ContactPickerModal';
-import { HeaderActions } from '../../src/shared/components/HeaderActions';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
@@ -60,6 +60,9 @@ export default function VerifyScreen() {
     { id: '3', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
     { id: '4', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
     { id: '5', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+    { id: '6', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+    { id: '7', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+    { id: '8', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
   ]);
 
   const spinValue = useState(new Animated.Value(0))[0];
@@ -159,22 +162,12 @@ export default function VerifyScreen() {
     <View style={styles.container}>
       <StatusBar style="light" />
 
-      {/* Header vert Kwismo avec bouton retour et bouton d'options */}
-      <View style={[styles.header, { paddingTop: Math.max(insets.top + 10, 20) }]}>
-        <View style={styles.headerContent}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={handleBack}
-            style={styles.headerActionBtn}
-          >
-            <Icon name="solar:arrow-left-linear" color={colors.white} size={24} />
-          </TouchableOpacity>
-
-          <Text style={styles.headerTitle}>{t('common.verifyNumber', 'Verification du numero')}</Text>
-
-          <HeaderActions iconColor={colors.white} />
-        </View>
-      </View>
+      {/* Header global unifié Kwismo */}
+      <HeaderBar
+        title={t('common.verifyNumber', 'Verification du numero')}
+        showBack={true}
+        onBack={handleBack}
+      />
 
       {/* Feuille de contenu blanc/sombre avec bordure supérieure gauche arrondie */}
       <View
@@ -183,15 +176,10 @@ export default function VerifyScreen() {
           { backgroundColor: themeColors.background },
         ]}
       >
-        <ScrollView
-          contentContainerStyle={[
-            styles.scrollBody,
-            { paddingBottom: insets.bottom + 110 },
-          ]}
-          showsVerticalScrollIndicator={false}
-        >
-          {viewState === 'idle' && (
-            <View style={styles.idleContainer}>
+        {viewState === 'idle' ? (
+          <View style={styles.idleRootContainer}>
+            {/* Zone fixe du haut : Input + Bouton vérifier + Titre Historique */}
+            <View style={styles.topFixedSection}>
               {/* Champ de saisie du numéro */}
               <View
                 style={[
@@ -210,7 +198,6 @@ export default function VerifyScreen() {
                   },
                 ]}
               >
-                {/* Icône téléphone */}
                 <Icon
                   name="solar:phone-linear"
                   color={
@@ -305,229 +292,249 @@ export default function VerifyScreen() {
                 </Text>
               </TouchableOpacity>
 
-              {/* Historique des vérifications */}
-              <View style={styles.historySection}>
-                {verificationHistory.length === 0 ? (
-                  <View style={styles.emptyHistoryBox}>
-                    <Icon name="solar:history-linear" color={themeColors.inputPlaceholder} size={36} style={{ marginBottom: 8 }} />
-                    <Text style={[styles.emptyHistoryText, { color: themeColors.textSecondary }]}>
-                      {t('common.noVerificationHistory', 'Aucune vérification récente pour le moment.')}
+              {/* Titre FIXE de l'historique des vérifications */}
+              <Text style={[styles.historySectionTitleFixed, { color: themeColors.textPrimary }]}>
+                {t('common.verificationHistory', 'Historique des vérifications')}
+              </Text>
+            </View>
+
+            {/* SEULE la liste des numéros est scrollable */}
+            <ScrollView
+              style={styles.historyScrollView}
+              contentContainerStyle={[
+                styles.historyScrollContent,
+                { paddingBottom: insets.bottom + 90 },
+              ]}
+              showsVerticalScrollIndicator={false}
+            >
+              {verificationHistory.length === 0 ? (
+                <View style={styles.emptyHistoryBox}>
+                  <Icon name="solar:history-linear" color={themeColors.inputPlaceholder} size={36} style={{ marginBottom: 8 }} />
+                  <Text style={[styles.emptyHistoryText, { color: themeColors.textSecondary }]}>
+                    {t('common.noVerificationHistory', 'Aucune vérification récente pour le moment.')}
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.historyList}>
+                  {verificationHistory.map((item, idx) => (
+                    <TouchableOpacity
+                      key={`${item.id}-${idx}`}
+                      activeOpacity={0.7}
+                      onPress={() => {
+                        setPhoneNumber(item.phone);
+                      }}
+                      style={styles.historyRow}
+                    >
+                      <View style={styles.avatarCircle} />
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.historyPhone, { color: themeColors.textPrimary }]}>
+                          {item.countryCallingCode} {item.phone}
+                        </Text>
+                        <Text style={[styles.historySub, { color: themeColors.textSecondary }]}>
+                          {item.date}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </ScrollView>
+          </View>
+        ) : (
+          <ScrollView
+            contentContainerStyle={[
+              styles.scrollBody,
+              { paddingBottom: insets.bottom + 40 },
+            ]}
+            showsVerticalScrollIndicator={false}
+          >
+            {viewState === 'analyzing' && (
+              <View style={styles.analyzingContainer}>
+                <View
+                  style={[
+                    styles.inputCardReadonly,
+                    { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder },
+                  ]}
+                >
+                  <Icon name="solar:phone-linear" color={colors.green} size={20} style={{ marginRight: 8 }} />
+                  <CountryFlag countryCode={selectedCountry.code} size={20} style={{ marginRight: 6 }} />
+                  <Text style={[styles.countryCodeText, { color: themeColors.textPrimary, marginRight: 6 }]}>
+                    {selectedCountry.callingCode}
+                  </Text>
+                  <Text style={[styles.phoneTextReadonly, { color: themeColors.textPrimary }]}>
+                    {phoneNumber}
+                  </Text>
+                </View>
+
+                <View style={[styles.graphicCircleBg, { backgroundColor: isDark ? '#1E293B' : '#E6F7F0' }]}>
+                  <View style={[styles.innerShieldIcon, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
+                    <Icon name="solar:shield-check-bold" color={colors.green} size={64} />
+                  </View>
+                </View>
+
+                <Text style={[styles.analyzingTitle, { color: themeColors.textPrimary }]}>
+                  {t('common.analyzing')}
+                </Text>
+                <Text style={[styles.analyzingSub, { color: themeColors.textSecondary }]}>
+                  {t('common.analyzingSubtitle')}
+                </Text>
+
+                <View style={[styles.stepsCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
+                  <View style={styles.stepItem}>
+                    <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 1 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
+                      {t('common.dbAnalysis')}
                     </Text>
+                    {analysisStep > 1 ? (
+                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                    ) : analysisStep === 1 ? (
+                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
+                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
+                      </Animated.View>
+                    ) : (
+                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                    )}
                   </View>
-                ) : (
-                  <View style={styles.historyList}>
-                    {verificationHistory.map((item) => (
-                      <TouchableOpacity
-                        key={item.id}
-                        activeOpacity={0.7}
-                        onPress={() => {
-                          setPhoneNumber(item.phone);
-                        }}
-                        style={styles.historyRow}
-                      >
-                        <View style={styles.avatarCircle} />
-                        <View style={{ flex: 1 }}>
-                          <Text style={[styles.historyPhone, { color: themeColors.textPrimary }]}>
-                            {item.countryCallingCode} {item.phone}
-                          </Text>
-                          <Text style={[styles.historySub, { color: themeColors.textSecondary }]}>
-                            {item.date}
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    ))}
+
+                  <View style={styles.stepItem}>
+                    <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 2 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
+                      {t('common.reportsCheck')}
+                    </Text>
+                    {analysisStep > 2 ? (
+                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                    ) : analysisStep === 2 ? (
+                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
+                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
+                      </Animated.View>
+                    ) : (
+                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                    )}
                   </View>
-                )}
-              </View>
-            </View>
-          )}
 
-          {viewState === 'analyzing' && (
-            <View style={styles.analyzingContainer}>
-              <View
-                style={[
-                  styles.inputCardReadonly,
-                  { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder },
-                ]}
-              >
-                <Icon name="solar:phone-linear" color={colors.green} size={20} style={{ marginRight: 8 }} />
-                <CountryFlag countryCode={selectedCountry.code} size={20} style={{ marginRight: 6 }} />
-                <Text style={[styles.countryCodeText, { color: themeColors.textPrimary, marginRight: 6 }]}>
-                  {selectedCountry.callingCode}
-                </Text>
-                <Text style={[styles.phoneTextReadonly, { color: themeColors.textPrimary }]}>
-                  {phoneNumber}
-                </Text>
-              </View>
+                  <View style={styles.stepItem}>
+                    <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 3 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
+                      {t('common.communityCheck')}
+                    </Text>
+                    {analysisStep > 3 ? (
+                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                    ) : analysisStep === 3 ? (
+                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
+                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
+                      </Animated.View>
+                    ) : (
+                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                    )}
+                  </View>
 
-              <View style={[styles.graphicCircleBg, { backgroundColor: isDark ? '#1E293B' : '#E6F7F0' }]}>
-                <View style={[styles.innerShieldIcon, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
-                  <Icon name="solar:shield-check-bold" color={colors.green} size={64} />
+                  <View style={styles.stepItem}>
+                    <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 4 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
+                      {t('common.riskCalculation')}
+                    </Text>
+                    {analysisStep > 4 ? (
+                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                    ) : analysisStep === 4 ? (
+                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
+                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
+                      </Animated.View>
+                    ) : (
+                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                    )}
+                  </View>
                 </View>
-              </View>
 
-              <Text style={[styles.analyzingTitle, { color: themeColors.textPrimary }]}>
-                {t('common.analyzing')}
-              </Text>
-              <Text style={[styles.analyzingSub, { color: themeColors.textSecondary }]}>
-                {t('common.analyzingSubtitle')}
-              </Text>
-
-              <View style={[styles.stepsCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
-                <View style={styles.stepItem}>
-                  <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 1 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
-                    {t('common.dbAnalysis')}
+                <View style={[styles.infoCard, { backgroundColor: isDark ? '#1E293B' : '#EBF3FF' }]}>
+                  <Icon name="solar:info-circle-linear" color="#3B82F6" size={20} style={{ marginRight: 10 }} />
+                  <Text style={[styles.infoText, { color: isDark ? '#93C5FD' : '#1D4ED8' }]}>
+                    {t('common.operationTimeInfo')}
                   </Text>
-                  {analysisStep > 1 ? (
-                    <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
-                  ) : analysisStep === 1 ? (
-                    <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                      <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
-                    </Animated.View>
-                  ) : (
-                    <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
-                  )}
+                </View>
+              </View>
+            )}
+
+            {viewState === 'result' && (
+              <View style={styles.resultContainer}>
+                <View style={styles.statusPillBanner}>
+                  <Text style={styles.statusPillText}>{t('common.secured')}</Text>
                 </View>
 
-                <View style={styles.stepItem}>
-                  <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 2 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
-                    {t('common.reportsCheck')}
+                <View style={[styles.graphicCircleBg, { backgroundColor: isDark ? '#1E293B' : '#E6F7F0' }]}>
+                  <View style={[styles.innerShieldIcon, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
+                    <Icon name="solar:shield-check-bold" color={colors.green} size={64} />
+                  </View>
+                </View>
+
+                <View style={styles.riskCard}>
+                  <View style={styles.riskHeader}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Text style={styles.riskTitle}>{t('common.riskScore')}</Text>
+                      <Icon name="solar:info-circle-linear" color="rgba(255,255,255,0.8)" size={14} style={{ marginLeft: 4 }} />
+                    </View>
+                    <View style={styles.riskLevelBadge}>
+                      <Text style={styles.riskLevelText}>{t('common.veryLow')}</Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.gaugeContainer}>
+                    <View style={styles.gaugeLabels}>
+                      <Text style={styles.gaugeVal}>0</Text>
+                      <Text style={styles.gaugeVal}>100</Text>
+                    </View>
+                    <View style={styles.gaugeBarBackground}>
+                      <View style={[styles.gaugeBarFill, { width: '8%' }]} />
+                    </View>
+                  </View>
+                </View>
+
+                <View style={styles.communitySection}>
+                  <Text style={[styles.communityTitle, { color: themeColors.textPrimary }]}>
+                    {t('common.communityHistory')}
                   </Text>
-                  {analysisStep > 2 ? (
-                    <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
-                  ) : analysisStep === 2 ? (
-                    <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                      <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
-                    </Animated.View>
-                  ) : (
-                    <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
-                  )}
-                </View>
 
-                <View style={styles.stepItem}>
-                  <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 3 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
-                    {t('common.communityCheck')}
+                  <View style={[styles.statRow, { borderBottomColor: themeColors.inputBorder }]}>
+                    <View style={styles.iconCircleDark}>
+                      <Icon name="solar:bell-bold" color={colors.white} size={16} />
+                    </View>
+                    <Text style={[styles.statLabel, { color: themeColors.textSecondary }]}>
+                      {t('common.reportsCount')}
+                    </Text>
+                    <Text style={[styles.statValue, { color: themeColors.textPrimary }]}>0</Text>
+                  </View>
+
+                  <View style={[styles.statRow, { borderBottomColor: themeColors.inputBorder }]}>
+                    <View style={styles.iconCircleDark}>
+                      <Icon name="solar:chat-dots-bold" color={colors.white} size={16} />
+                    </View>
+                    <Text style={[styles.statLabel, { color: themeColors.textSecondary }]}>
+                      {t('common.positiveComments')}
+                    </Text>
+                    <Text style={[styles.statValue, { color: themeColors.textPrimary }]}>24</Text>
+                  </View>
+
+                  <Text style={[styles.lastReportSub, { color: themeColors.textSecondary }]}>
+                    {t('common.lastReportAgo')}
                   </Text>
-                  {analysisStep > 3 ? (
-                    <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
-                  ) : analysisStep === 3 ? (
-                    <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                      <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
-                    </Animated.View>
-                  ) : (
-                    <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
-                  )}
                 </View>
 
-                <View style={styles.stepItem}>
-                  <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 4 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
-                    {t('common.riskCalculation')}
-                  </Text>
-                  {analysisStep > 4 ? (
-                    <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
-                  ) : analysisStep === 4 ? (
-                    <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                      <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
-                    </Animated.View>
-                  ) : (
-                    <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
-                  )}
+                <View style={styles.dualActionsRow}>
+                  <TouchableOpacity
+                    activeOpacity={0.85}
+                    onPress={() => router.push('/(app)/report')}
+                    style={styles.signalerBtn}
+                  >
+                    <Text style={styles.actionBtnText}>{t('common.report')}</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    activeOpacity={0.85}
+                    onPress={() => router.push('/(app)/transfer')}
+                    style={styles.transfererBtn}
+                  >
+                    <Text style={styles.actionBtnText}>{t('common.transfer')}</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
-
-              <View style={[styles.infoCard, { backgroundColor: isDark ? '#1E293B' : '#EBF3FF' }]}>
-                <Icon name="solar:info-circle-linear" color="#3B82F6" size={20} style={{ marginRight: 10 }} />
-                <Text style={[styles.infoText, { color: isDark ? '#93C5FD' : '#1D4ED8' }]}>
-                  {t('common.operationTimeInfo')}
-                </Text>
-              </View>
-            </View>
-          )}
-
-          {viewState === 'result' && (
-            <View style={styles.resultContainer}>
-              <View style={styles.statusPillBanner}>
-                <Text style={styles.statusPillText}>{t('common.secured')}</Text>
-              </View>
-
-              <View style={[styles.graphicCircleBg, { backgroundColor: isDark ? '#1E293B' : '#E6F7F0' }]}>
-                <View style={[styles.innerShieldIcon, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
-                  <Icon name="solar:shield-check-bold" color={colors.green} size={64} />
-                </View>
-              </View>
-
-              <View style={styles.riskCard}>
-                <View style={styles.riskHeader}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Text style={styles.riskTitle}>{t('common.riskScore')}</Text>
-                    <Icon name="solar:info-circle-linear" color="rgba(255,255,255,0.8)" size={14} style={{ marginLeft: 4 }} />
-                  </View>
-                  <View style={styles.riskLevelBadge}>
-                    <Text style={styles.riskLevelText}>{t('common.veryLow')}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.gaugeContainer}>
-                  <View style={styles.gaugeLabels}>
-                    <Text style={styles.gaugeVal}>0</Text>
-                    <Text style={styles.gaugeVal}>100</Text>
-                  </View>
-                  <View style={styles.gaugeBarBackground}>
-                    <View style={[styles.gaugeBarFill, { width: '8%' }]} />
-                  </View>
-                </View>
-              </View>
-
-              <View style={styles.communitySection}>
-                <Text style={[styles.communityTitle, { color: themeColors.textPrimary }]}>
-                  {t('common.communityHistory')}
-                </Text>
-
-                <View style={[styles.statRow, { borderBottomColor: themeColors.inputBorder }]}>
-                  <View style={styles.iconCircleDark}>
-                    <Icon name="solar:bell-bold" color={colors.white} size={16} />
-                  </View>
-                  <Text style={[styles.statLabel, { color: themeColors.textSecondary }]}>
-                    {t('common.reportsCount')}
-                  </Text>
-                  <Text style={[styles.statValue, { color: themeColors.textPrimary }]}>0</Text>
-                </View>
-
-                <View style={[styles.statRow, { borderBottomColor: themeColors.inputBorder }]}>
-                  <View style={styles.iconCircleDark}>
-                    <Icon name="solar:chat-dots-bold" color={colors.white} size={16} />
-                  </View>
-                  <Text style={[styles.statLabel, { color: themeColors.textSecondary }]}>
-                    {t('common.positiveComments')}
-                  </Text>
-                  <Text style={[styles.statValue, { color: themeColors.textPrimary }]}>24</Text>
-                </View>
-
-                <Text style={[styles.lastReportSub, { color: themeColors.textSecondary }]}>
-                  {t('common.lastReportAgo')}
-                </Text>
-              </View>
-
-              <View style={styles.dualActionsRow}>
-                <TouchableOpacity
-                  activeOpacity={0.85}
-                  onPress={() => router.push('/(app)/report')}
-                  style={styles.signalerBtn}
-                >
-                  <Text style={styles.actionBtnText}>{t('common.report')}</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  activeOpacity={0.85}
-                  onPress={() => router.push('/(app)/transfer')}
-                  style={styles.transfererBtn}
-                >
-                  <Text style={styles.actionBtnText}>{t('common.transfer')}</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
-        </ScrollView>
+            )}
+          </ScrollView>
+        )}
       </View>
 
       {/* Bouton du bas "Choisi dans les contacts" conforme à la maquette (Bleu Nuit, rectangulaire arrondi) */}
@@ -576,37 +583,29 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.green,
   },
-  header: {
-    backgroundColor: colors.green,
-    paddingHorizontal: 16,
-    paddingBottom: 20,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  headerActionBtn: {
-    padding: 6,
-  },
-  headerTitle: {
-    fontFamily: fonts.h6,
-    fontSize: scaleFont(18),
-    fontWeight: '700',
-    color: colors.white,
-  },
   mainCardSheet: {
     flex: 1,
     borderTopLeftRadius: 36,
     borderTopRightRadius: 0,
     overflow: 'hidden',
   },
-  scrollBody: {
+  idleRootContainer: {
+    flex: 1,
+  },
+  topFixedSection: {
     paddingHorizontal: 20,
     paddingTop: 24,
   },
-  idleContainer: {
+  historyScrollView: {
     flex: 1,
+  },
+  historyScrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+  },
+  scrollBody: {
+    paddingHorizontal: 20,
+    paddingTop: 24,
   },
   inputCard: {
     flexDirection: 'row',
@@ -655,7 +654,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 18,
-    marginBottom: 26,
+    marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -666,8 +665,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bold,
     fontSize: scaleFont(15),
   },
-  historySection: {
-    marginTop: 4,
+  historySectionTitleFixed: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(16),
+    fontWeight: '700',
+    marginBottom: 10,
   },
   emptyHistoryBox: {
     padding: 24,

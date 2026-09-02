@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
-import { HeaderActions } from '../../src/shared/components/HeaderActions';
+import { HeaderBar } from '../../src/shared/components/HeaderBar';
 import { Skeleton, SkeletonCircle, SkeletonLoader } from '../../src/shared/ui/Skeleton';
 import { TabBar } from '../../src/shared/components/TabBar';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
@@ -36,7 +36,6 @@ export default function DashboardHomeScreen() {
   const { t } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
 
-  const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState(0);
   const [loading, setLoading] = useState(true);
   const unreadNotifications = 3;
@@ -72,38 +71,13 @@ export default function DashboardHomeScreen() {
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <StatusBar style="light" />
 
+      {/* Header global unifié KWISMO */}
+      <HeaderBar isHome={true} unreadNotificationsCount={unreadNotifications} />
+
       <ScrollView
         contentContainerStyle={{ paddingBottom: 110 }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={[styles.headerCard, { paddingTop: Math.max(insets.top + 10, 20) }]}>
-          <View style={styles.userRow}>
-            <View style={styles.userLeft}>
-              <View style={styles.avatarCircle}>
-                <Text style={styles.avatarText}>L</Text>
-              </View>
-              <Text style={styles.greetingText}>Hello, Lorem</Text>
-            </View>
-
-            <View style={styles.userRight}>
-              <HeaderActions
-                unreadNotificationsCount={unreadNotifications}
-                iconColor={colors.white}
-              />
-            </View>
-          </View>
-
-          <View style={styles.searchBar}>
-            <Icon name="solar:magnifer-linear" color={colors.white} size={20} style={{ opacity: 0.9, marginRight: 10 }} />
-            <TextInput
-              style={[styles.searchInput, Platform.OS === 'web' ? ({ outline: 'none' } as any) : {}]}
-              placeholder={t('common.search')}
-              placeholderTextColor="rgba(255, 255, 255, 0.75)"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-          </View>
-        </View>
 
         <View style={styles.actionGrid}>
           <TouchableOpacity

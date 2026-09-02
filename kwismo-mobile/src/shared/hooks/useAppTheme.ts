@@ -24,18 +24,14 @@ export function useAppTheme() {
   const userThemePreference = useThemeStore((state) => state.userThemePreference);
   const setTheme = useThemeStore((state) => state.setTheme);
 
-  // Requirement: Automatic system dark/light mode before login (!isAuthenticated)
-  // If logged in, use saved user theme settings (system / light / dark)
   let activeTheme: 'light' | 'dark' = systemColorScheme as 'light' | 'dark';
 
-  if (isAuthenticated) {
-    if (userThemePreference === 'dark') {
-      activeTheme = 'dark';
-    } else if (userThemePreference === 'light') {
-      activeTheme = 'light';
-    } else {
-      activeTheme = systemColorScheme as 'light' | 'dark';
-    }
+  if (userThemePreference === 'dark') {
+    activeTheme = 'dark';
+  } else if (userThemePreference === 'light') {
+    activeTheme = 'light';
+  } else {
+    activeTheme = (systemColorScheme === 'dark' ? 'dark' : 'light');
   }
 
   const isDark = activeTheme === 'dark';
