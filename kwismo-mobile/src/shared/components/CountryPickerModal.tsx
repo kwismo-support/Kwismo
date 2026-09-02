@@ -15,6 +15,7 @@ import { getCountries, getCountryCallingCode, CountryCode } from 'libphonenumber
 import countries from 'i18n-iso-countries';
 import frLocale from 'i18n-iso-countries/langs/fr.json';
 import enLocale from 'i18n-iso-countries/langs/en.json';
+import { CountryFlag } from './CountryFlag';
 import { Icon } from '../ui/Icon';
 import { useAppTheme } from '../hooks/useAppTheme';
 import { colors, fonts } from '../../styles/tokens';
@@ -27,15 +28,7 @@ export interface CountryItem {
   code: CountryCode;
   name: string;
   callingCode: string;
-  flag: string;
 }
-
-export const getCountryFlag = (countryCode: string): string => {
-  if (!countryCode || countryCode.length !== 2) return '🌐';
-  return countryCode
-    .toUpperCase()
-    .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397));
-};
 
 export const getAllCountries = (lang: string = 'fr'): CountryItem[] => {
   const isFr = lang.startsWith('fr');
@@ -49,7 +42,6 @@ export const getAllCountries = (lang: string = 'fr'): CountryItem[] => {
           code,
           name,
           callingCode,
-          flag: getCountryFlag(code),
         };
       } catch {
         return null;
@@ -177,9 +169,7 @@ export const CountryPickerModal: React.FC<CountryPickerModalProps> = ({
                     },
                   ]}
                 >
-                  <View style={styles.flagCircle}>
-                    <Text style={styles.flagEmoji}>{item.flag}</Text>
-                  </View>
+                  <CountryFlag countryCode={item.code} size={28} style={{ marginRight: 12 }} />
                   <Text style={[styles.countryName, { color: themeColors.textPrimary }]}>
                     {item.name}
                   </Text>

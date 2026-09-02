@@ -17,10 +17,10 @@ import { useTranslation } from 'react-i18next';
 import { parsePhoneNumberFromString, getCountryCallingCode, CountryCode } from 'libphonenumber-js/min';
 import countries from 'i18n-iso-countries';
 import { Icon } from '../../src/shared/ui/Icon';
-import { Button } from '../../src/shared/ui/Button';
-import { HeaderActions } from '../../src/shared/components/HeaderActions';
-import { CountryPickerModal, CountryItem, getCountryFlag } from '../../src/shared/components/CountryPickerModal';
+import { CountryPickerModal, CountryItem } from '../../src/shared/components/CountryPickerModal';
+import { CountryFlag } from '../../src/shared/components/CountryFlag';
 import { ContactPickerModal } from '../../src/shared/components/ContactPickerModal';
+import { HeaderActions } from '../../src/shared/components/HeaderActions';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
@@ -44,25 +44,28 @@ export default function VerifyScreen() {
     code: 'CM',
     name: countries.getName('CM', isFr ? 'fr' : 'en') || 'Cameroun',
     callingCode: `+${getCountryCallingCode('CM')}`,
-    flag: getCountryFlag('CM'),
   };
 
   const [viewState, setViewState] = useState<'idle' | 'analyzing' | 'result'>('idle');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<CountryItem>(defaultCountry);
   const [phoneError, setPhoneError] = useState('');
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const [analysisStep, setAnalysisStep] = useState(1);
   const [countryModalVisible, setCountryModalVisible] = useState(false);
   const [contactModalVisible, setContactModalVisible] = useState(false);
   const [verificationHistory, setVerificationHistory] = useState<VerificationHistoryItem[]>([
-    { id: '1', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'hier, 21:47' },
-    { id: '2', phone: '6 77 12 34 56', countryCallingCode: '+237', date: '28 août, 14:12' },
+    { id: '1', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+    { id: '2', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+    { id: '3', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+    { id: '4', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+    { id: '5', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
   ]);
 
   const spinValue = useState(new Animated.Value(0))[0];
 
   useEffect(() => {
-    // Détection automatique du pays par IP via service public léger
+    // Détection automatique du pays par IP
     fetch('https://ipapi.co/json/')
       .then((res) => res.json())
       .then((data) => {
@@ -75,7 +78,6 @@ export default function VerifyScreen() {
               code,
               name,
               callingCode,
-              flag: getCountryFlag(code),
             });
           } catch {
             // ignore
@@ -105,14 +107,15 @@ export default function VerifyScreen() {
   // Validation en temps réel avec libphonenumber-js
   const parsedPhone = parsePhoneNumberFromString(phoneNumber.trim(), selectedCountry.code);
   const isPhoneValid = Boolean(parsedPhone && parsedPhone.isValid());
+  const isPhoneInvalid = Boolean(phoneNumber.trim().length > 0 && !isPhoneValid);
 
   const handleVerify = async () => {
-    setPhoneError('');
     if (!isPhoneValid) {
-      setPhoneError(t('validation.phoneNumberInvalid', 'Numéro de téléphone invalide pour ce pays'));
+      setPhoneError(t('validation.phoneNumberInvalid', 'Numéro de téléphone invalide'));
       return false;
     }
 
+    setPhoneError('');
     setViewState('analyzing');
     setAnalysisStep(1);
 
@@ -120,7 +123,7 @@ export default function VerifyScreen() {
       id: Date.now().toString(),
       phone: phoneNumber,
       countryCallingCode: selectedCountry.callingCode,
-      date: t('common.now', 'À l’instant'),
+      date: 'Verification de numero',
     };
     setVerificationHistory((prev) => [newItem, ...prev]);
 
@@ -139,6 +142,14 @@ export default function VerifyScreen() {
     if (phoneError) setPhoneError('');
   };
 
+  const handleBack = () => {
+    if (viewState !== 'idle') {
+      setViewState('idle');
+    } else {
+      router.back();
+    }
+  };
+
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
@@ -148,28 +159,24 @@ export default function VerifyScreen() {
     <View style={styles.container}>
       <StatusBar style="light" />
 
-      {/* Header vert Kwismo */}
+      {/* Header vert Kwismo avec bouton retour et bouton d'options */}
       <View style={[styles.header, { paddingTop: Math.max(insets.top + 10, 20) }]}>
         <View style={styles.headerContent}>
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => {
-              if (viewState !== 'idle') {
-                setViewState('idle');
-              } else {
-                router.back();
-              }
-            }}
-            style={styles.backBtn}
+            onPress={handleBack}
+            style={styles.headerActionBtn}
           >
-            <Icon name="solar:arrow-left-linear" color={colors.white} size={22} />
+            <Icon name="solar:arrow-left-linear" color={colors.white} size={24} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('common.verifyNumber')}</Text>
+
+          <Text style={styles.headerTitle}>{t('common.verifyNumber', 'Verification du numero')}</Text>
+
           <HeaderActions iconColor={colors.white} />
         </View>
       </View>
 
-      {/* Feuille de contenu avec bordure supérieure gauche arrondie */}
+      {/* Feuille de contenu blanc/sombre avec bordure supérieure gauche arrondie */}
       <View
         style={[
           styles.mainCardSheet,
@@ -185,50 +192,69 @@ export default function VerifyScreen() {
         >
           {viewState === 'idle' && (
             <View style={styles.idleContainer}>
-              {/* Carte de saisie de numéro sans séparateur vertical */}
+              {/* Champ de saisie du numéro */}
               <View
                 style={[
                   styles.inputCard,
                   {
                     backgroundColor: themeColors.cardBg,
-                    borderColor: phoneError
-                      ? '#EF4444'
-                      : isPhoneValid
-                      ? colors.green
-                      : themeColors.inputBorder,
+                    borderColor:
+                      isPhoneInvalid && (isInputFocused || phoneError)
+                        ? '#EF4444'
+                        : isPhoneValid
+                        ? colors.green
+                        : isInputFocused
+                        ? colors.green
+                        : themeColors.inputBorder,
+                    borderWidth: (isPhoneInvalid && isInputFocused) || isPhoneValid ? 1.5 : 1,
                   },
                 ]}
               >
+                {/* Icône téléphone */}
                 <Icon
                   name="solar:phone-linear"
-                  color={isPhoneValid ? colors.green : themeColors.inputPlaceholder}
+                  color={
+                    isPhoneInvalid && isInputFocused
+                      ? '#EF4444'
+                      : isPhoneValid
+                      ? colors.green
+                      : themeColors.inputPlaceholder
+                  }
                   size={20}
                   style={{ marginRight: 8 }}
                 />
 
-                {/* Sélecteur de pays avec drapeau et indicatif */}
+                {/* Sélecteur de pays avec drapeau circulaire, indicatif et flèche vers le bas */}
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => setCountryModalVisible(true)}
                   style={styles.countryPicker}
                 >
-                  <Text style={styles.flagEmoji}>{selectedCountry.flag}</Text>
+                  <CountryFlag countryCode={selectedCountry.code} size={22} style={{ marginRight: 6 }} />
                   <Text style={[styles.countryCodeText, { color: themeColors.textPrimary }]}>
                     {selectedCountry.callingCode}
                   </Text>
-                  <Icon name="solar:alt-arrow-down-linear" color={themeColors.inputPlaceholder} size={14} />
+                  <Icon
+                    name="solar:alt-arrow-down-linear"
+                    color={themeColors.textSecondary}
+                    size={16}
+                    style={{ marginLeft: 4 }}
+                  />
                 </TouchableOpacity>
 
+                {/* Champ texte sans barre séparatrice */}
                 <TextInput
                   style={[
                     styles.phoneInput,
                     { color: themeColors.textPrimary },
                     Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
                   ]}
-                  placeholder={t('common.phonePlaceholder')}
+                  placeholder={t('common.phonePlaceholder', 'Numero de telephone')}
                   placeholderTextColor={themeColors.inputPlaceholder}
                   keyboardType="phone-pad"
                   value={phoneNumber}
+                  onFocus={() => setIsInputFocused(true)}
+                  onBlur={() => setIsInputFocused(false)}
                   onChangeText={(val) => {
                     setPhoneNumber(val);
                     if (phoneError) setPhoneError('');
@@ -247,22 +273,40 @@ export default function VerifyScreen() {
                 </View>
               ) : null}
 
-              {/* Bouton de vérification désactivé tant que le numéro n'est pas valide */}
-              <Button
-                title={t('common.verify')}
-                onPress={handleVerify}
+              {/* Bouton "Vérifier" : Gris quand désactivé, Jaune/Orange Kwismo quand validé */}
+              <TouchableOpacity
+                activeOpacity={isPhoneValid ? 0.85 : 1}
+                onPress={isPhoneValid ? handleVerify : undefined}
                 disabled={!isPhoneValid}
-                variant="primary"
-                size="md"
-                style={{ marginTop: 18, marginBottom: 26 }}
-              />
+                style={[
+                  styles.verifyBtn,
+                  {
+                    backgroundColor: isPhoneValid
+                      ? colors.orange
+                      : isDark
+                      ? '#334155'
+                      : '#D1D5DB',
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.verifyBtnText,
+                    {
+                      color: isPhoneValid
+                        ? colors.white
+                        : isDark
+                        ? '#94A3B8'
+                        : '#64748B',
+                    },
+                  ]}
+                >
+                  {t('common.verify', 'Verifier')}
+                </Text>
+              </TouchableOpacity>
 
               {/* Historique des vérifications */}
               <View style={styles.historySection}>
-                <Text style={[styles.historySectionTitle, { color: themeColors.textPrimary }]}>
-                  {t('common.verificationHistory', 'Historique des vérifications')}
-                </Text>
-
                 {verificationHistory.length === 0 ? (
                   <View style={styles.emptyHistoryBox}>
                     <Icon name="solar:history-linear" color={themeColors.inputPlaceholder} size={36} style={{ marginBottom: 8 }} />
@@ -279,27 +323,17 @@ export default function VerifyScreen() {
                         onPress={() => {
                           setPhoneNumber(item.phone);
                         }}
-                        style={[
-                          styles.historyRow,
-                          {
-                            backgroundColor: themeColors.cardBg,
-                            borderColor: themeColors.inputBorder,
-                            borderWidth: isDark ? 1 : 0,
-                          },
-                        ]}
+                        style={styles.historyRow}
                       >
-                        <View style={styles.avatarCircle}>
-                          <Icon name="solar:user-linear" color={colors.white} size={18} />
-                        </View>
+                        <View style={styles.avatarCircle} />
                         <View style={{ flex: 1 }}>
                           <Text style={[styles.historyPhone, { color: themeColors.textPrimary }]}>
                             {item.countryCallingCode} {item.phone}
                           </Text>
                           <Text style={[styles.historySub, { color: themeColors.textSecondary }]}>
-                            {t('common.verifiedOn', 'Vérifié')} • {item.date}
+                            {item.date}
                           </Text>
                         </View>
-                        <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -317,7 +351,7 @@ export default function VerifyScreen() {
                 ]}
               >
                 <Icon name="solar:phone-linear" color={colors.green} size={20} style={{ marginRight: 8 }} />
-                <Text style={styles.flagEmoji}>{selectedCountry.flag}</Text>
+                <CountryFlag countryCode={selectedCountry.code} size={20} style={{ marginRight: 6 }} />
                 <Text style={[styles.countryCodeText, { color: themeColors.textPrimary, marginRight: 6 }]}>
                   {selectedCountry.callingCode}
                 </Text>
@@ -496,7 +530,7 @@ export default function VerifyScreen() {
         </ScrollView>
       </View>
 
-      {/* Bouton fixe "Choisir dans contacts" */}
+      {/* Bouton du bas "Choisi dans les contacts" conforme à la maquette (Bleu Nuit, rectangulaire arrondi) */}
       {viewState === 'idle' && (
         <View
           style={[
@@ -507,10 +541,10 @@ export default function VerifyScreen() {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => setContactModalVisible(true)}
-            style={styles.contactsBtn}
+            style={styles.contactsBtnMaquette}
           >
-            <Icon name="solar:users-group-two-rounded-bold" color={colors.white} size={20} style={{ marginRight: 10 }} />
-            <Text style={styles.contactsBtnText}>{t('common.chooseFromContacts')}</Text>
+            <Icon name="solar:users-group-two-rounded-bold" color={colors.white} size={22} style={{ marginRight: 10 }} />
+            <Text style={styles.contactsBtnText}>{t('common.chooseFromContacts', 'Choisi dans les contacts')}</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -545,14 +579,14 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: colors.green,
     paddingHorizontal: 16,
-    paddingBottom: 24,
+    paddingBottom: 20,
   },
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  backBtn: {
+  headerActionBtn: {
     padding: 6,
   },
   headerTitle: {
@@ -577,9 +611,8 @@ const styles = StyleSheet.create({
   inputCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 54,
+    height: 52,
     borderRadius: 14,
-    borderWidth: 1.5,
     paddingHorizontal: 14,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -591,14 +624,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingRight: 10,
-    gap: 4,
-  },
-  flagEmoji: {
-    fontSize: 18,
-    marginRight: 2,
   },
   countryCodeText: {
-    fontFamily: fonts.bold,
+    fontFamily: fonts.semiBold,
     fontSize: scaleFont(15),
   },
   phoneInput: {
@@ -621,14 +649,25 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#EF4444',
   },
-  historySection: {
-    marginTop: 8,
+  verifyBtn: {
+    height: 52,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 18,
+    marginBottom: 26,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  historySectionTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(16),
-    fontWeight: '700',
-    marginBottom: 14,
+  verifyBtnText: {
+    fontFamily: fonts.bold,
+    fontSize: scaleFont(15),
+  },
+  historySection: {
+    marginTop: 4,
   },
   emptyHistoryBox: {
     padding: 24,
@@ -641,36 +680,55 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   historyList: {
-    gap: 8,
+    gap: 16,
   },
   historyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 14,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
+    paddingVertical: 6,
   },
   avatarCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: '#94A3B8',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#D1D5DB',
+    marginRight: 14,
   },
   historyPhone: {
-    fontFamily: fonts.semiBold,
-    fontSize: scaleFont(14),
+    fontFamily: fonts.bold,
+    fontSize: scaleFont(15),
   },
   historySub: {
     fontFamily: fonts.regular,
-    fontSize: scaleFont(11),
+    fontSize: scaleFont(12),
+    color: '#94A3B8',
     marginTop: 2,
+  },
+  bottomContactsWrapper: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+    backgroundColor: 'transparent',
+  },
+  contactsBtnMaquette: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 54,
+    borderRadius: 14,
+    backgroundColor: '#131B2E',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  contactsBtnText: {
+    fontFamily: fonts.semiBold,
+    fontSize: scaleFont(15),
+    color: colors.white,
   },
   analyzingContainer: {
     alignItems: 'center',
@@ -883,31 +941,6 @@ const styles = StyleSheet.create({
   actionBtnText: {
     fontFamily: fonts.semiBold,
     fontSize: scaleFont(14),
-    color: colors.white,
-  },
-  bottomContactsWrapper: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 20,
-  },
-  contactsBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: colors.orange,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  contactsBtnText: {
-    fontFamily: fonts.semiBold,
-    fontSize: scaleFont(15),
     color: colors.white,
   },
 });

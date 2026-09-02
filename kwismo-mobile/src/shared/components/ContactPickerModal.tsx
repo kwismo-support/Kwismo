@@ -16,7 +16,7 @@ import { parsePhoneNumberFromString, getCountryCallingCode, CountryCode } from '
 import countries from 'i18n-iso-countries';
 import { Icon } from '../ui/Icon';
 import { useAppTheme } from '../hooks/useAppTheme';
-import { CountryItem, getCountryFlag } from './CountryPickerModal';
+import { CountryItem } from './CountryPickerModal';
 import { getDeviceContacts, RawContact } from '../lib/contactsService';
 import { colors, fonts } from '../../styles/tokens';
 import { scaleFont } from '../lib/responsive';
@@ -92,7 +92,6 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
             code,
             name,
             callingCode,
-            flag: getCountryFlag(code),
           };
         }
         cleanNumber = parsed.nationalNumber;
