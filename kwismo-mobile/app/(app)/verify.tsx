@@ -458,7 +458,7 @@ export default function VerifyScreen() {
                   <View style={styles.riskHeader}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                       <Text style={styles.riskTitle}>{t('common.riskScore', 'Score de risque')}</Text>
-                      <Icon name="solar:info-circle-linear" color="rgba(255,255,255,0.85)" size={16} style={{ marginLeft: 6 }} />
+                      <Icon name="duo-icons:info" color="rgba(255,255,255,0.9)" size={16} style={{ marginLeft: 6 }} />
                     </View>
                     <View style={styles.riskLevelBadge}>
                       <Text style={styles.riskLevelText}>{t('common.veryLow', 'Très faible')}</Text>
@@ -476,27 +476,23 @@ export default function VerifyScreen() {
                   </View>
                 </View>
 
-                {/* Historique communautaire avec solar:alarm-sleep-bold et solar:chat-round-line-bold */}
+                {/* Historique communautaire sans fond sur les icônes, textes et chiffres en gras et couleur principale */}
                 <View style={styles.communitySection}>
                   <Text style={[styles.communityTitle, { color: themeColors.textPrimary }]}>
                     {t('common.communityHistory', 'Historique communautaire')}
                   </Text>
 
                   <View style={[styles.statRow, { borderBottomColor: themeColors.inputBorder }]}>
-                    <View style={styles.iconCircleDark}>
-                      <Icon name="solar:alarm-sleep-bold" color={colors.white} size={18} />
-                    </View>
-                    <Text style={[styles.statLabel, { color: themeColors.textSecondary }]}>
+                    <Icon name="solar:alarm-sleep-bold" color={themeColors.textPrimary} size={22} style={{ marginRight: 12 }} />
+                    <Text style={[styles.statLabel, { color: themeColors.textPrimary }]}>
                       {t('common.reportsCount', 'Signalements')}
                     </Text>
                     <Text style={[styles.statValue, { color: themeColors.textPrimary }]}>0</Text>
                   </View>
 
                   <View style={[styles.statRow, { borderBottomColor: themeColors.inputBorder }]}>
-                    <View style={styles.iconCircleDark}>
-                      <Icon name="solar:chat-round-line-bold" color={colors.white} size={18} />
-                    </View>
-                    <Text style={[styles.statLabel, { color: themeColors.textSecondary }]}>
+                    <Icon name="solar:chat-round-line-bold" color={themeColors.textPrimary} size={22} style={{ marginRight: 12 }} />
+                    <Text style={[styles.statLabel, { color: themeColors.textPrimary }]}>
                       {t('common.positiveComments', 'Commentaires positifs')}
                     </Text>
                     <Text style={[styles.statValue, { color: themeColors.textPrimary }]}>24</Text>
@@ -916,26 +912,19 @@ const styles = StyleSheet.create({
   statRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 14,
     borderBottomWidth: 1,
-  },
-  iconCircleDark: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.navy,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
   },
   statLabel: {
     flex: 1,
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(14),
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(15),
+    fontWeight: '700',
   },
   statValue: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(15),
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(16),
+    fontWeight: '700',
   },
   lastReportSub: {
     fontFamily: fonts.regular,

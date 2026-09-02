@@ -54,7 +54,7 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
 
   return (
     <View style={styles.wrapper}>
-      {/* Grand cercle d'arrière-plan plus grand et statique */}
+      {/* Grand cercle d'arrière-plan statique */}
       <View style={[styles.outerCircle, { backgroundColor: circleBgColor }]}>
         {/* Anneau d'étoiles (sparkles) animées qui tournent autour du cercle */}
         <Animated.View
@@ -84,7 +84,7 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
           </View>
         </Animated.View>
 
-        {/* Petits checks / sparkles additionnels animés en mode résultat */}
+        {/* Petits sparkles additionnels animés en mode résultat */}
         {state === 'result' && (
           <Animated.View
             style={[
@@ -104,37 +104,26 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
           </Animated.View>
         )}
 
-        {/* Bouclier central statique composé des 3 calques Figma :
-            1. Bordures externes (fond vert)
-            2. Bordures internes (contour vert translucide)
-            3. Icône au centre (solar:user-bold-duotone ou solar:diploma-verified-bold-duotone) */}
+        {/* Bouclier central officiel Iconify avec l'icône duotone centrée au-dessus */}
         <View style={styles.shieldContainer}>
-          <Svg width="124" height="138" viewBox="0 0 124 138" fill="none">
-            {/* Bordure externe */}
-            <Path
-              d="M62 4 C96 4 116 18 116 42 C116 94 62 132 62 134 C62 132 8 94 8 42 C8 18 28 4 62 4 Z"
-              fill={colors.green}
-            />
-            {/* Bordure interne */}
-            <Path
-              d="M62 8 C93 8 111 20 111 42 C111 90 62 126 62 128 C62 126 13 90 13 42 C13 20 31 8 62 8 Z"
-              stroke="rgba(255, 255, 255, 0.3)"
-              strokeWidth="2.5"
-            />
-          </Svg>
+          <Icon
+            name="solar:shield-bold"
+            size={136}
+            color={colors.green}
+          />
 
-          {/* Icône au centre du bouclier */}
+          {/* Icône centrale superposée */}
           <View style={styles.shieldIconCenter}>
             {state === 'analyzing' ? (
               <Icon
                 name="solar:user-bold-duotone"
-                size={58}
+                size={62}
                 color="#FFFFFF"
               />
             ) : (
               <Icon
                 name="solar:diploma-verified-bold-duotone"
-                size={58}
+                size={62}
                 color="#FFFFFF"
               />
             )}
@@ -198,10 +187,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   shieldContainer: {
-    width: 124,
-    height: 138,
+    width: 136,
+    height: 136,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
   },
   shieldIconCenter: {
     position: 'absolute',
@@ -211,6 +201,6 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 8,
+    paddingBottom: 6,
   },
 });
