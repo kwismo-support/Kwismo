@@ -33,6 +33,9 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
         padding: 0;
         overflow-x: hidden;
         background-color: #0F2B24;
+        font-family: 'Ageo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      h1, h2, h3, h4, h5, h6, .headline {
         font-family: 'Montserrat Alternates', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       }
     `;

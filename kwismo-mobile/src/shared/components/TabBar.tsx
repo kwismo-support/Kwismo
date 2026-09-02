@@ -39,17 +39,15 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
       ]}
     >
       <TouchableOpacity
-        activeOpacity={0.8}
+        activeOpacity={0.7}
         onPress={() => router.replace('/(app)')}
         style={styles.tabItem}
       >
-        <View style={currentTab === 'home' ? styles.activeIconBg : styles.inactiveIconBg}>
-          <Icon
-            name="solar:home-smile-bold"
-            size={22}
-            color={currentTab === 'home' ? colors.white : themeColors.inputPlaceholder}
-          />
-        </View>
+        <Icon
+          name={currentTab === 'home' ? 'solar:home-smile-bold' : 'solar:home-smile-linear'}
+          size={24}
+          color={currentTab === 'home' ? colors.green : themeColors.inputPlaceholder}
+        />
         <Text
           style={[
             styles.tabLabel,
@@ -62,17 +60,15 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        activeOpacity={0.8}
+        activeOpacity={0.7}
         onPress={() => router.replace('/(app)/contacts')}
         style={styles.tabItem}
       >
-        <View style={currentTab === 'contacts' ? styles.activeIconBg : styles.inactiveIconBg}>
-          <Icon
-            name="solar:user-id-linear"
-            size={22}
-            color={currentTab === 'contacts' ? colors.white : themeColors.inputPlaceholder}
-          />
-        </View>
+        <Icon
+          name={currentTab === 'contacts' ? 'solar:user-id-bold' : 'solar:user-id-linear'}
+          size={24}
+          color={currentTab === 'contacts' ? colors.green : themeColors.inputPlaceholder}
+        />
         <Text
           style={[
             styles.tabLabel,
@@ -85,17 +81,15 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        activeOpacity={0.8}
+        activeOpacity={0.7}
         onPress={() => router.replace('/(app)/transfer')}
         style={styles.tabItem}
       >
-        <View style={currentTab === 'transfer' ? styles.activeIconBg : styles.inactiveIconBg}>
-          <Icon
-            name="solar:card-transfer-linear"
-            size={22}
-            color={currentTab === 'transfer' ? colors.white : themeColors.inputPlaceholder}
-          />
-        </View>
+        <Icon
+          name={currentTab === 'transfer' ? 'solar:card-transfer-bold' : 'solar:card-transfer-linear'}
+          size={24}
+          color={currentTab === 'transfer' ? colors.green : themeColors.inputPlaceholder}
+        />
         <Text
           style={[
             styles.tabLabel,
@@ -108,17 +102,15 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        activeOpacity={0.8}
+        activeOpacity={0.7}
         onPress={() => router.replace('/(app)/profile')}
         style={styles.tabItem}
       >
-        <View style={currentTab === 'profile' ? styles.activeIconBg : styles.inactiveIconBg}>
-          <Icon
-            name="solar:user-circle-linear"
-            size={22}
-            color={currentTab === 'profile' ? colors.white : themeColors.inputPlaceholder}
-          />
-        </View>
+        <Icon
+          name={currentTab === 'profile' ? 'solar:user-circle-bold' : 'solar:user-circle-linear'}
+          size={24}
+          color={currentTab === 'profile' ? colors.green : themeColors.inputPlaceholder}
+        />
         <Text
           style={[
             styles.tabLabel,
@@ -144,7 +136,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-    paddingTop: 8,
+    paddingTop: 10,
     borderTopWidth: 1,
     elevation: 10,
     shadowColor: '#000',
@@ -156,28 +148,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-  },
-  activeIconBg: {
-    width: 44,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.green,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 2,
-  },
-  inactiveIconBg: {
-    width: 44,
-    height: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 2,
+    gap: 4,
   },
   tabLabel: {
     fontFamily: fonts.medium,
     fontSize: scaleFont(11),
   },
   tabLabelActive: {
+    fontFamily: fonts.semiBold,
     fontWeight: '700',
   },
 });
