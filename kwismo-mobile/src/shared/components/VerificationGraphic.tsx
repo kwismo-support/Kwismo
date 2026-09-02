@@ -104,11 +104,11 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
           </Animated.View>
         )}
 
-        {/* Bouclier central officiel Iconify avec l'icône duotone centrée au-dessus */}
+        {/* Bouclier central uni et entier (non sectionné) avec l'icône duotone centrée au-dessus */}
         <View style={styles.shieldContainer}>
           <Icon
-            name="solar:shield-bold"
-            size={136}
+            name="solar:shield-minimalistic-bold"
+            size={138}
             color={colors.green}
           />
 
