@@ -109,6 +109,16 @@
     "privacyPolicyTitle": "Privacy Policy",
     "termsTitle": "Terms of Service"
   },
+  "profile": {
+    "preferences": "Preferences",
+    "language": "Language",
+    "darkMode": "Theme"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "Auto"
+  },
   "validation": {
     "required": "This field is required",
     "emailRequired": "Please enter an email address",

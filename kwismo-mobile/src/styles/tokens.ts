@@ -54,22 +54,22 @@ const fontHeadlineRegular = Platform.select({
 });
 
 const fontBodyRegular = Platform.select({
-  web: "'Ageo', 'Montserrat Alternates', system-ui, -apple-system, sans-serif",
+  web: "'Ageo', 'Aptos', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   default: 'Ageo-Regular',
 });
 
 const fontBodyMedium = Platform.select({
-  web: "'Ageo', 'Montserrat Alternates', system-ui, -apple-system, sans-serif",
+  web: "'Ageo', 'Aptos', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   default: 'Ageo-Medium',
 });
 
 const fontBodySemiBold = Platform.select({
-  web: "'Ageo', 'Montserrat Alternates', system-ui, -apple-system, sans-serif",
+  web: "'Ageo', 'Aptos', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   default: 'Ageo-SemiBold',
 });
 
 const fontBodyBold = Platform.select({
-  web: "'Ageo', 'Montserrat Alternates', system-ui, -apple-system, sans-serif",
+  web: "'Ageo', 'Aptos', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   default: 'Ageo-Bold',
 });
 

@@ -61,7 +61,7 @@ export default function ProfileScreen() {
 
         <View style={styles.content}>
           <Text style={[styles.sectionTitle, { color: themeColors.textSecondary }]}>
-            {t('common.preferences')}
+            {t('profile.preferences')}
           </Text>
 
           <View style={[styles.card, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
@@ -69,7 +69,7 @@ export default function ProfileScreen() {
               <View style={styles.settingLeft}>
                 <Icon name="solar:moon-linear" color={colors.green} size={20} style={{ marginRight: 12 }} />
                 <Text style={[styles.settingLabel, { color: themeColors.textPrimary }]}>
-                  {t('common.darkMode')}
+                  {t('profile.darkMode')}
                 </Text>
               </View>
               <Switch
@@ -86,7 +86,7 @@ export default function ProfileScreen() {
               <View style={styles.settingLeft}>
                 <Icon name="solar:global-linear" color={colors.green} size={20} style={{ marginRight: 12 }} />
                 <Text style={[styles.settingLabel, { color: themeColors.textPrimary }]}>
-                  {t('common.language')}
+                  {t('profile.language')}
                 </Text>
               </View>
               <LanguageSwitcher />

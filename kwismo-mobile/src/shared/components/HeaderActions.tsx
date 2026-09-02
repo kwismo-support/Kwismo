@@ -156,7 +156,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
                         },
                       ]}
                     >
-                      Français (FR)
+                      {t('common.french')}
                     </Text>
                   </TouchableOpacity>
 
@@ -184,12 +184,12 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
                         },
                       ]}
                     >
-                      English (EN)
+                      {t('common.english')}
                     </Text>
                   </TouchableOpacity>
                 </View>
 
-                {/* Section Thème */}
+                {/* Section Thème : 3 icônes sur une seule ligne réparties équitablement */}
                 <Text
                   style={[
                     styles.sectionLabel,
@@ -198,15 +198,16 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
                 >
                   {t('profile.darkMode')}
                 </Text>
-                <View style={styles.optionsRow}>
+                <View style={styles.themeOptionsRow}>
                   {(['light', 'dark', 'system'] as ThemePreference[]).map((mode) => {
                     const isSelected = userThemePreference === mode;
                     return (
                       <TouchableOpacity
                         key={mode}
+                        activeOpacity={0.7}
                         onPress={() => setTheme(mode)}
                         style={[
-                          styles.optionChip,
+                          styles.themeIconChip,
                           {
                             backgroundColor: isSelected
                               ? colors.green
@@ -224,27 +225,11 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
                               ? 'solar:moon-linear'
                               : 'solar:laptop-minimalistic-linear'
                           }
-                          size={16}
+                          size={22}
                           color={
                             isSelected ? colors.white : themeColors.textPrimary
                           }
                         />
-                        <Text
-                          style={[
-                            styles.chipText,
-                            {
-                              color: isSelected
-                                ? colors.white
-                                : themeColors.textPrimary,
-                            },
-                          ]}
-                        >
-                          {mode === 'light'
-                            ? 'Clair'
-                            : mode === 'dark'
-                            ? 'Sombre'
-                            : 'Auto'}
-                        </Text>
                       </TouchableOpacity>
                     );
                   })}
@@ -330,6 +315,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+  },
+  themeOptionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+    width: '100%',
+  },
+  themeIconChip: {
+    flex: 1,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
   },
   optionChip: {
     flexDirection: 'row',

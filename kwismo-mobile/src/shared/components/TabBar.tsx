@@ -107,7 +107,7 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
         style={styles.tabItem}
       >
         <Icon
-          name={currentTab === 'profile' ? 'solar:user-circle-bold' : 'solar:user-circle-linear'}
+          name={currentTab === 'profile' ? 'solar:user-bold' : 'solar:user-linear'}
           size={24}
           color={currentTab === 'profile' ? colors.green : themeColors.inputPlaceholder}
         />

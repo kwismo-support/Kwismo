@@ -109,6 +109,16 @@
     "privacyPolicyTitle": "Politique de confidentialité",
     "termsTitle": "Conditions d'utilisation"
   },
+  "profile": {
+    "preferences": "Préférences",
+    "language": "Langue",
+    "darkMode": "Thème"
+  },
+  "theme": {
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Auto"
+  },
   "validation": {
     "required": "Ce champ est obligatoire",
     "emailRequired": "Veuillez renseigner une adresse email",
