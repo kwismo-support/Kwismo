@@ -6,28 +6,18 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  FlatList,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
-import {
-  Search,
-  Bell,
-  MoreVertical,
-  QrCode,
-  ArrowLeftRight,
-  MessageSquare,
-  Radio,
-  ChevronRight,
-  Home,
-  Users,
-  CreditCard,
-  User,
-} from 'lucide-react-native';
+import { Icon } from '../../src/shared/ui/Icon';
 import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
-import { SkeletonItem } from '../../src/shared/components/SkeletonItem';
+import { HomeSkeleton } from '../../src/shared/components/HomeSkeleton';
+import { TabBar } from '../../src/shared/components/TabBar';
+import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
+import { scaleFont } from '../../src/shared/lib/responsive';
 
 const RECENT_ACTIVITIES = [
   { id: '1', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Faible', statusType: 'blue', time: 'hier, 21:47' },
@@ -43,15 +33,21 @@ export default function DashboardHomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { isDark, colors: themeColors } = useAppTheme();
 
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState(0);
+  const unreadNotifications = 3;
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 700);
+    const timer = setTimeout(() => setLoading(false), 600);
     return () => clearTimeout(timer);
   }, []);
+
+  if (loading) {
+    return <HomeSkeleton />;
+  }
 
   const filterTabs = [
     t('common.verifiedNumber'),
@@ -63,28 +59,27 @@ export default function DashboardHomeScreen() {
   const getStatusStyle = (type: string) => {
     switch (type) {
       case 'blue':
-        return { bg: '#EBF3FF', text: '#3B82F6' };
+        return { bg: isDark ? '#1E3A8A' : '#EBF3FF', text: '#3B82F6' };
       case 'red':
-        return { bg: '#FEE2E2', text: '#EF4444' };
+        return { bg: isDark ? '#7F1D1D' : '#FEE2E2', text: '#EF4444' };
       case 'green':
-        return { bg: '#E6F7F0', text: colors.green };
+        return { bg: isDark ? '#064E3B' : '#E6F7F0', text: colors.green };
       case 'yellow':
-        return { bg: '#FEF3C7', text: '#D97706' };
+        return { bg: isDark ? '#78350F' : '#FEF3C7', text: '#D97706' };
       default:
-        return { bg: '#F3F4F6', text: '#6B7280' };
+        return { bg: isDark ? '#334155' : '#F3F4F6', text: '#6B7280' };
     }
   };
 
   return (
-    <View style={styles.container}>
-      {/* Scrollable Dashboard Body */}
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <StatusBar style="light" />
+
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 100 }}
+        contentContainerStyle={{ paddingBottom: 110 }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Top Header Card matching Image 1 */}
-        <View style={[styles.headerCard, { paddingTop: insets.top + 12 }]}>
-          {/* User Row */}
+        <View style={[styles.headerCard, { paddingTop: Math.max(insets.top + 10, 20) }]}>
           <View style={styles.userRow}>
             <View style={styles.userLeft}>
               <View style={styles.avatarCircle}>
@@ -96,18 +91,21 @@ export default function DashboardHomeScreen() {
             <View style={styles.userRight}>
               <LanguageSwitcher darkTheme={true} />
               <TouchableOpacity activeOpacity={0.7} style={styles.iconBtn}>
-                <Bell color={colors.white} size={22} />
-                <View style={styles.badgeDot} />
+                <Icon name="solar:bell-linear" color={colors.white} size={22} />
+                {unreadNotifications > 0 && (
+                  <View style={styles.badgeCountContainer}>
+                    <Text style={styles.badgeCountText}>{unreadNotifications}</Text>
+                  </View>
+                )}
               </TouchableOpacity>
               <TouchableOpacity activeOpacity={0.7} style={styles.iconBtn}>
-                <MoreVertical color={colors.white} size={22} />
+                <Icon name="solar:menu-dots-bold" color={colors.white} size={22} />
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Search Input Bar */}
           <View style={styles.searchBar}>
-            <Search color={colors.white} size={20} style={{ opacity: 0.9, marginRight: 10 }} />
+            <Icon name="solar:magnifer-linear" color={colors.white} size={20} style={{ opacity: 0.9, marginRight: 10 }} />
             <TextInput
               style={styles.searchInput}
               placeholder={t('common.search')}
@@ -118,58 +116,60 @@ export default function DashboardHomeScreen() {
           </View>
         </View>
 
-        {/* Quick Action Grid matching Image 1 */}
         <View style={styles.actionGrid}>
-          {/* Action 1: Verify Number */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/verify')}
             style={styles.actionItem}
           >
-            <View style={styles.actionIconCircle}>
-              <QrCode color={colors.green} size={24} />
+            <View style={[styles.actionIconCircle, { backgroundColor: isDark ? '#1E293B' : '#EBF7F2' }]}>
+              <Icon name="solar:face-id-square-linear" color={colors.green} size={26} />
             </View>
-            <Text style={styles.actionLabel}>{t('common.verifyNumber')}</Text>
+            <Text style={[styles.actionLabel, { color: themeColors.textSecondary }]}>
+              {t('common.verifyNumber')}
+            </Text>
           </TouchableOpacity>
 
-          {/* Action 2: Money Transfer */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/transfer')}
             style={styles.actionItem}
           >
-            <View style={styles.actionIconCircle}>
-              <ArrowLeftRight color={colors.green} size={24} />
+            <View style={[styles.actionIconCircle, { backgroundColor: isDark ? '#1E293B' : '#EBF7F2' }]}>
+              <Icon name="solar:card-transfer-linear" color={colors.green} size={24} />
             </View>
-            <Text style={styles.actionLabel}>{t('common.moneyTransfer')}</Text>
+            <Text style={[styles.actionLabel, { color: themeColors.textSecondary }]}>
+              {t('common.moneyTransfer')}
+            </Text>
           </TouchableOpacity>
 
-          {/* Action 3: Whatsapp Alert */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/alert-whatsapp')}
             style={styles.actionItem}
           >
-            <View style={styles.actionIconCircle}>
-              <MessageSquare color={colors.green} size={24} />
+            <View style={[styles.actionIconCircle, { backgroundColor: isDark ? '#1E293B' : '#EBF7F2' }]}>
+              <Icon name="ic:baseline-whatsapp" color={colors.green} size={24} />
             </View>
-            <Text style={styles.actionLabel}>{t('common.whatsappAlert')}</Text>
+            <Text style={[styles.actionLabel, { color: themeColors.textSecondary }]}>
+              {t('common.whatsappAlert')}
+            </Text>
           </TouchableOpacity>
 
-          {/* Action 4: Report */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/report')}
             style={styles.actionItem}
           >
-            <View style={styles.actionIconCircle}>
-              <Radio color={colors.green} size={24} />
+            <View style={[styles.actionIconCircle, { backgroundColor: isDark ? '#1E293B' : '#EBF7F2' }]}>
+              <Icon name="solar:danger-triangle-linear" color={colors.green} size={24} />
             </View>
-            <Text style={styles.actionLabel}>{t('common.report')}</Text>
+            <Text style={[styles.actionLabel, { color: themeColors.textSecondary }]}>
+              {t('common.report')}
+            </Text>
           </TouchableOpacity>
         </View>
 
-        {/* Horizontal Filter Pills */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -182,13 +182,20 @@ export default function DashboardHomeScreen() {
               onPress={() => setActiveFilter(idx)}
               style={[
                 styles.filterPill,
-                activeFilter === idx && styles.filterPillActive,
+                {
+                  backgroundColor: themeColors.cardBg,
+                  borderColor: activeFilter === idx ? colors.green : themeColors.inputBorder,
+                },
+                activeFilter === idx && {
+                  backgroundColor: isDark ? '#064E3B' : '#E6F7F0',
+                },
               ]}
             >
               <Text
                 style={[
                   styles.filterText,
-                  activeFilter === idx && styles.filterTextActive,
+                  { color: themeColors.textSecondary },
+                  activeFilter === idx && { color: colors.green, fontWeight: '700' },
                 ]}
               >
                 {tab}
@@ -197,100 +204,65 @@ export default function DashboardHomeScreen() {
           ))}
         </ScrollView>
 
-        {/* Recent Activity Header */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>{t('common.recentActivity')}</Text>
+          <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
+            {t('common.recentActivity')}
+          </Text>
           <TouchableOpacity activeOpacity={0.7}>
             <Text style={styles.seeAllText}>{t('common.seeAll')}</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Recent Activity List / Skeleton Loading */}
         <View style={styles.activityList}>
-          {loading
-            ? Array.from({ length: 5 }).map((_, idx) => (
-                <View key={`skeleton-${idx}`} style={styles.skeletonRow}>
-                  <SkeletonItem width={44} height={44} borderRadius={22} />
-                  <View style={{ flex: 1, marginLeft: 12 }}>
-                    <SkeletonItem width="60%" height={16} borderRadius={4} />
-                    <SkeletonItem width="40%" height={12} borderRadius={4} style={{ marginTop: 6 }} />
-                  </View>
-                  <SkeletonItem width={60} height={20} borderRadius={10} />
+          {RECENT_ACTIVITIES.map((item) => {
+            const badgeStyle = getStatusStyle(item.statusType);
+            return (
+              <TouchableOpacity
+                key={item.id}
+                activeOpacity={0.7}
+                onPress={() => router.push('/(app)/verify')}
+                style={[
+                  styles.activityRow,
+                  {
+                    backgroundColor: themeColors.cardBg,
+                    borderColor: themeColors.inputBorder,
+                    borderWidth: isDark ? 1 : 0,
+                  },
+                ]}
+              >
+                <View style={styles.itemAvatar} />
+
+                <View style={styles.itemDetails}>
+                  <Text style={[styles.itemPhone, { color: themeColors.textPrimary }]}>
+                    {item.phone}
+                  </Text>
+                  <Text style={[styles.itemType, { color: themeColors.textSecondary }]}>
+                    {item.type}
+                  </Text>
                 </View>
-              ))
-            : RECENT_ACTIVITIES.map((item) => {
-                const badgeStyle = getStatusStyle(item.statusType);
-                return (
-                  <TouchableOpacity
-                    key={item.id}
-                    activeOpacity={0.7}
-                    onPress={() => router.push('/(app)/verify')}
-                    style={styles.activityRow}
-                  >
-                    <View style={styles.itemAvatar} />
 
-                    <View style={styles.itemDetails}>
-                      <Text style={styles.itemPhone}>{item.phone}</Text>
-                      <Text style={styles.itemType}>{item.type}</Text>
-                    </View>
+                <View
+                  style={[
+                    styles.statusBadge,
+                    { backgroundColor: badgeStyle.bg },
+                  ]}
+                >
+                  <Text style={[styles.statusText, { color: badgeStyle.text }]}>
+                    {item.status}
+                  </Text>
+                </View>
 
-                    <View
-                      style={[
-                        styles.statusBadge,
-                        { backgroundColor: badgeStyle.bg },
-                      ]}
-                    >
-                      <Text style={[styles.statusText, { color: badgeStyle.text }]}>
-                        {item.status}
-                      </Text>
-                    </View>
-
-                    <Text style={styles.itemTime}>{item.time}</Text>
-                    <ChevronRight color="#CBD5E0" size={18} />
-                  </TouchableOpacity>
-                );
-              })}
+                <Text style={[styles.itemTime, { color: themeColors.textSecondary }]}>
+                  {item.time}
+                </Text>
+                <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </ScrollView>
 
-      {/* Fixed Bottom TabBar matching Image 1 */}
-      <View style={[styles.tabBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
-        <TouchableOpacity activeOpacity={0.8} style={styles.tabItem}>
-          <View style={styles.tabActiveIconBg}>
-            <Home color={colors.white} size={22} />
-          </View>
-          <Text style={[styles.tabLabel, styles.tabLabelActive]}>
-            {t('common.home')}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => router.push('/(app)/contacts')}
-          style={styles.tabItem}
-        >
-          <Users color="#A0AEC0" size={22} />
-          <Text style={styles.tabLabel}>{t('common.management')}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => router.push('/(app)/transfer')}
-          style={styles.tabItem}
-        >
-          <CreditCard color="#A0AEC0" size={22} />
-          <Text style={styles.tabLabel}>{t('common.transfer')}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => router.push('/(app)/profile')}
-          style={styles.tabItem}
-        >
-          <User color="#A0AEC0" size={22} />
-          <Text style={styles.tabLabel}>{t('common.profile')}</Text>
-        </TouchableOpacity>
-      </View>
+      <TabBar activeTab="home" />
     </View>
   );
 }
@@ -298,14 +270,11 @@ export default function DashboardHomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAFAFA',
   },
   headerCard: {
     backgroundColor: colors.green,
     paddingHorizontal: 20,
     paddingBottom: 20,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
   },
   userRow: {
     flexDirection: 'row',
@@ -333,7 +302,7 @@ const styles = StyleSheet.create({
   },
   greetingText: {
     fontFamily: fonts.h6,
-    fontSize: 18,
+    fontSize: scaleFont(18),
     fontWeight: '700',
     color: colors.white,
   },
@@ -346,14 +315,25 @@ const styles = StyleSheet.create({
     padding: 6,
     position: 'relative',
   },
-  badgeDot: {
+  badgeCountContainer: {
     position: 'absolute',
-    top: 6,
-    right: 6,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#FF4D4D',
+    top: 2,
+    right: 2,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#FF3B30',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+    borderWidth: 1.5,
+    borderColor: colors.green,
+  },
+  badgeCountText: {
+    fontFamily: fonts.bold,
+    fontSize: 9,
+    color: colors.white,
+    lineHeight: 11,
   },
   searchBar: {
     flexDirection: 'row',
@@ -385,7 +365,6 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#EBF7F2',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
@@ -393,7 +372,6 @@ const styles = StyleSheet.create({
   actionLabel: {
     fontFamily: fonts.medium,
     fontSize: 11,
-    color: '#64748B',
     textAlign: 'center',
     lineHeight: 14,
   },
@@ -407,20 +385,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    backgroundColor: colors.white,
-  },
-  filterPillActive: {
-    borderColor: colors.green,
-    backgroundColor: '#E6F7F0',
   },
   filterText: {
     fontFamily: fonts.medium,
     fontSize: 13,
-    color: '#94A3B8',
-  },
-  filterTextActive: {
-    color: colors.green,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -431,8 +399,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily: fonts.bold,
-    fontSize: 17,
-    color: colors.navy,
+    fontSize: scaleFont(17),
   },
   seeAllText: {
     fontFamily: fonts.medium,
@@ -445,16 +412,20 @@ const styles = StyleSheet.create({
   activityRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
     padding: 12,
     borderRadius: 14,
     marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
   },
   itemAvatar: {
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: '#D1D5DB',
+    backgroundColor: '#94A3B8',
     marginRight: 12,
   },
   itemDetails: {
@@ -462,13 +433,11 @@ const styles = StyleSheet.create({
   },
   itemPhone: {
     fontFamily: fonts.bold,
-    fontSize: 15,
-    color: colors.navy,
+    fontSize: scaleFont(15),
   },
   itemType: {
     fontFamily: fonts.regular,
-    fontSize: 12,
-    color: '#94A3B8',
+    fontSize: scaleFont(12),
     marginTop: 2,
   },
   statusBadge: {
@@ -484,47 +453,6 @@ const styles = StyleSheet.create({
   itemTime: {
     fontFamily: fonts.regular,
     fontSize: 11,
-    color: '#94A3B8',
     marginRight: 6,
-  },
-  skeletonRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    marginBottom: 10,
-  },
-  tabBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    backgroundColor: colors.white,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
-    elevation: 10,
-  },
-  tabItem: {
-    alignItems: 'center',
-  },
-  tabActiveIconBg: {
-    width: 44,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.green,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 2,
-  },
-  tabLabel: {
-    fontFamily: fonts.medium,
-    fontSize: 11,
-    color: '#A0AEC0',
-  },
-  tabLabelActive: {
-    color: colors.green,
   },
 });
