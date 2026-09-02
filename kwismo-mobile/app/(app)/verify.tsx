@@ -21,6 +21,7 @@ import { HeaderBar } from '../../src/shared/components/HeaderBar';
 import { CountryPickerModal, CountryItem } from '../../src/shared/components/CountryPickerModal';
 import { CountryFlag } from '../../src/shared/components/CountryFlag';
 import { ContactPickerModal } from '../../src/shared/components/ContactPickerModal';
+import { VerificationGraphic, OperationStepSpinner } from '../../src/shared/components/VerificationGraphic';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
@@ -350,6 +351,7 @@ export default function VerifyScreen() {
           >
             {viewState === 'analyzing' && (
               <View style={styles.analyzingContainer}>
+                {/* Input lecture seule en haut */}
                 <View
                   style={[
                     styles.inputCardReadonly,
@@ -366,85 +368,96 @@ export default function VerifyScreen() {
                   </Text>
                 </View>
 
-                <View style={[styles.graphicCircleBg, { backgroundColor: isDark ? '#1E293B' : '#E6F7F0' }]}>
-                  <View style={[styles.innerShieldIcon, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
-                    <Icon name="solar:shield-check-bold" color={colors.green} size={64} />
-                  </View>
-                </View>
+                {/* Graphique animé avec le bouclier, les sparkles à 4 branches et la ligne d'analyse */}
+                <VerificationGraphic state="analyzing" isDark={isDark} />
 
                 <Text style={[styles.analyzingTitle, { color: themeColors.textPrimary }]}>
-                  {t('common.analyzing')}
+                  {t('common.analyzing', 'Analyse en cours...')}
                 </Text>
                 <Text style={[styles.analyzingSub, { color: themeColors.textSecondary }]}>
-                  {t('common.analyzingSubtitle')}
+                  {t('common.analyzingSubtitle', 'Nous vérifions ce numéro dans notre base de données et auprès de la communauté')}
                 </Text>
 
+                {/* Liste des 4 étapes avec le spinner rotatif vert et les badges de statut */}
                 <View style={[styles.stepsCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
+                  {/* Étape 1 : Analyse de la base de données */}
                   <View style={styles.stepItem}>
                     <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 1 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
-                      {t('common.dbAnalysis')}
+                      {t('common.dbAnalysis', 'Analyse de la base de données')}
                     </Text>
                     {analysisStep > 1 ? (
-                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                      <View style={styles.stepSuccessCircle}>
+                        <Icon name="solar:check-read-linear" color="#FFFFFF" size={14} />
+                      </View>
                     ) : analysisStep === 1 ? (
-                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
-                      </Animated.View>
+                      <OperationStepSpinner size={22} />
                     ) : (
-                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                      <View style={styles.stepPendingCircle}>
+                        <View style={styles.stepPendingDash} />
+                      </View>
                     )}
                   </View>
 
+                  {/* Étape 2 : Vérification des signalements */}
                   <View style={styles.stepItem}>
                     <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 2 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
-                      {t('common.reportsCheck')}
+                      {t('common.reportsCheck', 'Vérification des signalements')}
                     </Text>
                     {analysisStep > 2 ? (
-                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                      <View style={styles.stepSuccessCircle}>
+                        <Icon name="solar:check-read-linear" color="#FFFFFF" size={14} />
+                      </View>
                     ) : analysisStep === 2 ? (
-                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
-                      </Animated.View>
+                      <OperationStepSpinner size={22} />
                     ) : (
-                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                      <View style={styles.stepPendingCircle}>
+                        <View style={styles.stepPendingDash} />
+                      </View>
                     )}
                   </View>
 
+                  {/* Étape 3 : Consultation de la communauté */}
                   <View style={styles.stepItem}>
                     <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 3 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
-                      {t('common.communityCheck')}
+                      {t('common.communityCheck', 'Consultation de la communauté')}
                     </Text>
                     {analysisStep > 3 ? (
-                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                      <View style={styles.stepSuccessCircle}>
+                        <Icon name="solar:check-read-linear" color="#FFFFFF" size={14} />
+                      </View>
                     ) : analysisStep === 3 ? (
-                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
-                      </Animated.View>
+                      <OperationStepSpinner size={22} />
                     ) : (
-                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                      <View style={styles.stepPendingCircle}>
+                        <View style={styles.stepPendingDash} />
+                      </View>
                     )}
                   </View>
 
+                  {/* Étape 4 : Calcul du score de risque */}
                   <View style={styles.stepItem}>
                     <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 4 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
-                      {t('common.riskCalculation')}
+                      {t('common.riskCalculation', 'Calcul du score de risque')}
                     </Text>
                     {analysisStep > 4 ? (
-                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                      <View style={styles.stepSuccessCircle}>
+                        <Icon name="solar:check-read-linear" color="#FFFFFF" size={14} />
+                      </View>
                     ) : analysisStep === 4 ? (
-                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
-                      </Animated.View>
+                      <OperationStepSpinner size={22} />
                     ) : (
-                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                      <View style={styles.stepPendingCircle}>
+                        <View style={styles.stepPendingDash} />
+                      </View>
                     )}
                   </View>
                 </View>
 
+                {/* Info bas */}
                 <View style={[styles.infoCard, { backgroundColor: isDark ? '#1E293B' : '#EBF3FF' }]}>
                   <Icon name="solar:info-circle-linear" color="#3B82F6" size={20} style={{ marginRight: 10 }} />
                   <Text style={[styles.infoText, { color: isDark ? '#93C5FD' : '#1D4ED8' }]}>
-                    {t('common.operationTimeInfo')}
+                    {t('common.operationTimeInfo', 'Cette opération prend généralement quelques secondes')}
                   </Text>
                 </View>
               </View>
@@ -452,24 +465,23 @@ export default function VerifyScreen() {
 
             {viewState === 'result' && (
               <View style={styles.resultContainer}>
+                {/* Bannière pilule "SÉCURISÉ" */}
                 <View style={styles.statusPillBanner}>
-                  <Text style={styles.statusPillText}>{t('common.secured')}</Text>
+                  <Text style={styles.statusPillText}>SÉCURISÉ</Text>
                 </View>
 
-                <View style={[styles.graphicCircleBg, { backgroundColor: isDark ? '#1E293B' : '#E6F7F0' }]}>
-                  <View style={[styles.innerShieldIcon, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
-                    <Icon name="solar:shield-check-bold" color={colors.green} size={64} />
-                  </View>
-                </View>
+                {/* Graphique validé avec le bouclier, les lignes, le check superposé et les checks flottants */}
+                <VerificationGraphic state="result" isDark={isDark} />
 
+                {/* Carte de score de risque */}
                 <View style={styles.riskCard}>
                   <View style={styles.riskHeader}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Text style={styles.riskTitle}>{t('common.riskScore')}</Text>
-                      <Icon name="solar:info-circle-linear" color="rgba(255,255,255,0.8)" size={14} style={{ marginLeft: 4 }} />
+                      <Text style={styles.riskTitle}>{t('common.riskScore', 'Score de risque')}</Text>
+                      <Icon name="solar:info-circle-linear" color="rgba(255,255,255,0.85)" size={16} style={{ marginLeft: 6 }} />
                     </View>
                     <View style={styles.riskLevelBadge}>
-                      <Text style={styles.riskLevelText}>{t('common.veryLow')}</Text>
+                      <Text style={styles.riskLevelText}>{t('common.veryLow', 'Très faible')}</Text>
                     </View>
                   </View>
 
@@ -484,9 +496,10 @@ export default function VerifyScreen() {
                   </View>
                 </View>
 
+                {/* Historique communautaire */}
                 <View style={styles.communitySection}>
                   <Text style={[styles.communityTitle, { color: themeColors.textPrimary }]}>
-                    {t('common.communityHistory')}
+                    {t('common.communityHistory', 'Historique communautaire')}
                   </Text>
 
                   <View style={[styles.statRow, { borderBottomColor: themeColors.inputBorder }]}>
@@ -494,7 +507,7 @@ export default function VerifyScreen() {
                       <Icon name="solar:bell-bold" color={colors.white} size={16} />
                     </View>
                     <Text style={[styles.statLabel, { color: themeColors.textSecondary }]}>
-                      {t('common.reportsCount')}
+                      {t('common.reportsCount', 'Signalements')}
                     </Text>
                     <Text style={[styles.statValue, { color: themeColors.textPrimary }]}>0</Text>
                   </View>
@@ -504,23 +517,24 @@ export default function VerifyScreen() {
                       <Icon name="solar:chat-dots-bold" color={colors.white} size={16} />
                     </View>
                     <Text style={[styles.statLabel, { color: themeColors.textSecondary }]}>
-                      {t('common.positiveComments')}
+                      {t('common.positiveComments', 'Commentaires positifs')}
                     </Text>
                     <Text style={[styles.statValue, { color: themeColors.textPrimary }]}>24</Text>
                   </View>
 
                   <Text style={[styles.lastReportSub, { color: themeColors.textSecondary }]}>
-                    {t('common.lastReportAgo')}
+                    {t('common.lastReportAgo', 'Dernier signalement il y a 8 mois')}
                   </Text>
                 </View>
 
+                {/* Deux boutons d'action du bas */}
                 <View style={styles.dualActionsRow}>
                   <TouchableOpacity
                     activeOpacity={0.85}
                     onPress={() => router.push('/(app)/report')}
                     style={styles.signalerBtn}
                   >
-                    <Text style={styles.actionBtnText}>{t('common.report')}</Text>
+                    <Text style={styles.actionBtnText}>{t('common.report', 'Signaler')}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -528,7 +542,7 @@ export default function VerifyScreen() {
                     onPress={() => router.push('/(app)/transfer')}
                     style={styles.transfererBtn}
                   >
-                    <Text style={styles.actionBtnText}>{t('common.transfer')}</Text>
+                    <Text style={styles.actionBtnText}>{t('common.transfer', 'Transférer')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -799,6 +813,28 @@ const styles = StyleSheet.create({
     fontFamily: fonts.medium,
     fontSize: scaleFont(14),
   },
+  stepSuccessCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: colors.green,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepPendingCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: '#E2E8F0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepPendingDash: {
+    width: 10,
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: '#94A3B8',
+  },
   infoCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -816,16 +852,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statusPillBanner: {
-    backgroundColor: '#E6F7F0',
-    paddingHorizontal: 18,
-    paddingVertical: 6,
-    borderRadius: 20,
-    marginBottom: 20,
+    borderWidth: 1.5,
+    borderColor: colors.green,
+    borderRadius: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    marginBottom: 16,
+    backgroundColor: 'transparent',
   },
   statusPillText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(13),
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(22),
+    fontWeight: '800',
     color: colors.green,
+    letterSpacing: 2,
   },
   riskCard: {
     width: '100%',
