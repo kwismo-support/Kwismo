@@ -8,40 +8,90 @@ import {
   ScrollView,
   Animated,
   Easing,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
-import {
-  ArrowLeft,
-  Phone,
-  ChevronDown,
-  Users,
-  CheckCircle2,
-  MinusCircle,
-  Loader2,
-  Info,
-  ShieldCheck,
-  Bell,
-  MessageSquare,
-  MoreVertical,
-} from 'lucide-react-native';
-import { SkeletonItem } from '../../src/shared/components/SkeletonItem';
+import { parsePhoneNumberFromString, getCountryCallingCode, CountryCode } from 'libphonenumber-js/min';
+import countries from 'i18n-iso-countries';
+import { Icon } from '../../src/shared/ui/Icon';
+import { HeaderBar } from '../../src/shared/components/HeaderBar';
+import { CountryPickerModal, CountryItem } from '../../src/shared/components/CountryPickerModal';
+import { CountryFlag } from '../../src/shared/components/CountryFlag';
+import { ContactPickerModal } from '../../src/shared/components/ContactPickerModal';
+import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
+import { scaleFont } from '../../src/shared/lib/responsive';
+
+interface VerificationHistoryItem {
+  id: string;
+  phone: string;
+  countryCallingCode: string;
+  date: string;
+}
 
 export default function VerifyScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
+  const { isDark, colors: themeColors } = useAppTheme();
 
-  // Screen State: 'idle' (Image 2) | 'analyzing' (Image 3) | 'result' (Image 4)
+  const isFr = i18n.language.startsWith('fr');
+
+  const defaultCountry: CountryItem = {
+    code: 'CM',
+    name: countries.getName('CM', isFr ? 'fr' : 'en') || 'Cameroun',
+    callingCode: `+${getCountryCallingCode('CM')}`,
+  };
+
   const [viewState, setViewState] = useState<'idle' | 'analyzing' | 'result'>('idle');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [countryCode, setCountryCode] = useState('+237');
-  const [analysisStep, setAnalysisStep] = useState(1); // 1 to 4
+  const [selectedCountry, setSelectedCountry] = useState<CountryItem>(defaultCountry);
+  const [phoneError, setPhoneError] = useState('');
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [analysisStep, setAnalysisStep] = useState(1);
+  const [countryModalVisible, setCountryModalVisible] = useState(false);
+  const [contactModalVisible, setContactModalVisible] = useState(false);
+  const [verificationHistory, setVerificationHistory] = useState<VerificationHistoryItem[]>([
+    { id: '1', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+    { id: '2', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+    { id: '3', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+    { id: '4', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+    { id: '5', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+    { id: '6', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+    { id: '7', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+    { id: '8', phone: '6 98 44 43 88', countryCallingCode: '+237', date: 'Verification de numero' },
+  ]);
+
   const spinValue = useState(new Animated.Value(0))[0];
 
-  // Animated Spinner
+  useEffect(() => {
+    // Détection automatique du pays par IP
+    fetch('https://ipapi.co/json/')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.country_code) {
+          const code = data.country_code as CountryCode;
+          try {
+            const callingCode = `+${getCountryCallingCode(code)}`;
+            const name = countries.getName(code, isFr ? 'fr' : 'en') || code;
+            setSelectedCountry({
+              code,
+              name,
+              callingCode,
+            });
+          } catch {
+            // ignore
+          }
+        }
+      })
+      .catch(() => {
+        // fallback
+      });
+  }, [isFr]);
+
   useEffect(() => {
     if (viewState === 'analyzing') {
       const spin = Animated.loop(
@@ -57,16 +107,50 @@ export default function VerifyScreen() {
     }
   }, [viewState, spinValue]);
 
-  // Handle Verification Action
-  const handleVerify = () => {
+  // Validation en temps réel avec libphonenumber-js
+  const parsedPhone = parsePhoneNumberFromString(phoneNumber.trim(), selectedCountry.code);
+  const isPhoneValid = Boolean(parsedPhone && parsedPhone.isValid());
+  const isPhoneInvalid = Boolean(phoneNumber.trim().length > 0 && !isPhoneValid);
+
+  const handleVerify = async () => {
+    if (!isPhoneValid) {
+      setPhoneError(t('validation.phoneNumberInvalid', 'Numéro de téléphone invalide'));
+      return false;
+    }
+
+    setPhoneError('');
     setViewState('analyzing');
     setAnalysisStep(1);
 
-    // Step by step analysis progress simulation
+    const newItem: VerificationHistoryItem = {
+      id: Date.now().toString(),
+      phone: phoneNumber,
+      countryCallingCode: selectedCountry.callingCode,
+      date: 'Verification de numero',
+    };
+    setVerificationHistory((prev) => [newItem, ...prev]);
+
     setTimeout(() => setAnalysisStep(2), 700);
     setTimeout(() => setAnalysisStep(3), 1500);
     setTimeout(() => setAnalysisStep(4), 2200);
     setTimeout(() => setViewState('result'), 3000);
+    return true;
+  };
+
+  const handleSelectContact = (phone: string, country?: CountryItem) => {
+    setPhoneNumber(phone);
+    if (country) {
+      setSelectedCountry(country);
+    }
+    if (phoneError) setPhoneError('');
+  };
+
+  const handleBack = () => {
+    if (viewState !== 'idle') {
+      setViewState('idle');
+    } else {
+      router.back();
+    }
   };
 
   const spin = spinValue.interpolate({
@@ -76,284 +160,384 @@ export default function VerifyScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Top Green Header matching Images 2, 3, 4 */}
-      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-        <View style={styles.headerContent}>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => {
-              if (viewState !== 'idle') {
-                setViewState('idle');
-              } else {
-                router.back();
-              }
-            }}
-            style={styles.backBtn}
-          >
-            <ArrowLeft color={colors.white} size={22} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('common.verifyNumber')}</Text>
-          <TouchableOpacity activeOpacity={0.7} style={styles.moreBtn}>
-            <MoreVertical color={colors.white} size={22} />
-          </TouchableOpacity>
-        </View>
-      </View>
+      <StatusBar style="light" />
 
-      {/* Main Content View based on current viewState */}
-      <ScrollView
-        contentContainerStyle={[
-          styles.scrollBody,
-          { paddingBottom: insets.bottom + 100 },
+      {/* Header global unifié Kwismo */}
+      <HeaderBar
+        title={t('common.verifyNumber', 'Verification du numero')}
+        showBack={true}
+        onBack={handleBack}
+      />
+
+      {/* Feuille de contenu blanc/sombre avec bordure supérieure gauche arrondie */}
+      <View
+        style={[
+          styles.mainCardSheet,
+          { backgroundColor: themeColors.background },
         ]}
-        showsVerticalScrollIndicator={false}
       >
-        {/* State 1: IDLE / INPUT (Image 2) */}
-        {viewState === 'idle' && (
-          <View style={styles.idleContainer}>
-            {/* Phone Input Card */}
-            <View style={styles.inputCard}>
-              <Phone color="#94A3B8" size={20} style={{ marginRight: 8 }} />
-              <TouchableOpacity activeOpacity={0.7} style={styles.countryPicker}>
-                <Text style={styles.countryCodeText}>{countryCode}</Text>
-                <ChevronDown color="#94A3B8" size={16} />
-              </TouchableOpacity>
-              <View style={styles.inputDivider} />
-              <TextInput
-                style={styles.phoneInput}
-                placeholder={t('common.phoneNumber')}
-                placeholderTextColor="#A0AEC0"
-                keyboardType="phone-pad"
-                value={phoneNumber}
-                onChangeText={setPhoneNumber}
-              />
-            </View>
+        {viewState === 'idle' ? (
+          <View style={styles.idleRootContainer}>
+            {/* Zone fixe du haut : Input + Bouton vérifier + Titre Historique */}
+            <View style={styles.topFixedSection}>
+              {/* Champ de saisie du numéro */}
+              <View
+                style={[
+                  styles.inputCard,
+                  {
+                    backgroundColor: themeColors.cardBg,
+                    borderColor:
+                      isPhoneInvalid && (isInputFocused || phoneError)
+                        ? '#EF4444'
+                        : isPhoneValid
+                        ? colors.green
+                        : isInputFocused
+                        ? colors.green
+                        : themeColors.inputBorder,
+                    borderWidth: (isPhoneInvalid && isInputFocused) || isPhoneValid ? 1.5 : 1,
+                  },
+                ]}
+              >
+                <Icon
+                  name="solar:phone-linear"
+                  color={
+                    isPhoneInvalid && isInputFocused
+                      ? '#EF4444'
+                      : isPhoneValid
+                      ? colors.green
+                      : themeColors.inputPlaceholder
+                  }
+                  size={20}
+                  style={{ marginRight: 8 }}
+                />
 
-            {/* Verify Action Button */}
-            <TouchableOpacity
-              activeOpacity={0.85}
-              onPress={handleVerify}
-              style={styles.verifyBtn}
-            >
-              <Text style={styles.verifyBtnText}>{t('common.verify')}</Text>
-            </TouchableOpacity>
+                {/* Sélecteur de pays avec drapeau circulaire, indicatif et flèche vers le bas */}
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => setCountryModalVisible(true)}
+                  style={styles.countryPicker}
+                >
+                  <CountryFlag countryCode={selectedCountry.code} size={22} style={{ marginRight: 6 }} />
+                  <Text style={[styles.countryCodeText, { color: themeColors.textPrimary }]}>
+                    {selectedCountry.callingCode}
+                  </Text>
+                  <Icon
+                    name="solar:alt-arrow-down-linear"
+                    color={themeColors.textSecondary}
+                    size={16}
+                    style={{ marginLeft: 4 }}
+                  />
+                </TouchableOpacity>
 
-            {/* History List */}
-            <View style={styles.historyList}>
-              {Array.from({ length: 9 }).map((_, idx) => (
-                <View key={`history-${idx}`} style={styles.historyRow}>
-                  <View style={styles.avatarCircle} />
-                  <View>
-                    <Text style={styles.historyPhone}>+237 6 98 44 43 88</Text>
-                    <Text style={styles.historySub}>Verification de numero</Text>
-                  </View>
+                {/* Champ texte sans barre séparatrice */}
+                <TextInput
+                  style={[
+                    styles.phoneInput,
+                    { color: themeColors.textPrimary },
+                    Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
+                  ]}
+                  placeholder={t('common.phonePlaceholder', 'Numero de telephone')}
+                  placeholderTextColor={themeColors.inputPlaceholder}
+                  keyboardType="phone-pad"
+                  value={phoneNumber}
+                  onFocus={() => setIsInputFocused(true)}
+                  onBlur={() => setIsInputFocused(false)}
+                  onChangeText={(val) => {
+                    setPhoneNumber(val);
+                    if (phoneError) setPhoneError('');
+                  }}
+                />
+
+                {isPhoneValid && (
+                  <Icon name="solar:check-circle-bold" color={colors.green} size={20} style={{ marginLeft: 6 }} />
+                )}
+              </View>
+
+              {phoneError ? (
+                <View style={styles.errorRow}>
+                  <Icon name="solar:danger-circle-bold" color="#EF4444" size={14} />
+                  <Text style={styles.errorText}>{phoneError}</Text>
                 </View>
-              ))}
-            </View>
-          </View>
-        )}
+              ) : null}
 
-        {/* State 2: ANALYZING (Image 3) */}
-        {viewState === 'analyzing' && (
-          <View style={styles.analyzingContainer}>
-            {/* Number Bar */}
-            <View style={styles.inputCardReadonly}>
-              <Phone color="#94A3B8" size={20} style={{ marginRight: 8 }} />
-              <Text style={styles.countryCodeText}>{countryCode}</Text>
-              <ChevronDown color="#94A3B8" size={16} style={{ marginRight: 12 }} />
-              <Text style={styles.phoneTextReadonly}>
-                {phoneNumber || '698 44 43 88'}
+              {/* Bouton "Vérifier" : Gris quand désactivé, Jaune/Orange Kwismo quand validé */}
+              <TouchableOpacity
+                activeOpacity={isPhoneValid ? 0.85 : 1}
+                onPress={isPhoneValid ? handleVerify : undefined}
+                disabled={!isPhoneValid}
+                style={[
+                  styles.verifyBtn,
+                  {
+                    backgroundColor: isPhoneValid
+                      ? colors.orange
+                      : isDark
+                      ? '#334155'
+                      : '#D1D5DB',
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.verifyBtnText,
+                    {
+                      color: isPhoneValid
+                        ? colors.white
+                        : isDark
+                        ? '#94A3B8'
+                        : '#64748B',
+                    },
+                  ]}
+                >
+                  {t('common.verify', 'Verifier')}
+                </Text>
+              </TouchableOpacity>
+
+              {/* Titre FIXE de l'historique des vérifications */}
+              <Text style={[styles.historySectionTitleFixed, { color: themeColors.textPrimary }]}>
+                {t('common.verificationHistory', 'Historique des vérifications')}
               </Text>
             </View>
 
-            {/* Center Animated Shield Graphic */}
-            <View style={styles.graphicCircleBg}>
-              <View style={styles.innerShieldIcon}>
-                <ShieldCheck color={colors.green} size={64} />
-              </View>
-            </View>
-
-            <Text style={styles.analyzingTitle}>{t('common.analyzing')}</Text>
-            <Text style={styles.analyzingSub}>{t('common.analyzingSubtitle')}</Text>
-
-            {/* Animated Step Progress Checklist matching Image 3 */}
-            <View style={styles.stepsCard}>
-              {/* Step 1 */}
-              <View style={styles.stepItem}>
-                <Text
-                  style={[
-                    styles.stepText,
-                    analysisStep >= 1 && styles.stepTextActive,
-                  ]}
-                >
-                  {t('common.dbAnalysis')}
-                </Text>
-                {analysisStep > 1 ? (
-                  <CheckCircle2 color={colors.green} size={22} />
-                ) : analysisStep === 1 ? (
-                  <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                    <Loader2 color={colors.green} size={22} />
-                  </Animated.View>
-                ) : (
-                  <MinusCircle color="#CBD5E0" size={22} />
-                )}
-              </View>
-
-              {/* Step 2 */}
-              <View style={styles.stepItem}>
-                <Text
-                  style={[
-                    styles.stepText,
-                    analysisStep >= 2 && styles.stepTextActive,
-                  ]}
-                >
-                  {t('common.reportsCheck')}
-                </Text>
-                {analysisStep > 2 ? (
-                  <CheckCircle2 color={colors.green} size={22} />
-                ) : analysisStep === 2 ? (
-                  <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                    <Loader2 color={colors.green} size={22} />
-                  </Animated.View>
-                ) : (
-                  <MinusCircle color="#CBD5E0" size={22} />
-                )}
-              </View>
-
-              {/* Step 3 */}
-              <View style={styles.stepItem}>
-                <Text
-                  style={[
-                    styles.stepText,
-                    analysisStep >= 3 && styles.stepTextActive,
-                  ]}
-                >
-                  {t('common.communityCheck')}
-                </Text>
-                {analysisStep > 3 ? (
-                  <CheckCircle2 color={colors.green} size={22} />
-                ) : analysisStep === 3 ? (
-                  <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                    <Loader2 color={colors.green} size={22} />
-                  </Animated.View>
-                ) : (
-                  <MinusCircle color="#CBD5E0" size={22} />
-                )}
-              </View>
-
-              {/* Step 4 */}
-              <View style={styles.stepItem}>
-                <Text
-                  style={[
-                    styles.stepText,
-                    analysisStep >= 4 && styles.stepTextActive,
-                  ]}
-                >
-                  {t('common.riskCalculation')}
-                </Text>
-                {analysisStep > 4 ? (
-                  <CheckCircle2 color={colors.green} size={22} />
-                ) : analysisStep === 4 ? (
-                  <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                    <Loader2 color={colors.green} size={22} />
-                  </Animated.View>
-                ) : (
-                  <MinusCircle color="#CBD5E0" size={22} />
-                )}
-              </View>
-            </View>
-
-            {/* Info Box */}
-            <View style={styles.infoCard}>
-              <Info color="#3B82F6" size={20} style={{ marginRight: 10 }} />
-              <Text style={styles.infoText}>{t('common.operationTimeInfo')}</Text>
-            </View>
+            {/* SEULE la liste des numéros est scrollable */}
+            <ScrollView
+              style={styles.historyScrollView}
+              contentContainerStyle={[
+                styles.historyScrollContent,
+                { paddingBottom: insets.bottom + 90 },
+              ]}
+              showsVerticalScrollIndicator={false}
+            >
+              {verificationHistory.length === 0 ? (
+                <View style={styles.emptyHistoryBox}>
+                  <Icon name="solar:history-linear" color={themeColors.inputPlaceholder} size={36} style={{ marginBottom: 8 }} />
+                  <Text style={[styles.emptyHistoryText, { color: themeColors.textSecondary }]}>
+                    {t('common.noVerificationHistory', 'Aucune vérification récente pour le moment.')}
+                  </Text>
+                </View>
+              ) : (
+                <View style={styles.historyList}>
+                  {verificationHistory.map((item, idx) => (
+                    <TouchableOpacity
+                      key={`${item.id}-${idx}`}
+                      activeOpacity={0.7}
+                      onPress={() => {
+                        setPhoneNumber(item.phone);
+                      }}
+                      style={styles.historyRow}
+                    >
+                      <View style={styles.avatarCircle} />
+                      <View style={{ flex: 1 }}>
+                        <Text style={[styles.historyPhone, { color: themeColors.textPrimary }]}>
+                          {item.countryCallingCode} {item.phone}
+                        </Text>
+                        <Text style={[styles.historySub, { color: themeColors.textSecondary }]}>
+                          {item.date}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </ScrollView>
           </View>
+        ) : (
+          <ScrollView
+            contentContainerStyle={[
+              styles.scrollBody,
+              { paddingBottom: insets.bottom + 40 },
+            ]}
+            showsVerticalScrollIndicator={false}
+          >
+            {viewState === 'analyzing' && (
+              <View style={styles.analyzingContainer}>
+                <View
+                  style={[
+                    styles.inputCardReadonly,
+                    { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder },
+                  ]}
+                >
+                  <Icon name="solar:phone-linear" color={colors.green} size={20} style={{ marginRight: 8 }} />
+                  <CountryFlag countryCode={selectedCountry.code} size={20} style={{ marginRight: 6 }} />
+                  <Text style={[styles.countryCodeText, { color: themeColors.textPrimary, marginRight: 6 }]}>
+                    {selectedCountry.callingCode}
+                  </Text>
+                  <Text style={[styles.phoneTextReadonly, { color: themeColors.textPrimary }]}>
+                    {phoneNumber}
+                  </Text>
+                </View>
+
+                <View style={[styles.graphicCircleBg, { backgroundColor: isDark ? '#1E293B' : '#E6F7F0' }]}>
+                  <View style={[styles.innerShieldIcon, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
+                    <Icon name="solar:shield-check-bold" color={colors.green} size={64} />
+                  </View>
+                </View>
+
+                <Text style={[styles.analyzingTitle, { color: themeColors.textPrimary }]}>
+                  {t('common.analyzing')}
+                </Text>
+                <Text style={[styles.analyzingSub, { color: themeColors.textSecondary }]}>
+                  {t('common.analyzingSubtitle')}
+                </Text>
+
+                <View style={[styles.stepsCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
+                  <View style={styles.stepItem}>
+                    <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 1 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
+                      {t('common.dbAnalysis')}
+                    </Text>
+                    {analysisStep > 1 ? (
+                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                    ) : analysisStep === 1 ? (
+                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
+                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
+                      </Animated.View>
+                    ) : (
+                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                    )}
+                  </View>
+
+                  <View style={styles.stepItem}>
+                    <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 2 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
+                      {t('common.reportsCheck')}
+                    </Text>
+                    {analysisStep > 2 ? (
+                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                    ) : analysisStep === 2 ? (
+                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
+                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
+                      </Animated.View>
+                    ) : (
+                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                    )}
+                  </View>
+
+                  <View style={styles.stepItem}>
+                    <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 3 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
+                      {t('common.communityCheck')}
+                    </Text>
+                    {analysisStep > 3 ? (
+                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                    ) : analysisStep === 3 ? (
+                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
+                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
+                      </Animated.View>
+                    ) : (
+                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                    )}
+                  </View>
+
+                  <View style={styles.stepItem}>
+                    <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 4 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
+                      {t('common.riskCalculation')}
+                    </Text>
+                    {analysisStep > 4 ? (
+                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                    ) : analysisStep === 4 ? (
+                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
+                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
+                      </Animated.View>
+                    ) : (
+                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                    )}
+                  </View>
+                </View>
+
+                <View style={[styles.infoCard, { backgroundColor: isDark ? '#1E293B' : '#EBF3FF' }]}>
+                  <Icon name="solar:info-circle-linear" color="#3B82F6" size={20} style={{ marginRight: 10 }} />
+                  <Text style={[styles.infoText, { color: isDark ? '#93C5FD' : '#1D4ED8' }]}>
+                    {t('common.operationTimeInfo')}
+                  </Text>
+                </View>
+              </View>
+            )}
+
+            {viewState === 'result' && (
+              <View style={styles.resultContainer}>
+                <View style={styles.statusPillBanner}>
+                  <Text style={styles.statusPillText}>{t('common.secured')}</Text>
+                </View>
+
+                <View style={[styles.graphicCircleBg, { backgroundColor: isDark ? '#1E293B' : '#E6F7F0' }]}>
+                  <View style={[styles.innerShieldIcon, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
+                    <Icon name="solar:shield-check-bold" color={colors.green} size={64} />
+                  </View>
+                </View>
+
+                <View style={styles.riskCard}>
+                  <View style={styles.riskHeader}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Text style={styles.riskTitle}>{t('common.riskScore')}</Text>
+                      <Icon name="solar:info-circle-linear" color="rgba(255,255,255,0.8)" size={14} style={{ marginLeft: 4 }} />
+                    </View>
+                    <View style={styles.riskLevelBadge}>
+                      <Text style={styles.riskLevelText}>{t('common.veryLow')}</Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.gaugeContainer}>
+                    <View style={styles.gaugeLabels}>
+                      <Text style={styles.gaugeVal}>0</Text>
+                      <Text style={styles.gaugeVal}>100</Text>
+                    </View>
+                    <View style={styles.gaugeBarBackground}>
+                      <View style={[styles.gaugeBarFill, { width: '8%' }]} />
+                    </View>
+                  </View>
+                </View>
+
+                <View style={styles.communitySection}>
+                  <Text style={[styles.communityTitle, { color: themeColors.textPrimary }]}>
+                    {t('common.communityHistory')}
+                  </Text>
+
+                  <View style={[styles.statRow, { borderBottomColor: themeColors.inputBorder }]}>
+                    <View style={styles.iconCircleDark}>
+                      <Icon name="solar:bell-bold" color={colors.white} size={16} />
+                    </View>
+                    <Text style={[styles.statLabel, { color: themeColors.textSecondary }]}>
+                      {t('common.reportsCount')}
+                    </Text>
+                    <Text style={[styles.statValue, { color: themeColors.textPrimary }]}>0</Text>
+                  </View>
+
+                  <View style={[styles.statRow, { borderBottomColor: themeColors.inputBorder }]}>
+                    <View style={styles.iconCircleDark}>
+                      <Icon name="solar:chat-dots-bold" color={colors.white} size={16} />
+                    </View>
+                    <Text style={[styles.statLabel, { color: themeColors.textSecondary }]}>
+                      {t('common.positiveComments')}
+                    </Text>
+                    <Text style={[styles.statValue, { color: themeColors.textPrimary }]}>24</Text>
+                  </View>
+
+                  <Text style={[styles.lastReportSub, { color: themeColors.textSecondary }]}>
+                    {t('common.lastReportAgo')}
+                  </Text>
+                </View>
+
+                <View style={styles.dualActionsRow}>
+                  <TouchableOpacity
+                    activeOpacity={0.85}
+                    onPress={() => router.push('/(app)/report')}
+                    style={styles.signalerBtn}
+                  >
+                    <Text style={styles.actionBtnText}>{t('common.report')}</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    activeOpacity={0.85}
+                    onPress={() => router.push('/(app)/transfer')}
+                    style={styles.transfererBtn}
+                  >
+                    <Text style={styles.actionBtnText}>{t('common.transfer')}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </ScrollView>
         )}
+      </View>
 
-        {/* State 3: RESULT (Image 4) */}
-        {viewState === 'result' && (
-          <View style={styles.resultContainer}>
-            {/* Status Pill Banner */}
-            <View style={styles.statusPillBanner}>
-              <Text style={styles.statusPillText}>{t('common.secured')}</Text>
-            </View>
-
-            {/* Center Verified Shield Graphic */}
-            <View style={styles.graphicCircleBg}>
-              <View style={styles.innerShieldIcon}>
-                <ShieldCheck color={colors.green} size={64} />
-              </View>
-            </View>
-
-            {/* Risk Score Card */}
-            <View style={styles.riskCard}>
-              <View style={styles.riskHeader}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={styles.riskTitle}>{t('common.riskScore')}</Text>
-                  <Info color="rgba(255,255,255,0.8)" size={14} style={{ marginLeft: 4 }} />
-                </View>
-                <View style={styles.riskLevelBadge}>
-                  <Text style={styles.riskLevelText}>{t('common.veryLow')}</Text>
-                </View>
-              </View>
-
-              <View style={styles.gaugeContainer}>
-                <View style={styles.gaugeLabels}>
-                  <Text style={styles.gaugeVal}>0</Text>
-                  <Text style={styles.gaugeVal}>100</Text>
-                </View>
-                <View style={styles.gaugeBarBackground}>
-                  <View style={[styles.gaugeBarFill, { width: '8%' }]} />
-                </View>
-              </View>
-            </View>
-
-            {/* Community History Section */}
-            <View style={styles.communitySection}>
-              <Text style={styles.communityTitle}>{t('common.communityHistory')}</Text>
-
-              <View style={styles.statRow}>
-                <View style={styles.iconCircleDark}>
-                  <Bell color={colors.white} size={16} />
-                </View>
-                <Text style={styles.statLabel}>{t('common.reportsCount')}</Text>
-                <Text style={styles.statValue}>0</Text>
-              </View>
-
-              <View style={styles.statRow}>
-                <View style={styles.iconCircleDark}>
-                  <MessageSquare color={colors.white} size={16} />
-                </View>
-                <Text style={styles.statLabel}>{t('common.positiveComments')}</Text>
-                <Text style={styles.statValue}>24</Text>
-              </View>
-
-              <Text style={styles.lastReportSub}>{t('common.lastReportAgo')}</Text>
-            </View>
-
-            {/* Dual Action Buttons matching Image 4 */}
-            <View style={styles.dualActionsRow}>
-              <TouchableOpacity
-                activeOpacity={0.85}
-                onPress={() => router.push('/(app)/report')}
-                style={styles.signalerBtn}
-              >
-                <Text style={styles.actionBtnText}>{t('common.report')}</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                activeOpacity={0.85}
-                onPress={() => router.push('/(app)/transfer')}
-                style={styles.transfererBtn}
-              >
-                <Text style={styles.actionBtnText}>{t('common.transfer')}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      </ScrollView>
-
-      {/* Bottom Fixed Button: Choose from contacts (Only in Idle State) */}
+      {/* Bouton du bas "Choisi dans les contacts" conforme à la maquette (Bleu Nuit, rectangulaire arrondi) */}
       {viewState === 'idle' && (
         <View
           style={[
@@ -363,14 +547,33 @@ export default function VerifyScreen() {
         >
           <TouchableOpacity
             activeOpacity={0.85}
-            onPress={() => router.push('/(app)/contacts')}
-            style={styles.contactsBtn}
+            onPress={() => setContactModalVisible(true)}
+            style={styles.contactsBtnMaquette}
           >
-            <Users color={colors.white} size={20} style={{ marginRight: 10 }} />
-            <Text style={styles.contactsBtnText}>{t('common.chooseFromContacts')}</Text>
+            <Icon name="solar:users-group-two-rounded-bold" color={colors.white} size={22} style={{ marginRight: 10 }} />
+            <Text style={styles.contactsBtnText}>{t('common.chooseFromContacts', 'Choisi dans les contacts')}</Text>
           </TouchableOpacity>
         </View>
       )}
+
+      {/* Modale de sélection de pays */}
+      <CountryPickerModal
+        visible={countryModalVisible}
+        onClose={() => setCountryModalVisible(false)}
+        onSelect={(c) => {
+          setSelectedCountry(c);
+          if (phoneError) setPhoneError('');
+        }}
+        selectedCode={selectedCountry.code}
+      />
+
+      {/* Modale de sélection de contact */}
+      <ContactPickerModal
+        visible={contactModalVisible}
+        onClose={() => setContactModalVisible(false)}
+        onSelect={handleSelectContact}
+        defaultCountryCode={selectedCountry.code}
+      />
     </View>
   );
 }
@@ -378,113 +581,128 @@ export default function VerifyScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
-  },
-  header: {
     backgroundColor: colors.green,
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
   },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  mainCardSheet: {
+    flex: 1,
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 0,
+    overflow: 'hidden',
   },
-  backBtn: {
-    padding: 6,
+  idleRootContainer: {
+    flex: 1,
   },
-  headerTitle: {
-    fontFamily: fonts.h6,
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.white,
+  topFixedSection: {
+    paddingHorizontal: 20,
+    paddingTop: 24,
   },
-  moreBtn: {
-    padding: 6,
+  historyScrollView: {
+    flex: 1,
+  },
+  historyScrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
   },
   scrollBody: {
     paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  idleContainer: {
-    width: '100%',
+    paddingTop: 24,
   },
   inputCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
     height: 52,
     borderRadius: 14,
     paddingHorizontal: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
     elevation: 1,
   },
   countryPicker: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingRight: 10,
   },
   countryCodeText: {
-    fontFamily: fonts.bold,
-    fontSize: 15,
-    color: colors.navy,
-    marginRight: 4,
-  },
-  inputDivider: {
-    width: 1,
-    height: 20,
-    backgroundColor: '#CBD5E0',
-    marginHorizontal: 12,
+    fontFamily: fonts.semiBold,
+    fontSize: scaleFont(15),
   },
   phoneInput: {
     flex: 1,
+    height: '100%',
     fontFamily: fonts.medium,
-    fontSize: 15,
-    color: colors.navy,
+    fontSize: scaleFont(15),
+    paddingVertical: 0,
+    textAlignVertical: 'center',
+  },
+  errorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+    paddingHorizontal: 4,
+    gap: 6,
+  },
+  errorText: {
+    fontFamily: fonts.medium,
+    fontSize: 12,
+    color: '#EF4444',
   },
   verifyBtn: {
-    width: '100%',
     height: 52,
-    backgroundColor: colors.orange,
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
+    marginTop: 18,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
     elevation: 2,
   },
   verifyBtnText: {
-    fontFamily: fonts.medium,
-    fontSize: 16,
-    color: colors.white,
+    fontFamily: fonts.bold,
+    fontSize: scaleFont(15),
+  },
+  historySectionTitleFixed: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(16),
+    fontWeight: '700',
+    marginBottom: 10,
+  },
+  emptyHistoryBox: {
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyHistoryText: {
+    fontFamily: fonts.regular,
+    fontSize: scaleFont(13),
+    textAlign: 'center',
   },
   historyList: {
-    width: '100%',
+    gap: 16,
   },
   historyRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    paddingVertical: 6,
   },
   avatarCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#E2E8F0',
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#D1D5DB',
     marginRight: 14,
   },
   historyPhone: {
     fontFamily: fonts.bold,
-    fontSize: 15,
-    color: colors.navy,
+    fontSize: scaleFont(15),
   },
   historySub: {
     fontFamily: fonts.regular,
-    fontSize: 12,
+    fontSize: scaleFont(12),
     color: '#94A3B8',
     marginTop: 2,
   },
@@ -494,161 +712,148 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     paddingHorizontal: 20,
-    backgroundColor: 'rgba(255,255,255,0.95)',
+    backgroundColor: 'transparent',
   },
-  contactsBtn: {
+  contactsBtnMaquette: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '100%',
-    height: 52,
-    backgroundColor: colors.navy,
+    height: 54,
     borderRadius: 14,
+    backgroundColor: '#131B2E',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   contactsBtnText: {
-    fontFamily: fonts.medium,
-    fontSize: 15,
+    fontFamily: fonts.semiBold,
+    fontSize: scaleFont(15),
     color: colors.white,
   },
-  // Analyzing State Styles
   analyzingContainer: {
     alignItems: 'center',
+    paddingTop: 10,
   },
   inputCardReadonly: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.white,
+    width: '100%',
     height: 52,
     borderRadius: 14,
-    paddingHorizontal: 14,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    width: '100%',
-    marginBottom: 32,
+    paddingHorizontal: 16,
+    marginBottom: 28,
   },
   phoneTextReadonly: {
-    fontFamily: fonts.bold,
-    fontSize: 16,
-    color: colors.navy,
+    fontFamily: fonts.semiBold,
+    fontSize: scaleFont(15),
   },
   graphicCircleBg: {
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: '#E6F7F0',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
+    marginBottom: 20,
   },
   innerShieldIcon: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: '#C6EFE0',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
   },
   analyzingTitle: {
-    fontFamily: fonts.h3,
-    fontSize: 22,
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(20),
     fontWeight: '700',
-    color: colors.navy,
-    marginBottom: 8,
+    marginBottom: 6,
   },
   analyzingSub: {
-    fontFamily: fonts.medium,
-    fontSize: 13,
-    color: '#94A3B8',
+    fontFamily: fonts.regular,
+    fontSize: scaleFont(13),
+    marginBottom: 24,
     textAlign: 'center',
-    lineHeight: 18,
-    marginBottom: 28,
-    paddingHorizontal: 16,
   },
   stepsCard: {
     width: '100%',
-    borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
-    marginBottom: 24,
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 16,
+    gap: 16,
+    marginBottom: 20,
   },
   stepItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
   },
   stepText: {
     fontFamily: fonts.medium,
-    fontSize: 14,
-    color: '#94A3B8',
-  },
-  stepTextActive: {
-    color: colors.navy,
-    fontFamily: fonts.bold,
+    fontSize: scaleFont(14),
   },
   infoCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#EFF6FF',
-    padding: 14,
-    borderRadius: 14,
     width: '100%',
+    padding: 14,
+    borderRadius: 12,
   },
   infoText: {
     flex: 1,
     fontFamily: fonts.medium,
-    fontSize: 13,
-    color: '#3B82F6',
+    fontSize: scaleFont(12),
     lineHeight: 18,
   },
-  // Result State Styles
   resultContainer: {
     alignItems: 'center',
   },
   statusPillBanner: {
-    width: '100%',
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 1.5,
-    borderColor: colors.green,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 24,
+    backgroundColor: '#E6F7F0',
+    paddingHorizontal: 18,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginBottom: 20,
   },
   statusPillText: {
     fontFamily: fonts.bold,
-    fontSize: 20,
+    fontSize: scaleFont(13),
     color: colors.green,
-    letterSpacing: 1,
   },
   riskCard: {
     width: '100%',
     backgroundColor: colors.green,
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 28,
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 24,
   },
   riskHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 14,
   },
   riskTitle: {
     fontFamily: fonts.bold,
-    fontSize: 16,
+    fontSize: scaleFont(15),
     color: colors.white,
   },
   riskLevelBadge: {
-    backgroundColor: 'rgba(255,255,255,0.3)',
-    paddingHorizontal: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
   },
   riskLevelText: {
-    fontFamily: fonts.medium,
-    fontSize: 12,
+    fontFamily: fonts.bold,
+    fontSize: scaleFont(11),
     color: colors.white,
   },
   gaugeContainer: {
@@ -661,37 +866,35 @@ const styles = StyleSheet.create({
   },
   gaugeVal: {
     fontFamily: fonts.medium,
-    fontSize: 12,
-    color: colors.white,
+    fontSize: 10,
+    color: 'rgba(255, 255, 255, 0.85)',
   },
   gaugeBarBackground: {
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: 'rgba(255,255,255,0.4)',
     width: '100%',
-    overflow: 'hidden',
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   gaugeBarFill: {
     height: '100%',
+    borderRadius: 4,
     backgroundColor: colors.white,
-    borderRadius: 3,
   },
   communitySection: {
     width: '100%',
     marginBottom: 28,
   },
   communityTitle: {
-    fontFamily: fonts.bold,
-    fontSize: 16,
-    color: colors.navy,
-    marginBottom: 16,
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(16),
+    fontWeight: '700',
+    marginBottom: 12,
   },
   statRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
   },
   iconCircleDark: {
     width: 32,
@@ -705,45 +908,41 @@ const styles = StyleSheet.create({
   statLabel: {
     flex: 1,
     fontFamily: fonts.medium,
-    fontSize: 14,
-    color: colors.navy,
+    fontSize: scaleFont(14),
   },
   statValue: {
     fontFamily: fonts.bold,
-    fontSize: 15,
-    color: colors.navy,
+    fontSize: scaleFont(15),
   },
   lastReportSub: {
     fontFamily: fonts.regular,
-    fontSize: 12,
-    color: '#94A3B8',
-    marginTop: 14,
+    fontSize: scaleFont(12),
+    marginTop: 10,
   },
   dualActionsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    gap: 12,
     width: '100%',
-    gap: 14,
   },
   signalerBtn: {
     flex: 1,
-    height: 52,
-    backgroundColor: colors.orange,
-    borderRadius: 26,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#EF4444',
     alignItems: 'center',
     justifyContent: 'center',
   },
   transfererBtn: {
     flex: 1,
-    height: 52,
-    backgroundColor: colors.navy,
-    borderRadius: 26,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: colors.green,
     alignItems: 'center',
     justifyContent: 'center',
   },
   actionBtnText: {
-    fontFamily: fonts.medium,
-    fontSize: 15,
+    fontFamily: fonts.semiBold,
+    fontSize: scaleFont(14),
     color: colors.white,
   },
 });

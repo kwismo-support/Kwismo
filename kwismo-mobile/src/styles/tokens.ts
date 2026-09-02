@@ -1,23 +1,20 @@
 import { Platform } from 'react-native';
 
 /**
- * Design Tokens for Kwismo Mobile
+ * Design Tokens
  */
 
 export const colors = {
-  // Primary brand palette specified in requirements
   navy: '#161E33',
   orange: '#FF9900',
   green: '#32B07F',
   blue: '#6B98FF',
 
-  // Dark variations & gradients
   darkBg: '#0F1626',
   darkGreenOverlay: 'rgba(15, 30, 35, 0.95)',
   gradientGreenStart: '#32B07F',
   gradientNavyEnd: '#161E33',
 
-  // Neutral tones
   white: '#FFFFFF',
   offWhite: '#F8FAF9',
   gray100: '#F3F4F6',
@@ -28,76 +25,49 @@ export const colors = {
   gray900: '#111827',
   black: '#000000',
 
-  // Input border & placeholders
   inputBorder: 'rgba(255, 255, 255, 0.6)',
   inputPlaceholder: '#A0AEC0',
 
-  // Pagination indicators
   activeIndicator: '#FF9900',
   inactiveIndicator: 'rgba(255, 255, 255, 0.5)',
 };
 
-// Platform-aware font family definitions for Web, Android, and iOS
-const fontHeadlineBold = Platform.select({
-  web: "'Montserrat Alternates', 'MontserratAlternates-Bold', sans-serif",
-  default: 'MontserratAlternates-Bold',
-});
+// Font configuration
+export const HEADLINE_FONT = 'Montserrat Alternates';
+export const BODY_FONT = 'Ageo';
 
-const fontHeadlineMedium = Platform.select({
-  web: "'Montserrat Alternates', 'MontserratAlternates-Medium', sans-serif",
-  default: 'MontserratAlternates-Medium',
-});
-
-const fontHeadlineRegular = Platform.select({
-  web: "'Montserrat Alternates', 'MontserratAlternates-Regular', sans-serif",
-  default: 'MontserratAlternates-Regular',
-});
-
-const fontBodyRegular = Platform.select({
-  web: "'Ageo', 'Montserrat Alternates', system-ui, -apple-system, sans-serif",
-  default: 'Ageo-Regular',
-});
-
-const fontBodyMedium = Platform.select({
-  web: "'Ageo', 'Montserrat Alternates', system-ui, -apple-system, sans-serif",
-  default: 'Ageo-Medium',
-});
-
-const fontBodySemiBold = Platform.select({
-  web: "'Ageo', 'Montserrat Alternates', system-ui, -apple-system, sans-serif",
-  default: 'Ageo-SemiBold',
-});
-
-const fontBodyBold = Platform.select({
-  web: "'Ageo', 'Montserrat Alternates', system-ui, -apple-system, sans-serif",
-  default: 'Ageo-Bold',
-});
-
-export const fonts = {
-  // Headlines - Montserrat Alternates
-  h1: fontHeadlineBold,
-  h2: fontHeadlineBold,
-  h3: fontHeadlineMedium,
-  h4: fontHeadlineRegular,
-  h5: fontHeadlineRegular,
-  h6: fontHeadlineRegular,
-  headlineBold: fontHeadlineBold,
-  headlineMedium: fontHeadlineMedium,
-  headlineRegular: fontHeadlineRegular,
-
-  // Body & Buttons - Ageo
-  bodyLarge: fontBodyMedium,
-  bodyMedium: fontBodyMedium,
-  bodySmall: fontBodyRegular,
-  caption: fontBodySemiBold,
-  footnote: fontBodySemiBold,
-  regular: fontBodyRegular,
-  medium: fontBodyMedium,
-  semiBold: fontBodySemiBold,
-  semibold: fontBodySemiBold,
-  bold: fontBodyBold,
+const getFont = (family: string, weightSuffix: string) => {
+  const cleanName = family.replace(/\s+/g, '');
+  return Platform.select({
+    web: `'${family}', '${cleanName}-${weightSuffix}', system-ui, -apple-system, BlinkMacSystemFont, sans-serif`,
+    default: `${cleanName}-${weightSuffix}`,
+  });
 };
 
+export const fonts = {
+  h1: getFont(HEADLINE_FONT, 'Bold'),
+  h2: getFont(HEADLINE_FONT, 'Bold'),
+  h3: getFont(HEADLINE_FONT, 'Medium'),
+  h4: getFont(HEADLINE_FONT, 'Regular'),
+  h5: getFont(HEADLINE_FONT, 'Regular'),
+  h6: getFont(HEADLINE_FONT, 'Regular'),
+  headlineBold: getFont(HEADLINE_FONT, 'Bold'),
+  headlineMedium: getFont(HEADLINE_FONT, 'Medium'),
+  headlineRegular: getFont(HEADLINE_FONT, 'Regular'),
+
+  bodyLarge: getFont(BODY_FONT, 'Medium'),
+  bodyMedium: getFont(BODY_FONT, 'Medium'),
+  bodySmall: getFont(BODY_FONT, 'Regular'),
+  caption: getFont(BODY_FONT, 'SemiBold'),
+  footnote: getFont(BODY_FONT, 'SemiBold'),
+  regular: getFont(BODY_FONT, 'Regular'),
+  medium: getFont(BODY_FONT, 'Medium'),
+  semiBold: getFont(BODY_FONT, 'SemiBold'),
+  semibold: getFont(BODY_FONT, 'SemiBold'),
+  bold: getFont(BODY_FONT, 'Bold'),
+};
+
+// Typography scale
 export const typography = {
   h1: { fontSize: 56, lineHeight: 72, fontFamily: fonts.h1, fontWeight: '700' as const },
   h2: { fontSize: 40, lineHeight: 56, fontFamily: fonts.h2, fontWeight: '700' as const },
@@ -105,9 +75,11 @@ export const typography = {
   h4: { fontSize: 26, lineHeight: 32, fontFamily: fonts.h4, fontWeight: '400' as const },
   h5: { fontSize: 22, lineHeight: 32, fontFamily: fonts.h5, fontWeight: '400' as const },
   h6: { fontSize: 20, lineHeight: 28, fontFamily: fonts.h6, fontWeight: '400' as const },
+
   bodyLarge: { fontSize: 16, lineHeight: 27, fontFamily: fonts.bodyLarge, fontWeight: '500' as const },
   bodyMedium: { fontSize: 14, lineHeight: 20, fontFamily: fonts.bodyMedium, fontWeight: '500' as const },
   bodySmall: { fontSize: 12, lineHeight: 16, fontFamily: fonts.bodySmall, fontWeight: '400' as const },
+
   caption: { fontSize: 14, lineHeight: 21, fontFamily: fonts.caption, fontWeight: '600' as const },
   footnote: { fontSize: 12, lineHeight: 16, fontFamily: fonts.footnote, fontWeight: '600' as const },
 };

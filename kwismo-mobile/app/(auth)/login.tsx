@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
@@ -11,46 +10,92 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { Eye, EyeOff, Check } from 'lucide-react-native';
+import { Icon } from '../../src/shared/ui/Icon';
 import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
+import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
+import { useAuthStore } from '../../src/shared/store/authStore';
+import { Input } from '../../src/shared/ui/Input';
+import { Button } from '../../src/shared/ui/Button';
+import { toast } from '../../src/shared/store/toastStore';
+import { validateEmail } from '../../src/shared/lib/validation';
 import { colors, fonts } from '../../src/styles/tokens';
 
 export default function LoginScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { isDark, colors: themeColors } = useAppTheme();
+  const loginStoreAction = useAuthStore((state) => state.login);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleLogin = () => {
-    router.replace('/(app)');
+  // Inline errors state
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const validateForm = () => {
+    let isValid = true;
+    setEmailError('');
+    setPasswordError('');
+
+    if (!email.trim()) {
+      setEmailError(t('validation.emailRequired'));
+      isValid = false;
+    } else if (!validateEmail(email)) {
+      setEmailError(t('validation.emailInvalid'));
+      isValid = false;
+    }
+
+    if (!password) {
+      setPasswordError(t('validation.passwordRequired'));
+      isValid = false;
+    }
+
+    return isValid;
   };
+
+  const handleLogin = async () => {
+    if (!validateForm()) return false;
+
+    // Simulate authentication with guaranteed minimum loading on success
+    loginStoreAction(
+      { id: '1', email: email.trim() },
+      'sample-jwt-token'
+    );
+
+    toast.success(t('toasts.loginSuccess'));
+    router.replace('/(app)');
+    return true;
+  };
+
+  const headerGradientColors = isDark
+    ? ['#2BB673', '#249460', '#1B2E3D', '#162035', '#0F1626', '#0F1626']
+    : ['#2BB673', '#28A86B', '#249460', '#213E35', '#23303B', '#3C4A56', '#60707F', '#98A8B8', '#D8E2EC', '#FFFFFF', '#FFFFFF'];
+
+  const headerGradientLocations = isDark
+    ? [0, 0.25, 0.5, 0.7, 0.85, 1.0]
+    : [0, 0.10, 0.20, 0.30, 0.38, 0.46, 0.53, 0.60, 0.66, 0.72, 0.76, 1.0];
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <View style={styles.container}>
-        <LinearGradient
-          colors={[
-            '#2CB677',
-            '#206E57',
-            '#1B2E3D',
-            '#687D92',
-            '#C4CED8',
-            '#FFFFFF',
-          ]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0.85, y: 0.55 }}
-          style={styles.gradientHeader}
-        />
+      <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+        <StatusBar style="light" />
+
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+          <LinearGradient
+            colors={headerGradientColors}
+            locations={headerGradientLocations}
+            style={StyleSheet.absoluteFill}
+          />
+        </View>
 
         <View style={[styles.langWrapper, { top: Math.max(insets.top + 16, 20) }]}>
           <LanguageSwitcher darkTheme={true} />
@@ -60,95 +105,105 @@ export default function LoginScreen() {
           contentContainerStyle={[
             styles.scrollContent,
             {
-              paddingTop: Math.max(insets.top + 40, 60),
-              paddingBottom: Math.max(insets.bottom + 40, 60),
+              paddingTop: Math.max(insets.top + 50, 70),
+              paddingBottom: Math.max(insets.bottom + 30, 40),
             },
           ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.title}>
-            Accédez à{'\n'}votre compte
-          </Text>
-          <Text style={styles.subtitle}>
-            Saisissez vos identifiants de connexion pour accéder à votre espace compte.
-          </Text>
+          <Text style={styles.title}>{t('auth.loginTitle')}</Text>
+          <Text style={styles.subtitle}>{t('auth.loginSubtitle')}</Text>
 
           <View style={styles.formContainer}>
-            <View style={styles.inputCard}>
-              <TextInput
-                style={styles.input}
-                placeholder="Adresse email"
-                placeholderTextColor="#A0AEC0"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
+            {/* Champ Email */}
+            <Input
+              placeholder={t('common.email')}
+              value={email}
+              onChangeText={(val) => {
+                setEmail(val);
+                if (emailError) setEmailError('');
+              }}
+              error={emailError}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              leftIcon={<Icon name="solar:letter-linear" color={themeColors.inputPlaceholder} size={20} />}
+            />
 
-            <View style={styles.inputCard}>
-              <TextInput
-                style={[styles.input, { flex: 1 }]}
-                placeholder="Mot de passe"
-                placeholderTextColor="#A0AEC0"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-              />
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => setShowPassword(!showPassword)}
-                style={styles.eyeIcon}
-              >
-                {showPassword ? (
-                  <EyeOff color="#A0AEC0" size={22} />
-                ) : (
-                  <Eye color="#A0AEC0" size={22} />
-                )}
-              </TouchableOpacity>
-            </View>
+            {/* Champ Mot de passe */}
+            <Input
+              placeholder={t('common.password')}
+              value={password}
+              onChangeText={(val) => {
+                setPassword(val);
+                if (passwordError) setPasswordError('');
+              }}
+              error={passwordError}
+              isPassword
+              leftIcon={<Icon name="solar:lock-password-linear" color={themeColors.inputPlaceholder} size={20} />}
+            />
 
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => router.push('/(auth)/forgot-password')}
               style={styles.forgotWrapper}
             >
-              <Text style={styles.forgotText}>Mot de passe oublier ? changer</Text>
+              <Text style={[styles.forgotText, { color: themeColors.textSecondary }]}>
+                {t('auth.forgotPasswordLink')}
+              </Text>
             </TouchableOpacity>
 
+            {/* Remember Me Checkbox */}
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => setRememberMe(!rememberMe)}
               style={styles.checkboxRow}
             >
-              <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
-                {rememberMe && <Check color={colors.white} size={14} strokeWidth={3} />}
+              <View
+                style={[
+                  styles.checkbox,
+                  { borderColor: themeColors.textPrimary },
+                  rememberMe && { backgroundColor: themeColors.textPrimary },
+                ]}
+              >
+                {rememberMe && (
+                  <Icon
+                    name="solar:check-read-linear"
+                    color={isDark ? themeColors.background : colors.white}
+                    size={14}
+                  />
+                )}
               </View>
-              <Text style={styles.checkboxLabel}>{t('common.rememberMe')}</Text>
+              <Text style={[styles.checkboxLabel, { color: themeColors.textPrimary }]}>
+                {t('common.rememberMe')}
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              activeOpacity={0.85}
+            {/* Bouton de Connexion avec 2s min de chargement */}
+            <Button
+              title={t('common.login')}
               onPress={handleLogin}
-              style={styles.loginButton}
-            >
-              <Text style={styles.loginButtonText}>{t('common.login')}</Text>
-            </TouchableOpacity>
+              variant="primary"
+              size="md"
+              style={{ marginBottom: 20 }}
+            />
 
             <View style={styles.dividerRow}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>{t('common.or')}</Text>
-              <View style={styles.dividerLine} />
+              <View style={[styles.dividerLine, { backgroundColor: themeColors.divider }]} />
+              <Text style={[styles.dividerText, { color: themeColors.textSecondary }]}>
+                {t('common.or')}
+              </Text>
+              <View style={[styles.dividerLine, { backgroundColor: themeColors.divider }]} />
             </View>
 
-            <TouchableOpacity
-              activeOpacity={0.85}
+            {/* Bouton Créer un compte */}
+            <Button
+              title={t('common.register')}
               onPress={() => router.push('/(auth)/register')}
-              style={styles.registerButton}
-            >
-              <Text style={styles.registerButtonText}>{t('common.register')}</Text>
-            </TouchableOpacity>
+              variant="secondary"
+              size="md"
+              minLoadingDuration={0}
+            />
           </View>
         </ScrollView>
       </View>
@@ -159,14 +214,6 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  gradientHeader: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: '52%',
   },
   langWrapper: {
     position: 'absolute',
@@ -176,6 +223,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 24,
     flexGrow: 1,
+    zIndex: 10,
   },
   title: {
     fontFamily: fonts.h2,
@@ -197,83 +245,32 @@ const styles = StyleSheet.create({
   formContainer: {
     width: '100%',
   },
-  inputCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    height: 52,
-    borderRadius: 14,
-    paddingHorizontal: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  input: {
-    fontFamily: fonts.medium,
-    fontSize: 15,
-    color: colors.navy,
-    height: '100%',
-    width: '100%',
-  },
-  eyeIcon: {
-    padding: 6,
-  },
   forgotWrapper: {
     alignSelf: 'flex-start',
-    marginBottom: 18,
-    marginTop: -4,
+    marginBottom: 24,
+    marginTop: -2,
   },
   forgotText: {
     fontFamily: fonts.medium,
     fontSize: 13,
-    color: '#4A5568',
   },
   checkboxRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 32,
   },
   checkbox: {
     width: 20,
     height: 20,
-    borderRadius: 4,
+    borderRadius: 6,
     borderWidth: 1.5,
-    borderColor: '#1D2A44',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
-  },
-  checkboxChecked: {
-    backgroundColor: '#1D2A44',
+    marginRight: 12,
   },
   checkboxLabel: {
     fontFamily: fonts.medium,
     fontSize: 14,
-    color: '#1D2A44',
-  },
-  loginButton: {
-    width: '100%',
-    height: 52,
-    backgroundColor: colors.orange,
-    borderRadius: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-    elevation: 2,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 4,
-  },
-  loginButtonText: {
-    fontFamily: fonts.medium,
-    fontSize: 16,
-    color: colors.white,
   },
   dividerRow: {
     flexDirection: 'row',
@@ -283,27 +280,11 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#CBD5E0',
   },
   dividerText: {
     fontFamily: fonts.medium,
     fontSize: 14,
-    color: '#4A5568',
     marginHorizontal: 16,
   },
-  registerButton: {
-    width: '100%',
-    height: 52,
-    backgroundColor: 'transparent',
-    borderRadius: 26,
-    borderWidth: 1.5,
-    borderColor: '#1D2A44',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  registerButtonText: {
-    fontFamily: fonts.medium,
-    fontSize: 16,
-    color: '#1D2A44',
-  },
 });
+
