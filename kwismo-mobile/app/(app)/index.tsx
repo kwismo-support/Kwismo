@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
-import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
+import { HeaderActions } from '../../src/shared/components/HeaderActions';
 import { HomeSkeleton } from '../../src/shared/components/HomeSkeleton';
 import { TabBar } from '../../src/shared/components/TabBar';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
@@ -89,18 +89,10 @@ export default function DashboardHomeScreen() {
             </View>
 
             <View style={styles.userRight}>
-              <LanguageSwitcher darkTheme={true} />
-              <TouchableOpacity activeOpacity={0.7} style={styles.iconBtn}>
-                <Icon name="solar:bell-linear" color={colors.white} size={22} />
-                {unreadNotifications > 0 && (
-                  <View style={styles.badgeCountContainer}>
-                    <Text style={styles.badgeCountText}>{unreadNotifications}</Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.7} style={styles.iconBtn}>
-                <Icon name="solar:menu-dots-bold" color={colors.white} size={22} />
-              </TouchableOpacity>
+              <HeaderActions
+                unreadNotificationsCount={unreadNotifications}
+                iconColor={colors.white}
+              />
             </View>
           </View>
 
@@ -162,7 +154,7 @@ export default function DashboardHomeScreen() {
             style={styles.actionItem}
           >
             <View style={[styles.actionIconCircle, { backgroundColor: isDark ? '#1E293B' : '#EBF7F2' }]}>
-              <Icon name="solar:danger-triangle-linear" color={colors.green} size={24} />
+              <Icon name="solar:radar-2-linear" color={colors.green} size={24} />
             </View>
             <Text style={[styles.actionLabel, { color: themeColors.textSecondary }]}>
               {t('common.report')}

@@ -15,6 +15,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
 import { Button } from '../../src/shared/ui/Button';
+import { HeaderActions } from '../../src/shared/components/HeaderActions';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
@@ -93,9 +94,7 @@ export default function VerifyScreen() {
             <Icon name="solar:arrow-left-linear" color={colors.white} size={22} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>{t('common.verifyNumber')}</Text>
-          <TouchableOpacity activeOpacity={0.7} style={styles.moreBtn}>
-            <Icon name="solar:menu-dots-bold" color={colors.white} size={22} />
-          </TouchableOpacity>
+          <HeaderActions iconColor={colors.white} />
         </View>
       </View>
 

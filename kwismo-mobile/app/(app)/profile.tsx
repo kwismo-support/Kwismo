@@ -13,6 +13,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
 import { TabBar } from '../../src/shared/components/TabBar';
+import { HeaderActions } from '../../src/shared/components/HeaderActions';
 import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { useThemeStore } from '../../src/shared/store/themeStore';
@@ -44,14 +45,17 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={[styles.headerCard, { paddingTop: Math.max(insets.top + 10, 20) }]}>
-          <View style={styles.userSection}>
-            <View style={styles.avatarCircle}>
-              <Text style={styles.avatarText}>L</Text>
+          <View style={[styles.userSection, { justifyContent: 'space-between' }]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={styles.avatarCircle}>
+                <Text style={styles.avatarText}>L</Text>
+              </View>
+              <View style={styles.userInfo}>
+                <Text style={styles.userName}>Lorem Ipsum</Text>
+                <Text style={styles.userEmail}>lorem.ipsum@kwismo.com</Text>
+              </View>
             </View>
-            <View style={styles.userInfo}>
-              <Text style={styles.userName}>Lorem Ipsum</Text>
-              <Text style={styles.userEmail}>lorem.ipsum@kwismo.com</Text>
-            </View>
+            <HeaderActions iconColor={colors.white} />
           </View>
         </View>
 

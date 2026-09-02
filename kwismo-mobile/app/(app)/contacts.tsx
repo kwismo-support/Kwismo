@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
+import { HeaderActions } from '../../src/shared/components/HeaderActions';
 import { TabBar } from '../../src/shared/components/TabBar';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
@@ -47,9 +48,12 @@ export default function ContactsScreen() {
         <View style={[styles.headerCard, { paddingTop: Math.max(insets.top + 10, 20) }]}>
           <View style={styles.headerRow}>
             <Text style={styles.headerTitle}>{t('common.management')}</Text>
-            <TouchableOpacity activeOpacity={0.7} style={styles.addBtn}>
-              <Icon name="solar:user-plus-linear" color={colors.white} size={22} />
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <TouchableOpacity activeOpacity={0.7} style={styles.addBtn}>
+                <Icon name="solar:user-plus-linear" color={colors.white} size={22} />
+              </TouchableOpacity>
+              <HeaderActions iconColor={colors.white} />
+            </View>
           </View>
 
           <View style={styles.searchBar}>
