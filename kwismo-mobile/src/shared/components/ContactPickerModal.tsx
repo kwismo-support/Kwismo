@@ -12,20 +12,14 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import * as Contacts from 'expo-contacts';
 import { parsePhoneNumberFromString, getCountryCallingCode, CountryCode } from 'libphonenumber-js/min';
 import countries from 'i18n-iso-countries';
 import { Icon } from '../ui/Icon';
 import { useAppTheme } from '../hooks/useAppTheme';
 import { CountryItem, getCountryFlag } from './CountryPickerModal';
+import { getDeviceContacts, RawContact } from '../lib/contactsService';
 import { colors, fonts } from '../../styles/tokens';
 import { scaleFont } from '../lib/responsive';
-
-interface DeviceContact {
-  id: string;
-  name: string;
-  phone: string;
-}
 
 interface ContactPickerModalProps {
   visible: boolean;
@@ -44,7 +38,7 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
   const { i18n, t } = useTranslation();
   const { colors: themeColors } = useAppTheme();
 
-  const [contacts, setContacts] = useState<DeviceContact[]>([]);
+  const [contacts, setContacts] = useState<RawContact[]>([]);
   const [loading, setLoading] = useState(false);
   const [permissionDenied, setPermissionDenied] = useState(false);
   const [search, setSearch] = useState('');
@@ -62,46 +56,11 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
     setPermissionDenied(false);
 
     try {
-      if (Platform.OS === 'web') {
-        const mock: DeviceContact[] = [
-          { id: '1', name: 'Alain Dupont', phone: '+237 6 98 44 43 88' },
-          { id: '2', name: 'Carine Mbida', phone: '+237 6 77 12 34 56' },
-          { id: '3', name: 'Boris Talla', phone: '+237 6 55 98 76 54' },
-          { id: '4', name: 'Diane Ewane', phone: '+33 6 12 34 56 78' },
-          { id: '5', name: 'Eric Kamga', phone: '+237 6 70 88 99 00' },
-        ];
-        setContacts(mock);
-        setLoading(false);
-        return;
-      }
-
-      const { status } = await Contacts.requestPermissionsAsync();
-      if (status !== 'granted') {
+      const { granted, contacts: list } = await getDeviceContacts();
+      if (!granted) {
         setPermissionDenied(true);
-        setLoading(false);
-        return;
-      }
-
-      const { data } = await Contacts.getContactsAsync({
-        fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.Name],
-      });
-
-      if (data && data.length > 0) {
-        const parsedContacts: DeviceContact[] = [];
-        data.forEach((c) => {
-          if (c.phoneNumbers && c.phoneNumbers.length > 0) {
-            c.phoneNumbers.forEach((p, idx) => {
-              if (p.number) {
-                parsedContacts.push({
-                  id: `${c.id || Math.random()}-${idx}`,
-                  name: c.name || 'Contact',
-                  phone: p.number,
-                });
-              }
-            });
-          }
-        });
-        setContacts(parsedContacts);
+      } else {
+        setContacts(list);
       }
     } catch {
       setPermissionDenied(true);
@@ -118,7 +77,7 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
     );
   }, [contacts, search]);
 
-  const handleSelectContact = (item: DeviceContact) => {
+  const handleSelectContact = (item: RawContact) => {
     let cleanNumber = item.phone.replace(/[\s\-()]/g, '');
     let matchedCountry: CountryItem | undefined;
 
