@@ -37,77 +37,60 @@ export const colors = {
   inactiveIndicator: 'rgba(255, 255, 255, 0.5)',
 };
 
-// Platform-aware font family definitions for Web, Android, and iOS
-const fontHeadlineBold = Platform.select({
-  web: "'Montserrat Alternates', 'MontserratAlternates-Bold', sans-serif",
-  default: 'MontserratAlternates-Bold',
-});
+// Configuration globale des familles de polices (Modifiable sur une seule ligne)
+export const HEADLINE_FONT = 'Montserrat Alternates'; // Titres, Headlines et Accroches
+export const BODY_FONT = 'Ageo'; // Corps de texte, Boutons, Formulaires, Données
 
-const fontHeadlineMedium = Platform.select({
-  web: "'Montserrat Alternates', 'MontserratAlternates-Medium', sans-serif",
-  default: 'MontserratAlternates-Medium',
-});
-
-const fontHeadlineRegular = Platform.select({
-  web: "'Montserrat Alternates', 'MontserratAlternates-Regular', sans-serif",
-  default: 'MontserratAlternates-Regular',
-});
-
-const fontBodyRegular = Platform.select({
-  web: "'Ageo', 'Aptos', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  default: 'Ageo-Regular',
-});
-
-const fontBodyMedium = Platform.select({
-  web: "'Ageo', 'Aptos', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  default: 'Ageo-Medium',
-});
-
-const fontBodySemiBold = Platform.select({
-  web: "'Ageo', 'Aptos', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  default: 'Ageo-SemiBold',
-});
-
-const fontBodyBold = Platform.select({
-  web: "'Ageo', 'Aptos', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-  default: 'Ageo-Bold',
-});
-
-export const fonts = {
-  // Headlines - Montserrat Alternates
-  h1: fontHeadlineBold,
-  h2: fontHeadlineBold,
-  h3: fontHeadlineMedium,
-  h4: fontHeadlineRegular,
-  h5: fontHeadlineRegular,
-  h6: fontHeadlineRegular,
-  headlineBold: fontHeadlineBold,
-  headlineMedium: fontHeadlineMedium,
-  headlineRegular: fontHeadlineRegular,
-
-  // Body & Buttons - Ageo
-  bodyLarge: fontBodyMedium,
-  bodyMedium: fontBodyMedium,
-  bodySmall: fontBodyRegular,
-  caption: fontBodySemiBold,
-  footnote: fontBodySemiBold,
-  regular: fontBodyRegular,
-  medium: fontBodyMedium,
-  semiBold: fontBodySemiBold,
-  semibold: fontBodySemiBold,
-  bold: fontBodyBold,
+// Résolution multiplateforme intelligente
+const getFont = (family: string, weightSuffix: string) => {
+  const cleanName = family.replace(/\s+/g, '');
+  return Platform.select({
+    web: `'${family}', '${cleanName}-${weightSuffix}', system-ui, -apple-system, BlinkMacSystemFont, sans-serif`,
+    default: `${cleanName}-${weightSuffix}`,
+  });
 };
 
+export const fonts = {
+  // Headlines & Titres (Montserrat Alternates par défaut)
+  h1: getFont(HEADLINE_FONT, 'Bold'),
+  h2: getFont(HEADLINE_FONT, 'Bold'),
+  h3: getFont(HEADLINE_FONT, 'Medium'),
+  h4: getFont(HEADLINE_FONT, 'Regular'),
+  h5: getFont(HEADLINE_FONT, 'Regular'),
+  h6: getFont(HEADLINE_FONT, 'Regular'),
+  headlineBold: getFont(HEADLINE_FONT, 'Bold'),
+  headlineMedium: getFont(HEADLINE_FONT, 'Medium'),
+  headlineRegular: getFont(HEADLINE_FONT, 'Regular'),
+
+  // Body & Boutons & UI (Ageo par défaut)
+  bodyLarge: getFont(BODY_FONT, 'Medium'),
+  bodyMedium: getFont(BODY_FONT, 'Medium'),
+  bodySmall: getFont(BODY_FONT, 'Regular'),
+  caption: getFont(BODY_FONT, 'SemiBold'),
+  footnote: getFont(BODY_FONT, 'SemiBold'),
+  regular: getFont(BODY_FONT, 'Regular'),
+  medium: getFont(BODY_FONT, 'Medium'),
+  semiBold: getFont(BODY_FONT, 'SemiBold'),
+  semibold: getFont(BODY_FONT, 'SemiBold'),
+  bold: getFont(BODY_FONT, 'Bold'),
+};
+
+// Échelle typographique stricte conforme à la charte Typographie.png
 export const typography = {
+  // Titres / Headlines (Montserrat Alternates)
   h1: { fontSize: 56, lineHeight: 72, fontFamily: fonts.h1, fontWeight: '700' as const },
   h2: { fontSize: 40, lineHeight: 56, fontFamily: fonts.h2, fontWeight: '700' as const },
   h3: { fontSize: 28, lineHeight: 40, fontFamily: fonts.h3, fontWeight: '500' as const },
   h4: { fontSize: 26, lineHeight: 32, fontFamily: fonts.h4, fontWeight: '400' as const },
   h5: { fontSize: 22, lineHeight: 32, fontFamily: fonts.h5, fontWeight: '400' as const },
   h6: { fontSize: 20, lineHeight: 28, fontFamily: fonts.h6, fontWeight: '400' as const },
+
+  // Corps de texte / Body (Ageo)
   bodyLarge: { fontSize: 16, lineHeight: 27, fontFamily: fonts.bodyLarge, fontWeight: '500' as const },
   bodyMedium: { fontSize: 14, lineHeight: 20, fontFamily: fonts.bodyMedium, fontWeight: '500' as const },
   bodySmall: { fontSize: 12, lineHeight: 16, fontFamily: fonts.bodySmall, fontWeight: '400' as const },
+
+  // Boutons & UI / Buttons & Captions (Ageo)
   caption: { fontSize: 14, lineHeight: 21, fontFamily: fonts.caption, fontWeight: '600' as const },
   footnote: { fontSize: 12, lineHeight: 16, fontFamily: fonts.footnote, fontWeight: '600' as const },
 };
