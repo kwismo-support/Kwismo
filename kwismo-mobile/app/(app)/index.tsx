@@ -112,7 +112,7 @@ export default function DashboardHomeScreen() {
             style={styles.actionItem}
           >
             <View style={[styles.actionIconCircle, { backgroundColor: isDark ? '#1E293B' : '#EBF7F2' }]}>
-              <Icon name="solar:face-id-linear" color={colors.green} size={28} />
+              <Icon name="solar:user-id-linear" color={colors.green} size={28} />
             </View>
             <Text style={[styles.actionLabel, { color: themeColors.textSecondary }]}>
               {t('common.verifyNumber')}
@@ -151,7 +151,7 @@ export default function DashboardHomeScreen() {
             style={styles.actionItem}
           >
             <View style={[styles.actionIconCircle, { backgroundColor: isDark ? '#1E293B' : '#EBF7F2' }]}>
-              <Icon name="solar:transmission-linear" color={colors.green} size={26} />
+              <Icon name="solar:radar-2-linear" color={colors.green} size={26} />
             </View>
             <Text style={[styles.actionLabel, { color: themeColors.textSecondary }]}>
               {t('common.report')}

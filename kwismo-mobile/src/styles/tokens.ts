@@ -1,23 +1,20 @@
 import { Platform } from 'react-native';
 
 /**
- * Design Tokens for Kwismo Mobile
+ * Design Tokens
  */
 
 export const colors = {
-  // Primary brand palette specified in requirements
   navy: '#161E33',
   orange: '#FF9900',
   green: '#32B07F',
   blue: '#6B98FF',
 
-  // Dark variations & gradients
   darkBg: '#0F1626',
   darkGreenOverlay: 'rgba(15, 30, 35, 0.95)',
   gradientGreenStart: '#32B07F',
   gradientNavyEnd: '#161E33',
 
-  // Neutral tones
   white: '#FFFFFF',
   offWhite: '#F8FAF9',
   gray100: '#F3F4F6',
@@ -28,20 +25,17 @@ export const colors = {
   gray900: '#111827',
   black: '#000000',
 
-  // Input border & placeholders
   inputBorder: 'rgba(255, 255, 255, 0.6)',
   inputPlaceholder: '#A0AEC0',
 
-  // Pagination indicators
   activeIndicator: '#FF9900',
   inactiveIndicator: 'rgba(255, 255, 255, 0.5)',
 };
 
-// Configuration globale des familles de polices (Modifiable sur une seule ligne)
-export const HEADLINE_FONT = 'Montserrat Alternates'; // Titres, Headlines et Accroches
-export const BODY_FONT = 'Ageo'; // Corps de texte, Boutons, Formulaires, Données
+// Font configuration
+export const HEADLINE_FONT = 'Montserrat Alternates';
+export const BODY_FONT = 'Ageo';
 
-// Résolution multiplateforme intelligente
 const getFont = (family: string, weightSuffix: string) => {
   const cleanName = family.replace(/\s+/g, '');
   return Platform.select({
@@ -51,7 +45,6 @@ const getFont = (family: string, weightSuffix: string) => {
 };
 
 export const fonts = {
-  // Headlines & Titres (Montserrat Alternates par défaut)
   h1: getFont(HEADLINE_FONT, 'Bold'),
   h2: getFont(HEADLINE_FONT, 'Bold'),
   h3: getFont(HEADLINE_FONT, 'Medium'),
@@ -62,7 +55,6 @@ export const fonts = {
   headlineMedium: getFont(HEADLINE_FONT, 'Medium'),
   headlineRegular: getFont(HEADLINE_FONT, 'Regular'),
 
-  // Body & Boutons & UI (Ageo par défaut)
   bodyLarge: getFont(BODY_FONT, 'Medium'),
   bodyMedium: getFont(BODY_FONT, 'Medium'),
   bodySmall: getFont(BODY_FONT, 'Regular'),
@@ -75,9 +67,8 @@ export const fonts = {
   bold: getFont(BODY_FONT, 'Bold'),
 };
 
-// Échelle typographique stricte conforme à la charte Typographie.png
+// Typography scale
 export const typography = {
-  // Titres / Headlines (Montserrat Alternates)
   h1: { fontSize: 56, lineHeight: 72, fontFamily: fonts.h1, fontWeight: '700' as const },
   h2: { fontSize: 40, lineHeight: 56, fontFamily: fonts.h2, fontWeight: '700' as const },
   h3: { fontSize: 28, lineHeight: 40, fontFamily: fonts.h3, fontWeight: '500' as const },
@@ -85,12 +76,10 @@ export const typography = {
   h5: { fontSize: 22, lineHeight: 32, fontFamily: fonts.h5, fontWeight: '400' as const },
   h6: { fontSize: 20, lineHeight: 28, fontFamily: fonts.h6, fontWeight: '400' as const },
 
-  // Corps de texte / Body (Ageo)
   bodyLarge: { fontSize: 16, lineHeight: 27, fontFamily: fonts.bodyLarge, fontWeight: '500' as const },
   bodyMedium: { fontSize: 14, lineHeight: 20, fontFamily: fonts.bodyMedium, fontWeight: '500' as const },
   bodySmall: { fontSize: 12, lineHeight: 16, fontFamily: fonts.bodySmall, fontWeight: '400' as const },
 
-  // Boutons & UI / Buttons & Captions (Ageo)
   caption: { fontSize: 14, lineHeight: 21, fontFamily: fonts.caption, fontWeight: '600' as const },
   footnote: { fontSize: 12, lineHeight: 16, fontFamily: fonts.footnote, fontWeight: '600' as const },
 };

@@ -41,13 +41,6 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ darkTheme = 
         </Text>
       </TouchableOpacity>
 
-      <View
-        style={[
-          styles.dividerBar,
-          darkTheme ? styles.dividerDark : styles.dividerLight,
-        ]}
-      />
-
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => toggleLanguage('en')}
