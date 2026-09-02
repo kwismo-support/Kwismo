@@ -99,7 +99,9 @@
     "secureAccountOtpSubtitle": "Un code à 6 chiffres a été envoyé par e-mail. Veuillez le saisir ci-dessous.",
     "alreadySentQuestion": "Déjà envoyé ?",
     "resendCode": "renvoyer",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "acceptPrivacyPolicy": "J'accepte la politique de confidentialité",
+    "acceptTermsOfService": "J'accepte les conditions d'utilisation"
   },
   "validation": {
     "required": "Ce champ est obligatoire",
@@ -111,6 +113,8 @@
     "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
     "firstNameRequired": "Le prénom est requis",
     "lastNameRequired": "Le nom est requis",
+    "privacyRequired": "Veuillez accepter la politique de confidentialité",
+    "termsRequired": "Veuillez accepter les conditions d'utilisation",
     "otpIncomplete": "Veuillez saisir les 6 chiffres du code OTP",
     "criteriaMinLength": "8 caractères minimum",
     "criteriaUppercase": "1 lettre majuscule",

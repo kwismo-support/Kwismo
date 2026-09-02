@@ -99,7 +99,9 @@
     "secureAccountOtpSubtitle": "A 6-digit code has been sent by email. Please enter it below.",
     "alreadySentQuestion": "Already sent?",
     "resendCode": "resend",
-    "logout": "Log Out"
+    "logout": "Log Out",
+    "acceptPrivacyPolicy": "I accept the Privacy Policy",
+    "acceptTermsOfService": "I accept the Terms of Service"
   },
   "validation": {
     "required": "This field is required",
@@ -111,6 +113,8 @@
     "passwordsDoNotMatch": "Passwords do not match",
     "firstNameRequired": "First name is required",
     "lastNameRequired": "Last name is required",
+    "privacyRequired": "Please accept the Privacy Policy",
+    "termsRequired": "Please accept the Terms of Service",
     "otpIncomplete": "Please enter all 6 digits of the OTP code",
     "criteriaMinLength": "8 characters minimum",
     "criteriaUppercase": "1 uppercase letter",

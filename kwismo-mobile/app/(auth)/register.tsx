@@ -21,6 +21,7 @@ import { Button } from '../../src/shared/ui/Button';
 import { toast } from '../../src/shared/store/toastStore';
 import { validateEmail, validatePassword } from '../../src/shared/lib/validation';
 import { colors, fonts } from '../../src/styles/tokens';
+import { scaleFont } from '../../src/shared/lib/responsive';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -33,6 +34,8 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [acceptPrivacy, setAcceptPrivacy] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   // Inline errors state
   const [lastNameError, setLastNameError] = useState('');
@@ -40,6 +43,8 @@ export default function RegisterScreen() {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  const [privacyError, setPrivacyError] = useState('');
+  const [termsError, setTermsError] = useState('');
 
   // Password validation analysis
   const passwordAnalysis = validatePassword(password);
@@ -51,6 +56,8 @@ export default function RegisterScreen() {
     setEmailError('');
     setPasswordError('');
     setConfirmPasswordError('');
+    setPrivacyError('');
+    setTermsError('');
 
     if (!lastName.trim()) {
       setLastNameError(t('validation.lastNameRequired'));
@@ -83,6 +90,16 @@ export default function RegisterScreen() {
       isValid = false;
     } else if (password !== confirmPassword) {
       setConfirmPasswordError(t('validation.passwordsDoNotMatch'));
+      isValid = false;
+    }
+
+    if (!acceptPrivacy) {
+      setPrivacyError(t('validation.privacyRequired'));
+      isValid = false;
+    }
+
+    if (!acceptTerms) {
+      setTermsError(t('validation.termsRequired'));
       isValid = false;
     }
 
@@ -333,8 +350,71 @@ export default function RegisterScreen() {
               error={confirmPasswordError}
               isPassword
               leftIcon={<Icon name="solar:lock-password-linear" color={themeColors.inputPlaceholder} size={20} />}
-              containerStyle={{ marginBottom: 24 }}
+              containerStyle={{ marginBottom: 16 }}
             />
+
+            {/* Cases obligatoires : Politique de confidentialité & Conditions d'utilisation */}
+            <View style={styles.checkboxGroup}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => {
+                  setAcceptPrivacy(!acceptPrivacy);
+                  if (privacyError) setPrivacyError('');
+                }}
+                style={styles.checkboxRow}
+              >
+                <View
+                  style={[
+                    styles.checkboxBox,
+                    {
+                      borderColor: privacyError ? '#EF4444' : acceptPrivacy ? colors.green : themeColors.inputBorder,
+                      backgroundColor: acceptPrivacy ? colors.green : 'transparent',
+                    },
+                  ]}
+                >
+                  {acceptPrivacy && <Icon name="solar:check-read-linear" size={14} color={colors.white} />}
+                </View>
+                <Text style={[styles.checkboxLabel, { color: themeColors.textPrimary }]}>
+                  {t('auth.acceptPrivacyPolicy')} <Text style={{ color: '#EF4444' }}>*</Text>
+                </Text>
+              </TouchableOpacity>
+              {privacyError ? (
+                <View style={styles.checkboxErrorRow}>
+                  <Icon name="solar:danger-circle-bold" size={13} color="#EF4444" />
+                  <Text style={styles.checkboxErrorText}>{privacyError}</Text>
+                </View>
+              ) : null}
+
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => {
+                  setAcceptTerms(!acceptTerms);
+                  if (termsError) setTermsError('');
+                }}
+                style={[styles.checkboxRow, { marginTop: 10 }]}
+              >
+                <View
+                  style={[
+                    styles.checkboxBox,
+                    {
+                      borderColor: termsError ? '#EF4444' : acceptTerms ? colors.green : themeColors.inputBorder,
+                      backgroundColor: acceptTerms ? colors.green : 'transparent',
+                    },
+                  ]}
+                >
+                  {acceptTerms && <Icon name="solar:check-read-linear" size={14} color={colors.white} />}
+                </View>
+                <Text style={[styles.checkboxLabel, { color: themeColors.textPrimary }]}>
+                  {t('auth.acceptTermsOfService')} <Text style={{ color: '#EF4444' }}>*</Text>
+                </Text>
+              </TouchableOpacity>
+              {termsError ? (
+                <View style={styles.checkboxErrorRow}>
+                  <Icon name="solar:danger-circle-bold" size={13} color="#EF4444" />
+                  <Text style={styles.checkboxErrorText}>{termsError}</Text>
+                </View>
+              ) : null}
+            </View>
 
             {/* Bouton Créer mon compte avec 2s min de chargement */}
             <Button
@@ -342,7 +422,7 @@ export default function RegisterScreen() {
               onPress={handleRegister}
               variant="primary"
               size="md"
-              style={{ marginTop: 8, marginBottom: 20 }}
+              style={{ marginTop: 14, marginBottom: 20 }}
             />
 
             <View style={styles.dividerRow}>
@@ -452,6 +532,39 @@ const styles = StyleSheet.create({
     fontFamily: fonts.medium,
     fontSize: 14,
     marginHorizontal: 16,
+  },
+  checkboxGroup: {
+    marginBottom: 8,
+  },
+  checkboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  checkboxBox: {
+    width: 20,
+    height: 20,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxLabel: {
+    fontFamily: fonts.medium,
+    fontSize: scaleFont(13),
+    flex: 1,
+  },
+  checkboxErrorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
+    paddingLeft: 30,
+  },
+  checkboxErrorText: {
+    fontFamily: fonts.medium,
+    fontSize: scaleFont(11),
+    color: '#EF4444',
   },
 });
 
