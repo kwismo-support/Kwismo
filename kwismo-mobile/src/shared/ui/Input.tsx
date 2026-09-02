@@ -124,6 +124,8 @@ export const Input: React.FC<InputProps> = ({
             textInputDynamicStyle,
             inputStyle,
           ]}
+          selectionColor={colors.green}
+          cursorColor={colors.green}
           placeholder={placeholder}
           placeholderTextColor={themeColors.inputPlaceholder}
           value={value}

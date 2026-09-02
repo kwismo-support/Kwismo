@@ -36,10 +36,32 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
       input:-webkit-autofill,
       input:-webkit-autofill:hover,
       input:-webkit-autofill:focus,
-      input:-webkit-autofill:active {
+      input:-webkit-autofill:active,
+      textarea:-webkit-autofill,
+      textarea:-webkit-autofill:hover,
+      textarea:-webkit-autofill:focus,
+      textarea:-webkit-autofill:active,
+      select:-webkit-autofill {
         -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
-        -webkit-text-fill-color: inherit !important;
+        box-shadow: 0 0 0 1000px transparent inset !important;
+        -webkit-text-fill-color: currentColor !important;
+        color: inherit !important;
+        font-family: 'Ageo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        font-size: inherit !important;
+        font-weight: inherit !important;
+        letter-spacing: inherit !important;
         transition: background-color 5000s ease-in-out 0s !important;
+        background-color: transparent !important;
+      }
+      input:autofill,
+      input:autofill:hover,
+      input:autofill:focus,
+      textarea:autofill {
+        -webkit-text-fill-color: currentColor !important;
+        color: inherit !important;
+        font-family: 'Ageo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        font-size: inherit !important;
+        font-weight: inherit !important;
         background-color: transparent !important;
       }
       body, html {
