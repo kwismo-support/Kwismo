@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
 import { HeaderActions } from '../../src/shared/components/HeaderActions';
+import { Skeleton, SkeletonCircle, SkeletonLoader } from '../../src/shared/ui/Skeleton';
 import { TabBar } from '../../src/shared/components/TabBar';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
@@ -31,6 +32,12 @@ export default function ContactsScreen() {
   const { t } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredContacts = CONTACTS_DATA.filter(
     (c) =>
@@ -70,45 +77,73 @@ export default function ContactsScreen() {
         </View>
 
         <View style={styles.listContainer}>
-          {filteredContacts.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              activeOpacity={0.7}
-              style={[
-                styles.contactRow,
-                {
-                  backgroundColor: themeColors.cardBg,
-                  borderColor: themeColors.inputBorder,
-                  borderWidth: isDark ? 1 : 0,
-                },
-              ]}
-            >
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>{item.name[0]}</Text>
-              </View>
+          <SkeletonLoader
+            loading={loading}
+            fallback={
+              <>
+                {Array.from({ length: 4 }).map((_, idx) => (
+                  <View
+                    key={`skel-contact-${idx}`}
+                    style={[
+                      styles.contactRow,
+                      {
+                        backgroundColor: themeColors.cardBg,
+                        borderColor: themeColors.inputBorder,
+                        borderWidth: isDark ? 1 : 0,
+                      },
+                    ]}
+                  >
+                    <SkeletonCircle size={44} style={{ marginRight: 12 }} />
+                    <View style={{ flex: 1, gap: 6 }}>
+                      <Skeleton width="50%" height={16} borderRadius={4} />
+                      <Skeleton width="40%" height={12} borderRadius={4} />
+                    </View>
+                    <Skeleton width={70} height={24} borderRadius={12} />
+                  </View>
+                ))}
+              </>
+            }
+          >
+            {filteredContacts.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                activeOpacity={0.7}
+                style={[
+                  styles.contactRow,
+                  {
+                    backgroundColor: themeColors.cardBg,
+                    borderColor: themeColors.inputBorder,
+                    borderWidth: isDark ? 1 : 0,
+                  },
+                ]}
+              >
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarText}>{item.name[0]}</Text>
+                </View>
 
-              <View style={styles.details}>
-                <Text style={[styles.nameText, { color: themeColors.textPrimary }]}>
-                  {item.name}
-                </Text>
-                <View style={styles.phoneRow}>
-                  <Icon name="solar:phone-linear" color={themeColors.textSecondary} size={12} style={{ marginRight: 4 }} />
-                  <Text style={[styles.phoneText, { color: themeColors.textSecondary }]}>
-                    {item.phone}
+                <View style={styles.details}>
+                  <Text style={[styles.nameText, { color: themeColors.textPrimary }]}>
+                    {item.name}
                   </Text>
+                  <View style={styles.phoneRow}>
+                    <Icon name="solar:phone-linear" color={themeColors.textSecondary} size={12} style={{ marginRight: 4 }} />
+                    <Text style={[styles.phoneText, { color: themeColors.textSecondary }]}>
+                      {item.phone}
+                    </Text>
+                  </View>
                 </View>
-              </View>
 
-              {item.trusted && (
-                <View style={styles.badge}>
-                  <Icon name="solar:shield-check-bold" color={colors.green} size={14} style={{ marginRight: 4 }} />
-                  <Text style={styles.badgeText}>{item.status}</Text>
-                </View>
-              )}
+                {item.trusted && (
+                  <View style={styles.badge}>
+                    <Icon name="solar:shield-check-bold" color={colors.green} size={14} style={{ marginRight: 4 }} />
+                    <Text style={styles.badgeText}>{item.status}</Text>
+                  </View>
+                )}
 
-              <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
-            </TouchableOpacity>
-          ))}
+                <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
+              </TouchableOpacity>
+            ))}
+          </SkeletonLoader>
         </View>
       </ScrollView>
 

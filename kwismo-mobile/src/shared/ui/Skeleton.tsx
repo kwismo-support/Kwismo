@@ -67,12 +67,27 @@ export const SkeletonCircle: React.FC<{ size?: number; style?: ViewStyle }> = ({
   );
 };
 
+export const SkeletonLine: React.FC<{
+  width?: number | string;
+  height?: number;
+  style?: ViewStyle;
+}> = ({ width = '100%', height = 14, style }) => {
+  return (
+    <Skeleton
+      width={width}
+      height={height}
+      borderRadius={4}
+      style={style}
+    />
+  );
+};
+
 export const SkeletonCard: React.FC<{
   height?: number;
   style?: ViewStyle;
   children?: React.ReactNode;
 }> = ({ height = 120, style, children }) => {
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { colors: themeColors } = useAppTheme();
 
   return (
     <View
@@ -95,6 +110,26 @@ export const SkeletonCard: React.FC<{
       )}
     </View>
   );
+};
+
+// Composant Skeleton unifié conditionnel
+interface SkeletonLoaderProps {
+  loading: boolean;
+  fallback: React.ReactNode;
+  children: React.ReactNode;
+  style?: ViewStyle;
+}
+
+export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
+  loading,
+  fallback,
+  children,
+  style,
+}) => {
+  if (loading) {
+    return <View style={style}>{fallback}</View>;
+  }
+  return <>{children}</>;
 };
 
 export default Skeleton;
