@@ -14,18 +14,14 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
+import { parsePhoneNumberFromString, getCountryCallingCode, CountryCode } from 'libphonenumber-js/min';
+import countries from 'i18n-iso-countries';
 import { Icon } from '../../src/shared/ui/Icon';
 import { Button } from '../../src/shared/ui/Button';
 import { HeaderActions } from '../../src/shared/components/HeaderActions';
-import { CountryPickerModal } from '../../src/shared/components/CountryPickerModal';
+import { CountryPickerModal, CountryItem, getCountryFlag } from '../../src/shared/components/CountryPickerModal';
 import { ContactPickerModal } from '../../src/shared/components/ContactPickerModal';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
-import {
-  COUNTRIES_LIST,
-  CountryInfo,
-  detectCountryByIP,
-  validatePhoneNumber,
-} from '../../src/shared/lib/countryData';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
 
@@ -39,12 +35,21 @@ interface VerificationHistoryItem {
 export default function VerifyScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
+
+  const isFr = i18n.language.startsWith('fr');
+
+  const defaultCountry: CountryItem = {
+    code: 'CM',
+    name: countries.getName('CM', isFr ? 'fr' : 'en') || 'Cameroun',
+    callingCode: `+${getCountryCallingCode('CM')}`,
+    flag: getCountryFlag('CM'),
+  };
 
   const [viewState, setViewState] = useState<'idle' | 'analyzing' | 'result'>('idle');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState<CountryInfo>(COUNTRIES_LIST[0]);
+  const [selectedCountry, setSelectedCountry] = useState<CountryItem>(defaultCountry);
   const [phoneError, setPhoneError] = useState('');
   const [analysisStep, setAnalysisStep] = useState(1);
   const [countryModalVisible, setCountryModalVisible] = useState(false);
@@ -57,11 +62,30 @@ export default function VerifyScreen() {
   const spinValue = useState(new Animated.Value(0))[0];
 
   useEffect(() => {
-    // Détection automatique du pays par IP au chargement
-    detectCountryByIP().then((c) => {
-      if (c) setSelectedCountry(c);
-    });
-  }, []);
+    // Détection automatique du pays par IP via service public léger
+    fetch('https://ipapi.co/json/')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.country_code) {
+          const code = data.country_code as CountryCode;
+          try {
+            const callingCode = `+${getCountryCallingCode(code)}`;
+            const name = countries.getName(code, isFr ? 'fr' : 'en') || code;
+            setSelectedCountry({
+              code,
+              name,
+              callingCode,
+              flag: getCountryFlag(code),
+            });
+          } catch {
+            // ignore
+          }
+        }
+      })
+      .catch(() => {
+        // fallback
+      });
+  }, [isFr]);
 
   useEffect(() => {
     if (viewState === 'analyzing') {
@@ -79,8 +103,8 @@ export default function VerifyScreen() {
   }, [viewState, spinValue]);
 
   // Validation en temps réel avec libphonenumber-js
-  const validationResult = validatePhoneNumber(phoneNumber, selectedCountry.code);
-  const isPhoneValid = validationResult.isValid;
+  const parsedPhone = parsePhoneNumberFromString(phoneNumber.trim(), selectedCountry.code);
+  const isPhoneValid = Boolean(parsedPhone && parsedPhone.isValid());
 
   const handleVerify = async () => {
     setPhoneError('');
@@ -92,7 +116,6 @@ export default function VerifyScreen() {
     setViewState('analyzing');
     setAnalysisStep(1);
 
-    // Ajout à l'historique
     const newItem: VerificationHistoryItem = {
       id: Date.now().toString(),
       phone: phoneNumber,
@@ -108,7 +131,7 @@ export default function VerifyScreen() {
     return true;
   };
 
-  const handleSelectContact = (phone: string, country?: CountryInfo) => {
+  const handleSelectContact = (phone: string, country?: CountryItem) => {
     setPhoneNumber(phone);
     if (country) {
       setSelectedCountry(country);
@@ -176,7 +199,12 @@ export default function VerifyScreen() {
                   },
                 ]}
               >
-                <Icon name="solar:phone-linear" color={isPhoneValid ? colors.green : themeColors.inputPlaceholder} size={20} style={{ marginRight: 8 }} />
+                <Icon
+                  name="solar:phone-linear"
+                  color={isPhoneValid ? colors.green : themeColors.inputPlaceholder}
+                  size={20}
+                  style={{ marginRight: 8 }}
+                />
 
                 {/* Sélecteur de pays avec drapeau et indicatif */}
                 <TouchableOpacity

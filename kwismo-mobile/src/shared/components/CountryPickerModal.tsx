@@ -11,16 +11,58 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { getCountries, getCountryCallingCode, CountryCode } from 'libphonenumber-js/min';
+import countries from 'i18n-iso-countries';
+import frLocale from 'i18n-iso-countries/langs/fr.json';
+import enLocale from 'i18n-iso-countries/langs/en.json';
 import { Icon } from '../ui/Icon';
 import { useAppTheme } from '../hooks/useAppTheme';
-import { COUNTRIES_LIST, CountryInfo } from '../lib/countryData';
 import { colors, fonts } from '../../styles/tokens';
 import { scaleFont } from '../lib/responsive';
+
+countries.registerLocale(frLocale);
+countries.registerLocale(enLocale);
+
+export interface CountryItem {
+  code: CountryCode;
+  name: string;
+  callingCode: string;
+  flag: string;
+}
+
+export const getCountryFlag = (countryCode: string): string => {
+  if (!countryCode || countryCode.length !== 2) return '🌐';
+  return countryCode
+    .toUpperCase()
+    .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397));
+};
+
+export const getAllCountries = (lang: string = 'fr'): CountryItem[] => {
+  const isFr = lang.startsWith('fr');
+  const codes = getCountries();
+  return codes
+    .map((code) => {
+      try {
+        const callingCode = `+${getCountryCallingCode(code)}`;
+        const name = countries.getName(code, isFr ? 'fr' : 'en') || code;
+        return {
+          code,
+          name,
+          callingCode,
+          flag: getCountryFlag(code),
+        };
+      } catch {
+        return null;
+      }
+    })
+    .filter((c): c is CountryItem => c !== null)
+    .sort((a, b) => a.name.localeCompare(b.name));
+};
 
 interface CountryPickerModalProps {
   visible: boolean;
   onClose: () => void;
-  onSelect: (country: CountryInfo) => void;
+  onSelect: (country: CountryItem) => void;
   selectedCode?: string;
 }
 
@@ -35,16 +77,21 @@ export const CountryPickerModal: React.FC<CountryPickerModalProps> = ({
   const { isDark, colors: themeColors } = useAppTheme();
   const [search, setSearch] = useState('');
 
-  const isFr = i18n.language.startsWith('fr');
+  const allCountries = useMemo(() => {
+    return getAllCountries(i18n.language);
+  }, [i18n.language]);
 
   const filteredCountries = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return COUNTRIES_LIST;
-    return COUNTRIES_LIST.filter((c) => {
-      const name = isFr ? c.nameFr.toLowerCase() : c.nameEn.toLowerCase();
-      return name.includes(q) || c.callingCode.includes(q) || c.code.toLowerCase().includes(q);
+    if (!q) return allCountries;
+    return allCountries.filter((c) => {
+      return (
+        c.name.toLowerCase().includes(q) ||
+        c.callingCode.includes(q) ||
+        c.code.toLowerCase().includes(q)
+      );
     });
-  }, [search, isFr]);
+  }, [allCountries, search]);
 
   return (
     <Modal
@@ -64,7 +111,6 @@ export const CountryPickerModal: React.FC<CountryPickerModalProps> = ({
             },
           ]}
         >
-          {/* Header */}
           <View style={styles.headerRow}>
             <Text style={[styles.modalTitle, { color: themeColors.textPrimary }]}>
               {t('common.selectCountry', 'Sélectionner un pays')}
@@ -78,7 +124,6 @@ export const CountryPickerModal: React.FC<CountryPickerModalProps> = ({
             </TouchableOpacity>
           </View>
 
-          {/* Search bar */}
           <View
             style={[
               styles.searchBar,
@@ -99,7 +144,6 @@ export const CountryPickerModal: React.FC<CountryPickerModalProps> = ({
               placeholderTextColor={themeColors.inputPlaceholder}
               value={search}
               onChangeText={setSearch}
-              autoFocus={false}
             />
             {search.length > 0 && (
               <TouchableOpacity onPress={() => setSearch('')}>
@@ -108,7 +152,6 @@ export const CountryPickerModal: React.FC<CountryPickerModalProps> = ({
             )}
           </View>
 
-          {/* Countries list */}
           <FlatList
             data={filteredCountries}
             keyExtractor={(item) => item.code}
@@ -116,7 +159,6 @@ export const CountryPickerModal: React.FC<CountryPickerModalProps> = ({
             contentContainerStyle={styles.listContent}
             renderItem={({ item }) => {
               const isSelected = selectedCode === item.code;
-              const displayName = isFr ? item.nameFr : item.nameEn;
               return (
                 <TouchableOpacity
                   activeOpacity={0.7}
@@ -139,7 +181,7 @@ export const CountryPickerModal: React.FC<CountryPickerModalProps> = ({
                     <Text style={styles.flagEmoji}>{item.flag}</Text>
                   </View>
                   <Text style={[styles.countryName, { color: themeColors.textPrimary }]}>
-                    {displayName}
+                    {item.name}
                   </Text>
                   <Text style={[styles.callingCode, { color: colors.green }]}>
                     {item.callingCode}

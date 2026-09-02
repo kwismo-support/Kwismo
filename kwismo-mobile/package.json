@@ -21,6 +21,7 @@
     "expo-splash-screen": "~0.26.2",
     "expo-status-bar": "~1.11.1",
     "expo-system-ui": "~2.9.3",
+    "i18n-iso-countries": "^7.14.0",
     "i18next": "^23.10.0",
     "libphonenumber-js": "^1.13.12",
     "lucide-react-native": "^0.395.0",

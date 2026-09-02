@@ -13,10 +13,11 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import * as Contacts from 'expo-contacts';
-import { parsePhoneNumberFromString, CountryCode } from 'libphonenumber-js';
+import { parsePhoneNumberFromString, getCountryCallingCode, CountryCode } from 'libphonenumber-js/min';
+import countries from 'i18n-iso-countries';
 import { Icon } from '../ui/Icon';
 import { useAppTheme } from '../hooks/useAppTheme';
-import { COUNTRIES_LIST, CountryInfo } from '../lib/countryData';
+import { CountryItem, getCountryFlag } from './CountryPickerModal';
 import { colors, fonts } from '../../styles/tokens';
 import { scaleFont } from '../lib/responsive';
 
@@ -24,13 +25,12 @@ interface DeviceContact {
   id: string;
   name: string;
   phone: string;
-  countryCode?: CountryCode;
 }
 
 interface ContactPickerModalProps {
   visible: boolean;
   onClose: () => void;
-  onSelect: (phone: string, country?: CountryInfo) => void;
+  onSelect: (phone: string, country?: CountryItem) => void;
   defaultCountryCode?: CountryCode;
 }
 
@@ -41,13 +41,15 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
   defaultCountryCode = 'CM',
 }) => {
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { colors: themeColors } = useAppTheme();
 
   const [contacts, setContacts] = useState<DeviceContact[]>([]);
   const [loading, setLoading] = useState(false);
   const [permissionDenied, setPermissionDenied] = useState(false);
   const [search, setSearch] = useState('');
+
+  const isFr = i18n.language.startsWith('fr');
 
   useEffect(() => {
     if (visible) {
@@ -61,7 +63,6 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
 
     try {
       if (Platform.OS === 'web') {
-        // Mock contacts for web preview
         const mock: DeviceContact[] = [
           { id: '1', name: 'Alain Dupont', phone: '+237 6 98 44 43 88' },
           { id: '2', name: 'Carine Mbida', phone: '+237 6 77 12 34 56' },
@@ -119,13 +120,21 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
 
   const handleSelectContact = (item: DeviceContact) => {
     let cleanNumber = item.phone.replace(/[\s\-()]/g, '');
-    let matchedCountry: CountryInfo | undefined;
+    let matchedCountry: CountryItem | undefined;
 
     try {
       const parsed = parsePhoneNumberFromString(cleanNumber, defaultCountryCode);
       if (parsed) {
         if (parsed.country) {
-          matchedCountry = COUNTRIES_LIST.find((c) => c.code === parsed.country);
+          const code = parsed.country;
+          const name = countries.getName(code, isFr ? 'fr' : 'en') || code;
+          const callingCode = `+${getCountryCallingCode(code)}`;
+          matchedCountry = {
+            code,
+            name,
+            callingCode,
+            flag: getCountryFlag(code),
+          };
         }
         cleanNumber = parsed.nationalNumber;
       }
@@ -155,7 +164,6 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
             },
           ]}
         >
-          {/* Header */}
           <View style={styles.headerRow}>
             <Text style={[styles.modalTitle, { color: themeColors.textPrimary }]}>
               {t('common.selectFromContacts', 'Choisir dans mes contacts')}
@@ -169,7 +177,6 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
             </TouchableOpacity>
           </View>
 
-          {/* Search bar */}
           <View
             style={[
               styles.searchBar,
