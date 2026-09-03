@@ -22,6 +22,10 @@ export default function LandingPage() {
 
       <Comparison/>
 
+      <Pricing/>
+
+      <Partners/>
+
       <DowloadCTA/>
 
       <Footer/>
