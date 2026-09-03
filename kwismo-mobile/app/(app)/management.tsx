@@ -25,7 +25,6 @@ import { toast } from '../../src/shared/store/toastStore';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
 
-// Définition d'un numéro rattaché au compte multi-SIM
 export interface UserSimNumber {
   id: string;
   countryCode: string;
@@ -51,7 +50,7 @@ export default function ManagementScreen() {
       phone: '6 98 44 43 88',
       operator: 'Orange',
       status: 'verified',
-      addedDate: '12 Août 2026',
+      addedDate: '12 Août',
     },
     {
       id: 'num-2',
@@ -60,12 +59,13 @@ export default function ManagementScreen() {
       phone: '6 77 12 34 56',
       operator: 'MTN',
       status: 'pending',
-      addedDate: '28 Août 2026',
+      addedDate: '28 Août',
     },
   ]);
 
-  // États pour l'ajout d'un nouveau numéro
-  const [addModalVisible, setAddModalVisible] = useState(false);
+  // États pour l'ajout / modification d'un numéro
+  const [fullScreenAddVisible, setFullScreenAddVisible] = useState(false);
+  const [editingNumberId, setEditingNumberId] = useState<string | null>(null);
   const [countryModalVisible, setCountryModalVisible] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<CountryItem>({
     code: 'CM',
@@ -76,27 +76,27 @@ export default function ManagementScreen() {
   const [phoneError, setPhoneError] = useState('');
   const [isSubmittingPhone, setIsSubmittingPhone] = useState(false);
 
-  // États pour la validation OTP par SMS
-  const [otpModalVisible, setOtpModalVisible] = useState(false);
+  // États pour la validation OTP par SMS (Plein écran)
+  const [fullScreenOtpVisible, setFullScreenOtpVisible] = useState(false);
   const [otpTargetNumber, setOtpTargetNumber] = useState<UserSimNumber | null>(null);
   const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);
   const [otpTimer, setOtpTimer] = useState(60);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
-  // États pour la confirmation de suppression ou déclaration de compromission
+  // Modales d'actions
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [restoreSecurityModalVisible, setRestoreSecurityModalVisible] = useState(false);
   const [targetActionNumber, setTargetActionNumber] = useState<UserSimNumber | null>(null);
 
   // Compte à rebours OTP
   useEffect(() => {
     let interval: any;
-    if (otpModalVisible && otpTimer > 0) {
+    if (fullScreenOtpVisible && otpTimer > 0) {
       interval = setInterval(() => setOtpTimer((prev) => prev - 1), 1000);
     }
     return () => clearInterval(interval);
-  }, [otpModalVisible, otpTimer]);
+  }, [fullScreenOtpVisible, otpTimer]);
 
-  // Détection de l'opérateur local (Cameroun & générique)
   const detectOperator = (cleanPhone: string): 'Orange' | 'MTN' | 'Camtel' | 'Autre' => {
     const raw = cleanPhone.replace(/\s+/g, '');
     if (raw.startsWith('69') || raw.startsWith('655') || raw.startsWith('656') || raw.startsWith('657')) {
@@ -111,18 +111,37 @@ export default function ManagementScreen() {
     return 'Autre';
   };
 
-  // Gestion du formatage progressif
   const handlePhoneChange = (text: string) => {
     const cleanDigits = text.replace(/[^0-9]/g, '');
     const formatter = new AsYouType(selectedCountry.code as any);
     const formatted = formatter.input(cleanDigits);
     setNewPhoneNumber(formatted);
-
     if (phoneError) setPhoneError('');
   };
 
-  // Validation et envoi OTP pour rattacher un numéro
-  const handleStartAddNumber = () => {
+  // Ouverture du formulaire d'ajout
+  const handleOpenAddNumber = () => {
+    setEditingNumberId(null);
+    setNewPhoneNumber('');
+    setPhoneError('');
+    setFullScreenAddVisible(true);
+  };
+
+  // Ouverture du formulaire de modification
+  const handleOpenEditNumber = (item: UserSimNumber) => {
+    setEditingNumberId(item.id);
+    setNewPhoneNumber(item.phone);
+    setSelectedCountry({
+      code: item.countryCode as any,
+      name: item.countryCode === 'CM' ? 'Cameroun' : item.countryCode,
+      callingCode: item.callingCode,
+    });
+    setPhoneError('');
+    setFullScreenAddVisible(true);
+  };
+
+  // Envoi de la saisie (Ajout ou Modification)
+  const handleSavePhone = () => {
     const fullNumber = `${selectedCountry.callingCode}${newPhoneNumber.replace(/\s+/g, '')}`;
     const isValid = isValidPhoneNumber(fullNumber, selectedCountry.code as any);
 
@@ -131,11 +150,11 @@ export default function ManagementScreen() {
       return;
     }
 
-    // Contrôle d'unicité locale
-    const alreadyExists = numbers.some(
-      (n) => n.phone.replace(/\s+/g, '') === newPhoneNumber.replace(/\s+/g, '')
+    const cleanInput = newPhoneNumber.replace(/\s+/g, '');
+    const duplicate = numbers.find(
+      (n) => n.id !== editingNumberId && n.phone.replace(/\s+/g, '') === cleanInput
     );
-    if (alreadyExists) {
+    if (duplicate) {
       setPhoneError('Ce numéro est déjà rattaché à votre compte.');
       return;
     }
@@ -143,43 +162,57 @@ export default function ManagementScreen() {
     setIsSubmittingPhone(true);
     setTimeout(() => {
       setIsSubmittingPhone(false);
-      const newSim: UserSimNumber = {
-        id: `num-${Date.now()}`,
-        countryCode: selectedCountry.code,
-        callingCode: selectedCountry.callingCode,
-        phone: newPhoneNumber,
-        operator: detectOperator(newPhoneNumber),
-        status: 'pending',
-        addedDate: "Aujourd'hui",
-      };
+      let targetSim: UserSimNumber;
 
-      setNumbers((prev) => [...prev, newSim]);
-      setAddModalVisible(false);
+      if (editingNumberId) {
+        targetSim = {
+          id: editingNumberId,
+          countryCode: selectedCountry.code,
+          callingCode: selectedCountry.callingCode,
+          phone: newPhoneNumber,
+          operator: detectOperator(newPhoneNumber),
+          status: 'pending',
+          addedDate: 'Modifié',
+        };
+        setNumbers((prev) =>
+          prev.map((n) => (n.id === editingNumberId ? targetSim : n))
+        );
+      } else {
+        targetSim = {
+          id: `num-${Date.now()}`,
+          countryCode: selectedCountry.code,
+          callingCode: selectedCountry.callingCode,
+          phone: newPhoneNumber,
+          operator: detectOperator(newPhoneNumber),
+          status: 'pending',
+          addedDate: "Aujourd'hui",
+        };
+        setNumbers((prev) => [...prev, targetSim]);
+      }
+
+      setFullScreenAddVisible(false);
       setNewPhoneNumber('');
 
-      // Ouvrir immédiatement l'écran OTP SMS pour ce numéro
-      setOtpTargetNumber(newSim);
+      // Ouvrir immédiatement l'écran OTP SMS pour valider ce numéro
+      setOtpTargetNumber(targetSim);
       setOtpCode(['', '', '', '', '', '']);
       setOtpTimer(60);
-      setOtpModalVisible(true);
+      setFullScreenOtpVisible(true);
       toast.success('Code OTP envoyé par SMS');
     }, 800);
   };
 
-  // Saisie du code OTP
   const handleOtpInput = (text: string, index: number) => {
     const digit = text.slice(-1);
     const newCode = [...otpCode];
     newCode[index] = digit;
     setOtpCode(newCode);
 
-    // Auto-soumission si les 6 cases sont remplies
     if (digit && index === 5 && newCode.every((c) => c !== '')) {
       handleConfirmOtp(newCode.join(''));
     }
   };
 
-  // Validation définitive de l'OTP SMS
   const handleConfirmOtp = (codeString?: string) => {
     const entered = codeString || otpCode.join('');
     if (entered.length < 6) {
@@ -197,32 +230,42 @@ export default function ManagementScreen() {
           )
         );
       }
-      setOtpModalVisible(false);
+      setFullScreenOtpVisible(false);
       toast.success('Numéro vérifié et protégé avec succès !');
     }, 900);
   };
 
-  // Déclarer un numéro compromis
+  // Déclarer compromis -> propose d'alerter les contacts
   const handleDeclareCompromised = (item: UserSimNumber) => {
     setNumbers((prev) =>
       prev.map((n) => (n.id === item.id ? { ...n, status: 'compromised' } : n))
     );
-    toast.error(`La ligne ${item.phone} a été déclarée compromise.`);
+    toast.error(`Ligne ${item.phone} déclarée compromise`);
+    router.push('/(app)/alert-whatsapp');
   };
 
-  // Suppression d'un numéro
+  // Rétablir la sécurité (désactiver l'état compromis)
+  const handleRestoreSecurity = () => {
+    if (!targetActionNumber) return;
+    setNumbers((prev) =>
+      prev.map((n) => (n.id === targetActionNumber.id ? { ...n, status: 'verified' } : n))
+    );
+    setRestoreSecurityModalVisible(false);
+    toast.success('Sécurité rétablie avec succès.');
+  };
+
   const handleConfirmDelete = () => {
     if (!targetActionNumber) return;
     setNumbers((prev) => prev.filter((n) => n.id !== targetActionNumber.id));
     setDeleteModalVisible(false);
-    toast.info('Le numéro a été retiré de votre compte.');
+    toast.info('Numéro supprimé du compte.');
   };
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <StatusBar style="light" />
 
-      {/* Header global unifié de page principale : Titre à gauche, Actions à droite */}
+      {/* Header global unifié : Titre à gauche, Actions à droite */}
       <HeaderBar title={t('common.management', 'Gestion')} showBack={false} />
 
       <ScrollView
@@ -232,23 +275,29 @@ export default function ManagementScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* En-tête de section : Mes numéros (Gestion Multi-SIM) */}
-        <View style={styles.sectionHeaderRow}>
+        {/* En-tête : Titre + Bouton d'ajout positionné en haut pour éviter de scroller */}
+        <View style={styles.topSectionRow}>
           <View>
             <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
-              Mes numéros
+              Mes numéros ({numbers.length})
             </Text>
             <Text style={[styles.sectionSub, { color: themeColors.textSecondary }]}>
-              Rattachez et sécurisez toutes vos cartes SIM
+              Multi-SIM rattachées à votre compte
             </Text>
           </View>
-          <View style={styles.countBadge}>
-            <Text style={styles.countBadgeText}>{numbers.length}</Text>
-          </View>
+
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={handleOpenAddNumber}
+            style={[styles.addTopBtn, { backgroundColor: colors.green }]}
+          >
+            <Icon name="solar:add-circle-bold" color={colors.white} size={18} style={{ marginRight: 6 }} />
+            <Text style={styles.addTopBtnText}>Ajouter</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Liste des numéros du compte */}
-        <View style={styles.numbersList}>
+        {/* Grille : Exactement 2 numéros par ligne pour un affichage dense et sans scroll */}
+        <View style={styles.gridContainer}>
           {numbers.map((item) => {
             const isVerified = item.status === 'verified';
             const isPending = item.status === 'pending';
@@ -258,84 +307,77 @@ export default function ManagementScreen() {
               <View
                 key={item.id}
                 style={[
-                  styles.numberCard,
+                  styles.gridCard,
                   {
                     backgroundColor: themeColors.cardBg,
-                    borderColor: isCompromised
-                      ? '#EF4444'
-                      : themeColors.inputBorder,
+                    borderColor: isCompromised ? '#EF4444' : themeColors.inputBorder,
                   },
                 ]}
               >
-                {/* Ligne principale du numéro */}
-                <View style={styles.cardTopRow}>
-                  <View style={styles.cardPhoneInfo}>
-                    <CountryFlag countryCode={item.countryCode} size={24} style={{ marginRight: 8 }} />
-                    <View>
-                      <Text style={[styles.phoneNumberText, { color: themeColors.textPrimary }]}>
-                        {item.callingCode} {item.phone}
-                      </Text>
-                      <View style={styles.metaRow}>
-                        <View style={styles.operatorBadge}>
-                          <Text style={styles.operatorBadgeText}>{item.operator}</Text>
-                        </View>
-                        <Text style={[styles.addedDateText, { color: themeColors.textSecondary }]}>
-                          Ajouté le {item.addedDate}
-                        </Text>
-                      </View>
-                    </View>
+                {/* Ligne haute : Drapeau + Opérateur + Action Modifier */}
+                <View style={styles.cardHeaderRow}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <CountryFlag countryCode={item.countryCode} size={20} style={{ marginRight: 6 }} />
+                    <Text style={[styles.operatorText, { color: themeColors.textPrimary }]}>
+                      {item.operator}
+                    </Text>
                   </View>
 
-                  {/* Badge de statut */}
-                  <View
-                    style={[
-                      styles.statusBadge,
-                      isVerified && styles.statusBadgeVerified,
-                      isPending && styles.statusBadgePending,
-                      isCompromised && styles.statusBadgeCompromised,
-                    ]}
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => handleOpenEditNumber(item)}
+                    style={styles.cardMenuBtn}
                   >
-                    <Icon
-                      name={
-                        isVerified
-                          ? 'solar:shield-check-bold'
-                          : isPending
-                          ? 'solar:clock-circle-bold'
-                          : 'solar:danger-triangle-bold'
-                      }
-                      size={14}
-                      color={
-                        isVerified
+                    <Icon name="solar:pen-new-square-linear" color={themeColors.textSecondary} size={16} />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Numéro formaté */}
+                <Text
+                  numberOfLines={1}
+                  style={[styles.cardNumberText, { color: themeColors.textPrimary }]}
+                >
+                  {item.phone}
+                </Text>
+
+                {/* Badge de statut compact */}
+                <View style={styles.badgeRow}>
+                  <Icon
+                    name={
+                      isVerified
+                        ? 'solar:shield-check-bold'
+                        : isPending
+                        ? 'solar:clock-circle-bold'
+                        : 'solar:danger-triangle-bold'
+                    }
+                    size={15}
+                    color={
+                      isVerified
+                        ? colors.green
+                        : isPending
+                        ? colors.orange
+                        : '#EF4444'
+                    }
+                    style={{ marginRight: 4 }}
+                  />
+                  <Text
+                    style={[
+                      styles.statusText,
+                      {
+                        color: isVerified
                           ? colors.green
                           : isPending
                           ? colors.orange
-                          : '#EF4444'
-                      }
-                      style={{ marginRight: 4 }}
-                    />
-                    <Text
-                      style={[
-                        styles.statusBadgeLabel,
-                        {
-                          color: isVerified
-                            ? colors.green
-                            : isPending
-                            ? colors.orange
-                            : '#EF4444',
-                        },
-                      ]}
-                    >
-                      {isVerified
-                        ? 'Vérifié'
-                        : isPending
-                        ? 'En attente'
-                        : 'Compromis'}
-                    </Text>
-                  </View>
+                          : '#EF4444',
+                      },
+                    ]}
+                  >
+                    {isVerified ? 'Vérifié' : isPending ? 'En attente' : 'Compromis'}
+                  </Text>
                 </View>
 
-                {/* Actions sur la ligne */}
-                <View style={[styles.cardActionsRow, { borderTopColor: themeColors.divider }]}>
+                {/* Actions contextuelles selon l'état */}
+                <View style={[styles.bottomActionsRow, { borderTopColor: themeColors.divider }]}>
                   {isPending && (
                     <TouchableOpacity
                       activeOpacity={0.75}
@@ -343,12 +385,11 @@ export default function ManagementScreen() {
                         setOtpTargetNumber(item);
                         setOtpCode(['', '', '', '', '', '']);
                         setOtpTimer(60);
-                        setOtpModalVisible(true);
+                        setFullScreenOtpVisible(true);
                       }}
-                      style={[styles.actionChip, { backgroundColor: colors.orange }]}
+                      style={[styles.smallActionBtn, { backgroundColor: colors.orange }]}
                     >
-                      <Icon name="solar:check-circle-bold" color={colors.white} size={14} style={{ marginRight: 4 }} />
-                      <Text style={styles.actionChipText}>Finaliser la vérification</Text>
+                      <Text style={styles.smallActionBtnText}>Valider OTP</Text>
                     </TouchableOpacity>
                   )}
 
@@ -356,11 +397,10 @@ export default function ManagementScreen() {
                     <TouchableOpacity
                       activeOpacity={0.75}
                       onPress={() => handleDeclareCompromised(item)}
-                      style={[styles.actionChipOutline, { borderColor: '#EF4444' }]}
+                      style={[styles.smallActionOutlineBtn, { borderColor: '#EF4444' }]}
                     >
-                      <Icon name="solar:danger-triangle-linear" color="#EF4444" size={14} style={{ marginRight: 4 }} />
-                      <Text style={[styles.actionChipOutlineText, { color: '#EF4444' }]}>
-                        Déclarer compromis
+                      <Text style={[styles.smallActionOutlineBtnText, { color: '#EF4444' }]}>
+                        Compromis
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -368,11 +408,13 @@ export default function ManagementScreen() {
                   {isCompromised && (
                     <TouchableOpacity
                       activeOpacity={0.75}
-                      onPress={() => router.push('/(app)/alert-whatsapp')}
-                      style={[styles.actionChip, { backgroundColor: '#25D366' }]}
+                      onPress={() => {
+                        setTargetActionNumber(item);
+                        setRestoreSecurityModalVisible(true);
+                      }}
+                      style={[styles.smallActionBtn, { backgroundColor: colors.green }]}
                     >
-                      <Icon name="ic:baseline-whatsapp" color={colors.white} size={16} style={{ marginRight: 4 }} />
-                      <Text style={styles.actionChipText}>Alerter mes contacts</Text>
+                      <Text style={styles.smallActionBtnText}>Rétablir</Text>
                     </TouchableOpacity>
                   )}
 
@@ -382,9 +424,9 @@ export default function ManagementScreen() {
                       setTargetActionNumber(item);
                       setDeleteModalVisible(true);
                     }}
-                    style={styles.deleteIconBtn}
+                    style={styles.cardDeleteBtn}
                   >
-                    <Icon name="solar:trash-bin-trash-linear" color={themeColors.textSecondary} size={18} />
+                    <Icon name="solar:trash-bin-trash-linear" color={themeColors.disabledText} size={16} />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -392,104 +434,76 @@ export default function ManagementScreen() {
           })}
         </View>
 
-        {/* Bouton principal : Ajouter un numéro */}
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={() => setAddModalVisible(true)}
-          style={[styles.addNumberBtn, { backgroundColor: colors.green }]}
-        >
-          <Icon name="solar:add-circle-bold" color={colors.white} size={22} style={{ marginRight: 8 }} />
-          <Text style={styles.addNumberBtnText}>Ajouter un numéro</Text>
-        </TouchableOpacity>
-
-        {/* Section Sécurité & Services complémentaires du cahier des charges */}
-        <Text style={[styles.sectionTitle, { color: themeColors.textPrimary, marginTop: 32 }]}>
+        {/* Section Actions de sécurité : Icônes pleines sans fond */}
+        <Text style={[styles.sectionTitle, { color: themeColors.textPrimary, marginTop: 28 }]}>
           Actions de sécurité
         </Text>
 
-        <View style={styles.servicesGrid}>
+        <View style={styles.securityActionsColumn}>
           {/* Signalement de fraude */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/report')}
-            style={[styles.serviceCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
+            style={[styles.cleanActionCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
           >
-            <View style={[styles.serviceIconWrap, { backgroundColor: '#FEF3C7' }]}>
-              <Icon name="heroicons:signal-16-solid" color={colors.orange} size={24} />
+            <Icon name="heroicons:signal-16-solid" color={colors.orange} size={24} style={{ marginRight: 14 }} />
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.cleanActionTitle, { color: themeColors.textPrimary }]}>
+                Signaler une fraude
+              </Text>
+              <Text style={[styles.cleanActionSub, { color: themeColors.textSecondary }]}>
+                Signalez un numéro suspect vous ayant contacté
+              </Text>
             </View>
-            <Text style={[styles.serviceTitle, { color: themeColors.textPrimary }]}>
-              Signaler une fraude
-            </Text>
-            <Text style={[styles.serviceDesc, { color: themeColors.textSecondary }]}>
-              Déclarez un numéro suspect vous ayant contacté
-            </Text>
+            <Icon name="solar:alt-arrow-right-linear" color={themeColors.textSecondary} size={18} />
           </TouchableOpacity>
 
-          {/* Alerte WhatsApp */}
+          {/* Répertoire & Insignes de confiance */}
           <TouchableOpacity
             activeOpacity={0.8}
-            onPress={() => router.push('/(app)/alert-whatsapp')}
-            style={[styles.serviceCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
+            onPress={() => router.push('/(app)/contacts')}
+            style={[styles.cleanActionCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
           >
-            <View style={[styles.serviceIconWrap, { backgroundColor: '#DCFCE7' }]}>
-              <Icon name="ic:baseline-whatsapp" color="#16A34A" size={24} />
+            <Icon name="solar:users-group-two-rounded-bold" color={colors.green} size={24} style={{ marginRight: 14 }} />
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.cleanActionTitle, { color: themeColors.textPrimary }]}>
+                Répertoire de contacts
+              </Text>
+              <Text style={[styles.cleanActionSub, { color: themeColors.textSecondary }]}>
+                Consultez vos contacts et leurs insignes de confiance
+              </Text>
             </View>
-            <Text style={[styles.serviceTitle, { color: themeColors.textPrimary }]}>
-              Alerte WhatsApp
-            </Text>
-            <Text style={[styles.serviceDesc, { color: themeColors.textSecondary }]}>
-              Prévenez vos proches en cas de ligne piratée
-            </Text>
+            <Icon name="solar:alt-arrow-right-linear" color={themeColors.textSecondary} size={18} />
           </TouchableOpacity>
         </View>
-
-        {/* Accès à la liste des contacts du carnet d'adresses (§9.4) */}
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => router.push('/(app)/contacts')}
-          style={[
-            styles.contactsBanner,
-            { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder },
-          ]}
-        >
-          <View style={styles.contactsBannerLeft}>
-            <Icon name="solar:users-group-two-rounded-bold" color={colors.green} size={24} style={{ marginRight: 12 }} />
-            <View>
-              <Text style={[styles.contactsBannerTitle, { color: themeColors.textPrimary }]}>
-                Répertoire & Insignes de confiance
-              </Text>
-              <Text style={[styles.contactsBannerSub, { color: themeColors.textSecondary }]}>
-                Consultez le statut de vos contacts enregistrés
-              </Text>
-            </View>
-          </View>
-          <Icon name="solar:alt-arrow-right-linear" color={themeColors.textSecondary} size={20} />
-        </TouchableOpacity>
       </ScrollView>
 
-      {/* TabBar en bas sur les 4 pages principales */}
+      {/* Navigation TabBar basse */}
       <TabBar activeTab="management" />
 
       {/* ========================================================================= */}
-      {/* MODALE D'AJOUT D'UN NUMÉRO */}
+      {/* FORMULAIRE PLEIN ÉCRAN : AJOUT / MODIFICATION D'UN NUMÉRO */}
       {/* ========================================================================= */}
-      <Modal visible={addModalVisible} transparent animationType="slide">
-        <View style={styles.modalBackdrop}>
-          <View style={[styles.modalSheet, { backgroundColor: themeColors.cardBg }]}>
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: themeColors.textPrimary }]}>
-                Ajouter un numéro à votre compte
-              </Text>
-              <TouchableOpacity onPress={() => setAddModalVisible(false)}>
-                <Icon name="solar:close-circle-bold" color={themeColors.textSecondary} size={26} />
-              </TouchableOpacity>
-            </View>
+      <Modal visible={fullScreenAddVisible} animationType="slide">
+        <View style={[styles.fullScreenContainer, { backgroundColor: colors.green }]}>
+          <StatusBar style="light" />
 
-            <Text style={[styles.modalHelpText, { color: themeColors.textSecondary }]}>
-              Chaque numéro rattaché est protégé et surveillé par Kwismo après validation par OTP SMS.
+          {/* Header plein écran avec retour */}
+          <HeaderBar
+            title={editingNumberId ? 'Modifier le numéro' : 'Ajouter un numéro'}
+            showBack={true}
+            onBack={() => setFullScreenAddVisible(false)}
+          />
+
+          <View style={[styles.fullScreenContentCard, { backgroundColor: themeColors.background }]}>
+            <Text style={[styles.fullScreenFormTitle, { color: themeColors.textPrimary }]}>
+              Rattachement d'une ligne SIM
+            </Text>
+            <Text style={[styles.fullScreenFormSub, { color: themeColors.textSecondary }]}>
+              Un code de validation OTP par SMS sera envoyé sur ce numéro pour certifier votre détention de la ligne.
             </Text>
 
-            {/* Champ de saisie avec sélecteur de pays */}
+            {/* Input avec sélecteur de pays */}
             <View
               style={[
                 styles.phoneInputRow,
@@ -533,9 +547,9 @@ export default function ManagementScreen() {
             <TouchableOpacity
               activeOpacity={0.85}
               disabled={!newPhoneNumber.trim() || isSubmittingPhone}
-              onPress={handleStartAddNumber}
+              onPress={handleSavePhone}
               style={[
-                styles.submitAddBtn,
+                styles.primarySubmitBtn,
                 {
                   backgroundColor: newPhoneNumber.trim()
                     ? colors.green
@@ -546,7 +560,9 @@ export default function ManagementScreen() {
               {isSubmittingPhone ? (
                 <ActivityIndicator color={colors.white} />
               ) : (
-                <Text style={styles.submitAddBtnText}>Continuer</Text>
+                <Text style={styles.primarySubmitBtnText}>
+                  {editingNumberId ? 'Valider et envoyer OTP' : 'Continuer'}
+                </Text>
               )}
             </TouchableOpacity>
           </View>
@@ -554,34 +570,36 @@ export default function ManagementScreen() {
       </Modal>
 
       {/* ========================================================================= */}
-      {/* MODALE DE VÉRIFICATION OTP SMS (§8.3) */}
+      {/* FORMULAIRE PLEIN ÉCRAN : VALIDATION OTP PAR SMS */}
       {/* ========================================================================= */}
-      <Modal visible={otpModalVisible} transparent animationType="slide">
-        <View style={styles.modalBackdrop}>
-          <View style={[styles.modalSheet, { backgroundColor: themeColors.cardBg }]}>
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: themeColors.textPrimary }]}>
-                Vérifiez votre numéro
-              </Text>
-              <TouchableOpacity onPress={() => setOtpModalVisible(false)}>
-                <Icon name="solar:close-circle-bold" color={themeColors.textSecondary} size={26} />
-              </TouchableOpacity>
-            </View>
+      <Modal visible={fullScreenOtpVisible} animationType="slide">
+        <View style={[styles.fullScreenContainer, { backgroundColor: colors.green }]}>
+          <StatusBar style="light" />
 
-            <Text style={[styles.modalHelpText, { color: themeColors.textSecondary }]}>
+          <HeaderBar
+            title="Validation OTP"
+            showBack={true}
+            onBack={() => setFullScreenOtpVisible(false)}
+          />
+
+          <View style={[styles.fullScreenContentCard, { backgroundColor: themeColors.background }]}>
+            <Text style={[styles.fullScreenFormTitle, { color: themeColors.textPrimary }]}>
+              Vérifiez votre numéro
+            </Text>
+            <Text style={[styles.fullScreenFormSub, { color: themeColors.textSecondary }]}>
               Saisissez le code à 6 chiffres envoyé par SMS au{' '}
               <Text style={{ fontWeight: '700', color: themeColors.textPrimary }}>
                 {otpTargetNumber?.callingCode} {otpTargetNumber?.phone}
               </Text>
             </Text>
 
-            {/* Cases OTP */}
-            <View style={styles.otpBoxesRow}>
+            {/* Cases OTP contenues strictement dans la largeur de l'écran */}
+            <View style={styles.otpBoxesContainer}>
               {otpCode.map((digit, idx) => (
                 <TextInput
                   key={idx}
                   style={[
-                    styles.otpBox,
+                    styles.otpBoxResponsive,
                     {
                       backgroundColor: themeColors.inputBg,
                       borderColor: digit ? colors.green : themeColors.inputBorder,
@@ -593,6 +611,7 @@ export default function ManagementScreen() {
                   keyboardType="number-pad"
                   value={digit}
                   onChangeText={(txt) => handleOtpInput(txt, idx)}
+                  autoFocus={idx === 0}
                 />
               ))}
             </View>
@@ -617,7 +636,7 @@ export default function ManagementScreen() {
               disabled={isVerifyingOtp || otpCode.some((c) => c === '')}
               onPress={() => handleConfirmOtp()}
               style={[
-                styles.submitAddBtn,
+                styles.primarySubmitBtn,
                 {
                   backgroundColor: otpCode.every((c) => c !== '')
                     ? colors.green
@@ -628,7 +647,7 @@ export default function ManagementScreen() {
               {isVerifyingOtp ? (
                 <ActivityIndicator color={colors.white} />
               ) : (
-                <Text style={styles.submitAddBtnText}>Confirmer le numéro</Text>
+                <Text style={styles.primarySubmitBtnText}>Confirmer le numéro</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -636,8 +655,39 @@ export default function ManagementScreen() {
       </Modal>
 
       {/* ========================================================================= */}
-      {/* MODALE DE CONFIRMATION DE SUPPRESSION */}
+      {/* MODALE DE SÉCURITÉ : Rétablir un numéro compromis */}
       {/* ========================================================================= */}
+      <Modal visible={restoreSecurityModalVisible} transparent animationType="fade">
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.confirmCard, { backgroundColor: themeColors.cardBg }]}>
+            <Icon name="solar:shield-check-bold" color={colors.green} size={42} style={{ alignSelf: 'center', marginBottom: 12 }} />
+            <Text style={[styles.confirmTitle, { color: themeColors.textPrimary }]}>
+              Rétablir la sécurité de la ligne ?
+            </Text>
+            <Text style={[styles.confirmSub, { color: themeColors.textSecondary }]}>
+              Confirmez que vous avez repris le contrôle total de la ligne {targetActionNumber?.callingCode} {targetActionNumber?.phone}.
+            </Text>
+
+            <View style={styles.confirmButtonsRow}>
+              <TouchableOpacity
+                onPress={() => setRestoreSecurityModalVisible(false)}
+                style={[styles.cancelBtn, { borderColor: themeColors.inputBorder }]}
+              >
+                <Text style={[styles.cancelBtnText, { color: themeColors.textPrimary }]}>Annuler</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleRestoreSecurity}
+                style={[styles.confirmSaveBtn, { backgroundColor: colors.green }]}
+              >
+                <Text style={styles.confirmSaveBtnText}>Rétablir</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* MODALE DE CONFIRMATION DE SUPPRESSION */}
       <Modal visible={deleteModalVisible} transparent animationType="fade">
         <View style={styles.modalBackdrop}>
           <View style={[styles.confirmCard, { backgroundColor: themeColors.cardBg }]}>
@@ -646,7 +696,7 @@ export default function ManagementScreen() {
               Supprimer cette ligne ?
             </Text>
             <Text style={[styles.confirmSub, { color: themeColors.textSecondary }]}>
-              Le numéro {targetActionNumber?.callingCode} {targetActionNumber?.phone} ne sera plus surveillé ni protégé au titre de votre compte Kwismo.
+              Le numéro {targetActionNumber?.callingCode} {targetActionNumber?.phone} ne sera plus surveillé au titre de votre compte.
             </Text>
 
             <View style={styles.confirmButtonsRow}>
@@ -668,7 +718,6 @@ export default function ManagementScreen() {
         </View>
       </Modal>
 
-      {/* Sélecteur de pays */}
       <CountryPickerModal
         visible={countryModalVisible}
         onClose={() => setCountryModalVisible(false)}
@@ -684,245 +733,158 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollBody: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
-  sectionHeaderRow: {
+  topSectionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 18,
+    marginBottom: 16,
   },
   sectionTitle: {
     fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(20),
+    fontSize: scaleFont(18),
     fontWeight: '800',
   },
   sectionSub: {
     fontFamily: fonts.regular,
-    fontSize: scaleFont(13),
+    fontSize: scaleFont(12),
     marginTop: 2,
   },
-  countBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+  addTopBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     borderRadius: 12,
-    backgroundColor: '#E6F7F0',
   },
-  countBadgeText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(14),
-    color: colors.green,
+  addTopBtnText: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(13),
     fontWeight: '700',
+    color: colors.white,
   },
-  numbersList: {
-    gap: 14,
-    marginBottom: 16,
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
   },
-  numberCard: {
+  gridCard: {
+    width: '48.2%',
     borderRadius: 16,
     borderWidth: 1,
-    padding: 16,
+    padding: 12,
+    justifyContent: 'space-between',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
-    shadowRadius: 6,
+    shadowRadius: 4,
     elevation: 2,
   },
-  cardTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  cardPhoneInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  phoneNumberText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(16),
-    fontWeight: '700',
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 4,
-    gap: 8,
-  },
-  operatorBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-    backgroundColor: '#F3F4F6',
-  },
-  operatorBadgeText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(11),
-    color: '#374151',
-    fontWeight: '700',
-  },
-  addedDateText: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-  },
-  statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 12,
-  },
-  statusBadgeVerified: {
-    backgroundColor: '#E6F7F0',
-  },
-  statusBadgePending: {
-    backgroundColor: '#FEF3C7',
-  },
-  statusBadgeCompromised: {
-    backgroundColor: '#FEE2E2',
-  },
-  statusBadgeLabel: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(11),
-    fontWeight: '700',
-  },
-  cardActionsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 14,
-    paddingTop: 12,
-    borderTopWidth: 1,
-  },
-  actionChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
-  },
-  actionChipText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(12),
-    color: colors.white,
-    fontWeight: '700',
-  },
-  actionChipOutline: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 14,
-    borderWidth: 1,
-  },
-  actionChipOutlineText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(12),
-    fontWeight: '700',
-  },
-  deleteIconBtn: {
-    padding: 6,
-  },
-  addNumberBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 52,
-    borderRadius: 14,
-    shadowColor: colors.green,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  addNumberBtnText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(15),
-    fontWeight: '700',
-    color: colors.white,
-  },
-  servicesGrid: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 14,
-    marginBottom: 20,
-  },
-  serviceCard: {
-    flex: 1,
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 16,
-  },
-  serviceIconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-  serviceTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '700',
-    marginBottom: 4,
-  },
-  serviceDesc: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(11),
-    lineHeight: 16,
-  },
-  contactsBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 16,
-  },
-  contactsBannerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  contactsBannerTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '700',
-  },
-  contactsBannerSub: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-    marginTop: 2,
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
-    justifyContent: 'flex-end',
-  },
-  modalSheet: {
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    padding: 24,
-    paddingBottom: 36,
-  },
-  modalHeader: {
+  cardHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 8,
   },
-  modalTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(18),
-    fontWeight: '800',
+  operatorText: {
+    fontFamily: fonts.bold,
+    fontSize: scaleFont(12),
+    fontWeight: '700',
   },
-  modalHelpText: {
+  cardMenuBtn: {
+    padding: 2,
+  },
+  cardNumberText: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(14),
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  badgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  statusText: {
+    fontFamily: fonts.bold,
+    fontSize: scaleFont(11),
+    fontWeight: '700',
+  },
+  bottomActionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 8,
+    borderTopWidth: 1,
+  },
+  smallActionBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  smallActionBtnText: {
+    fontFamily: fonts.bold,
+    fontSize: scaleFont(10),
+    fontWeight: '700',
+    color: colors.white,
+  },
+  smallActionOutlineBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  smallActionOutlineBtnText: {
+    fontFamily: fonts.bold,
+    fontSize: scaleFont(10),
+    fontWeight: '700',
+  },
+  cardDeleteBtn: {
+    padding: 4,
+  },
+  securityActionsColumn: {
+    gap: 10,
+    marginTop: 12,
+  },
+  cleanActionCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 16,
+  },
+  cleanActionTitle: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(14),
+    fontWeight: '700',
+  },
+  cleanActionSub: {
+    fontFamily: fonts.regular,
+    fontSize: scaleFont(12),
+    marginTop: 2,
+  },
+  fullScreenContainer: {
+    flex: 1,
+  },
+  fullScreenContentCard: {
+    flex: 1,
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 0,
+    padding: 24,
+  },
+  fullScreenFormTitle: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(20),
+    fontWeight: '800',
+    marginBottom: 6,
+  },
+  fullScreenFormSub: {
     fontFamily: fonts.regular,
     fontSize: scaleFont(13),
-    lineHeight: 19,
-    marginBottom: 20,
+    lineHeight: 20,
+    marginBottom: 28,
   },
   phoneInputRow: {
     flexDirection: 'row',
@@ -957,28 +919,30 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginLeft: 4,
   },
-  submitAddBtn: {
-    height: 52,
+  primarySubmitBtn: {
+    height: 54,
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 24,
+    marginTop: 32,
   },
-  submitAddBtnText: {
+  primarySubmitBtnText: {
     fontFamily: fonts.headlineBold,
     fontSize: scaleFont(15),
     fontWeight: '700',
     color: colors.white,
   },
-  otpBoxesRow: {
+  otpBoxesContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 8,
+    marginVertical: 24,
+    width: '100%',
   },
-  otpBox: {
-    flex: 1,
-    height: 54,
+  otpBoxResponsive: {
+    width: 44,
+    height: 52,
     borderRadius: 12,
     borderWidth: 1.5,
     textAlign: 'center',
@@ -999,12 +963,17 @@ const styles = StyleSheet.create({
     fontSize: scaleFont(13),
     fontWeight: '700',
   },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   confirmCard: {
     marginHorizontal: 24,
     borderRadius: 24,
     padding: 24,
-    alignSelf: 'center',
-    width: '90%',
+    width: '88%',
   },
   confirmTitle: {
     fontFamily: fonts.headlineBold,
@@ -1035,6 +1004,18 @@ const styles = StyleSheet.create({
   cancelBtnText: {
     fontFamily: fonts.bold,
     fontSize: scaleFont(14),
+  },
+  confirmSaveBtn: {
+    flex: 1,
+    height: 48,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  confirmSaveBtnText: {
+    fontFamily: fonts.bold,
+    fontSize: scaleFont(14),
+    color: colors.white,
   },
   confirmDeleteBtn: {
     flex: 1,
