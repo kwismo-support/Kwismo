@@ -18,6 +18,7 @@ import { parsePhoneNumberFromString, getCountryCallingCode, CountryCode } from '
 import countries from 'i18n-iso-countries';
 import { Icon } from '../../src/shared/ui/Icon';
 import { HeaderBar } from '../../src/shared/components/HeaderBar';
+import { PhoneCountryInput } from '../../src/shared/components/PhoneCountryInput';
 import { CountryPickerModal, CountryItem } from '../../src/shared/components/CountryPickerModal';
 import { CountryFlag } from '../../src/shared/components/CountryFlag';
 import { ContactPickerModal } from '../../src/shared/components/ContactPickerModal';
@@ -181,85 +182,18 @@ export default function VerifyScreen() {
           <View style={styles.idleRootContainer}>
             {/* Zone fixe du haut : Input + Bouton vérifier + Titre Historique */}
             <View style={styles.topFixedSection}>
-              {/* Champ de saisie du numéro */}
-              <View
-                style={[
-                  styles.inputCard,
-                  {
-                    backgroundColor: themeColors.cardBg,
-                    borderColor:
-                      isPhoneInvalid && (isInputFocused || phoneError)
-                        ? '#EF4444'
-                        : isPhoneValid
-                        ? colors.green
-                        : isInputFocused
-                        ? colors.green
-                        : themeColors.inputBorder,
-                    borderWidth: (isPhoneInvalid && isInputFocused) || isPhoneValid ? 1.5 : 1,
-                  },
-                ]}
-              >
-                <Icon
-                  name="solar:phone-linear"
-                  color={
-                    isPhoneInvalid && isInputFocused
-                      ? '#EF4444'
-                      : isPhoneValid
-                      ? colors.green
-                      : themeColors.inputPlaceholder
-                  }
-                  size={20}
-                  style={{ marginRight: 8 }}
-                />
-
-                {/* Sélecteur de pays avec drapeau circulaire, indicatif et flèche vers le bas */}
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => setCountryModalVisible(true)}
-                  style={styles.countryPicker}
-                >
-                  <CountryFlag countryCode={selectedCountry.code} size={22} style={{ marginRight: 6 }} />
-                  <Text style={[styles.countryCodeText, { color: themeColors.textPrimary }]}>
-                    {selectedCountry.callingCode}
-                  </Text>
-                  <Icon
-                    name="solar:alt-arrow-down-linear"
-                    color={themeColors.textSecondary}
-                    size={16}
-                    style={{ marginLeft: 4 }}
-                  />
-                </TouchableOpacity>
-
-                {/* Champ texte sans barre séparatrice */}
-                <TextInput
-                  style={[
-                    styles.phoneInput,
-                    { color: themeColors.textPrimary },
-                    Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
-                  ]}
-                  placeholder={t('common.phonePlaceholder', 'Numero de telephone')}
-                  placeholderTextColor={themeColors.inputPlaceholder}
-                  keyboardType="phone-pad"
-                  value={phoneNumber}
-                  onFocus={() => setIsInputFocused(true)}
-                  onBlur={() => setIsInputFocused(false)}
-                  onChangeText={(val) => {
-                    setPhoneNumber(val);
-                    if (phoneError) setPhoneError('');
-                  }}
-                />
-
-                {isPhoneValid && (
-                  <Icon name="solar:check-circle-bold" color={colors.green} size={20} style={{ marginLeft: 6 }} />
-                )}
-              </View>
-
-              {phoneError ? (
-                <View style={styles.errorRow}>
-                  <Icon name="solar:danger-circle-bold" color="#EF4444" size={14} />
-                  <Text style={styles.errorText}>{phoneError}</Text>
-                </View>
-              ) : null}
+              {/* Champ de saisie du numéro réutilisable */}
+              <PhoneCountryInput
+                phoneNumber={phoneNumber}
+                onPhoneNumberChange={(val) => {
+                  setPhoneNumber(val);
+                  if (phoneError) setPhoneError('');
+                }}
+                selectedCountry={selectedCountry}
+                onCountryChange={setSelectedCountry}
+                error={phoneError}
+                showContactPicker={true}
+              />
 
               {/* Bouton "Vérifier" : Gris quand désactivé, Jaune/Orange Kwismo quand validé */}
               <TouchableOpacity

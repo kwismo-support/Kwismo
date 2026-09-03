@@ -9,8 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { parsePhoneNumberFromString, getCountryCallingCode, CountryCode } from 'libphonenumber-js/min';
-import countries from 'i18n-iso-countries';
+import { parsePhoneNumberFromString, getCountryCallingCode } from 'libphonenumber-js/min';
 import { Icon } from '../ui/Icon';
 import { useAppTheme } from '../hooks/useAppTheme';
 import { CountryFlag } from './CountryFlag';
@@ -29,6 +28,7 @@ export interface PhoneCountryInputProps {
   onCountryChange: (country: CountryItem) => void;
   containerStyle?: ViewStyle;
   placeholder?: string;
+  showContactPicker?: boolean;
 }
 
 export const PhoneCountryInput: React.FC<PhoneCountryInputProps> = ({
@@ -41,8 +41,9 @@ export const PhoneCountryInput: React.FC<PhoneCountryInputProps> = ({
   onCountryChange,
   containerStyle,
   placeholder,
+  showContactPicker = true,
 }) => {
-  const { i18n, t } = useTranslation();
+  const { t } = useTranslation();
   const { colors: themeColors } = useAppTheme();
 
   const [isFocused, setIsFocused] = useState(false);
@@ -64,7 +65,7 @@ export const PhoneCountryInput: React.FC<PhoneCountryInputProps> = ({
   let borderColor = themeColors.inputBorder;
   let activeIconColor = themeColors.inputPlaceholder;
 
-  if (error || (isPhoneInvalid && isFocused)) {
+  if (error || (isPhoneInvalid && (isFocused || Boolean(error)))) {
     borderColor = '#EF4444';
     activeIconColor = '#EF4444';
   } else if (isPhoneValid || isFocused) {
@@ -90,7 +91,7 @@ export const PhoneCountryInput: React.FC<PhoneCountryInputProps> = ({
           },
         ]}
       >
-        {/* Icône Téléphone */}
+        {/* Icône Téléphone intégrée à gauche (comme sur les pages d'authentification) */}
         <Icon
           name="solar:phone-linear"
           color={activeIconColor}
@@ -98,7 +99,7 @@ export const PhoneCountryInput: React.FC<PhoneCountryInputProps> = ({
           style={{ marginRight: 8 }}
         />
 
-        {/* Sélecteur de pays : Drapeau + Indicatif + Flèche vers le bas */}
+        {/* Sélecteur de pays : Drapeau + Indicatif + Flèche vers le bas (SANS AUCUN TRAIT SÉPARATEUR) */}
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={() => setCountryModalVisible(true)}
@@ -112,21 +113,15 @@ export const PhoneCountryInput: React.FC<PhoneCountryInputProps> = ({
             name="solar:alt-arrow-down-linear"
             color={themeColors.textSecondary}
             size={16}
-            style={{ marginLeft: 4 }}
+            style={{ marginLeft: 4, marginRight: 8 }}
           />
         </TouchableOpacity>
 
-        {/* Séparateur vertical discret */}
-        <View style={[styles.verticalDivider, { backgroundColor: themeColors.inputBorder }]} />
-
-        {/* Champ Texte Téléphone */}
+        {/* Champ de saisie Texte téléphone direct */}
         <TextInput
           style={[
-            styles.textInput,
-            {
-              color: themeColors.textPrimary,
-              fontFamily: fonts.medium,
-            },
+            styles.phoneInput,
+            { color: themeColors.textPrimary },
             Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
           ]}
           selectionColor={colors.green}
@@ -137,13 +132,15 @@ export const PhoneCountryInput: React.FC<PhoneCountryInputProps> = ({
           value={phoneNumber}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          onChangeText={onPhoneNumberChange}
+          onChangeText={(val) => {
+            onPhoneNumberChange(val);
+          }}
         />
 
-        {/* Valide Checkmark ou Bouton Contacts */}
+        {/* Bouton de sélection dans les contacts ou icône de validation */}
         {isPhoneValid ? (
           <Icon name="solar:check-circle-bold" color={colors.green} size={20} style={{ marginLeft: 6 }} />
-        ) : (
+        ) : showContactPicker ? (
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setContactModalVisible(true)}
@@ -152,10 +149,10 @@ export const PhoneCountryInput: React.FC<PhoneCountryInputProps> = ({
           >
             <Icon name="solar:users-group-two-rounded-linear" color={colors.green} size={22} />
           </TouchableOpacity>
-        )}
+        ) : null}
       </View>
 
-      {/* Ligne d'erreur ou d'indication */}
+      {/* Message d'erreur sous l'input identique à l'authentification */}
       {error ? (
         <View style={styles.errorRow}>
           <Icon name="solar:danger-circle-bold" color="#EF4444" size={14} />
@@ -203,30 +200,26 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingHorizontal: 14,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
-    shadowRadius: 6,
+    shadowRadius: 4,
     elevation: 2,
   },
   countryPicker: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingRight: 8,
   },
   countryCodeText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(14),
+    fontFamily: fonts.semiBold,
+    fontSize: scaleFont(15),
   },
-  verticalDivider: {
-    width: 1,
-    height: 24,
-    marginHorizontal: 8,
-  },
-  textInput: {
+  phoneInput: {
     flex: 1,
     height: '100%',
-    paddingVertical: 0,
+    fontFamily: fonts.medium,
     fontSize: scaleFont(15),
+    paddingVertical: 0,
+    textAlignVertical: 'center',
   },
   contactBtn: {
     padding: 4,
