@@ -147,7 +147,9 @@
     "acceptTermsPrefix": "I accept the",
     "termsOfServiceLink": "Terms of Service",
     "privacyPolicyTitle": "Privacy Policy",
-    "termsTitle": "Terms of Service"
+    "termsTitle": "Terms of Service",
+    "otpSuccessTitle": "Welcome",
+    "otpWelcomeBackTitle": "Welcome back"
   },
   "transfer": {
     "enterDetails": "Transfer details",

@@ -3,10 +3,10 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { KwismoLogo } from '../../src/shared/components/KwismoLogo';
 import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
+import { AuthDomeBackground } from '../../src/shared/components/AuthDomeBackground';
 import { colors, fonts } from '../../src/styles/tokens';
 
 export default function AuthWelcomeScreen() {
@@ -15,72 +15,51 @@ export default function AuthWelcomeScreen() {
   const { t } = useTranslation();
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="light" />
+    <AuthDomeBackground>
+      <View style={styles.container}>
+        <StatusBar style="light" />
 
-      {/* Full-width vertical linear gradient - smooth fade from emerald green top to navy slate middle to pure white bottom */}
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
-        <LinearGradient
-          colors={[
-            '#2BB673',
-            '#28A86B',
-            '#249460',
-            '#213E35',
-            '#23303B',
-            '#2A3742',
-            '#3C4A56',
-            '#60707F',
-            '#98A8B8',
-            '#D8E2EC',
-            '#FFFFFF',
-            '#FFFFFF',
+        {/* Sélecteur de langue en haut à droite */}
+        <View style={[styles.langWrapper, { top: Math.max(insets.top + 16, 20) }]}>
+          <LanguageSwitcher darkTheme={true} />
+        </View>
+
+        {/* Logo Kwismo centré sur le dôme */}
+        <View style={styles.centerContainer}>
+          <KwismoLogo size={200} variant="white" />
+        </View>
+
+        {/* Boutons d'action en bas de page */}
+        <View
+          style={[
+            styles.bottomContainer,
+            { paddingBottom: Math.max(insets.bottom + 24, 36) },
           ]}
-          locations={[0, 0.10, 0.20, 0.30, 0.38, 0.46, 0.53, 0.60, 0.66, 0.72, 0.76, 1.0]}
-          style={StyleSheet.absoluteFill}
-        />
-      </View>
-
-      {/* Top right language switcher */}
-      <View style={[styles.langWrapper, { top: Math.max(insets.top + 16, 20) }]}>
-        <LanguageSwitcher darkTheme={true} />
-      </View>
-
-      {/* Centered Kwismo Logo */}
-      <View style={styles.centerContainer}>
-        <KwismoLogo size={200} variant="white" />
-      </View>
-
-      {/* Bottom action buttons */}
-      <View
-        style={[
-          styles.bottomContainer,
-          { paddingBottom: Math.max(insets.bottom + 24, 36) },
-        ]}
-      >
-        <TouchableOpacity
-          activeOpacity={0.85}
-          style={styles.loginButton}
-          onPress={() => router.push('/(auth)/login')}
         >
-          <Text style={styles.loginText}>{t('common.login')}</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={styles.loginButton}
+            onPress={() => router.push('/(auth)/login')}
+          >
+            <Text style={styles.loginText}>{t('common.login', 'Se connecter')}</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          activeOpacity={0.85}
-          style={styles.registerButton}
-          onPress={() => router.push('/(auth)/register')}
-        >
-          <Text style={styles.registerText}>{t('common.register')}</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            style={styles.registerButton}
+            onPress={() => router.push('/(auth)/register')}
+          >
+            <Text style={styles.registerText}>{t('common.register', 'Créer un compte')}</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </AuthDomeBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   langWrapper: {
     position: 'absolute',
@@ -113,8 +92,9 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   loginText: {
-    fontFamily: fonts.medium,
+    fontFamily: fonts.headlineBold,
     fontSize: 16,
+    fontWeight: '700',
     color: colors.white,
   },
   registerButton: {
@@ -128,8 +108,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   registerText: {
-    fontFamily: fonts.medium,
+    fontFamily: fonts.headlineBold,
     fontSize: 16,
+    fontWeight: '700',
     color: '#3B4E7A',
   },
 });

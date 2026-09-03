@@ -69,7 +69,7 @@ export default function LoginScreen() {
     );
 
     toast.success(t('toasts.loginSuccess'));
-    router.replace('/(app)');
+    router.replace('/(auth)/otp-success?mode=login');
     return true;
   };
 

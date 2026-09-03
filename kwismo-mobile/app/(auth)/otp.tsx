@@ -101,7 +101,7 @@ export default function OtpScreen() {
     }
 
     toast.success(t('toasts.loginSuccess'));
-    router.replace('/(app)');
+    router.replace('/(auth)/otp-success');
     return true;
   };
 

@@ -147,7 +147,9 @@
     "acceptTermsPrefix": "J'accepte les",
     "termsOfServiceLink": "conditions d'utilisation",
     "privacyPolicyTitle": "Politique de confidentialité",
-    "termsTitle": "Conditions d'utilisation"
+    "termsTitle": "Conditions d'utilisation",
+    "otpSuccessTitle": "Bienvenue",
+    "otpWelcomeBackTitle": "Bon retour parmi nous"
   },
   "transfer": {
     "enterDetails": "Détails du transfert",
