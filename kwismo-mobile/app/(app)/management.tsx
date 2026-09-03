@@ -18,6 +18,7 @@ import { AsYouType, isValidPhoneNumber } from 'libphonenumber-js/min';
 import { Icon } from '../../src/shared/ui/Icon';
 import { HeaderBar } from '../../src/shared/components/HeaderBar';
 import { TabBar } from '../../src/shared/components/TabBar';
+import { Skeleton, SkeletonCircle, SkeletonLoader } from '../../src/shared/ui/Skeleton';
 import { CountryFlag } from '../../src/shared/components/CountryFlag';
 import { CountryPickerModal, CountryItem } from '../../src/shared/components/CountryPickerModal';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
@@ -41,6 +42,8 @@ export default function ManagementScreen() {
   const { t } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
 
+  const [loading, setLoading] = useState(true);
+
   // Liste des numéros de l'utilisateur
   const [numbers, setNumbers] = useState<UserSimNumber[]>([
     {
@@ -62,6 +65,11 @@ export default function ManagementScreen() {
       addedDate: '28 Août',
     },
   ]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(t);
+  }, []);
 
   // États pour l'ajout / modification d'un numéro
   const [fullScreenAddVisible, setFullScreenAddVisible] = useState(false);
@@ -297,11 +305,27 @@ export default function ManagementScreen() {
         </View>
 
         {/* Grille : Exactement 2 numéros par ligne pour un affichage dense et sans scroll */}
-        <View style={styles.gridContainer}>
-          {numbers.map((item) => {
-            const isVerified = item.status === 'verified';
-            const isPending = item.status === 'pending';
-            const isCompromised = item.status === 'compromised';
+        {loading ? (
+          <SkeletonLoader>
+            <View style={styles.gridContainer}>
+              <View style={[styles.gridCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
+                <Skeleton width={70} height={16} borderRadius={4} />
+                <Skeleton width={110} height={20} borderRadius={6} style={{ marginVertical: 10 }} />
+                <Skeleton width={80} height={14} borderRadius={4} />
+              </View>
+              <View style={[styles.gridCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
+                <Skeleton width={70} height={16} borderRadius={4} />
+                <Skeleton width={110} height={20} borderRadius={6} style={{ marginVertical: 10 }} />
+                <Skeleton width={80} height={14} borderRadius={4} />
+              </View>
+            </View>
+          </SkeletonLoader>
+        ) : (
+          <View style={styles.gridContainer}>
+            {numbers.map((item) => {
+              const isVerified = item.status === 'verified';
+              const isPending = item.status === 'pending';
+              const isCompromised = item.status === 'compromised';
 
             return (
               <View
@@ -433,6 +457,7 @@ export default function ManagementScreen() {
             );
           })}
         </View>
+      )}
 
         {/* Section Actions de sécurité : Icônes pleines sans fond */}
         <Text style={[styles.sectionTitle, { color: themeColors.textPrimary, marginTop: 28 }]}>
@@ -768,10 +793,11 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    justifyContent: 'space-between',
+    rowGap: 12,
   },
   gridCard: {
-    width: '48.2%',
+    width: '48.5%',
     borderRadius: 16,
     borderWidth: 1,
     padding: 12,

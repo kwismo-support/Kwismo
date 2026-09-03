@@ -114,22 +114,22 @@ export const SkeletonCard: React.FC<{
 
 // Composant Skeleton unifié conditionnel
 interface SkeletonLoaderProps {
-  loading: boolean;
-  fallback: React.ReactNode;
+  loading?: boolean;
+  fallback?: React.ReactNode;
   children: React.ReactNode;
   style?: ViewStyle;
 }
 
 export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
-  loading,
+  loading = true,
   fallback,
   children,
   style,
 }) => {
-  if (loading) {
+  if (loading && fallback) {
     return <View style={style}>{fallback}</View>;
   }
-  return <>{children}</>;
+  return <View style={style}>{children}</View>;
 };
 
 export default Skeleton;

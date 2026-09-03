@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   ScrollView,
   Platform,
@@ -20,50 +19,105 @@ import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
 
-const RECENT_ACTIVITIES = [
-  { id: '1', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Faible', statusType: 'blue', time: 'hier, 21:47' },
-  { id: '2', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Détectée', statusType: 'red', time: 'hier, 21:47' },
-  { id: '3', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Protégé', statusType: 'green', time: 'hier, 21:47' },
-  { id: '4', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'En cours', statusType: 'yellow', time: 'hier, 21:47' },
-  { id: '5', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Protégé', statusType: 'green', time: 'hier, 21:47' },
-  { id: '6', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Protégé', statusType: 'green', time: 'hier, 21:47' },
-  { id: '7', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Protégé', statusType: 'green', time: 'hier, 21:47' },
+// Données des KPI personnels selon la Section 9.1
+const KPI_CARDS = [
+  {
+    id: 'kpi-verified',
+    title: 'Numéros vérifiés',
+    value: '3',
+    variation: '+1 ce mois',
+    icon: 'solar:shield-check-bold',
+    accentColor: colors.green,
+  },
+  {
+    id: 'kpi-threats',
+    title: 'Menaces évitées',
+    value: '12',
+    variation: '+3 sem.',
+    icon: 'solar:shield-warning-bold',
+    accentColor: colors.green,
+  },
+  {
+    id: 'kpi-reports',
+    title: 'Signalements faits',
+    value: '5',
+    variation: 'Communauté',
+    icon: 'heroicons:signal-16-solid',
+    accentColor: colors.orange,
+  },
+  {
+    id: 'kpi-transfers',
+    title: 'Transferts protégés',
+    value: '85 000 F',
+    variation: '100% sécurisés',
+    icon: 'solar:card-transfer-bold',
+    accentColor: '#3B82F6',
+  },
 ];
 
-export default function DashboardHomeScreen() {
+// Activité récente selon la Section 9.1
+const RECENT_ACTIVITIES = [
+  {
+    id: '1',
+    phone: '+237 6 98 44 43 88',
+    title: 'Vérification numéro',
+    status: 'Protégé',
+    statusType: 'green',
+    date: "Aujourd'hui à 11:42",
+    icon: 'solar:shield-check-bold',
+  },
+  {
+    id: '2',
+    phone: '+237 6 55 98 76 54',
+    title: 'Appel suspect détecté',
+    status: 'Suspect',
+    statusType: 'red',
+    date: 'Hier à 16:15',
+    icon: 'solar:danger-triangle-bold',
+  },
+  {
+    id: '3',
+    phone: 'Orange Money (5 000 F)',
+    title: 'Transfert USSD sécurisé',
+    status: 'Sécurisé',
+    statusType: 'green',
+    date: 'Il y a 2 jours',
+    icon: 'solar:card-transfer-bold',
+  },
+  {
+    id: '4',
+    phone: '+237 6 70 12 34 56',
+    title: 'Signalement arnaque',
+    status: 'Transmis',
+    statusType: 'orange',
+    date: 'Il y a 3 jours',
+    icon: 'heroicons:signal-16-solid',
+  },
+];
+
+export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
 
-  const [activeFilter, setActiveFilter] = useState(0);
   const [loading, setLoading] = useState(true);
-  const unreadNotifications = 3;
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 600);
+    const timer = setTimeout(() => setLoading(false), 500);
     return () => clearTimeout(timer);
   }, []);
 
-  const filterTabs = [
-    t('common.verifiedNumber'),
-    t('common.avoidedThreats'),
-    t('common.reportsMade'),
-    t('common.transfers'),
-  ];
-
-  const getStatusStyle = (type: string) => {
+  const getBadgeColors = (type: string) => {
     switch (type) {
-      case 'blue':
-        return { bg: isDark ? '#1E3A8A' : '#EBF3FF', text: '#3B82F6' };
-      case 'red':
-        return { bg: isDark ? '#7F1D1D' : '#FEE2E2', text: '#EF4444' };
       case 'green':
         return { bg: isDark ? '#064E3B' : '#E6F7F0', text: colors.green };
-      case 'yellow':
-        return { bg: isDark ? '#78350F' : '#FEF3C7', text: '#D97706' };
+      case 'red':
+        return { bg: isDark ? '#7F1D1D' : '#FEE2E2', text: '#EF4444' };
+      case 'orange':
+        return { bg: isDark ? '#78350F' : '#FEF3C7', text: colors.orange };
       default:
-        return { bg: isDark ? '#334155' : '#F3F4F6', text: '#6B7280' };
+        return { bg: isDark ? '#1E293B' : '#F1F5F9', text: themeColors.textSecondary };
     }
   };
 
@@ -71,191 +125,212 @@ export default function DashboardHomeScreen() {
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <StatusBar style="light" />
 
-      {/* Header global unifié KWISMO */}
-      <HeaderBar isHome={true} unreadNotificationsCount={unreadNotifications} />
+      {/* Header global unifié : KWISMO à gauche, Cloche et options à droite */}
+      <HeaderBar isHome={true} />
 
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 110 }}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: insets.bottom + 105 },
+        ]}
         showsVerticalScrollIndicator={false}
       >
-
-        <View style={styles.actionGrid}>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => router.push('/(app)/verify')}
-            style={styles.actionItem}
-          >
-            <View style={[styles.actionIconCircle, { backgroundColor: isDark ? '#1E293B' : '#EBF7F2' }]}>
-              <Icon name="ri:user-scan-fill" color={colors.green} size={28} />
-            </View>
-            <Text style={[styles.actionLabel, { color: themeColors.textSecondary }]}>
-              {t('common.verifyNumber')}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => router.push('/(app)/transfer')}
-            style={styles.actionItem}
-          >
-            <View style={[styles.actionIconCircle, { backgroundColor: isDark ? '#1E293B' : '#EBF7F2' }]}>
-              <Icon name="solar:square-transfer-horizontal-linear" color={colors.green} size={26} />
-            </View>
-            <Text style={[styles.actionLabel, { color: themeColors.textSecondary }]}>
-              {t('common.moneyTransfer')}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => router.push('/(app)/alert-whatsapp')}
-            style={styles.actionItem}
-          >
-            <View style={[styles.actionIconCircle, { backgroundColor: isDark ? '#1E293B' : '#EBF7F2' }]}>
-              <Icon name="ic:baseline-whatsapp" color={colors.green} size={26} />
-            </View>
-            <Text style={[styles.actionLabel, { color: themeColors.textSecondary }]}>
-              {t('common.whatsappAlert')}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => router.push('/(app)/report')}
-            style={styles.actionItem}
-          >
-            <View style={[styles.actionIconCircle, { backgroundColor: isDark ? '#1E293B' : '#EBF7F2' }]}>
-              <Icon name="heroicons:signal-16-solid" color={colors.green} size={26} />
-            </View>
-            <Text style={[styles.actionLabel, { color: themeColors.textSecondary }]}>
-              {t('common.report')}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filterScroll}
-        >
-          {filterTabs.map((tab, idx) => (
-            <TouchableOpacity
-              key={`filter-${idx}`}
-              activeOpacity={0.7}
-              onPress={() => setActiveFilter(idx)}
-              style={[
-                styles.filterPill,
-                {
-                  backgroundColor: activeFilter === idx ? colors.green : themeColors.cardBg,
-                  borderColor: activeFilter === idx ? colors.green : themeColors.inputBorder,
-                },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.filterText,
-                  { color: activeFilter === idx ? colors.white : themeColors.textSecondary },
-                ]}
-              >
-                {tab}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
-            {t('common.recentActivity')}
+        {/* Salutation personnalisée & Titre Dashboard (§9.1) */}
+        <View style={styles.greetingHeader}>
+          <Text style={[styles.welcomeGreeting, { color: themeColors.textPrimary }]}>
+            Bonjour, Alain 👋
           </Text>
-          <TouchableOpacity activeOpacity={0.7}>
-            <Text style={styles.seeAllText}>{t('common.seeAll')}</Text>
-          </TouchableOpacity>
+          <Text style={[styles.welcomeSub, { color: themeColors.textSecondary }]}>
+            Votre tableau de bord anti-fraude Mobile Money
+          </Text>
         </View>
 
-        <View style={styles.activityList}>
-          <SkeletonLoader
-            loading={loading}
-            fallback={
-              <>
-                {Array.from({ length: 5 }).map((_, idx) => (
-                  <View
-                    key={`skel-activity-${idx}`}
-                    style={[
-                      styles.activityRow,
-                      {
-                        backgroundColor: themeColors.cardBg,
-                        borderColor: themeColors.inputBorder,
-                        borderWidth: isDark ? 1 : 0,
-                      },
-                    ]}
-                  >
-                    <SkeletonCircle size={42} style={{ marginRight: 12 }} />
-                    <View style={{ flex: 1, gap: 6 }}>
-                      <Skeleton width="65%" height={16} borderRadius={4} />
-                      <Skeleton width="45%" height={12} borderRadius={4} />
-                    </View>
-                    <View style={styles.statusCenterContainer}>
-                      <Skeleton width={60} height={24} borderRadius={12} />
-                    </View>
-                    <Skeleton width={50} height={12} borderRadius={4} />
+        {/* 1. KPI PERSONNELS (§9.1) : Grille 2x2 compacte */}
+        <View style={styles.kpiContainer}>
+          {loading ? (
+            <SkeletonLoader>
+              <View style={styles.kpiGrid}>
+                {[1, 2, 3, 4].map((i) => (
+                  <View key={i} style={[styles.kpiCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
+                    <Skeleton width={80} height={14} borderRadius={4} />
+                    <Skeleton width={60} height={24} borderRadius={6} style={{ marginVertical: 8 }} />
+                    <Skeleton width={90} height={12} borderRadius={4} />
                   </View>
                 ))}
-              </>
-            }
-          >
-            {RECENT_ACTIVITIES.map((item) => {
-              const badgeStyle = getStatusStyle(item.statusType);
-              return (
-                <TouchableOpacity
-                  key={item.id}
-                  activeOpacity={0.7}
-                  onPress={() => router.push('/(app)/verify')}
+              </View>
+            </SkeletonLoader>
+          ) : (
+            <View style={styles.kpiGrid}>
+              {KPI_CARDS.map((kpi) => (
+                <View
+                  key={kpi.id}
                   style={[
-                    styles.activityRow,
+                    styles.kpiCard,
                     {
                       backgroundColor: themeColors.cardBg,
                       borderColor: themeColors.inputBorder,
-                      borderWidth: isDark ? 1 : 0,
                     },
                   ]}
                 >
-                  <View style={styles.itemAvatar} />
-
-                  <View style={styles.itemDetails}>
-                    <Text style={[styles.itemPhone, { color: themeColors.textPrimary }]}>
-                      {item.phone}
+                  <View style={styles.kpiCardTop}>
+                    <Text style={[styles.kpiTitle, { color: themeColors.textSecondary }]}>
+                      {kpi.title}
                     </Text>
-                    <Text style={[styles.itemType, { color: themeColors.textSecondary }]}>
-                      {item.type}
+                    <Icon name={kpi.icon} color={kpi.accentColor} size={18} />
+                  </View>
+
+                  <Text style={[styles.kpiValue, { color: themeColors.textPrimary }]}>
+                    {kpi.value}
+                  </Text>
+
+                  <View style={styles.kpiBottomRow}>
+                    <View style={[styles.kpiDot, { backgroundColor: kpi.accentColor }]} />
+                    <Text style={[styles.kpiVariation, { color: themeColors.textSecondary }]}>
+                      {kpi.variation}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+
+        {/* 2. ACTIONS RAPIDES (§9.1) : 4 Raccourcis directs en 1 clic */}
+        <Text style={[styles.sectionTitle, { color: themeColors.textPrimary, marginTop: 24 }]}>
+          Actions rapides
+        </Text>
+
+        <View style={styles.quickActionsGrid}>
+          {/* Vérifier un numéro */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => router.push('/(app)/verify')}
+            style={[styles.quickActionBtn, { backgroundColor: colors.green }]}
+          >
+            <Icon name="solar:shield-check-bold" color={colors.white} size={22} style={{ marginBottom: 6 }} />
+            <Text style={styles.quickActionBtnText}>Vérifier un numéro</Text>
+          </TouchableOpacity>
+
+          {/* Transfert USSD */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => router.push('/(app)/transfer')}
+            style={[styles.quickActionBtnSecondary, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
+          >
+            <Icon name="solar:card-transfer-bold" color={colors.green} size={22} style={{ marginBottom: 6 }} />
+            <Text style={[styles.quickActionBtnSecondaryText, { color: themeColors.textPrimary }]}>
+              Transfert USSD
+            </Text>
+          </TouchableOpacity>
+
+          {/* Alerte WhatsApp */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => router.push('/(app)/alert-whatsapp')}
+            style={[styles.quickActionBtnSecondary, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
+          >
+            <Icon name="ic:baseline-whatsapp" color="#25D366" size={22} style={{ marginBottom: 6 }} />
+            <Text style={[styles.quickActionBtnSecondaryText, { color: themeColors.textPrimary }]}>
+              Alerte WhatsApp
+            </Text>
+          </TouchableOpacity>
+
+          {/* Signaler */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => router.push('/(app)/report')}
+            style={[styles.quickActionBtnSecondary, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
+          >
+            <Icon name="heroicons:signal-16-solid" color={colors.orange} size={22} style={{ marginBottom: 6 }} />
+            <Text style={[styles.quickActionBtnSecondaryText, { color: themeColors.textPrimary }]}>
+              Signaler
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* 3. ACTIVITÉ RÉCENTE (§9.1) */}
+        <View style={styles.recentSectionHeader}>
+          <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
+            Activité récente
+          </Text>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => router.push('/(app)/verify')}
+          >
+            <Text style={[styles.viewAllLink, { color: colors.green }]}>
+              Voir tout
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.activitiesList}>
+          {loading ? (
+            <SkeletonLoader>
+              {[1, 2, 3].map((i) => (
+                <View
+                  key={i}
+                  style={[styles.activityItem, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
+                >
+                  <SkeletonCircle size={36} />
+                  <View style={{ flex: 1, marginLeft: 12 }}>
+                    <Skeleton width={140} height={14} borderRadius={4} />
+                    <Skeleton width={90} height={12} borderRadius={4} style={{ marginTop: 6 }} />
+                  </View>
+                  <Skeleton width={60} height={20} borderRadius={10} />
+                </View>
+              ))}
+            </SkeletonLoader>
+          ) : (
+            RECENT_ACTIVITIES.map((item) => {
+              const badge = getBadgeColors(item.statusType);
+              return (
+                <View
+                  key={item.id}
+                  style={[
+                    styles.activityItem,
+                    {
+                      backgroundColor: themeColors.cardBg,
+                      borderColor: themeColors.inputBorder,
+                    },
+                  ]}
+                >
+                  {/* Icône pleine sans rond de fond */}
+                  <Icon
+                    name={item.icon}
+                    size={22}
+                    color={
+                      item.statusType === 'green'
+                        ? colors.green
+                        : item.statusType === 'red'
+                        ? '#EF4444'
+                        : colors.orange
+                    }
+                    style={{ marginRight: 12 }}
+                  />
+
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.activityTitle, { color: themeColors.textPrimary }]}>
+                      {item.title}
+                    </Text>
+                    <Text style={[styles.activityPhone, { color: themeColors.textSecondary }]}>
+                      {item.phone} · {item.date}
                     </Text>
                   </View>
 
-                  <View style={styles.statusCenterContainer}>
-                    <View
-                      style={[
-                        styles.statusBadge,
-                        { backgroundColor: badgeStyle.bg },
-                      ]}
-                    >
-                      <Text style={[styles.statusText, { color: badgeStyle.text }]}>
-                        {item.status}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.itemRight}>
-                    <Text style={[styles.itemTime, { color: themeColors.textSecondary }]}>
-                      {item.time}
+                  {/* Badge de statut centré */}
+                  <View style={[styles.statusBadge, { backgroundColor: badge.bg }]}>
+                    <Text style={[styles.statusBadgeText, { color: badge.text }]}>
+                      {item.status}
                     </Text>
-                    <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
                   </View>
-                </TouchableOpacity>
+                </View>
               );
-            })}
-          </SkeletonLoader>
+            })
+          )}
         </View>
       </ScrollView>
 
+      {/* Barre d'onglets basse officielle */}
       <TabBar activeTab="home" />
     </View>
   );
@@ -265,204 +340,159 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  headerCard: {
-    backgroundColor: colors.green,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
-  userRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  greetingHeader: {
     marginBottom: 16,
   },
-  userLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  avatarCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#FF9900',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
-  },
-  avatarText: {
-    fontFamily: fonts.bold,
-    fontSize: 18,
-    color: colors.white,
-  },
-  greetingText: {
-    fontFamily: fonts.h6,
-    fontSize: scaleFont(18),
-    fontWeight: '700',
-    color: colors.white,
-  },
-  userRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  iconBtn: {
-    padding: 6,
-    position: 'relative',
-  },
-  badgeCountContainer: {
-    position: 'absolute',
-    top: 2,
-    right: 2,
-    minWidth: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: '#FF3B30',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 3,
-    borderWidth: 1.5,
-    borderColor: colors.green,
-  },
-  badgeCountText: {
-    fontFamily: fonts.bold,
-    fontSize: 9,
-    color: colors.white,
-    lineHeight: 11,
-  },
-  searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.22)',
-    height: 48,
-    borderRadius: 24,
-    paddingHorizontal: 16,
-  },
-  searchInput: {
-    flex: 1,
-    fontFamily: fonts.medium,
-    fontSize: 15,
-    color: colors.white,
-    height: '100%',
-  },
-  actionGrid: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    paddingHorizontal: 16,
-    paddingVertical: 24,
-  },
-  actionItem: {
-    alignItems: 'center',
-    width: '22%',
-  },
-  actionIconCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  actionLabel: {
-    fontFamily: fonts.medium,
-    fontSize: 11,
-    textAlign: 'center',
-    lineHeight: 14,
-  },
-  filterScroll: {
-    paddingHorizontal: 20,
-    gap: 10,
-    marginBottom: 20,
-  },
-  filterPill: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-  },
-  filterText: {
-    fontFamily: fonts.medium,
-    fontSize: 13,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    marginBottom: 16,
-  },
-  sectionTitle: {
+  welcomeGreeting: {
     fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(17),
-    fontWeight: '700',
+    fontSize: scaleFont(22),
+    fontWeight: '800',
   },
-  seeAllText: {
-    fontFamily: fonts.medium,
-    fontSize: 14,
-    color: colors.green,
+  welcomeSub: {
+    fontFamily: fonts.regular,
+    fontSize: scaleFont(13),
+    marginTop: 2,
   },
-  activityList: {
-    paddingHorizontal: 20,
-  },
-  activityRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 14,
+  kpiContainer: {
     marginBottom: 10,
+  },
+  kpiGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: 10,
+  },
+  kpiCard: {
+    width: '48.5%',
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 14,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
     shadowRadius: 4,
-    elevation: 1,
+    elevation: 2,
   },
-  itemAvatar: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: '#94A3B8',
-    marginRight: 12,
+  kpiCardTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 6,
   },
-  itemDetails: {
-    flex: 1,
+  kpiTitle: {
+    fontFamily: fonts.medium,
+    fontSize: scaleFont(12),
+  },
+  kpiValue: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(18),
+    fontWeight: '800',
+    marginBottom: 6,
+  },
+  kpiBottomRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  kpiDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 6,
+  },
+  kpiVariation: {
+    fontFamily: fonts.regular,
+    fontSize: scaleFont(11),
+  },
+  sectionTitle: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(17),
+    fontWeight: '800',
+  },
+  quickActionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: 10,
+    marginTop: 12,
+    marginBottom: 24,
+  },
+  quickActionBtn: {
+    width: '48.5%',
+    height: 80,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: colors.green,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  quickActionBtnText: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(12),
+    fontWeight: '700',
+    color: colors.white,
+    textAlign: 'center',
+  },
+  quickActionBtnSecondary: {
+    width: '48.5%',
+    height: 80,
+    borderRadius: 16,
+    borderWidth: 1,
+    alignItems: 'center',
     justifyContent: 'center',
   },
-  itemPhone: {
-    fontFamily: fonts.semiBold,
-    fontSize: scaleFont(14),
-    fontWeight: '600',
+  quickActionBtnSecondaryText: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(12),
+    fontWeight: '700',
+    textAlign: 'center',
   },
-  itemType: {
+  recentSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  viewAllLink: {
+    fontFamily: fonts.bold,
+    fontSize: scaleFont(13),
+    fontWeight: '700',
+  },
+  activitiesList: {
+    gap: 10,
+  },
+  activityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 14,
+  },
+  activityTitle: {
+    fontFamily: fonts.bold,
+    fontSize: scaleFont(13),
+    fontWeight: '700',
+  },
+  activityPhone: {
     fontFamily: fonts.regular,
     fontSize: scaleFont(11),
     marginTop: 2,
   },
-  statusCenterContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 6,
-  },
   statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+    marginLeft: 8,
   },
-  statusText: {
-    fontFamily: fonts.medium,
-    fontSize: 11,
-    textAlign: 'center',
-  },
-  itemRight: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  itemTime: {
-    fontFamily: fonts.regular,
-    fontSize: 11,
-    marginRight: 6,
+  statusBadgeText: {
+    fontFamily: fonts.bold,
+    fontSize: scaleFont(11),
+    fontWeight: '700',
   },
 });
