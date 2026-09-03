@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
-import { HeaderActions } from '../../src/shared/components/HeaderActions';
+import { HeaderBar } from '../../src/shared/components/HeaderBar';
 import { Skeleton, SkeletonCircle, SkeletonLoader } from '../../src/shared/ui/Skeleton';
 import { TabBar } from '../../src/shared/components/TabBar';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
@@ -49,32 +49,13 @@ export default function ContactsScreen() {
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <StatusBar style="light" />
 
+      {/* Header unifié de page secondaire : Retour à gauche, Titre au milieu, Actions à droite */}
+      <HeaderBar title={t('common.contacts', 'Répertoire de contacts')} showBack={true} />
+
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 110 }}
+        contentContainerStyle={{ paddingBottom: 40 }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={[styles.headerCard, { paddingTop: Math.max(insets.top + 10, 20) }]}>
-          <View style={styles.headerRow}>
-            <Text style={styles.headerTitle}>{t('common.management')}</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <TouchableOpacity activeOpacity={0.7} style={styles.addBtn}>
-                <Icon name="solar:user-plus-linear" color={colors.white} size={22} />
-              </TouchableOpacity>
-              <HeaderActions iconColor={colors.white} />
-            </View>
-          </View>
-
-          <View style={styles.searchBar}>
-            <Icon name="solar:magnifer-linear" color={colors.white} size={20} style={{ opacity: 0.9, marginRight: 10 }} />
-            <TextInput
-              style={[styles.searchInput, Platform.OS === 'web' ? ({ outline: 'none' } as any) : {}]}
-              placeholder={t('common.search')}
-              placeholderTextColor="rgba(255, 255, 255, 0.75)"
-              value={search}
-              onChangeText={setSearch}
-            />
-          </View>
-        </View>
 
         <View style={styles.listContainer}>
           <SkeletonLoader
@@ -146,8 +127,6 @@ export default function ContactsScreen() {
           </SkeletonLoader>
         </View>
       </ScrollView>
-
-      <TabBar activeTab="contacts" />
     </View>
   );
 }

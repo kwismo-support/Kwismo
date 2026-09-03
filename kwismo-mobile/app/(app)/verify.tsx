@@ -18,9 +18,11 @@ import { parsePhoneNumberFromString, getCountryCallingCode, CountryCode } from '
 import countries from 'i18n-iso-countries';
 import { Icon } from '../../src/shared/ui/Icon';
 import { HeaderBar } from '../../src/shared/components/HeaderBar';
+import { PhoneCountryInput } from '../../src/shared/components/PhoneCountryInput';
 import { CountryPickerModal, CountryItem } from '../../src/shared/components/CountryPickerModal';
 import { CountryFlag } from '../../src/shared/components/CountryFlag';
 import { ContactPickerModal } from '../../src/shared/components/ContactPickerModal';
+import { VerificationGraphic, OperationStepSpinner } from '../../src/shared/components/VerificationGraphic';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
@@ -164,7 +166,7 @@ export default function VerifyScreen() {
 
       {/* Header global unifié Kwismo */}
       <HeaderBar
-        title={t('common.verifyNumber', 'Verification du numero')}
+        title={t('common.numberVerification', "Vérification d'un numéro")}
         showBack={true}
         onBack={handleBack}
       />
@@ -180,85 +182,18 @@ export default function VerifyScreen() {
           <View style={styles.idleRootContainer}>
             {/* Zone fixe du haut : Input + Bouton vérifier + Titre Historique */}
             <View style={styles.topFixedSection}>
-              {/* Champ de saisie du numéro */}
-              <View
-                style={[
-                  styles.inputCard,
-                  {
-                    backgroundColor: themeColors.cardBg,
-                    borderColor:
-                      isPhoneInvalid && (isInputFocused || phoneError)
-                        ? '#EF4444'
-                        : isPhoneValid
-                        ? colors.green
-                        : isInputFocused
-                        ? colors.green
-                        : themeColors.inputBorder,
-                    borderWidth: (isPhoneInvalid && isInputFocused) || isPhoneValid ? 1.5 : 1,
-                  },
-                ]}
-              >
-                <Icon
-                  name="solar:phone-linear"
-                  color={
-                    isPhoneInvalid && isInputFocused
-                      ? '#EF4444'
-                      : isPhoneValid
-                      ? colors.green
-                      : themeColors.inputPlaceholder
-                  }
-                  size={20}
-                  style={{ marginRight: 8 }}
-                />
-
-                {/* Sélecteur de pays avec drapeau circulaire, indicatif et flèche vers le bas */}
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  onPress={() => setCountryModalVisible(true)}
-                  style={styles.countryPicker}
-                >
-                  <CountryFlag countryCode={selectedCountry.code} size={22} style={{ marginRight: 6 }} />
-                  <Text style={[styles.countryCodeText, { color: themeColors.textPrimary }]}>
-                    {selectedCountry.callingCode}
-                  </Text>
-                  <Icon
-                    name="solar:alt-arrow-down-linear"
-                    color={themeColors.textSecondary}
-                    size={16}
-                    style={{ marginLeft: 4 }}
-                  />
-                </TouchableOpacity>
-
-                {/* Champ texte sans barre séparatrice */}
-                <TextInput
-                  style={[
-                    styles.phoneInput,
-                    { color: themeColors.textPrimary },
-                    Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
-                  ]}
-                  placeholder={t('common.phonePlaceholder', 'Numero de telephone')}
-                  placeholderTextColor={themeColors.inputPlaceholder}
-                  keyboardType="phone-pad"
-                  value={phoneNumber}
-                  onFocus={() => setIsInputFocused(true)}
-                  onBlur={() => setIsInputFocused(false)}
-                  onChangeText={(val) => {
-                    setPhoneNumber(val);
-                    if (phoneError) setPhoneError('');
-                  }}
-                />
-
-                {isPhoneValid && (
-                  <Icon name="solar:check-circle-bold" color={colors.green} size={20} style={{ marginLeft: 6 }} />
-                )}
-              </View>
-
-              {phoneError ? (
-                <View style={styles.errorRow}>
-                  <Icon name="solar:danger-circle-bold" color="#EF4444" size={14} />
-                  <Text style={styles.errorText}>{phoneError}</Text>
-                </View>
-              ) : null}
+              {/* Champ de saisie du numéro réutilisable */}
+              <PhoneCountryInput
+                phoneNumber={phoneNumber}
+                onPhoneNumberChange={(val) => {
+                  setPhoneNumber(val);
+                  if (phoneError) setPhoneError('');
+                }}
+                selectedCountry={selectedCountry}
+                onCountryChange={setSelectedCountry}
+                error={phoneError}
+                showContactPicker={true}
+              />
 
               {/* Bouton "Vérifier" : Gris quand désactivé, Jaune/Orange Kwismo quand validé */}
               <TouchableOpacity
@@ -270,9 +205,7 @@ export default function VerifyScreen() {
                   {
                     backgroundColor: isPhoneValid
                       ? colors.orange
-                      : isDark
-                      ? '#334155'
-                      : '#D1D5DB',
+                      : themeColors.disabled,
                   },
                 ]}
               >
@@ -282,9 +215,7 @@ export default function VerifyScreen() {
                     {
                       color: isPhoneValid
                         ? colors.white
-                        : isDark
-                        ? '#94A3B8'
-                        : '#64748B',
+                        : themeColors.disabledText,
                     },
                   ]}
                 >
@@ -350,6 +281,7 @@ export default function VerifyScreen() {
           >
             {viewState === 'analyzing' && (
               <View style={styles.analyzingContainer}>
+                {/* Input lecture seule en haut */}
                 <View
                   style={[
                     styles.inputCardReadonly,
@@ -366,85 +298,80 @@ export default function VerifyScreen() {
                   </Text>
                 </View>
 
-                <View style={[styles.graphicCircleBg, { backgroundColor: isDark ? '#1E293B' : '#E6F7F0' }]}>
-                  <View style={[styles.innerShieldIcon, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
-                    <Icon name="solar:shield-check-bold" color={colors.green} size={64} />
-                  </View>
-                </View>
+                {/* Graphique animé avec le bouclier, les sparkles à 4 branches et la ligne d'analyse */}
+                <VerificationGraphic state="analyzing" isDark={isDark} />
 
                 <Text style={[styles.analyzingTitle, { color: themeColors.textPrimary }]}>
-                  {t('common.analyzing')}
+                  {t('common.analyzing', 'Analyse en cours...')}
                 </Text>
                 <Text style={[styles.analyzingSub, { color: themeColors.textSecondary }]}>
-                  {t('common.analyzingSubtitle')}
+                  {t('common.analyzingSubtitle', 'Nous vérifions ce numéro dans notre base de données et auprès de la communauté')}
                 </Text>
 
+                {/* Liste des 4 étapes avec les icônes officielles Iconify */}
                 <View style={[styles.stepsCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
+                  {/* Étape 1 : Analyse de la base de données */}
                   <View style={styles.stepItem}>
                     <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 1 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
-                      {t('common.dbAnalysis')}
+                      {t('common.dbAnalysis', 'Analyse de la base de données')}
                     </Text>
                     {analysisStep > 1 ? (
-                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                      <Icon name="solar:shield-check-bold" color={colors.green} size={24} />
                     ) : analysisStep === 1 ? (
-                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
-                      </Animated.View>
+                      <OperationStepSpinner size={24} />
                     ) : (
-                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                      <Icon name="solar:shield-minus-bold-duotone" color={themeColors.disabled} size={24} />
                     )}
                   </View>
 
+                  {/* Étape 2 : Vérification des signalements */}
                   <View style={styles.stepItem}>
                     <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 2 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
-                      {t('common.reportsCheck')}
+                      {t('common.reportsCheck', 'Vérification des signalements')}
                     </Text>
                     {analysisStep > 2 ? (
-                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                      <Icon name="solar:shield-check-bold" color={colors.green} size={24} />
                     ) : analysisStep === 2 ? (
-                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
-                      </Animated.View>
+                      <OperationStepSpinner size={24} />
                     ) : (
-                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                      <Icon name="solar:shield-minus-bold-duotone" color={themeColors.disabled} size={24} />
                     )}
                   </View>
 
+                  {/* Étape 3 : Consultation de la communauté */}
                   <View style={styles.stepItem}>
                     <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 3 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
-                      {t('common.communityCheck')}
+                      {t('common.communityCheck', 'Consultation de la communauté')}
                     </Text>
                     {analysisStep > 3 ? (
-                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                      <Icon name="solar:shield-check-bold" color={colors.green} size={24} />
                     ) : analysisStep === 3 ? (
-                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
-                      </Animated.View>
+                      <OperationStepSpinner size={24} />
                     ) : (
-                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                      <Icon name="solar:shield-minus-bold-duotone" color={themeColors.disabled} size={24} />
                     )}
                   </View>
 
+                  {/* Étape 4 : Calcul du score de risque */}
                   <View style={styles.stepItem}>
                     <Text style={[styles.stepText, { color: themeColors.textSecondary }, analysisStep >= 4 && { color: themeColors.textPrimary, fontWeight: '700' }]}>
-                      {t('common.riskCalculation')}
+                      {t('common.riskCalculation', 'Calcul du score de risque')}
                     </Text>
                     {analysisStep > 4 ? (
-                      <Icon name="solar:check-circle-bold" color={colors.green} size={22} />
+                      <Icon name="solar:shield-check-bold" color={colors.green} size={24} />
                     ) : analysisStep === 4 ? (
-                      <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                        <Icon name="solar:restart-circle-linear" color={colors.green} size={22} />
-                      </Animated.View>
+                      <OperationStepSpinner size={24} />
                     ) : (
-                      <Icon name="solar:minus-circle-linear" color="#CBD5E0" size={22} />
+                      <Icon name="solar:shield-minus-bold-duotone" color={themeColors.disabled} size={24} />
                     )}
                   </View>
                 </View>
 
+                {/* Info bas avec duo-icons:info */}
                 <View style={[styles.infoCard, { backgroundColor: isDark ? '#1E293B' : '#EBF3FF' }]}>
-                  <Icon name="solar:info-circle-linear" color="#3B82F6" size={20} style={{ marginRight: 10 }} />
+                  <Icon name="duo-icons:info" color="#3B82F6" size={20} style={{ marginRight: 10 }} />
                   <Text style={[styles.infoText, { color: isDark ? '#93C5FD' : '#1D4ED8' }]}>
-                    {t('common.operationTimeInfo')}
+                    {t('common.operationTimeInfo', 'Cette opération prend généralement quelques secondes')}
                   </Text>
                 </View>
               </View>
@@ -452,24 +379,23 @@ export default function VerifyScreen() {
 
             {viewState === 'result' && (
               <View style={styles.resultContainer}>
+                {/* Bannière pilule "SÉCURISÉ" */}
                 <View style={styles.statusPillBanner}>
-                  <Text style={styles.statusPillText}>{t('common.secured')}</Text>
+                  <Text style={styles.statusPillText}>SÉCURISÉ</Text>
                 </View>
 
-                <View style={[styles.graphicCircleBg, { backgroundColor: isDark ? '#1E293B' : '#E6F7F0' }]}>
-                  <View style={[styles.innerShieldIcon, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
-                    <Icon name="solar:shield-check-bold" color={colors.green} size={64} />
-                  </View>
-                </View>
+                {/* Graphique validé avec le bouclier, les lignes, le check superposé et les checks flottants */}
+                <VerificationGraphic state="result" isDark={isDark} />
 
+                {/* Carte de score de risque */}
                 <View style={styles.riskCard}>
                   <View style={styles.riskHeader}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                      <Text style={styles.riskTitle}>{t('common.riskScore')}</Text>
-                      <Icon name="solar:info-circle-linear" color="rgba(255,255,255,0.8)" size={14} style={{ marginLeft: 4 }} />
+                      <Text style={styles.riskTitle}>{t('common.riskScore', 'Score de risque')}</Text>
+                      <Icon name="duo-icons:info" color="rgba(255,255,255,0.9)" size={16} style={{ marginLeft: 6 }} />
                     </View>
                     <View style={styles.riskLevelBadge}>
-                      <Text style={styles.riskLevelText}>{t('common.veryLow')}</Text>
+                      <Text style={styles.riskLevelText}>{t('common.veryLow', 'Très faible')}</Text>
                     </View>
                   </View>
 
@@ -484,51 +410,56 @@ export default function VerifyScreen() {
                   </View>
                 </View>
 
+                {/* Historique communautaire sans fond sur les icônes, textes et chiffres en gras et couleur principale */}
                 <View style={styles.communitySection}>
                   <Text style={[styles.communityTitle, { color: themeColors.textPrimary }]}>
-                    {t('common.communityHistory')}
+                    {t('common.communityHistory', 'Historique communautaire')}
                   </Text>
 
                   <View style={[styles.statRow, { borderBottomColor: themeColors.inputBorder }]}>
-                    <View style={styles.iconCircleDark}>
-                      <Icon name="solar:bell-bold" color={colors.white} size={16} />
-                    </View>
-                    <Text style={[styles.statLabel, { color: themeColors.textSecondary }]}>
-                      {t('common.reportsCount')}
+                    <Icon name="solar:alarm-sleep-bold" color={themeColors.textPrimary} size={22} style={{ marginRight: 12 }} />
+                    <Text style={[styles.statLabel, { color: themeColors.textPrimary }]}>
+                      {t('common.reportsCount', 'Signalements')}
                     </Text>
                     <Text style={[styles.statValue, { color: themeColors.textPrimary }]}>0</Text>
                   </View>
 
                   <View style={[styles.statRow, { borderBottomColor: themeColors.inputBorder }]}>
-                    <View style={styles.iconCircleDark}>
-                      <Icon name="solar:chat-dots-bold" color={colors.white} size={16} />
-                    </View>
-                    <Text style={[styles.statLabel, { color: themeColors.textSecondary }]}>
-                      {t('common.positiveComments')}
+                    <Icon name="solar:chat-round-line-bold" color={themeColors.textPrimary} size={22} style={{ marginRight: 12 }} />
+                    <Text style={[styles.statLabel, { color: themeColors.textPrimary }]}>
+                      {t('common.positiveComments', 'Commentaires positifs')}
                     </Text>
                     <Text style={[styles.statValue, { color: themeColors.textPrimary }]}>24</Text>
                   </View>
 
-                  <Text style={[styles.lastReportSub, { color: themeColors.textSecondary }]}>
-                    {t('common.lastReportAgo')}
+                  <Text style={[styles.lastReportSub, { color: themeColors.disabledText }]}>
+                    {t('common.lastReportAgo', 'Dernier signalement il y a 8 mois')}
                   </Text>
                 </View>
 
+                {/* Deux boutons d'action du bas aux couleurs primaires */}
                 <View style={styles.dualActionsRow}>
                   <TouchableOpacity
                     activeOpacity={0.85}
                     onPress={() => router.push('/(app)/report')}
-                    style={styles.signalerBtn}
+                    style={[styles.signalerBtn, { backgroundColor: colors.orange }]}
                   >
-                    <Text style={styles.actionBtnText}>{t('common.report')}</Text>
+                    <Text style={styles.actionBtnText}>{t('common.report', 'Signaler')}</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     activeOpacity={0.85}
                     onPress={() => router.push('/(app)/transfer')}
-                    style={styles.transfererBtn}
+                    style={[
+                      styles.transfererBtn,
+                      {
+                        backgroundColor: isDark ? '#22304A' : colors.navy,
+                        borderWidth: isDark ? 1 : 0,
+                        borderColor: 'rgba(255, 255, 255, 0.25)',
+                      },
+                    ]}
                   >
-                    <Text style={styles.actionBtnText}>{t('common.transfer')}</Text>
+                    <Text style={styles.actionBtnText}>{t('common.transfer', 'Transférer')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -548,7 +479,14 @@ export default function VerifyScreen() {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => setContactModalVisible(true)}
-            style={styles.contactsBtnMaquette}
+            style={[
+              styles.contactsBtnMaquette,
+              {
+                backgroundColor: isDark ? '#22304A' : '#131B2E',
+                borderWidth: isDark ? 1 : 0,
+                borderColor: 'rgba(255, 255, 255, 0.25)',
+              },
+            ]}
           >
             <Icon name="solar:users-group-two-rounded-bold" color={colors.white} size={22} style={{ marginRight: 10 }} />
             <Text style={styles.contactsBtnText}>{t('common.chooseFromContacts', 'Choisi dans les contacts')}</Text>
@@ -799,6 +737,28 @@ const styles = StyleSheet.create({
     fontFamily: fonts.medium,
     fontSize: scaleFont(14),
   },
+  stepSuccessCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: colors.green,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepPendingCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: '#E2E8F0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepPendingDash: {
+    width: 10,
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: '#94A3B8',
+  },
   infoCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -816,16 +776,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statusPillBanner: {
-    backgroundColor: '#E6F7F0',
-    paddingHorizontal: 18,
-    paddingVertical: 6,
-    borderRadius: 20,
-    marginBottom: 20,
+    borderWidth: 1.5,
+    borderColor: colors.green,
+    borderRadius: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    marginBottom: 16,
+    backgroundColor: 'transparent',
   },
   statusPillText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(13),
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(22),
+    fontWeight: '800',
     color: colors.green,
+    letterSpacing: 2,
   },
   riskCard: {
     width: '100%',
@@ -893,26 +860,19 @@ const styles = StyleSheet.create({
   statRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 14,
     borderBottomWidth: 1,
-  },
-  iconCircleDark: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.navy,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
   },
   statLabel: {
     flex: 1,
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(14),
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(15),
+    fontWeight: '700',
   },
   statValue: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(15),
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(16),
+    fontWeight: '700',
   },
   lastReportSub: {
     fontFamily: fonts.regular,

@@ -30,6 +30,9 @@ export const colors = {
 
   activeIndicator: '#FF9900',
   inactiveIndicator: 'rgba(255, 255, 255, 0.5)',
+
+  disabled: '#D1D5DB',
+  disabledText: '#94A3B8',
 };
 
 // Font configuration
