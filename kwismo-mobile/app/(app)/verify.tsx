@@ -23,6 +23,7 @@ import { CountryPickerModal, CountryItem } from '../../src/shared/components/Cou
 import { CountryFlag } from '../../src/shared/components/CountryFlag';
 import { ContactPickerModal } from '../../src/shared/components/ContactPickerModal';
 import { VerificationGraphic, OperationStepSpinner } from '../../src/shared/components/VerificationGraphic';
+import { Skeleton, SkeletonCircle, SkeletonLoader } from '../../src/shared/ui/Skeleton';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
@@ -47,6 +48,13 @@ export default function VerifyScreen() {
     name: countries.getName('CM', isFr ? 'fr' : 'en') || 'Cameroun',
     callingCode: `+${getCountryCallingCode('CM')}`,
   };
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 400);
+    return () => clearTimeout(timer);
+  }, []);
 
   const [viewState, setViewState] = useState<'idle' | 'analyzing' | 'result'>('idle');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -238,7 +246,21 @@ export default function VerifyScreen() {
               ]}
               showsVerticalScrollIndicator={false}
             >
-              {verificationHistory.length === 0 ? (
+              {loading ? (
+                <SkeletonLoader>
+                  <View style={styles.historyList}>
+                    {[1, 2, 3, 4].map((i) => (
+                      <View key={i} style={styles.historyRow}>
+                        <SkeletonCircle size={40} />
+                        <View style={{ flex: 1, marginLeft: 12 }}>
+                          <Skeleton width={140} height={16} borderRadius={4} />
+                          <Skeleton width={100} height={12} borderRadius={4} style={{ marginTop: 6 }} />
+                        </View>
+                      </View>
+                    ))}
+                  </View>
+                </SkeletonLoader>
+              ) : verificationHistory.length === 0 ? (
                 <View style={styles.emptyHistoryBox}>
                   <Icon name="solar:history-linear" color={themeColors.inputPlaceholder} size={36} style={{ marginBottom: 8 }} />
                   <Text style={[styles.emptyHistoryText, { color: themeColors.textSecondary }]}>
@@ -262,7 +284,7 @@ export default function VerifyScreen() {
                           {item.countryCallingCode} {item.phone}
                         </Text>
                         <Text style={[styles.historySub, { color: themeColors.textSecondary }]}>
-                          {item.date}
+                          {t('common.numberVerification', 'Vérification de numéro')}
                         </Text>
                       </View>
                     </TouchableOpacity>

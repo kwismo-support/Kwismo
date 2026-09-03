@@ -208,10 +208,15 @@
   },
   "whatsapp": {
     "title": "Alerte WhatsApp",
-    "subtitle": "Recevez les alertes de sécurité directement sur WhatsApp",
-    "enableAlerts": "Activer les alertes WhatsApp",
-    "whatsappNumberLabel": "Numéro WhatsApp",
-    "saveSettings": "Enregistrer les paramètres"
+    "subtitle": "Protégez vos comptes WhatsApp associés à vos numéros contre le piratage",
+    "selectNumberLabel": "Sélectionner le numéro à protéger",
+    "protectionStatus": "Statut de la protection",
+    "statusProtected": "Protection active",
+    "statusNotProtected": "Non protégé",
+    "enableProtection": "Activer la détection de piratage WhatsApp",
+    "noticeText": "En activant cette option, Kwismo surveillera automatiquement les tentatives d'usurpation de votre compte WhatsApp sur ce numéro.",
+    "saveSettings": "Enregistrer la configuration",
+    "settingsSaved": "Paramètres WhatsApp enregistrés avec succès !"
   },
   "profile": {
     "preferences": "Préférences",
@@ -224,7 +229,8 @@
     "privacyPolicy": "Politique de confidentialité",
     "termsOfService": "Conditions d'utilisation",
     "appVersion": "Version de l'application",
-    "logout": "Se déconnecter"
+    "logout": "Se déconnecter",
+    "verifiedUser": "Compte utilisateur vérifié"
   },
   "theme": {
     "light": "Clair",

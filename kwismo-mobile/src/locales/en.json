@@ -208,10 +208,15 @@
   },
   "whatsapp": {
     "title": "WhatsApp Alert",
-    "subtitle": "Receive security alerts directly on WhatsApp",
-    "enableAlerts": "Enable WhatsApp alerts",
-    "whatsappNumberLabel": "WhatsApp number",
-    "saveSettings": "Save settings"
+    "subtitle": "Protect your WhatsApp accounts associated with your numbers against hacking",
+    "selectNumberLabel": "Select number to protect",
+    "protectionStatus": "Protection status",
+    "statusProtected": "Protection active",
+    "statusNotProtected": "Not protected",
+    "enableProtection": "Enable WhatsApp takeover detection",
+    "noticeText": "By enabling this option, Kwismo will automatically monitor spoofing or takeover attempts on your WhatsApp account for this number.",
+    "saveSettings": "Save configuration",
+    "settingsSaved": "WhatsApp settings saved successfully!"
   },
   "profile": {
     "preferences": "Preferences",
@@ -224,7 +229,8 @@
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "appVersion": "App version",
-    "logout": "Log Out"
+    "logout": "Log Out",
+    "verifiedUser": "Verified user account"
   },
   "theme": {
     "light": "Light",

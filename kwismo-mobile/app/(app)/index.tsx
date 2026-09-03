@@ -11,6 +11,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
+import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { Icon } from '../../src/shared/ui/Icon';
 import { HeaderBar } from '../../src/shared/components/HeaderBar';
 import { Skeleton, SkeletonCircle, SkeletonLoader } from '../../src/shared/ui/Skeleton';
@@ -18,6 +19,28 @@ import { TabBar } from '../../src/shared/components/TabBar';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
+
+// Composant Sparkline Graphique identique au design du designer
+const SparklineGraph = ({ color = '#10B981' }: { color?: string }) => (
+  <Svg width={65} height={28} viewBox="0 0 65 28" fill="none">
+    <Defs>
+      <LinearGradient id="sparklineGrad" x1="0" y1="0" x2="0" y2="1">
+        <Stop offset="0%" stopColor={color} stopOpacity={0.35} />
+        <Stop offset="100%" stopColor={color} stopOpacity={0.0} />
+      </LinearGradient>
+    </Defs>
+    <Path
+      d="M0 22 C10 24, 15 15, 25 18 C35 21, 45 10, 52 14 C58 18, 60 4, 65 2 L65 28 L0 28 Z"
+      fill="url(#sparklineGrad)"
+    />
+    <Path
+      d="M0 22 C10 24, 15 15, 25 18 C35 21, 45 10, 52 14 C58 18, 60 4, 65 2"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+  </Svg>
+);
 
 // Données des KPI personnels selon la Section 9.1
 const KPI_CARDS = [
@@ -153,16 +176,16 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        {/* 1. KPI PERSONNELS (§9.1) : Grille 2x2 compacte */}
+        {/* 1. KPI PERSONNELS (§9.1) : Grille 2x2 identique à la maquette du designer */}
         <View style={styles.kpiContainer}>
           {loading ? (
             <SkeletonLoader>
               <View style={styles.kpiGrid}>
                 {[1, 2, 3, 4].map((i) => (
                   <View key={i} style={[styles.kpiCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
-                    <Skeleton width={80} height={14} borderRadius={4} />
-                    <Skeleton width={60} height={24} borderRadius={6} style={{ marginVertical: 8 }} />
                     <Skeleton width={90} height={12} borderRadius={4} />
+                    <Skeleton width={70} height={10} borderRadius={4} style={{ marginVertical: 6 }} />
+                    <Skeleton width={60} height={22} borderRadius={6} style={{ marginTop: 6 }} />
                   </View>
                 ))}
               </View>
@@ -172,35 +195,47 @@ export default function HomeScreen() {
               {[
                 {
                   id: 'kpi-verified',
-                  title: t('common.verifiedNumbers', 'Numéros vérifiés'),
-                  value: '3',
-                  variation: t('common.kpiVerifiedSub', '+1 ce mois'),
-                  icon: 'solar:shield-check-bold',
-                  accentColor: colors.green,
+                  title: 'NUMÉRO VÉRIFIÉ',
+                  value: '124,592',
+                  trendPercent: '↑ 12,5%',
+                  trendPeriod: 'vs Avr. 2024',
+                  icon: 'solar:users-group-rounded-bold',
+                  iconBg: isDark ? '#1E293B' : '#EEF2FF',
+                  iconColor: '#3B82F6',
+                  sparklineColor: '#10B981',
                 },
                 {
                   id: 'kpi-threats',
-                  title: t('common.avoidedThreats', 'Menaces évitées'),
-                  value: '12',
-                  variation: t('common.kpiThreatsSub', '+3 sem.'),
-                  icon: 'solar:shield-warning-bold',
-                  accentColor: colors.green,
+                  title: 'MENACE EVITEE',
+                  value: '1 049',
+                  trendPercent: '↑ 12,5%',
+                  trendPeriod: 'vs Avr. 2024',
+                  icon: 'solar:verified-check-bold',
+                  iconBg: isDark ? '#143324' : '#DCFCE7',
+                  iconColor: '#16A34A',
+                  sparklineColor: '#10B981',
                 },
                 {
                   id: 'kpi-reports',
-                  title: t('common.reportsMade', 'Signalements faits'),
-                  value: '5',
-                  variation: t('common.kpiReportsSub', 'Communauté'),
-                  icon: 'heroicons:signal-16-solid',
-                  accentColor: colors.orange,
+                  title: 'SIGNALEMENT EFFECTUE',
+                  value: '1 049',
+                  trendPercent: '↑ 12,5%',
+                  trendPeriod: 'vs Avr. 2024',
+                  icon: 'solar:danger-triangle-bold',
+                  iconBg: isDark ? '#3B2914' : '#FEF3C7',
+                  iconColor: '#D97706',
+                  sparklineColor: '#10B981',
                 },
                 {
                   id: 'kpi-transfers',
-                  title: t('common.transfers', 'Transferts protégés'),
-                  value: '85 000 F',
-                  variation: t('common.kpiTransfersSub', '100% sécurisés'),
+                  title: 'TRANSFERT USSD',
+                  value: '124,592',
+                  trendPercent: '↑ 12,5%',
+                  trendPeriod: 'vs Avr. 2024',
                   icon: 'solar:card-transfer-bold',
-                  accentColor: '#3B82F6',
+                  iconBg: isDark ? '#3B181E' : '#FEE2E2',
+                  iconColor: '#DC2626',
+                  sparklineColor: '#10B981',
                 },
               ].map((kpi) => (
                 <View
@@ -213,22 +248,39 @@ export default function HomeScreen() {
                     },
                   ]}
                 >
+                  {/* Partie Haute : Titre à gauche + Icône dans conteneur arrondi à droite */}
                   <View style={styles.kpiCardTop}>
-                    <Text style={[styles.kpiTitle, { color: themeColors.textSecondary }]}>
-                      {kpi.title}
-                    </Text>
-                    <Icon name={kpi.icon} color={kpi.accentColor} size={18} />
+                    <View style={{ flex: 1, paddingRight: 4 }}>
+                      <Text
+                        numberOfLines={1}
+                        style={[styles.kpiTitleUpper, { color: themeColors.textPrimary }]}
+                      >
+                        {kpi.title}
+                      </Text>
+                      {/* Ligne Tendance : Flèche verte + Période */}
+                      <View style={styles.trendRow}>
+                        <Text style={styles.trendGreenText}>{kpi.trendPercent} </Text>
+                        <Text style={[styles.trendPeriodText, { color: themeColors.textSecondary }]}>
+                          {kpi.trendPeriod}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View style={[styles.iconContainerBox, { backgroundColor: kpi.iconBg }]}>
+                      <Icon name={kpi.icon} color={kpi.iconColor} size={20} />
+                    </View>
                   </View>
 
-                  <Text style={[styles.kpiValue, { color: themeColors.textPrimary }]}>
-                    {kpi.value}
-                  </Text>
-
-                  <View style={styles.kpiBottomRow}>
-                    <View style={[styles.kpiDot, { backgroundColor: kpi.accentColor }]} />
-                    <Text style={[styles.kpiVariation, { color: themeColors.textSecondary }]}>
-                      {kpi.variation}
+                  {/* Partie Basse : Grosse valeur à gauche + Sparkline Graphique à droite */}
+                  <View style={styles.kpiCardBottom}>
+                    <Text
+                      numberOfLines={1}
+                      style={[styles.kpiBigValue, { color: themeColors.textPrimary }]}
+                    >
+                      {kpi.value}
                     </Text>
+
+                    <SparklineGraph color={kpi.sparklineColor} />
                   </View>
                 </View>
               ))}
@@ -411,7 +463,7 @@ const styles = StyleSheet.create({
     width: '48.5%',
     borderRadius: 16,
     borderWidth: 1,
-    padding: 14,
+    padding: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
@@ -420,33 +472,49 @@ const styles = StyleSheet.create({
   },
   kpiCardTop: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginBottom: 6,
+    marginBottom: 8,
   },
-  kpiTitle: {
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(12),
-  },
-  kpiValue: {
+  kpiTitleUpper: {
     fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(18),
+    fontSize: scaleFont(10),
     fontWeight: '800',
-    marginBottom: 6,
+    letterSpacing: 0.3,
   },
-  kpiBottomRow: {
+  trendRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 2,
   },
-  kpiDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginRight: 6,
+  trendGreenText: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(10),
+    fontWeight: '700',
+    color: '#16A34A',
   },
-  kpiVariation: {
+  trendPeriodText: {
     fontFamily: fonts.regular,
-    fontSize: scaleFont(11),
+    fontSize: scaleFont(9),
+  },
+  iconContainerBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  kpiCardBottom: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  kpiBigValue: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(20),
+    fontWeight: '800',
+    flex: 1,
   },
   sectionTitle: {
     fontFamily: fonts.headlineBold,

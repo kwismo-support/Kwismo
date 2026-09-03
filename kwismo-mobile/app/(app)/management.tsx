@@ -285,19 +285,19 @@ export default function ManagementScreen() {
       >
         {/* En-tête : Titre + Bouton d'ajout positionné en haut pour éviter de scroller */}
         <View style={styles.topSectionRow}>
-          <View>
+          <View style={{ flex: 1, marginRight: 8 }}>
             <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
               {t('management.title', 'Mes numéros')} ({numbers.length})
             </Text>
             <Text style={[styles.sectionSub, { color: themeColors.textSecondary }]}>
-              {t('management.subtitle', 'Multi-SIM rattachées à votre compte')}
+              {t('management.subtitle', 'Gérez et sécurisez vos cartes SIM et numéros associés')}
             </Text>
           </View>
 
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={handleOpenAddNumber}
-            style={[styles.addTopBtn, { backgroundColor: colors.green }]}
+            style={[styles.addTopBtn, { backgroundColor: colors.green, flexShrink: 0 }]}
           >
             <Icon name="solar:add-circle-bold" color={colors.white} size={18} style={{ marginRight: 6 }} />
             <Text style={styles.addTopBtnText}>{t('management.addBtn', 'Ajouter')}</Text>
