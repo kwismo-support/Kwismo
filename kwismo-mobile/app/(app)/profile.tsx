@@ -7,10 +7,7 @@ import {
   ScrollView,
   Switch,
   Modal,
-  TextInput,
   Pressable,
-  Platform,
-  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -36,41 +33,24 @@ export default function ProfileScreen() {
   const logout = useAuthStore((state) => state.logout);
 
   const [loading, setLoading] = useState(true);
-
-  // Équivalents des switches de réglages (Maquette Designer)
   const [callDetectionEnabled, setCallDetectionEnabled] = useState(true);
-  const [pushNotificationEnabled, setPushNotificationEnabled] = useState(true);
-  const [rememberMeEnabled, setRememberMeEnabled] = useState(true);
-  const [biometricsEnabled, setBiometricsEnabled] = useState(true);
 
-  // Modales
-  const [editProfileModalVisible, setEditProfileModalVisible] = useState(false);
+  // Bottom Sheet Modals
   const [themeModalVisible, setThemeModalVisible] = useState(false);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
 
-  // Édition profil
-  const [userName, setUserName] = useState('Ismaël Cesar');
-  const [userCountry, setUserCountry] = useState('Cameroun');
-  const [userPhone, setUserPhone] = useState('+237 6 98 44 43 88');
-  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  // Informations utilisateur (Email sous le nom)
+  const userName = 'Ismaël Cesar';
+  const userEmail = 'ismael.cesar@kwismo.com';
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 350);
+    const timer = setTimeout(() => setLoading(false), 300);
     return () => clearTimeout(timer);
   }, []);
 
   const handleLogout = () => {
     logout();
     router.replace('/(auth)/login');
-  };
-
-  const handleSaveProfile = () => {
-    setIsSavingProfile(true);
-    setTimeout(() => {
-      setIsSavingProfile(false);
-      setEditProfileModalVisible(false);
-      toast.success(t('toasts.generalSuccess', 'Profil mis à jour avec succès !'));
-    }, 500);
   };
 
   const getThemeLabel = (pref: ThemePreference) => {
@@ -88,7 +68,7 @@ export default function ProfileScreen() {
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <StatusBar style="light" />
 
-      {/* En-tête global "Profil & Sécurité" identique à la maquette designer */}
+      {/* En-tête global "Profil & Sécurité" */}
       <HeaderBar title={t('common.profile', 'Profil & Sécurité')} />
 
       <ScrollView
@@ -98,14 +78,14 @@ export default function ProfileScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* CARTE UTILISATEUR (En-tête de profil) */}
+        {/* CARTE UTILISATEUR (Affichage du nom + EMAIL en dessous) */}
         {loading ? (
           <SkeletonLoader>
             <View style={[styles.userHeaderCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
-              <SkeletonCircle size={56} />
+              <SkeletonCircle size={52} />
               <View style={{ flex: 1, marginLeft: 14 }}>
                 <Skeleton width={140} height={18} borderRadius={4} />
-                <Skeleton width={130} height={14} borderRadius={4} style={{ marginTop: 6 }} />
+                <Skeleton width={160} height={14} borderRadius={4} style={{ marginTop: 6 }} />
               </View>
             </View>
           </SkeletonLoader>
@@ -121,14 +101,14 @@ export default function ProfileScreen() {
               <Text style={[styles.userNameText, { color: themeColors.textPrimary }]}>
                 {userName}
               </Text>
-              <Text style={[styles.userPhoneText, { color: themeColors.textSecondary }]}>
-                {userPhone}
+              <Text style={[styles.userEmailText, { color: themeColors.textSecondary }]}>
+                {userEmail}
               </Text>
             </View>
 
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={() => setEditProfileModalVisible(true)}
+              onPress={() => router.push('/(app)/edit-profile')}
               style={styles.editPenBtn}
             >
               <Icon name="solar:pen-new-square-bold" color={colors.green} size={20} />
@@ -136,16 +116,16 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        {/* SECTION 1 : COMPTE */}
+        {/* SECTION 1 : COMPTE (Redirection vers pages secondaires) */}
         <Text style={[styles.groupSectionLabel, { color: themeColors.textSecondary }]}>
           {t('profile.accountSection', 'Compte')}
         </Text>
 
         <View style={[styles.groupCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
-          {/* Éditer le profil */}
+          {/* Éditer le profil -> Page secondaire */}
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => setEditProfileModalVisible(true)}
+            onPress={() => router.push('/(app)/edit-profile')}
             style={styles.itemRow}
           >
             <View style={styles.itemLeft}>
@@ -159,16 +139,16 @@ export default function ProfileScreen() {
 
           <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
 
-          {/* Mot de passe sécurité */}
+          {/* Sécurité & mot de passe -> Page secondaire */}
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => setEditProfileModalVisible(true)}
+            onPress={() => router.push('/(app)/security')}
             style={styles.itemRow}
           >
             <View style={styles.itemLeft}>
               <Icon name="solar:lock-keyhole-bold" color={colors.green} size={20} style={{ marginRight: 12 }} />
               <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
-                {t('profile.security', 'Mot de passe sécurité')}
+                {t('profile.security', 'Sécurité & mot de passe')}
               </Text>
             </View>
             <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
@@ -176,10 +156,10 @@ export default function ProfileScreen() {
 
           <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
 
-          {/* Notifications */}
+          {/* Notifications -> Page secondaire */}
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => router.push('/(app)/alert-whatsapp')}
+            onPress={() => router.push('/(app)/notifications')}
             style={styles.itemRow}
           >
             <View style={styles.itemLeft}>
@@ -259,85 +239,9 @@ export default function ProfileScreen() {
               thumbColor={colors.white}
             />
           </View>
-
-          <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
-
-          {/* Notification Push (Switch) */}
-          <View style={styles.itemRow}>
-            <View style={styles.itemLeft}>
-              <Icon name="solar:bell-linear" color={colors.green} size={20} style={{ marginRight: 12 }} />
-              <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
-                Notification Push
-              </Text>
-            </View>
-            <Switch
-              value={pushNotificationEnabled}
-              onValueChange={setPushNotificationEnabled}
-              trackColor={{ false: '#CBD5E1', true: colors.green }}
-              thumbColor={colors.white}
-            />
-          </View>
         </View>
 
-        {/* SECTION 3 : SÉCURITÉ */}
-        <Text style={[styles.groupSectionLabel, { color: themeColors.textSecondary, marginTop: 16 }]}>
-          {t('common.security', 'Sécurité')}
-        </Text>
-
-        <View style={[styles.groupCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
-          {/* Modifier le mot de passe */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => setEditProfileModalVisible(true)}
-            style={styles.itemRow}
-          >
-            <View style={styles.itemLeft}>
-              <Icon name="solar:key-bold" color={colors.green} size={20} style={{ marginRight: 12 }} />
-              <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
-                {t('auth.forgotPasswordLink', 'Modifier le mot de passe')}
-              </Text>
-            </View>
-            <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
-          </TouchableOpacity>
-
-          <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
-
-          {/* Se souvenir de moi (Switch) */}
-          <View style={styles.itemRow}>
-            <View style={styles.itemLeft}>
-              <Icon name="solar:user-block-bold" color={colors.green} size={20} style={{ marginRight: 12 }} />
-              <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
-                {t('common.rememberMe', 'Se souvenir de moi')}
-              </Text>
-            </View>
-            <Switch
-              value={rememberMeEnabled}
-              onValueChange={setRememberMeEnabled}
-              trackColor={{ false: '#CBD5E1', true: colors.green }}
-              thumbColor={colors.white}
-            />
-          </View>
-
-          <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
-
-          {/* Verrouillage Face ID / Empreinte (Switch) */}
-          <View style={styles.itemRow}>
-            <View style={styles.itemLeft}>
-              <Icon name="solar:shield-keyhole-bold" color={colors.green} size={20} style={{ marginRight: 12 }} />
-              <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
-                Verrouillage Face ID / Empreinte
-              </Text>
-            </View>
-            <Switch
-              value={biometricsEnabled}
-              onValueChange={setBiometricsEnabled}
-              trackColor={{ false: '#CBD5E1', true: colors.green }}
-              thumbColor={colors.white}
-            />
-          </View>
-        </View>
-
-        {/* BOUTONS D'ACTION DU BAS (Design Designer) */}
+        {/* BOUTONS D'ACTION DU BAS (Design Maquette Designer) */}
         <View style={styles.bottomButtonsContainer}>
           {/* Supprimer son compte (Bouton Rouge) */}
           <TouchableOpacity
@@ -359,77 +263,7 @@ export default function ProfileScreen() {
         </View>
       </ScrollView>
 
-      {/* MODALE 1 : ÉDITER LE PROFIL (Écran 2 Maquette) */}
-      <Modal visible={editProfileModalVisible} transparent animationType="slide">
-        <View style={styles.modalOverlayBackdrop}>
-          <View style={[styles.editModalSheet, { backgroundColor: themeColors.cardBg }]}>
-            <View style={styles.modalHeaderRow}>
-              <TouchableOpacity onPress={() => setEditProfileModalVisible(false)}>
-                <Icon name="solar:arrow-left-bold" color={themeColors.textPrimary} size={22} />
-              </TouchableOpacity>
-              <Text style={[styles.modalHeaderTitle, { color: themeColors.textPrimary }]}>
-                {t('common.profile', 'Profil')}
-              </Text>
-              <View style={{ width: 22 }} />
-            </View>
-
-            {/* Avatar avec icône appareil photo */}
-            <View style={styles.modalAvatarContainer}>
-              <View style={[styles.modalAvatarBigCircle, { backgroundColor: isDark ? '#334155' : '#CBD5E1' }]}>
-                <Icon name="solar:user-bold" color={themeColors.textPrimary} size={36} />
-              </View>
-
-              <TouchableOpacity style={styles.cameraBadgeBtn}>
-                <Icon name="solar:camera-bold" color={colors.white} size={14} />
-              </TouchableOpacity>
-            </View>
-
-            {/* Champ Nom Complet */}
-            <Text style={[styles.modalInputLabel, { color: themeColors.textPrimary }]}>
-              Nom Complet
-            </Text>
-            <View style={[styles.modalInputWrapper, { backgroundColor: themeColors.inputBg, borderColor: themeColors.inputBorder }]}>
-              <TextInput
-                style={[styles.modalTextInput, { color: themeColors.textPrimary }]}
-                value={userName}
-                onChangeText={setUserName}
-                placeholder="Lorem ipsum"
-                placeholderTextColor={themeColors.inputPlaceholder}
-              />
-            </View>
-
-            {/* Champ Pays */}
-            <Text style={[styles.modalInputLabel, { color: themeColors.textPrimary, marginTop: 14 }]}>
-              Pays
-            </Text>
-            <View style={[styles.modalInputWrapper, { backgroundColor: themeColors.inputBg, borderColor: themeColors.inputBorder }]}>
-              <TextInput
-                style={[styles.modalTextInput, { color: themeColors.textPrimary }]}
-                value={userCountry}
-                onChangeText={setUserCountry}
-                placeholder="Cameroun"
-                placeholderTextColor={themeColors.inputPlaceholder}
-              />
-            </View>
-
-            {/* Bouton d'enregistrement Orange/Vert */}
-            <TouchableOpacity
-              activeOpacity={0.85}
-              disabled={isSavingProfile}
-              onPress={handleSaveProfile}
-              style={[styles.saveProfileBtn, { backgroundColor: colors.orange, marginTop: 24 }]}
-            >
-              {isSavingProfile ? (
-                <ActivityIndicator color={colors.white} />
-              ) : (
-                <Text style={styles.saveProfileBtnText}>Enregistrer les modifications</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      {/* MODALE 2 : BOTTOM SHEET SELECTION DE THÈME (Écran 4 Maquette) */}
+      {/* MODALE BOTTOM SHEET : THÈME */}
       <Modal visible={themeModalVisible} transparent animationType="fade">
         <Pressable style={styles.modalOverlayBackdrop} onPress={() => setThemeModalVisible(false)}>
           <Pressable style={[styles.bottomSheetModalCard, { backgroundColor: themeColors.cardBg }]}>
@@ -462,7 +296,7 @@ export default function ProfileScreen() {
         </Pressable>
       </Modal>
 
-      {/* MODALE 3 : BOTTOM SHEET SELECTION DE LANGUE (Écran 3 Maquette) */}
+      {/* MODALE BOTTOM SHEET : LANGUE */}
       <Modal visible={languageModalVisible} transparent animationType="fade">
         <Pressable style={styles.modalOverlayBackdrop} onPress={() => setLanguageModalVisible(false)}>
           <Pressable style={[styles.bottomSheetModalCard, { backgroundColor: themeColors.cardBg }]}>
@@ -542,7 +376,7 @@ const styles = StyleSheet.create({
     fontSize: scaleFont(16),
     fontWeight: '800',
   },
-  userPhoneText: {
+  userEmailText: {
     fontFamily: fonts.regular,
     fontSize: scaleFont(12),
     marginTop: 2,
@@ -620,85 +454,12 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
 
-  // Modal Édition profil
+  // Bottom Sheets Thème & Langue
   modalOverlayBackdrop: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
-  editModalSheet: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 20,
-    paddingBottom: 34,
-  },
-  modalHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  modalHeaderTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(17),
-    fontWeight: '800',
-  },
-  modalAvatarContainer: {
-    alignSelf: 'center',
-    position: 'relative',
-    marginBottom: 20,
-  },
-  modalAvatarBigCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cameraBadgeBtn: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: colors.green,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: colors.white,
-  },
-  modalInputLabel: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(13),
-    fontWeight: '600',
-    marginBottom: 6,
-  },
-  modalInputWrapper: {
-    height: 48,
-    borderRadius: 12,
-    borderWidth: 1,
-    paddingHorizontal: 14,
-    justifyContent: 'center',
-  },
-  modalTextInput: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(14),
-  },
-  saveProfileBtn: {
-    height: 48,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  saveProfileBtnText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(15),
-    fontWeight: '700',
-    color: colors.white,
-  },
-
-  // Bottom Sheets Thème & Langue
   bottomSheetModalCard: {
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
