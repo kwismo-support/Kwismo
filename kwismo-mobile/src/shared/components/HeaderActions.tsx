@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   Modal,
   StyleSheet,
-  TouchableWithoutFeedback,
+  Pressable,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
@@ -88,156 +88,153 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
         animationType="fade"
         onRequestClose={() => setModalVisible(false)}
       >
-        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <View style={styles.modalOverlay}>
-            <TouchableWithoutFeedback>
-              <View
+        <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
+          <Pressable
+            onPress={(e) => e.stopPropagation()}
+            style={[
+              styles.modalContent,
+              {
+                backgroundColor: themeColors.cardBg,
+                borderColor: themeColors.inputBorder,
+              },
+            ]}
+          >
+            {/* Header de la modal */}
+            <View style={styles.modalHeader}>
+              <Text
                 style={[
-                  styles.modalContent,
+                  styles.modalTitle,
+                  { color: themeColors.textPrimary },
+                ]}
+              >
+                {t('profile.preferences')}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Icon
+                  name="solar:close-circle-linear"
+                  size={20}
+                  color={themeColors.inputPlaceholder}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Section Langue */}
+            <Text
+              style={[
+                styles.sectionLabel,
+                { color: themeColors.inputPlaceholder },
+              ]}
+            >
+              {t('profile.language')}
+            </Text>
+            <View style={styles.optionsRow}>
+              <TouchableOpacity
+                onPress={() => handleLanguageChange('fr')}
+                style={[
+                  styles.optionChip,
                   {
-                    backgroundColor: themeColors.cardBg,
-                    borderColor: themeColors.inputBorder,
+                    backgroundColor:
+                      i18n.language.startsWith('fr')
+                        ? colors.green
+                        : isDark
+                        ? 'rgba(255,255,255,0.08)'
+                        : '#F3F4F6',
                   },
                 ]}
               >
-                {/* Header de la modal */}
-                <View style={styles.modalHeader}>
-                  <Text
-                    style={[
-                      styles.modalTitle,
-                      { color: themeColors.textPrimary },
-                    ]}
-                  >
-                    {t('profile.preferences')}
-                  </Text>
+                <Text
+                  style={[
+                    styles.chipText,
+                    {
+                      color: i18n.language.startsWith('fr')
+                        ? colors.white
+                        : themeColors.textPrimary,
+                    },
+                  ]}
+                >
+                  {t('common.french')}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => handleLanguageChange('en')}
+                style={[
+                  styles.optionChip,
+                  {
+                    backgroundColor:
+                      i18n.language.startsWith('en')
+                        ? colors.green
+                        : isDark
+                        ? 'rgba(255,255,255,0.08)'
+                        : '#F3F4F6',
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.chipText,
+                    {
+                      color: i18n.language.startsWith('en')
+                        ? colors.white
+                        : themeColors.textPrimary,
+                    },
+                  ]}
+                >
+                  {t('common.english')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Section Thème : 3 icônes sur une seule ligne réparties équitablement */}
+            <Text
+              style={[
+                styles.sectionLabel,
+                { color: themeColors.inputPlaceholder, marginTop: 16 },
+              ]}
+            >
+              {t('profile.darkMode')}
+            </Text>
+            <View style={styles.themeOptionsRow}>
+              {(['light', 'dark', 'system'] as ThemePreference[]).map((mode) => {
+                const isSelected = userThemePreference === mode;
+                return (
                   <TouchableOpacity
-                    onPress={() => setModalVisible(false)}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    key={mode}
+                    activeOpacity={0.7}
+                    onPress={() => setTheme(mode)}
+                    style={[
+                      styles.themeIconChip,
+                      {
+                        backgroundColor: isSelected
+                          ? colors.green
+                          : isDark
+                          ? 'rgba(255,255,255,0.08)'
+                          : '#F3F4F6',
+                      },
+                    ]}
                   >
                     <Icon
-                      name="solar:close-circle-linear"
-                      size={20}
-                      color={themeColors.inputPlaceholder}
+                      name={
+                        mode === 'light'
+                          ? 'solar:sun-2-linear'
+                          : mode === 'dark'
+                          ? 'solar:moon-linear'
+                          : 'solar:laptop-minimalistic-linear'
+                      }
+                      size={22}
+                      color={
+                        isSelected ? colors.white : themeColors.textPrimary
+                      }
                     />
                   </TouchableOpacity>
-                </View>
-
-                {/* Section Langue */}
-                <Text
-                  style={[
-                    styles.sectionLabel,
-                    { color: themeColors.inputPlaceholder },
-                  ]}
-                >
-                  {t('profile.language')}
-                </Text>
-                <View style={styles.optionsRow}>
-                  <TouchableOpacity
-                    onPress={() => handleLanguageChange('fr')}
-                    style={[
-                      styles.optionChip,
-                      {
-                        backgroundColor:
-                          i18n.language.startsWith('fr')
-                            ? colors.green
-                            : isDark
-                            ? 'rgba(255,255,255,0.08)'
-                            : '#F3F4F6',
-                      },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.chipText,
-                        {
-                          color: i18n.language.startsWith('fr')
-                            ? colors.white
-                            : themeColors.textPrimary,
-                        },
-                      ]}
-                    >
-                      {t('common.french')}
-                    </Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => handleLanguageChange('en')}
-                    style={[
-                      styles.optionChip,
-                      {
-                        backgroundColor:
-                          i18n.language.startsWith('en')
-                            ? colors.green
-                            : isDark
-                            ? 'rgba(255,255,255,0.08)'
-                            : '#F3F4F6',
-                      },
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.chipText,
-                        {
-                          color: i18n.language.startsWith('en')
-                            ? colors.white
-                            : themeColors.textPrimary,
-                        },
-                      ]}
-                    >
-                      {t('common.english')}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Section Thème : 3 icônes sur une seule ligne réparties équitablement */}
-                <Text
-                  style={[
-                    styles.sectionLabel,
-                    { color: themeColors.inputPlaceholder, marginTop: 16 },
-                  ]}
-                >
-                  {t('profile.darkMode')}
-                </Text>
-                <View style={styles.themeOptionsRow}>
-                  {(['light', 'dark', 'system'] as ThemePreference[]).map((mode) => {
-                    const isSelected = userThemePreference === mode;
-                    return (
-                      <TouchableOpacity
-                        key={mode}
-                        activeOpacity={0.7}
-                        onPress={() => setTheme(mode)}
-                        style={[
-                          styles.themeIconChip,
-                          {
-                            backgroundColor: isSelected
-                              ? colors.green
-                              : isDark
-                              ? 'rgba(255,255,255,0.08)'
-                              : '#F3F4F6',
-                          },
-                        ]}
-                      >
-                        <Icon
-                          name={
-                            mode === 'light'
-                              ? 'solar:sun-2-linear'
-                              : mode === 'dark'
-                              ? 'solar:moon-linear'
-                              : 'solar:laptop-minimalistic-linear'
-                          }
-                          size={22}
-                          color={
-                            isSelected ? colors.white : themeColors.textPrimary
-                          }
-                        />
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
+                );
+              })}
+            </View>
+          </Pressable>
+        </Pressable>
       </Modal>
     </View>
   );
