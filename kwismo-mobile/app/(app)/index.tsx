@@ -61,7 +61,9 @@ const RECENT_ACTIVITIES = [
     id: '1',
     phone: '+237 6 98 44 43 88',
     title: 'Vérification numéro',
+    titleKey: 'numberVerification',
     status: 'Protégé',
+    statusKey: 'protected',
     statusType: 'green',
     date: "Aujourd'hui à 11:42",
     icon: 'solar:shield-check-bold',
@@ -70,7 +72,9 @@ const RECENT_ACTIVITIES = [
     id: '2',
     phone: '+237 6 55 98 76 54',
     title: 'Appel suspect détecté',
+    titleKey: 'suspectCallDetected',
     status: 'Suspect',
+    statusKey: 'suspect',
     statusType: 'red',
     date: 'Hier à 16:15',
     icon: 'solar:danger-triangle-bold',
@@ -79,7 +83,9 @@ const RECENT_ACTIVITIES = [
     id: '3',
     phone: 'Orange Money (5 000 F)',
     title: 'Transfert USSD sécurisé',
+    titleKey: 'secureUssdTransfer',
     status: 'Sécurisé',
+    statusKey: 'secured',
     statusType: 'green',
     date: 'Il y a 2 jours',
     icon: 'solar:card-transfer-bold',
@@ -88,7 +94,9 @@ const RECENT_ACTIVITIES = [
     id: '4',
     phone: '+237 6 70 12 34 56',
     title: 'Signalement arnaque',
+    titleKey: 'scamReport',
     status: 'Transmis',
+    statusKey: 'submitted',
     statusType: 'orange',
     date: 'Il y a 3 jours',
     icon: 'heroicons:signal-16-solid',
@@ -138,10 +146,10 @@ export default function HomeScreen() {
         {/* Salutation personnalisée & Titre Dashboard (§9.1) */}
         <View style={styles.greetingHeader}>
           <Text style={[styles.welcomeGreeting, { color: themeColors.textPrimary }]}>
-            Bonjour, Alain 👋
+            {t('common.greetingUser', 'Bonjour, Alain 👋')}
           </Text>
           <Text style={[styles.welcomeSub, { color: themeColors.textSecondary }]}>
-            Votre tableau de bord anti-fraude Mobile Money
+            {t('common.dashboardSubtitle', 'Votre tableau de bord anti-fraude Mobile Money')}
           </Text>
         </View>
 
@@ -161,7 +169,40 @@ export default function HomeScreen() {
             </SkeletonLoader>
           ) : (
             <View style={styles.kpiGrid}>
-              {KPI_CARDS.map((kpi) => (
+              {[
+                {
+                  id: 'kpi-verified',
+                  title: t('common.verifiedNumbers', 'Numéros vérifiés'),
+                  value: '3',
+                  variation: t('common.kpiVerifiedSub', '+1 ce mois'),
+                  icon: 'solar:shield-check-bold',
+                  accentColor: colors.green,
+                },
+                {
+                  id: 'kpi-threats',
+                  title: t('common.avoidedThreats', 'Menaces évitées'),
+                  value: '12',
+                  variation: t('common.kpiThreatsSub', '+3 sem.'),
+                  icon: 'solar:shield-warning-bold',
+                  accentColor: colors.green,
+                },
+                {
+                  id: 'kpi-reports',
+                  title: t('common.reportsMade', 'Signalements faits'),
+                  value: '5',
+                  variation: t('common.kpiReportsSub', 'Communauté'),
+                  icon: 'heroicons:signal-16-solid',
+                  accentColor: colors.orange,
+                },
+                {
+                  id: 'kpi-transfers',
+                  title: t('common.transfers', 'Transferts protégés'),
+                  value: '85 000 F',
+                  variation: t('common.kpiTransfersSub', '100% sécurisés'),
+                  icon: 'solar:card-transfer-bold',
+                  accentColor: '#3B82F6',
+                },
+              ].map((kpi) => (
                 <View
                   key={kpi.id}
                   style={[
@@ -197,7 +238,7 @@ export default function HomeScreen() {
 
         {/* 2. ACTIONS RAPIDES (§9.1) : 4 Raccourcis directs en 1 clic */}
         <Text style={[styles.sectionTitle, { color: themeColors.textPrimary, marginTop: 24 }]}>
-          Actions rapides
+          {t('common.quickActions', 'Actions rapides')}
         </Text>
 
         <View style={styles.quickActionsGrid}>
@@ -208,7 +249,7 @@ export default function HomeScreen() {
             style={[styles.quickActionBtn, { backgroundColor: colors.green }]}
           >
             <Icon name="solar:shield-check-bold" color={colors.white} size={22} style={{ marginBottom: 6 }} />
-            <Text style={styles.quickActionBtnText}>Vérifier un numéro</Text>
+            <Text style={styles.quickActionBtnText}>{t('common.verifyNumber', 'Vérifier un numéro')}</Text>
           </TouchableOpacity>
 
           {/* Transfert USSD */}
@@ -219,7 +260,7 @@ export default function HomeScreen() {
           >
             <Icon name="solar:card-transfer-bold" color={colors.green} size={22} style={{ marginBottom: 6 }} />
             <Text style={[styles.quickActionBtnSecondaryText, { color: themeColors.textPrimary }]}>
-              Transfert USSD
+              {t('common.moneyTransfer', 'Transfert USSD')}
             </Text>
           </TouchableOpacity>
 
@@ -231,7 +272,7 @@ export default function HomeScreen() {
           >
             <Icon name="ic:baseline-whatsapp" color="#25D366" size={22} style={{ marginBottom: 6 }} />
             <Text style={[styles.quickActionBtnSecondaryText, { color: themeColors.textPrimary }]}>
-              Alerte WhatsApp
+              {t('common.whatsappAlert', 'Alerte WhatsApp')}
             </Text>
           </TouchableOpacity>
 
@@ -243,7 +284,7 @@ export default function HomeScreen() {
           >
             <Icon name="heroicons:signal-16-solid" color={colors.orange} size={22} style={{ marginBottom: 6 }} />
             <Text style={[styles.quickActionBtnSecondaryText, { color: themeColors.textPrimary }]}>
-              Signaler
+              {t('common.report', 'Signaler')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -251,14 +292,14 @@ export default function HomeScreen() {
         {/* 3. ACTIVITÉ RÉCENTE (§9.1) */}
         <View style={styles.recentSectionHeader}>
           <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
-            Activité récente
+            {t('common.recentActivity', 'Activité récente')}
           </Text>
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => router.push('/(app)/verify')}
           >
             <Text style={[styles.viewAllLink, { color: colors.green }]}>
-              Voir tout
+              {t('common.seeAll', 'Voir tout')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -310,7 +351,7 @@ export default function HomeScreen() {
 
                   <View style={{ flex: 1 }}>
                     <Text style={[styles.activityTitle, { color: themeColors.textPrimary }]}>
-                      {item.title}
+                      {t(`common.${item.titleKey}`, item.title)}
                     </Text>
                     <Text style={[styles.activityPhone, { color: themeColors.textSecondary }]}>
                       {item.phone} · {item.date}
@@ -320,7 +361,7 @@ export default function HomeScreen() {
                   {/* Badge de statut centré */}
                   <View style={[styles.statusBadge, { backgroundColor: badge.bg }]}>
                     <Text style={[styles.statusBadgeText, { color: badge.text }]}>
-                      {item.status}
+                      {t(`common.${item.statusKey}`, item.status)}
                     </Text>
                   </View>
                 </View>

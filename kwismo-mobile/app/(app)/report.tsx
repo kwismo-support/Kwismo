@@ -23,11 +23,11 @@ import { scaleFont } from '../../src/shared/lib/responsive';
 
 // Motifs de signalement issus du cahier des charges (§9.7)
 const REPORT_REASONS = [
-  { id: 'scam', label: "Tentative d'arnaque / Fraude", icon: 'solar:danger-triangle-bold' },
-  { id: 'fake_agent', label: "Faux agent d'opérateur (Orange / MTN)", icon: 'solar:user-cross-bold' },
-  { id: 'phishing', label: 'Message frauduleux / Phishing', icon: 'solar:link-broken-bold' },
-  { id: 'harassment', label: 'Appels répétés suspects / Harcèlement', icon: 'solar:phone-calling-rounded-bold' },
-  { id: 'wrong_transfer', label: 'Faux transfert ou demande de remboursement', icon: 'solar:card-transfer-bold' },
+  { id: 'scam', labelKey: 'report.reasonScam', label: "Tentative d'arnaque / Fraude", icon: 'solar:danger-triangle-bold' },
+  { id: 'fake_agent', labelKey: 'report.reasonFakeAgent', label: "Faux agent d'opérateur (Orange / MTN)", icon: 'solar:user-cross-bold' },
+  { id: 'phishing', labelKey: 'report.reasonPhishing', label: 'Message frauduleux / Phishing', icon: 'solar:link-broken-bold' },
+  { id: 'harassment', labelKey: 'report.reasonHarassment', label: 'Appels répétés suspects / Harcèlement', icon: 'solar:phone-calling-rounded-bold' },
+  { id: 'wrong_transfer', labelKey: 'report.reasonWrongTransfer', label: 'Faux transfert ou demande de remboursement', icon: 'solar:card-transfer-bold' },
 ];
 
 // Historique des appels récents reçus sur l'appareil (simulés issus de l'analyse d'appels §9.6)
@@ -73,7 +73,7 @@ export default function ReportScreen() {
     setValidationError('');
 
     if (!targetPhone.trim()) {
-      setValidationError('Veuillez sélectionner ou indiquer un numéro.');
+      setValidationError(t('report.selectPhoneError', 'Veuillez sélectionner ou indiquer un numéro.'));
       return;
     }
 
@@ -81,13 +81,16 @@ export default function ReportScreen() {
     const wasCalled = verifyCallerInHistory(targetPhone);
     if (!wasCalled) {
       setValidationError(
-        "Ce numéro ne figure pas dans vos appels reçus récents. Conformément aux règles de sécurité Kwismo, vous ne pouvez signaler qu'un numéro qui vous a contacté."
+        t(
+          'report.callerNotInHistoryError',
+          "Ce numéro ne figure pas dans vos appels reçus récents. Conformément aux règles de sécurité Kwismo, vous ne pouvez signaler qu'un numéro qui vous a contacté."
+        )
       );
       return;
     }
 
     if (!selectedReason) {
-      setValidationError('Veuillez sélectionner un motif de signalement.');
+      setValidationError(t('report.selectReasonError', 'Veuillez sélectionner un motif de signalement.'));
       return;
     }
 
@@ -102,7 +105,7 @@ export default function ReportScreen() {
     <View style={styles.container}>
       <StatusBar style="light" />
 
-      {/* Header unifié de page secondaire : Retour à gauche, Titre au milieu, Actions à droite */}
+      {/* Header unifié de page secondaire */}
       <HeaderBar
         title={t('common.report', 'Signaler')}
         showBack={true}
@@ -121,13 +124,13 @@ export default function ReportScreen() {
           <View style={[styles.ruleNoticeCard, { backgroundColor: isDark ? '#1E293B' : '#FEF3C7' }]}>
             <Icon name="solar:shield-warning-bold" color={colors.orange} size={22} style={{ marginRight: 10 }} />
             <Text style={[styles.ruleNoticeText, { color: isDark ? '#FDE68A' : '#92400E' }]}>
-              Règle communautaire : Vous ne pouvez signaler qu'un numéro suspect vous ayant réellement contacté ou appelé.
+              {t('report.ruleNotice', "Règle communautaire : Vous ne pouvez signaler qu'un numéro suspect vous ayant réellement contacté ou appelé.")}
             </Text>
           </View>
 
           {/* 1. Sélection du numéro concerné */}
           <Text style={[styles.inputLabel, { color: themeColors.textPrimary }]}>
-            Numéro concerné
+            {t('report.phoneLabel', 'Numéro concerné')}
           </Text>
 
           <View
@@ -160,7 +163,7 @@ export default function ReportScreen() {
               style={styles.recentCallTriggerBtn}
             >
               <Icon name="solar:history-bold" color={colors.green} size={18} style={{ marginRight: 4 }} />
-              <Text style={styles.recentCallTriggerText}>Appels récents</Text>
+              <Text style={styles.recentCallTriggerText}>{t('report.recentCalls', 'Appels récents')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -174,7 +177,7 @@ export default function ReportScreen() {
 
           {/* 2. Motif du signalement */}
           <Text style={[styles.inputLabel, { color: themeColors.textPrimary, marginTop: 24 }]}>
-            Motif du signalement
+            {t('report.reasonLabel', 'Motif du signalement')}
           </Text>
 
           <View style={styles.reasonsList}>
@@ -213,7 +216,7 @@ export default function ReportScreen() {
                         },
                       ]}
                     >
-                      {reason.label}
+                      {t(reason.labelKey, reason.label)}
                     </Text>
                   </View>
 
@@ -235,7 +238,7 @@ export default function ReportScreen() {
 
           {/* 3. Description libre (optionnelle) */}
           <Text style={[styles.inputLabel, { color: themeColors.textPrimary, marginTop: 24 }]}>
-            Description ou détails (optionnel)
+            {t('report.detailsLabel', 'Description ou détails (optionnel)')}
           </Text>
 
           <TextInput
@@ -248,7 +251,7 @@ export default function ReportScreen() {
               },
               Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
             ]}
-            placeholder="Décrivez brièvement la tentative (ex: m'a demandé mon code de retrait sous prétexte d'une erreur...)"
+            placeholder={t('report.detailsPlaceholder', "Décrivez brièvement la tentative...")}
             placeholderTextColor={themeColors.inputPlaceholder}
             multiline
             numberOfLines={4}
@@ -275,7 +278,7 @@ export default function ReportScreen() {
             ) : (
               <>
                 <Icon name="heroicons:signal-16-solid" color={colors.white} size={20} style={{ marginRight: 8 }} />
-                <Text style={styles.submitBtnText}>Envoyer le signalement</Text>
+                <Text style={styles.submitBtnText}>{t('report.submitReport', 'Envoyer le signalement')}</Text>
               </>
             )}
           </TouchableOpacity>

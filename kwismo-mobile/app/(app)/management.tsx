@@ -287,10 +287,10 @@ export default function ManagementScreen() {
         <View style={styles.topSectionRow}>
           <View>
             <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
-              Mes numéros ({numbers.length})
+              {t('management.title', 'Mes numéros')} ({numbers.length})
             </Text>
             <Text style={[styles.sectionSub, { color: themeColors.textSecondary }]}>
-              Multi-SIM rattachées à votre compte
+              {t('management.subtitle', 'Multi-SIM rattachées à votre compte')}
             </Text>
           </View>
 
@@ -300,7 +300,7 @@ export default function ManagementScreen() {
             style={[styles.addTopBtn, { backgroundColor: colors.green }]}
           >
             <Icon name="solar:add-circle-bold" color={colors.white} size={18} style={{ marginRight: 6 }} />
-            <Text style={styles.addTopBtnText}>Ajouter</Text>
+            <Text style={styles.addTopBtnText}>{t('management.addBtn', 'Ajouter')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -396,7 +396,11 @@ export default function ManagementScreen() {
                       },
                     ]}
                   >
-                    {isVerified ? 'Vérifié' : isPending ? 'En attente' : 'Compromis'}
+                    {isVerified
+                      ? t('common.statusVerified', 'Vérifié')
+                      : isPending
+                      ? t('common.statusPending', 'En attente')
+                      : t('common.statusCompromised', 'Compromis')}
                   </Text>
                 </View>
 
@@ -413,7 +417,7 @@ export default function ManagementScreen() {
                       }}
                       style={[styles.smallActionBtn, { backgroundColor: colors.orange }]}
                     >
-                      <Text style={styles.smallActionBtnText}>Valider OTP</Text>
+                      <Text style={styles.smallActionBtnText}>{t('common.validate', 'Valider OTP')}</Text>
                     </TouchableOpacity>
                   )}
 
@@ -424,7 +428,7 @@ export default function ManagementScreen() {
                       style={[styles.smallActionOutlineBtn, { borderColor: '#EF4444' }]}
                     >
                       <Text style={[styles.smallActionOutlineBtnText, { color: '#EF4444' }]}>
-                        Compromis
+                        {t('common.statusCompromised', 'Compromis')}
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -438,7 +442,7 @@ export default function ManagementScreen() {
                       }}
                       style={[styles.smallActionBtn, { backgroundColor: colors.green }]}
                     >
-                      <Text style={styles.smallActionBtnText}>Rétablir</Text>
+                      <Text style={styles.smallActionBtnText}>{t('common.reset', 'Rétablir')}</Text>
                     </TouchableOpacity>
                   )}
 
