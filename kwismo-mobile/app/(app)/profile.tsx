@@ -129,7 +129,7 @@ export default function ProfileScreen() {
             style={styles.itemRow}
           >
             <View style={styles.itemLeft}>
-              <Icon name="solar:user-bold" color={colors.green} size={20} style={{ marginRight: 12 }} />
+              <Icon name="solar:user-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
               <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
                 {t('profile.personalInfo', 'Éditer le profil')}
               </Text>
@@ -146,7 +146,7 @@ export default function ProfileScreen() {
             style={styles.itemRow}
           >
             <View style={styles.itemLeft}>
-              <Icon name="solar:lock-keyhole-bold" color={colors.green} size={20} style={{ marginRight: 12 }} />
+              <Icon name="solar:lock-keyhole-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
               <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
                 {t('profile.security', 'Sécurité & mot de passe')}
               </Text>
@@ -163,7 +163,7 @@ export default function ProfileScreen() {
             style={styles.itemRow}
           >
             <View style={styles.itemLeft}>
-              <Icon name="solar:bell-bold" color={colors.green} size={20} style={{ marginRight: 12 }} />
+              <Icon name="solar:bell-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
               <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
                 {t('common.notifications', 'Notifications')}
               </Text>
@@ -185,7 +185,7 @@ export default function ProfileScreen() {
             style={styles.itemRow}
           >
             <View style={styles.itemLeft}>
-              <Icon name="solar:sun-2-bold" color={colors.green} size={20} style={{ marginRight: 12 }} />
+              <Icon name="solar:sun-2-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
               <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
                 {t('profile.darkMode', 'Thème')}
               </Text>
@@ -208,7 +208,7 @@ export default function ProfileScreen() {
             style={styles.itemRow}
           >
             <View style={styles.itemLeft}>
-              <Icon name="solar:global-bold" color={colors.green} size={20} style={{ marginRight: 12 }} />
+              <Icon name="solar:global-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
               <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
                 {t('profile.language', 'Langues')}
               </Text>
@@ -227,7 +227,7 @@ export default function ProfileScreen() {
           {/* Détection d'appel (Switch) */}
           <View style={styles.itemRow}>
             <View style={styles.itemLeft}>
-              <Icon name="solar:phone-bold" color={colors.green} size={20} style={{ marginRight: 12 }} />
+              <Icon name="solar:phone-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
               <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
                 Détection d'appel
               </Text>

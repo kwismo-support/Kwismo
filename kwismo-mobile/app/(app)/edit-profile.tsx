@@ -27,8 +27,9 @@ export default function EditProfileScreen() {
   const { t } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
 
+  const initialEmail = 'ismael.cesar@kwismo.com';
   const [fullName, setFullName] = useState('Ismaël Cesar');
-  const [email, setEmail] = useState('ismael.cesar@kwismo.com');
+  const [email, setEmail] = useState(initialEmail);
   const [countryName, setCountryName] = useState('Cameroun');
   const [countryCode, setCountryCode] = useState('CM');
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
@@ -55,11 +56,18 @@ export default function EditProfileScreen() {
 
     if (!valid) return;
 
+    const hasEmailChanged = email.trim().toLowerCase() !== initialEmail.toLowerCase();
+
     setIsSaving(true);
     setTimeout(() => {
       setIsSaving(false);
-      toast.success(t('toasts.generalSuccess', 'Profil mis à jour avec succès !'));
-      router.back();
+      if (hasEmailChanged) {
+        toast.info(t('toasts.otpSent', 'Un code OTP a été envoyé pour valider votre nouvel e-mail.'));
+        router.push('/(auth)/otp');
+      } else {
+        toast.success(t('toasts.generalSuccess', 'Profil mis à jour avec succès !'));
+        router.back();
+      }
     }, 600);
   };
 

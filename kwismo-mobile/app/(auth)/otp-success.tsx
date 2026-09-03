@@ -107,10 +107,5 @@ const styles = StyleSheet.create({
     color: colors.orange,
     textAlign: 'center',
     letterSpacing: -0.5,
-    elevation: 4,
-    shadowColor: colors.orange,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
   },
 });

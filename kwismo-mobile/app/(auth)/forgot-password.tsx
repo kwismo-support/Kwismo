@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -106,6 +107,17 @@ export default function ForgotPasswordScreen() {
             variant="primary"
             size="md"
           />
+
+          {/* Bouton de retour vers la connexion */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => router.back()}
+            style={{ marginTop: 16, alignItems: 'center', paddingVertical: 10 }}
+          >
+            <Text style={{ fontFamily: fonts.headlineBold, fontSize: 14, color: themeColors.textSecondary }}>
+              ← Retour à la connexion
+            </Text>
+          </TouchableOpacity>
         </ScrollView>
       </View>
     </KeyboardAvoidingView>
@@ -115,6 +127,11 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  backButton: {
+    position: 'absolute',
+    left: 20,
+    zIndex: 20,
   },
   langWrapper: {
     position: 'absolute',

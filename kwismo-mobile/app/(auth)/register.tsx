@@ -572,7 +572,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   checkboxGroup: {
-    marginBottom: 8,
+    marginBottom: 64,
   },
   checkboxRow: {
     flexDirection: 'row',
