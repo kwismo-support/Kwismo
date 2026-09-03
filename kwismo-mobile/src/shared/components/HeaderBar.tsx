@@ -50,42 +50,55 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
       ]}
     >
       <View style={styles.contentRow}>
-        {/* Partie gauche : Bouton retour OU Titre / Marque KWISMO */}
-        <View style={styles.leftSection}>
-          {showBack && (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={handleBack}
-              style={styles.backBtn}
-            >
-              <Icon name="solar:arrow-left-linear" color={textColor} size={24} />
-            </TouchableOpacity>
-          )}
+        {showBack ? (
+          /* Page secondaire : Retour à gauche, Titre au milieu, Actions à droite */
+          <>
+            <View style={styles.sideColLeft}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={handleBack}
+                style={styles.backBtn}
+              >
+                <Icon name="solar:arrow-left-linear" color={textColor} size={24} />
+              </TouchableOpacity>
+            </View>
 
-          {isHome ? (
-            <Text style={[styles.brandTitle, { color: textColor }]}>KWISMO</Text>
-          ) : title ? (
-            <Text
-              numberOfLines={1}
-              style={[
-                styles.screenTitle,
-                { color: textColor },
-                showBack && { marginLeft: 8 },
-              ]}
-            >
-              {title}
-            </Text>
-          ) : null}
-        </View>
+            <View style={styles.centerCol}>
+              <Text numberOfLines={1} style={[styles.screenTitleCenter, { color: textColor }]}>
+                {title}
+              </Text>
+            </View>
 
-        {/* Partie droite : Notifications + Actions globales */}
-        <View style={styles.rightSection}>
-          <HeaderActions
-            unreadNotificationsCount={unreadNotificationsCount}
-            iconColor={textColor}
-            onPressNotifications={onPressNotifications}
-          />
-        </View>
+            <View style={styles.sideColRight}>
+              <HeaderActions
+                unreadNotificationsCount={unreadNotificationsCount}
+                iconColor={textColor}
+                onPressNotifications={onPressNotifications}
+              />
+            </View>
+          </>
+        ) : (
+          /* Page principale : Titre à gauche, Actions à droite */
+          <>
+            <View style={styles.mainLeftCol}>
+              {isHome ? (
+                <Text style={[styles.brandTitle, { color: textColor }]}>KWISMO</Text>
+              ) : (
+                <Text numberOfLines={1} style={[styles.mainPageTitle, { color: textColor }]}>
+                  {title}
+                </Text>
+              )}
+            </View>
+
+            <View style={styles.sideColRight}>
+              <HeaderActions
+                unreadNotificationsCount={unreadNotificationsCount}
+                iconColor={textColor}
+                onPressNotifications={onPressNotifications}
+              />
+            </View>
+          </>
+        )}
       </View>
     </View>
   );
@@ -102,14 +115,30 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     minHeight: 44,
   },
-  leftSection: {
+  sideColLeft: {
+    width: 60,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  sideColRight: {
+    width: 72,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  centerCol: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mainLeftCol: {
+    flex: 1,
+    justifyContent: 'center',
   },
   backBtn: {
     padding: 6,
-    marginRight: 4,
+    marginLeft: -4,
   },
   brandTitle: {
     fontFamily: fonts.headlineBold,
@@ -117,13 +146,15 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: 1.5,
   },
-  screenTitle: {
-    fontFamily: fonts.h6,
+  mainPageTitle: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(20),
+    fontWeight: '800',
+  },
+  screenTitleCenter: {
+    fontFamily: fonts.headlineBold,
     fontSize: scaleFont(18),
     fontWeight: '700',
-  },
-  rightSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    textAlign: 'center',
   },
 });

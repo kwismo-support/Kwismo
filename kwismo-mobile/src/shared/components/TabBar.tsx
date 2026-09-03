@@ -8,7 +8,7 @@ import { useAppTheme } from '../hooks/useAppTheme';
 import { colors, fonts } from '../../styles/tokens';
 import { scaleFont } from '../lib/responsive';
 
-export type TabRoute = 'home' | 'contacts' | 'transfer' | 'profile';
+export type TabRoute = 'home' | 'management' | 'transfer' | 'profile';
 
 interface TabBarProps {
   activeTab?: TabRoute;
@@ -22,7 +22,7 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
   const { colors: themeColors } = useAppTheme();
 
   const currentTab: TabRoute = activeTab || (
-    pathname.includes('contacts') ? 'contacts' :
+    pathname.includes('management') ? 'management' :
     pathname.includes('transfer') ? 'transfer' :
     pathname.includes('profile') ? 'profile' : 'home'
   );
@@ -61,19 +61,19 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
 
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => router.replace('/(app)/contacts')}
+        onPress={() => router.replace('/(app)/management')}
         style={styles.tabItem}
       >
         <Icon
-          name={currentTab === 'contacts' ? 'solar:user-id-bold' : 'solar:user-id-linear'}
+          name={currentTab === 'management' ? 'solar:user-id-bold' : 'solar:user-id-linear'}
           size={24}
-          color={currentTab === 'contacts' ? colors.green : themeColors.inputPlaceholder}
+          color={currentTab === 'management' ? colors.green : themeColors.inputPlaceholder}
         />
         <Text
           style={[
             styles.tabLabel,
-            { color: currentTab === 'contacts' ? colors.green : themeColors.inputPlaceholder },
-            currentTab === 'contacts' && styles.tabLabelActive,
+            { color: currentTab === 'management' ? colors.green : themeColors.inputPlaceholder },
+            currentTab === 'management' && styles.tabLabelActive,
           ]}
         >
           {t('common.management')}

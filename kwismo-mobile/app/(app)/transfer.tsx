@@ -11,7 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
 import { TabBar } from '../../src/shared/components/TabBar';
-import { HeaderActions } from '../../src/shared/components/HeaderActions';
+import { HeaderBar } from '../../src/shared/components/HeaderBar';
 import { Input } from '../../src/shared/ui/Input';
 import { Button } from '../../src/shared/ui/Button';
 import { toast } from '../../src/shared/store/toastStore';
@@ -54,19 +54,16 @@ export default function TransferScreen() {
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <StatusBar style="light" />
 
+      {/* Page principale : Titre à gauche, actions à droite */}
+      <HeaderBar
+        title={t('common.moneyTransfer', "Transfert d'argent")}
+        showBack={false}
+      />
+
       <ScrollView
         contentContainerStyle={{ paddingBottom: 110 }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={[styles.headerCard, { paddingTop: Math.max(insets.top + 10, 20) }]}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <View>
-              <Text style={styles.headerTitle}>{t('common.transfer')}</Text>
-              <Text style={styles.headerSubtitle}>{t('common.moneyTransfer')}</Text>
-            </View>
-            <HeaderActions iconColor={colors.white} />
-          </View>
-        </View>
 
         <View style={[styles.content, { backgroundColor: themeColors.background }]}>
           <View style={styles.operatorRow}>

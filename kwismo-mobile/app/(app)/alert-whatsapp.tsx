@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
+import { HeaderBar } from '../../src/shared/components/HeaderBar';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
@@ -18,16 +19,10 @@ export default function AlertWhatsappScreen() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <View style={[styles.header, { paddingTop: Math.max(insets.top + 10, 20) }]}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => router.back()}
-          style={styles.backBtn}
-        >
-          <Icon name="solar:arrow-left-linear" color={colors.white} size={22} />
-        </TouchableOpacity>
-        <Text style={styles.title}>{t('common.whatsappAlert')}</Text>
-      </View>
+      <HeaderBar
+        title={t('common.whatsappAlert', 'Alerte Whatsapp')}
+        showBack={true}
+      />
       <View style={[styles.content, { backgroundColor: themeColors.background }]}>
         <Icon name="ic:baseline-whatsapp" color={colors.green} size={48} />
         <Text style={[styles.subtitle, { color: themeColors.textSecondary }]}>

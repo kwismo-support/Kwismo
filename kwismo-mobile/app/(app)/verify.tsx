@@ -165,7 +165,7 @@ export default function VerifyScreen() {
 
       {/* Header global unifié Kwismo */}
       <HeaderBar
-        title={t('common.verifyNumber', 'Verification du numero')}
+        title={t('common.numberVerification', "Vérification d'un numéro")}
         showBack={true}
         onBack={handleBack}
       />
@@ -516,7 +516,14 @@ export default function VerifyScreen() {
                   <TouchableOpacity
                     activeOpacity={0.85}
                     onPress={() => router.push('/(app)/transfer')}
-                    style={[styles.transfererBtn, { backgroundColor: colors.navy }]}
+                    style={[
+                      styles.transfererBtn,
+                      {
+                        backgroundColor: isDark ? '#22304A' : colors.navy,
+                        borderWidth: isDark ? 1 : 0,
+                        borderColor: 'rgba(255, 255, 255, 0.25)',
+                      },
+                    ]}
                   >
                     <Text style={styles.actionBtnText}>{t('common.transfer', 'Transférer')}</Text>
                   </TouchableOpacity>
@@ -538,7 +545,14 @@ export default function VerifyScreen() {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => setContactModalVisible(true)}
-            style={styles.contactsBtnMaquette}
+            style={[
+              styles.contactsBtnMaquette,
+              {
+                backgroundColor: isDark ? '#22304A' : '#131B2E',
+                borderWidth: isDark ? 1 : 0,
+                borderColor: 'rgba(255, 255, 255, 0.25)',
+              },
+            ]}
           >
             <Icon name="solar:users-group-two-rounded-bold" color={colors.white} size={22} style={{ marginRight: 10 }} />
             <Text style={styles.contactsBtnText}>{t('common.chooseFromContacts', 'Choisi dans les contacts')}</Text>
