@@ -20,6 +20,7 @@ export interface InputProps extends Omit<TextInputProps, 'style'> {
   error?: string;
   isPassword?: boolean;
   leftIcon?: React.ReactNode;
+  iconLeft?: string;
   rightIcon?: React.ReactNode;
   containerStyle?: ViewStyle;
   inputStyle?: TextStyle;
@@ -31,6 +32,7 @@ export const Input: React.FC<InputProps> = ({
   error,
   isPassword = false,
   leftIcon,
+  iconLeft,
   rightIcon,
   containerStyle,
   inputStyle,
@@ -85,12 +87,16 @@ export const Input: React.FC<InputProps> = ({
         fontWeight: 'normal',
       };
 
-  // Render leftIcon with dynamic focus/error color if possible
-  const renderedLeftIcon = React.isValidElement(leftIcon)
-    ? React.cloneElement(leftIcon as React.ReactElement<any>, {
-        color: activeIconColor,
-      })
-    : leftIcon;
+  // Render leftIcon or iconLeft with dynamic focus/error color
+  const renderedLeftIcon = iconLeft ? (
+    <Icon name={iconLeft} size={20} color={activeIconColor} style={{ marginRight: 10 }} />
+  ) : React.isValidElement(leftIcon) ? (
+    React.cloneElement(leftIcon as React.ReactElement<any>, {
+      color: activeIconColor,
+    })
+  ) : (
+    leftIcon
+  );
 
   return (
     <View style={[styles.wrapper, containerStyle]}>

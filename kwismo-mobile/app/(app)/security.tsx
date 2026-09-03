@@ -5,16 +5,15 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  TextInput,
   Switch,
   ActivityIndicator,
-  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
+import { Input } from '../../src/shared/ui/Input';
 import { HeaderBar } from '../../src/shared/components/HeaderBar';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { toast } from '../../src/shared/store/toastStore';
@@ -30,34 +29,82 @@ export default function SecurityScreen() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPasswords, setShowPasswords] = useState(false);
+
+  const [currentPasswordError, setCurrentPasswordError] = useState('');
+  const [newPasswordError, setNewPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
   const [rememberMe, setRememberMe] = useState(true);
-  const [biometrics, setBiometrics] = useState(true);
+  const [biometricsEnabled, setBiometricsEnabled] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
 
+  // Critères de robustesse du mot de passe (Maquette Inscription)
+  const passwordCriteria = {
+    minLength: newPassword.length >= 8,
+    hasUppercase: /[A-Z]/.test(newPassword),
+    hasLowercase: /[a-z]/.test(newPassword),
+    hasNumber: /[0-9]/.test(newPassword),
+    hasSymbol: /[^A-Za-z0-9]/.test(newPassword),
+  };
+
+  const isPasswordStrong =
+    passwordCriteria.minLength &&
+    passwordCriteria.hasUppercase &&
+    passwordCriteria.hasLowercase &&
+    passwordCriteria.hasNumber &&
+    passwordCriteria.hasSymbol;
+
   const handleUpdatePassword = () => {
-    if (!currentPassword.trim() || !newPassword.trim()) {
-      toast.error(t('validation.required', 'Veuillez remplir tous les champs obligatoires.'));
-      return;
+    let valid = true;
+    setCurrentPasswordError('');
+    setNewPasswordError('');
+    setConfirmPasswordError('');
+
+    if (!currentPassword.trim()) {
+      setCurrentPasswordError(t('validation.required', 'Veuillez saisir votre mot de passe actuel.'));
+      valid = false;
     }
+
+    if (!isPasswordStrong) {
+      setNewPasswordError(
+        t('validation.passwordCriteria', 'Le nouveau mot de passe doit respecter tous les critères de sécurité.')
+      );
+      valid = false;
+    }
+
     if (newPassword !== confirmPassword) {
-      toast.error(t('validation.passwordsDoNotMatch', 'Les mots de passe ne correspondent pas.'));
-      return;
+      setConfirmPasswordError(t('validation.passwordsDoNotMatch', 'Les mots de passe ne correspondent pas.'));
+      valid = false;
     }
+
+    if (!valid) return;
 
     setIsUpdating(true);
     setTimeout(() => {
       setIsUpdating(false);
       toast.success(t('toasts.passwordResetSuccess', 'Mot de passe mis à jour avec succès !'));
-      router.back();
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
     }, 600);
+  };
+
+  const handleToggleBiometrics = (value: boolean) => {
+    if (!value) {
+      // Pour désactiver la biométrie, exige la saisie du code PIN à 6 chiffres
+      toast.info(t('common.securityCheck', 'Code PIN à 6 chiffres requis pour désactiver la biométrie.'));
+      router.push('/(app)/pin-setup');
+    } else {
+      setBiometricsEnabled(true);
+      toast.success('Déverrouillage par biométrie activé avec succès.');
+    }
   };
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <StatusBar style="light" />
 
-      {/* Header unifié de page secondaire */}
+      {/* Header unifié de page secondaire sans cloche */}
       <HeaderBar title={t('profile.security', 'Sécurité & mot de passe')} showBack={true} />
 
       <ScrollView
@@ -67,72 +114,91 @@ export default function SecurityScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Formulaire de modification du mot de passe */}
         <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
           Modifier mon mot de passe
         </Text>
 
-        <Text style={[styles.fieldLabel, { color: themeColors.textPrimary, marginTop: 14 }]}>
-          Mot de passe actuel
-        </Text>
-        <View style={[styles.inputWrapper, { backgroundColor: themeColors.inputBg, borderColor: themeColors.inputBorder }]}>
-          <Icon name="solar:lock-keyhole-linear" color={colors.green} size={20} style={{ marginRight: 10 }} />
-          <TextInput
-            style={[
-              styles.textInput,
-              { color: themeColors.textPrimary },
-              Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
-            ]}
-            secureTextEntry={!showPasswords}
+        {/* Input Standardisé : Mot de passe actuel */}
+        <View style={{ marginTop: 12 }}>
+          <Input
+            label={t('common.currentPassword', 'Mot de passe actuel')}
             value={currentPassword}
-            onChangeText={setCurrentPassword}
+            onChangeText={(val) => {
+              setCurrentPassword(val);
+              if (currentPasswordError) setCurrentPasswordError('');
+            }}
+            isPassword
             placeholder="••••••••"
-            placeholderTextColor={themeColors.inputPlaceholder}
+            error={currentPasswordError}
+            iconLeft="solar:lock-keyhole-linear"
           />
-          <TouchableOpacity onPress={() => setShowPasswords(!showPasswords)} style={{ padding: 4 }}>
-            <Icon
-              name={showPasswords ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
-              color={themeColors.inputPlaceholder}
-              size={18}
-            />
-          </TouchableOpacity>
         </View>
 
-        <Text style={[styles.fieldLabel, { color: themeColors.textPrimary, marginTop: 14 }]}>
-          Nouveau mot de passe
-        </Text>
-        <View style={[styles.inputWrapper, { backgroundColor: themeColors.inputBg, borderColor: themeColors.inputBorder }]}>
-          <Icon name="solar:key-linear" color={colors.green} size={20} style={{ marginRight: 10 }} />
-          <TextInput
-            style={[
-              styles.textInput,
-              { color: themeColors.textPrimary },
-              Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
-            ]}
-            secureTextEntry={!showPasswords}
+        {/* Input Standardisé : Nouveau mot de passe */}
+        <View style={{ marginTop: 12 }}>
+          <Input
+            label={t('common.newPassword', 'Nouveau mot de passe')}
             value={newPassword}
-            onChangeText={setNewPassword}
+            onChangeText={(val) => {
+              setNewPassword(val);
+              if (newPasswordError) setNewPasswordError('');
+            }}
+            isPassword
             placeholder="••••••••"
-            placeholderTextColor={themeColors.inputPlaceholder}
+            error={newPasswordError}
+            iconLeft="solar:key-linear"
           />
         </View>
 
-        <Text style={[styles.fieldLabel, { color: themeColors.textPrimary, marginTop: 14 }]}>
-          Confirmer le nouveau mot de passe
-        </Text>
-        <View style={[styles.inputWrapper, { backgroundColor: themeColors.inputBg, borderColor: themeColors.inputBorder }]}>
-          <Icon name="solar:key-bold" color={colors.green} size={20} style={{ marginRight: 10 }} />
-          <TextInput
-            style={[
-              styles.textInput,
-              { color: themeColors.textPrimary },
-              Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
-            ]}
-            secureTextEntry={!showPasswords}
+        {/* Indicateurs de robustesse du mot de passe (Maquette d'inscription) */}
+        <View style={styles.criteriaContainer}>
+          <Text style={[styles.criteriaTitle, { color: themeColors.textSecondary }]}>
+            Critères de robustesse du mot de passe :
+          </Text>
+          <View style={styles.criteriaGrid}>
+            {[
+              { key: 'minLength', label: t('validation.criteriaMinLength', 'Au moins 8 caractères'), valid: passwordCriteria.minLength },
+              { key: 'hasUppercase', label: t('validation.criteriaUppercase', '1 lettre majuscule'), valid: passwordCriteria.hasUppercase },
+              { key: 'hasLowercase', label: t('validation.criteriaLowercase', '1 lettre minuscule'), valid: passwordCriteria.hasLowercase },
+              { key: 'hasNumber', label: t('validation.criteriaNumber', '1 chiffre'), valid: passwordCriteria.hasNumber },
+              { key: 'hasSymbol', label: t('validation.criteriaSymbol', '1 symbole spécial (!@#$)'), valid: passwordCriteria.hasSymbol },
+            ].map((crit) => (
+              <View key={crit.key} style={styles.criteriaRow}>
+                <Icon
+                  name={crit.valid ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
+                  color={crit.valid ? colors.green : themeColors.inputPlaceholder}
+                  size={15}
+                  style={{ marginRight: 6 }}
+                />
+                <Text
+                  style={[
+                    styles.criteriaText,
+                    {
+                      color: crit.valid ? colors.green : themeColors.textSecondary,
+                      fontWeight: crit.valid ? '700' : '400',
+                    },
+                  ]}
+                >
+                  {crit.label}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Input Standardisé : Confirmation mot de passe */}
+        <View style={{ marginTop: 12 }}>
+          <Input
+            label={t('common.confirmPassword', 'Confirmer le nouveau mot de passe')}
             value={confirmPassword}
-            onChangeText={setConfirmPassword}
+            onChangeText={(val) => {
+              setConfirmPassword(val);
+              if (confirmPasswordError) setConfirmPasswordError('');
+            }}
+            isPassword
             placeholder="••••••••"
-            placeholderTextColor={themeColors.inputPlaceholder}
+            error={confirmPasswordError}
+            iconLeft="solar:key-bold"
           />
         </View>
 
@@ -145,16 +211,58 @@ export default function SecurityScreen() {
           {isUpdating ? (
             <ActivityIndicator color={colors.white} />
           ) : (
-            <Text style={styles.saveBtnText}>Mettre à jour le mot de passe</Text>
+            <Text style={styles.saveBtnText}>
+              {t('common.saveChanges', 'Mettre à jour le mot de passe')}
+            </Text>
           )}
         </TouchableOpacity>
 
-        {/* Options de sécurité avancées */}
+        {/* Protection par Biométrie & Code PIN (Secours obligatoire à 6 chiffres) */}
         <Text style={[styles.sectionTitle, { color: themeColors.textPrimary, marginTop: 32 }]}>
-          Options de sécurité
+          Déverrouillage de l'application & PIN
         </Text>
 
         <View style={[styles.optionsCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
+          {/* Configuration du Code PIN de secours à 6 chiffres */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => router.push('/(app)/pin-setup')}
+            style={styles.optionRow}
+          >
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text style={[styles.optionTitle, { color: themeColors.textPrimary }]}>
+                Code PIN à 6 chiffres (Secours)
+              </Text>
+              <Text style={[styles.optionSub, { color: themeColors.textSecondary }]}>
+                Définir ou modifier le code PIN exigé en cas d'échec biométrique
+              </Text>
+            </View>
+            <Icon name="solar:alt-arrow-right-linear" color={colors.green} size={20} />
+          </TouchableOpacity>
+
+          <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
+
+          {/* Switch Biométrie */}
+          <View style={styles.optionRow}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <Text style={[styles.optionTitle, { color: themeColors.textPrimary }]}>
+                Verrouillage Face ID / Empreinte
+              </Text>
+              <Text style={[styles.optionSub, { color: themeColors.textSecondary }]}>
+                Exige un code PIN pour la désactivation
+              </Text>
+            </View>
+            <Switch
+              value={biometricsEnabled}
+              onValueChange={handleToggleBiometrics}
+              trackColor={{ false: '#CBD5E1', true: colors.green }}
+              thumbColor={colors.white}
+            />
+          </View>
+
+          <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
+
+          {/* Switch Se souvenir de moi */}
           <View style={styles.optionRow}>
             <View style={{ flex: 1, paddingRight: 10 }}>
               <Text style={[styles.optionTitle, { color: themeColors.textPrimary }]}>
@@ -167,25 +275,6 @@ export default function SecurityScreen() {
             <Switch
               value={rememberMe}
               onValueChange={setRememberMe}
-              trackColor={{ false: '#CBD5E1', true: colors.green }}
-              thumbColor={colors.white}
-            />
-          </View>
-
-          <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
-
-          <View style={styles.optionRow}>
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              <Text style={[styles.optionTitle, { color: themeColors.textPrimary }]}>
-                Verrouillage Face ID / Empreinte
-              </Text>
-              <Text style={[styles.optionSub, { color: themeColors.textSecondary }]}>
-                Exiger la biométrie à l'ouverture de Kwismo
-              </Text>
-            </View>
-            <Switch
-              value={biometrics}
-              onValueChange={setBiometrics}
               trackColor={{ false: '#CBD5E1', true: colors.green }}
               thumbColor={colors.white}
             />
@@ -209,27 +298,30 @@ const styles = StyleSheet.create({
     fontSize: scaleFont(16),
     fontWeight: '800',
   },
-  fieldLabel: {
+  criteriaContainer: {
+    marginTop: 10,
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.03)',
+  },
+  criteriaTitle: {
     fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(13),
-    fontWeight: '600',
+    fontSize: scaleFont(12),
     marginBottom: 6,
   },
-  inputWrapper: {
+  criteriaGrid: {
+    gap: 4,
+  },
+  criteriaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 50,
-    borderRadius: 14,
-    borderWidth: 1.5,
-    paddingHorizontal: 14,
   },
-  textInput: {
-    flex: 1,
+  criteriaText: {
     fontFamily: fonts.regular,
-    fontSize: scaleFont(14),
+    fontSize: scaleFont(11),
   },
   saveBtn: {
-    height: 50,
+    height: 52,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',

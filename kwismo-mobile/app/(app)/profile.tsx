@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
   },
   bottomButtonsContainer: {
     gap: 10,
-    marginTop: 12,
+    marginTop: 36,
     marginBottom: 16,
   },
   dangerBtn: {

@@ -51,9 +51,9 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
     >
       <View style={styles.contentRow}>
         {showBack ? (
-          /* Page secondaire : Retour à gauche, Titre au milieu, Actions à droite */
+          /* Page secondaire : Retour à gauche, Titre au milieu, Actions (sans cloche) à droite */
           <>
-            <View style={styles.sideColLeft}>
+            <View style={[styles.sideColLeft, { width: 40 }]}>
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={handleBack}
@@ -64,21 +64,26 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             </View>
 
             <View style={styles.centerCol}>
-              <Text numberOfLines={1} style={[styles.screenTitleCenter, { color: textColor }]}>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={[styles.screenTitleCenter, { color: textColor }]}
+              >
                 {title}
               </Text>
             </View>
 
-            <View style={styles.sideColRight}>
+            <View style={[styles.sideColRight, { width: 40 }]}>
               <HeaderActions
                 unreadNotificationsCount={unreadNotificationsCount}
                 iconColor={textColor}
                 onPressNotifications={onPressNotifications}
+                showBell={false}
               />
             </View>
           </>
         ) : (
-          /* Page principale : Titre à gauche, Actions à droite */
+          /* Page principale : Titre à gauche, Actions (avec cloche) à droite */
           <>
             <View style={styles.mainLeftCol}>
               {isHome ? (
@@ -95,6 +100,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                 unreadNotificationsCount={unreadNotificationsCount}
                 iconColor={textColor}
                 onPressNotifications={onPressNotifications}
+                showBell={true}
               />
             </View>
           </>

@@ -19,12 +19,14 @@ interface HeaderActionsProps {
   unreadNotificationsCount?: number;
   iconColor?: string;
   onPressNotifications?: () => void;
+  showBell?: boolean;
 }
 
 export const HeaderActions: React.FC<HeaderActionsProps> = ({
   unreadNotificationsCount = 0,
   iconColor = colors.white,
   onPressNotifications,
+  showBell = true,
 }) => {
   const router = useRouter();
   const { t, i18n } = useTranslation();
@@ -48,25 +50,27 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Cloche de notifications */}
-      <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={handleNotificationsPress}
-        style={styles.iconButton}
-      >
-        <Icon
-          name={hasUnread ? 'solar:bell-bold' : 'solar:bell-linear'}
-          size={24}
-          color={iconColor}
-        />
-        {hasUnread && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>
-              {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
-            </Text>
-          </View>
-        )}
-      </TouchableOpacity>
+      {/* Cloche de notifications (visible seulement sur les pages principales) */}
+      {showBell && (
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={handleNotificationsPress}
+          style={styles.iconButton}
+        >
+          <Icon
+            name={hasUnread ? 'solar:bell-bold' : 'solar:bell-linear'}
+            size={24}
+            color={iconColor}
+          />
+          {hasUnread && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>
+                {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      )}
 
       {/* 3 points verticaux pour le menu d'options */}
       <TouchableOpacity

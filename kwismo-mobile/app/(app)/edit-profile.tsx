@@ -5,16 +5,17 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  TextInput,
   ActivityIndicator,
-  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
+import { Input } from '../../src/shared/ui/Input';
 import { HeaderBar } from '../../src/shared/components/HeaderBar';
+import { CountrySelectInput } from '../../src/shared/components/CountrySelectInput';
+import { ProfilePhotoPickerModal } from '../../src/shared/components/ProfilePhotoPickerModal';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { toast } from '../../src/shared/store/toastStore';
 import { colors, fonts } from '../../src/styles/tokens';
@@ -28,10 +29,32 @@ export default function EditProfileScreen() {
 
   const [fullName, setFullName] = useState('Ismaël Cesar');
   const [email, setEmail] = useState('ismael.cesar@kwismo.com');
-  const [country, setCountry] = useState('Cameroun');
+  const [countryName, setCountryName] = useState('Cameroun');
+  const [countryCode, setCountryCode] = useState('CM');
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+
+  const [fullNameError, setFullNameError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [isPhotoPickerOpen, setIsPhotoPickerOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = () => {
+    let valid = true;
+    setFullNameError('');
+    setEmailError('');
+
+    if (!fullName.trim()) {
+      setFullNameError(t('validation.required', 'Le nom complet est obligatoire.'));
+      valid = false;
+    }
+
+    if (!email.trim() || !email.includes('@')) {
+      setEmailError(t('validation.emailInvalid', 'Veuillez saisir une adresse email valide.'));
+      valid = false;
+    }
+
+    if (!valid) return;
+
     setIsSaving(true);
     setTimeout(() => {
       setIsSaving(false);
@@ -44,7 +67,7 @@ export default function EditProfileScreen() {
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <StatusBar style="light" />
 
-      {/* Header unifié de page secondaire */}
+      {/* Header unifié de page secondaire sans cloche */}
       <HeaderBar title={t('profile.personalInfo', 'Éditer le profil')} showBack={true} />
 
       <ScrollView
@@ -61,88 +84,55 @@ export default function EditProfileScreen() {
               {fullName.charAt(0).toUpperCase()}
             </Text>
           </View>
-          <TouchableOpacity style={styles.cameraBadgeBtn} activeOpacity={0.8}>
+
+          <TouchableOpacity
+            activeOpacity={0.85}
+            onPress={() => setIsPhotoPickerOpen(true)}
+            style={styles.cameraBadgeBtn}
+          >
             <Icon name="solar:camera-bold" color={colors.white} size={16} />
           </TouchableOpacity>
         </View>
 
-        {/* Formulaire des informations personnelles */}
-        <Text style={[styles.fieldLabel, { color: themeColors.textPrimary }]}>
-          {t('common.fullName', 'Nom Complet')}
-        </Text>
-        <View
-          style={[
-            styles.inputWrapper,
-            {
-              backgroundColor: themeColors.inputBg,
-              borderColor: themeColors.inputBorder,
-            },
-          ]}
-        >
-          <Icon name="solar:user-linear" color={colors.green} size={20} style={{ marginRight: 10 }} />
-          <TextInput
-            style={[
-              styles.textInput,
-              { color: themeColors.textPrimary },
-              Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
-            ]}
-            value={fullName}
-            onChangeText={setFullName}
-            placeholder="Lorem Ipsum"
-            placeholderTextColor={themeColors.inputPlaceholder}
-          />
-        </View>
+        {/* Input Standardisé : Nom Complet (avec focus et gestion d'erreur comme sur l'auth) */}
+        <Input
+          label={t('common.fullName', 'Nom Complet')}
+          value={fullName}
+          onChangeText={(val) => {
+            setFullName(val);
+            if (fullNameError) setFullNameError('');
+          }}
+          placeholder="Ismaël Cesar"
+          error={fullNameError}
+          iconLeft="solar:user-linear"
+        />
 
-        <Text style={[styles.fieldLabel, { color: themeColors.textPrimary, marginTop: 16 }]}>
-          {t('common.email', 'Adresse email')}
-        </Text>
-        <View
-          style={[
-            styles.inputWrapper,
-            {
-              backgroundColor: themeColors.inputBg,
-              borderColor: themeColors.inputBorder,
-            },
-          ]}
-        >
-          <Icon name="solar:letter-linear" color={colors.green} size={20} style={{ marginRight: 10 }} />
-          <TextInput
-            style={[
-              styles.textInput,
-              { color: themeColors.textPrimary },
-              Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
-            ]}
+        {/* Input Standardisé : Email (avec focus et validation) */}
+        <View style={{ marginTop: 12 }}>
+          <Input
+            label={t('common.email', 'Adresse email')}
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(val) => {
+              setEmail(val);
+              if (emailError) setEmailError('');
+            }}
             keyboardType="email-address"
             placeholder="ismael.cesar@kwismo.com"
-            placeholderTextColor={themeColors.inputPlaceholder}
+            error={emailError}
+            iconLeft="solar:letter-linear"
           />
         </View>
 
-        <Text style={[styles.fieldLabel, { color: themeColors.textPrimary, marginTop: 16 }]}>
-          {t('common.country', 'Pays')}
-        </Text>
-        <View
-          style={[
-            styles.inputWrapper,
-            {
-              backgroundColor: themeColors.inputBg,
-              borderColor: themeColors.inputBorder,
-            },
-          ]}
-        >
-          <Icon name="solar:global-linear" color={colors.green} size={20} style={{ marginRight: 10 }} />
-          <TextInput
-            style={[
-              styles.textInput,
-              { color: themeColors.textPrimary },
-              Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
-            ]}
-            value={country}
-            onChangeText={setCountry}
-            placeholder="Cameroun"
-            placeholderTextColor={themeColors.inputPlaceholder}
+        {/* Input Sélection de Pays du Monde (Composant dédié i18n-iso-countries) */}
+        <View style={{ marginTop: 12 }}>
+          <CountrySelectInput
+            label={t('common.country', 'Pays')}
+            value={countryName}
+            countryCode={countryCode}
+            onSelectCountry={(name, code) => {
+              setCountryName(name);
+              setCountryCode(code);
+            }}
           />
         </View>
 
@@ -162,6 +152,13 @@ export default function EditProfileScreen() {
           )}
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Modale de changement de photo (Caméra / Galerie) */}
+      <ProfilePhotoPickerModal
+        visible={isPhotoPickerOpen}
+        onClose={() => setIsPhotoPickerOpen(false)}
+        onSelectPhoto={(url) => setProfilePhoto(url)}
+      />
     </View>
   );
 }
@@ -204,25 +201,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: colors.white,
-  },
-  fieldLabel: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '700',
-    marginBottom: 6,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 52,
-    borderRadius: 14,
-    borderWidth: 1.5,
-    paddingHorizontal: 14,
-  },
-  textInput: {
-    flex: 1,
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(14),
   },
   saveBtn: {
     height: 52,
