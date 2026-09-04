@@ -480,9 +480,6 @@ async def main():
         else:
             print_results_plain(results, base_url, args.repeat)
 
-        # Save markdown report
-        save_markdown(results, base_url, args.repeat, args.output)
-
 
 if __name__ == "__main__":
     asyncio.run(main())

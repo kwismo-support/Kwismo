@@ -3,8 +3,6 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Comparison from './components/Comparison';
 import FraudProblem from './components/FraudProblem';
-import Pricing from './components/Pricing';
-import Partners from './components/Partners';
 import DowloadCTA from './components/DownloadCTA';
 import Footer from './components/Footer';
 
