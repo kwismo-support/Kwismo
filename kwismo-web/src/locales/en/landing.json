@@ -1,106 +1,196 @@
 {
+  "contactBar": {
+    "email": "kwismosupport@gmail.com",
+    "phone": "+237 698 44 43 88"
+  },
   "nav": {
+    "home": "Home",
+    "about": "About Us",
+    "security": "Security & Protection",
     "features": "Features",
-    "howItWorks": "How it works",
-    "pricing": "Pricing",
-    "partners": "Partners",
-    "login": "Login",
-    "getStarted": "Get started"
+    "contact": "Contact",
+    "partner": "Partner",
+    "login": "Sign In"
   },
   "hero": {
-    "badge": "Phone fraud protection",
-    "title": "Protect yourself from fraudulent calls",
-    "subtitle": "KWISMO detects, reports, and blocks fraudulent numbers in real time. Join the community protecting Africa.",
-    "cta": "Download the app",
-    "ctaSecondary": "Watch demo",
-    "trustedBy": "Already used by thousands of people"
-  },
-  "problem": {
-    "title": "Phone fraud, an African plague",
-    "subtitle": "Millions of fraudulent calls every day on the continent",
+    "titleLine1": "Secure your",
+    "titleLine2": "transactions with",
+    "titleLine3": "complete",
+    "titleHighlight": "simplicity",
+    "subtitle": "KWISMO protects your Orange Money and MTN MoMo transfers against scams and entry errors. Send and receive money with peace of mind.",
+    "ctaApp": "Download the App",
+    "ctaPartner": "Become a Partner",
     "stats": {
-      "fraud": "fraudulent calls detected",
-      "victims": "victims per year",
-      "loss": "lost to mobile fraud"
+      "verifiedNumbers": "verified numbers",
+      "accuracy": "Accuracy",
+      "operators": "Operators"
+    },
+    "badges": {
+      "protected": "Protected",
+      "alert": "Alert"
     }
   },
-  "comparison": {
-    "title": "Why KWISMO?",
-    "subtitle": "A solution built for Africa",
-    "features": {
-      "africaFocus": "Built for Africa",
-      "ussd": "Integrated USSD transfer",
-      "community": "Community reporting",
-      "realtime": "Real-time detection",
-      "whatsapp": "WhatsApp alert",
-      "offline": "Offline mode"
+  "fraudProblem": {
+    "title": "Mobile Money Fraud is Exploding",
+    "stats": {
+      "vishing": { "val": "1 / 3 min", "label": "Vishing" },
+      "simswap": { "val": "87 %", "label": "Successful SIM Swap attempts" },
+      "whatsapp": { "val": "+340 %", "label": "WhatsApp hacking in one year" },
+      "socialEng": { "val": "65 %", "label": "Social engineering in all frauds" }
     }
   },
-  "features": {
-    "title": "Everything you need",
-    "subtitle": "A complete protection suite",
-    "items": {
-      "verify": {
-        "title": "Instant verification",
-        "desc": "Check any number in one click before calling back."
+  "whatKwismoBrings": {
+    "title": "What KWISMO Brings You",
+    "subtitle": "Comprehensive protection designed for daily Mobile Money users.",
+    "points": [
+      "Real-time identification of risky calls and numbers",
+      "Pre-transfer recipient verification before every USSD transfer",
+      "Instant alerts on vishing and SIM swap attempts",
+      "Community database powered by user reports",
+      "Multi-operator coverage across key African markets",
+      "Secure API for partner financial institutions"
+    ]
+  },
+  "africanTeam": {
+    "title": "An African Team Serving Digital Trust",
+    "desc": "KWISMO was born from a simple observation: Mobile Money transformed our economies, but fraud advances as fast as innovation. We are building the collective shield that was missing.",
+    "cards": {
+      "mission": {
+        "title": "Our Mission",
+        "desc": "Make every Mobile Money transaction safe and serene, everywhere in Africa."
       },
-      "detect": {
-        "title": "Automatic detection",
-        "desc": "The app analyzes every incoming call and alerts you immediately."
+      "community": {
+        "title": "Our Community",
+        "desc": "Millions of users who report and protect together in real time."
       },
-      "transfer": {
-        "title": "Secure USSD transfer",
-        "desc": "Send money via USSD with a pre-verification of the recipient."
-      },
-      "report": {
-        "title": "Community reporting",
-        "desc": "Report suspicious numbers and protect your community."
-      },
-      "whatsapp": {
-        "title": "WhatsApp alert",
-        "desc": "Notify your contacts if your account is compromised."
-      },
-      "contacts": {
-        "title": "Secured contacts",
-        "desc": "Each contact is scored and badged by risk level."
+      "approach": {
+        "title": "Our Approach",
+        "desc": "A local technology designed for African networks and usage patterns."
       }
     }
   },
-  "howItWorks": {
-    "title": "How it works",
-    "steps": {
-      "1": { "title": "Sign up", "desc": "Create your account in 30 seconds with your phone number." },
-      "2": { "title": "Verify", "desc": "Enter any number to see its risk score." },
-      "3": { "title": "Stay protected", "desc": "Get real-time alerts on every incoming call." }
+  "pricing": {
+    "title": "Transparent Pay-As-You-Go Pricing",
+    "plans": {
+      "payg": {
+        "badge": "Pay-as-you-go",
+        "price": "$0.001",
+        "perCall": "/ API call",
+        "features": [
+          "Real-time number analysis",
+          "Detailed risk score",
+          "Community status",
+          "Swagger documentation",
+          "Email support"
+        ],
+        "cta": "Get API Key"
+      },
+      "volume": {
+        "badge": "Volume",
+        "title": "Custom Quote",
+        "sub": "volume discount",
+        "features": [
+          "Everything in Pay-as-you-go",
+          "Guaranteed high quotas",
+          "Contractual SLA",
+          "24/7 priority support",
+          "Real-time fraud webhooks"
+        ],
+        "cta": "Contact Team"
+      },
+      "enterprise": {
+        "badge": "Enterprise",
+        "title": "Tailored",
+        "sub": "customized",
+        "features": [
+          "Everything in Volume",
+          "Dedicated dashboards",
+          "Strategic reports",
+          "Guided onboarding",
+          "Custom SLA contract"
+        ],
+        "cta": "Contact Team"
+      }
     }
   },
-  "pricing": {
-    "title": "API Pricing",
-    "subtitle": "Integrate KWISMO into your services",
-    "price": "$0.001",
-    "perCall": "per call",
-    "features": {
-      "api": "Full API access",
-      "support": "Dedicated technical support",
-      "sla": "99.9% SLA guaranteed",
-      "custom": "Customizable scope"
-    },
-    "cta": "Become a partner"
+  "operatorsInstitutions": {
+    "title": "For Operators and Institutions",
+    "subtitle": "Integrate KWISMO collective intelligence and detect fraud across your network.",
+    "badgeTitle": "Join the Ecosystem",
+    "badgeDesc": "Contact within 48 hours",
+    "points": [
+      "Multi-operator collective intelligence",
+      "Documented REST API, fast integration",
+      "Dedicated dashboards and strategic reports"
+    ],
+    "cta": "Become a Partner"
   },
-  "partners": {
-    "title": "They trust us",
-    "subtitle": "Partner operators and institutions"
+  "allYouNeed": {
+    "title": "Everything You Need",
+    "items": [
+      {
+        "title": "Number Verification",
+        "desc": "Instant analysis to detect fraud and risk before transferring."
+      },
+      {
+        "title": "Protected USSD Transfer",
+        "desc": "Security layer on every Mobile Money transfer via USSD code."
+      },
+      {
+        "title": "Suspect Call Detection",
+        "desc": "Identification of risky incoming calls: fake customer support, phishing."
+      },
+      {
+        "title": "Badged Contacts",
+        "desc": "Your trusted contacts receive a community-verified trust badge."
+      },
+      {
+        "title": "WhatsApp Alert",
+        "desc": "Immediate notification if your WhatsApp account experiences hacking attempts."
+      },
+      {
+        "title": "Community Reporting",
+        "desc": "Every report strengthens the collective anti-fraud database."
+      }
+    ]
   },
-  "download": {
-    "title": "Download KWISMO",
-    "subtitle": "Available on iOS and Android",
-    "ios": "App Store",
-    "android": "Google Play"
+  "howItWorks": {
+    "title": "Operational in 3 Steps",
+    "steps": [
+      {
+        "num": "1",
+        "title": "Initialize Your Transfer",
+        "desc": "Enter transaction details on a clean and verified interface"
+      },
+      {
+        "num": "2",
+        "title": "Validate Safely",
+        "desc": "KWISMO analyzes fraud risks and confirms recipient authenticity"
+      },
+      {
+        "num": "3",
+        "title": "Successful Transaction",
+        "desc": "Receive a secure and traceable digital receipt instantly"
+      }
+    ]
+  },
+  "contactForm": {
+    "title": "A Question? An Idea?",
+    "subtitle": "Our team is available to answer all your questions.",
+    "name": "Your name",
+    "email": "Your email address",
+    "subject": "Subject",
+    "message": "Message",
+    "submit": "Send Message",
+    "successTitle": "Message Sent!",
+    "successDesc": "Thank you for reaching out. We will get back to you within 24 to 48 hours."
   },
   "footer": {
-    "rights": "All rights reserved",
-    "privacy": "Privacy",
-    "terms": "Terms",
-    "contact": "Contact"
+    "desc": "Mobile Money anti-fraud protection for African markets.",
+    "colDownload": "Download",
+    "colAbout": "About",
+    "colLegal": "Legal",
+    "rights": "All rights reserved.",
+    "login": "Sign In"
   }
 }

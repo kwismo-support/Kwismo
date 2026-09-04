@@ -1,119 +1,115 @@
-import { ArrowRight, Download } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@iconify/react';
 import ImgHero from '@/assets/illustrations/Img_Hero.png';
 
 export default function Hero() {
+  const { t } = useTranslation('landing');
+
   return (
     <section
       id="accueil"
-      className="w-full overflow-hidden bg-[#151D34]"
+      className="relative min-h-[540px] overflow-hidden bg-[#161E33] py-12 lg:py-16 text-white"
     >
-      <div className="grid min-h-[438px] w-full grid-cols-1 lg:grid-cols-2">
+      {/* Background glow gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#161E33] via-[#0E1726] to-[#0F1626] opacity-95 pointer-events-none" />
 
-        {/* =====================================================
-            COLONNE GAUCHE 
-        ====================================================== */}
-        <div className="flex items-center justify-center px-[8%] py-12 lg:justify-end lg:py-0 lg:pr-[7%]">
+      <div className="relative mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-10 px-6 lg:grid-cols-2 lg:gap-12">
 
-          <div className="w-full max-w-[500px]">
+        {/* COLONNE GAUCHE */}
+        <div className="relative z-10 flex flex-col items-start pt-4 lg:pt-0">
 
-            {/* Titre */}
-            <h1 className="font-title m-0 text-[56px] font-bold leading-[72px] tracking-[-1px] text-white">
-              Sécurisez vos
-              <br />
-              transactions en
-              <br />
-              toute{' '}
-              <span className="text-[#31B58A]">
-                simplicité
+          {/* Titre principal */}
+          <h1 className="font-title max-w-[540px] text-3xl sm:text-4xl lg:text-[44px] font-bold leading-[1.18] tracking-tight text-white">
+            {t('hero.titleLine1', 'Sécurisez vos')}
+            <br />
+            {t('hero.titleLine2', 'transactions en')}
+            <br />
+            {t('hero.titleLine3', 'toute')}{' '}
+            <span className="text-[#32B07F] inline-block">
+              {t('hero.titleHighlight', 'simplicité')}
+            </span>
+          </h1>
+
+          {/* Description */}
+          <p className="mt-4 max-w-[460px] font-body text-xs sm:text-sm font-normal leading-relaxed text-white/80">
+            {t(
+              'hero.subtitle',
+              "KWISMO protège vos transferts Orange Money et MTN MoMo contre les arnaques et les erreurs de saisie. Envoyez et recevez votre argent l'esprit tranquille."
+            )}
+          </p>
+
+          {/* Boutons CTA */}
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            {/* CTA 1: Télécharger l'application avec icône basil:download-solid */}
+            <a
+              href="#download"
+              className="flex h-[44px] items-center gap-2.5 rounded-xl bg-[#32B07F] px-5 font-body text-xs sm:text-sm font-semibold text-white no-underline transition hover:bg-[#2aa072] shadow-md"
+            >
+              <Icon icon="basil:download-solid" className="text-xl shrink-0" />
+              <span>{t('hero.ctaApp', "Télécharger l'application")}</span>
+            </a>
+
+            {/* CTA 2: Devenir partenaire avec icône flèche droite dans un cercle blanc */}
+            <a
+              href="#pricing"
+              className="flex h-[44px] items-center gap-3 rounded-xl bg-[#FF9900] pl-5 pr-2.5 font-body text-xs sm:text-sm font-semibold text-white no-underline transition hover:bg-[#e08700] shadow-md"
+            >
+              <span>{t('hero.ctaPartner', 'Devenir partenaire')}</span>
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#FF9900] shadow-sm">
+                <Icon icon="solar:arrow-right-linear" className="text-sm stroke-[2.5]" />
+              </div>
+            </a>
+          </div>
+
+          {/* Statistiques floutées */}
+          <div className="mt-8 flex items-center rounded-2xl border border-white/15 bg-white/10 p-3.5 backdrop-blur-md shadow-xl">
+
+            <div className="flex flex-col px-4 py-1">
+              <span className="font-title text-xl sm:text-2xl font-bold leading-none text-white">
+                2.4M+
               </span>
-            </h1>
-
-            {/* Description */}
-            <p className="font-body mt-4 max-w-[430px] text-[16px] font-medium leading-[27px] text-white">
-              KWISMO protège vos transferts Orange Money et MTN
-              MoMo contre les arnaques et les erreurs de saisie.
-              Envoyez et recevez votre argent l'esprit tranquille.
-            </p>
-
-            {/* Boutons */}
-            <div className="mt-7 flex flex-wrap items-center gap-4">
-
-              <a
-                href="#download"
-                className="font-body flex h-[42px] items-center gap-2 rounded-lg bg-[#31B58A] px-5 text-[14px] font-semibold text-white no-underline transition-opacity hover:opacity-90"
-              >
-                <Download size={15} strokeWidth={2.2} />
-                <span>Télécharger l'application</span>
-              </a>
-
-              <a
-                href="#partner"
-                className="font-body flex h-[42px] items-center gap-2 rounded-lg bg-[#FF9900] px-5 text-[14px] font-semibold text-white no-underline transition-opacity hover:opacity-90"
-              >
-                <span>Devenir partenaire</span>
-                <ArrowRight size={15} strokeWidth={2.2} />
-              </a>
-
+              <span className="mt-1 font-body text-[10px] sm:text-xs text-white/70">
+                {t('hero.stats.verifiedNumbers', 'numéros vérifiés')}
+              </span>
             </div>
 
-            {/* =================================================
-                STATISTIQUES
-            ================================================== */}
-            <div className="mt-8 inline-flex h-[64px] items-center rounded-xl border border-white/10 bg-white/10 px-2 backdrop-blur-sm">
+            <div className="h-9 w-px bg-white/20" />
 
-              {/* 2.4M+ */}
-              <div className="flex min-w-[110px] flex-col items-center px-3">
-                <span className="font-title text-[20px] font-bold leading-[24px] text-white">
-                  2.4M+
-                </span>
+            <div className="flex flex-col px-4 py-1">
+              <span className="font-title text-xl sm:text-2xl font-bold leading-none text-white">
+                98 %
+              </span>
+              <span className="mt-1 font-body text-[10px] sm:text-xs text-white/70">
+                {t('hero.stats.accuracy', 'Précision')}
+              </span>
+            </div>
 
-                <span className="font-body mt-1 text-[12px] font-normal leading-[16px] text-white/60">
-                  numéros vérifiés
-                </span>
-              </div>
+            <div className="h-9 w-px bg-white/20" />
 
-              <div className="h-[38px] w-px bg-white/20" />
-
-              {/* 98% */}
-              <div className="flex min-w-[90px] flex-col items-center px-3">
-                <span className="font-title text-[20px] font-bold leading-[24px] text-white">
-                  98 %
-                </span>
-
-                <span className="font-body mt-1 text-[12px] font-normal leading-[16px] text-white/60">
-                  Précision
-                </span>
-              </div>
-
-              <div className="h-[38px] w-px bg-white/20" />
-
-              {/* 50+ */}
-              <div className="flex min-w-[80px] flex-col items-center px-3">
-                <span className="font-title text-[20px] font-bold leading-[24px] text-white">
-                  50+
-                </span>
-
-                <span className="font-body mt-1 text-[12px] font-normal leading-[16px] text-white/60">
-                  Opérateurs
-                </span>
-              </div>
-
+            <div className="flex flex-col px-4 py-1">
+              <span className="font-title text-xl sm:text-2xl font-bold leading-none text-white">
+                50+
+              </span>
+              <span className="mt-1 font-body text-[10px] sm:text-xs text-white/70">
+                {t('hero.stats.operators', 'Opérateurs')}
+              </span>
             </div>
 
           </div>
+
         </div>
 
-        {/* =====================================================
-            COLONNE DROITE 
-        ====================================================== */}
-        <div className="relative flex min-h-[438px] items-end justify-center lg:justify-start">
-
-          <img
-            src={ImgHero}
-            alt="KWISMO - Sécurisation des transactions"
-            className="h-auto w-full max-w-[620px] object-contain object-bottom"
-          />
-
+        {/* COLONNE DROITE */}
+        <div className="relative flex h-full items-center justify-center lg:justify-end">
+          <div className="relative z-10 w-full max-w-[540px]">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] rounded-full bg-[#32B07F]/25 blur-2xl pointer-events-none" />
+            
+            <img
+              src={ImgHero}
+              alt="KWISMO Protection App"
+              className="relative z-10 w-full object-contain drop-shadow-2xl"
+            />
+          </div>
         </div>
 
       </div>

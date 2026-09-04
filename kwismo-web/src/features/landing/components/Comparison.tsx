@@ -1,55 +1,65 @@
-import { Check } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@iconify/react';
 
 export default function Comparison() {
-  const benefits = [
-    'Identification des appels et numéros à risque en temps réel',
-    'Vérification du bénéficiaire avant chaque transfert USSD',
-    'Alertes instantanées sur les tentatives de vishing et SIM swap',
-    'Base communautaire alimentée par les signalements des utilisateurs',
-    'Couverture multi-opérateurs sur les principaux marchés africains',
-    'API sécurisée pour les institutions financières partenaires',
+  const { t } = useTranslation('landing');
+
+  const rows = [
+    { key: 'africaFocus', label: t('comparison.features.africaFocus') },
+    { key: 'ussd', label: t('comparison.features.ussd') },
+    { key: 'community', label: t('comparison.features.community') },
+    { key: 'realtime', label: t('comparison.features.realtime') },
+    { key: 'whatsapp', label: t('comparison.features.whatsapp') },
+    { key: 'offline', label: t('comparison.features.offline') },
   ];
 
   return (
-    <section
-      id="comparison"
-      className="w-full bg-white px-6 pb-[70px] pt-[20px]"
-    >
-      <div className="mx-auto max-w-[1200px]">
+    <section id="comparison" className="w-full bg-white dark:bg-[#161E33] px-6 py-16 transition-colors">
+      <div className="mx-auto max-w-[1000px]">
 
-        {/* Titre */}
-        <div className="text-center">
-          <h2 className="font-title text-[40px] font-bold leading-[56px] text-[#151D34]">
-            Ce que KWISMO vous apporte
+        {/* Header */}
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="font-body text-xs font-semibold uppercase tracking-wider text-brand-green">
+            {t('comparison.subtitle')}
+          </span>
+          <h2 className="mt-2 font-title text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
+            {t('comparison.title')}
           </h2>
-
-          <p className="font-body mx-auto mt-1 max-w-[560px] text-[14px] font-medium leading-[20px] text-[#7A8496]">
-            Une protection complète, pensée pour le quotidien des utilisateurs Mobile Money.
-          </p>
         </div>
 
-        {/* Avantages */}
-        <div className="mt-8 grid grid-cols-1 gap-[10px] sm:grid-cols-2 lg:grid-cols-3">
-          {benefits.map((benefit) => (
-            <div
-              key={benefit}
-              className="flex min-h-[48px] items-center rounded-[9px] border border-[#AEB4BE] bg-white px-3"
-            >
-              {/* Icône */}
-              <div className="mr-3 flex h-[14px] w-[14px] shrink-0 items-center justify-center rounded-full bg-[#E7F7F1]">
-                <Check
-                  size={9}
-                  strokeWidth={3}
-                  className="text-[#31B58A]"
-                />
-              </div>
-
-              {/* Texte */}
-              <span className="font-body text-[12px] font-normal leading-[16px] text-[#394052]">
-                {benefit}
-              </span>
-            </div>
-          ))}
+        {/* Table Container */}
+        <div className="mt-10 overflow-x-auto rounded-2xl border border-slate-200 dark:border-white/10 shadow-lg">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-slate-50 dark:bg-[#0F1626] border-b border-slate-200 dark:border-white/10 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-200">
+                <th className="p-4 sm:p-5 font-title">Fonctionnalité</th>
+                <th className="p-4 sm:p-5 text-center text-slate-400">Truecaller</th>
+                <th className="p-4 sm:p-5 text-center text-slate-400">Whoscall</th>
+                <th className="p-4 sm:p-5 text-center font-bold text-brand-green bg-brand-green/10">
+                  <div className="flex items-center justify-center gap-1.5">
+                    <Icon icon="solar:shield-check-bold" className="text-lg" />
+                    <span>KWISMO</span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200 dark:divide-white/10 font-body text-xs sm:text-sm">
+              {rows.map((row, idx) => (
+                <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-white/5 transition">
+                  <td className="p-4 sm:p-5 font-medium text-slate-900 dark:text-white">{row.label}</td>
+                  <td className="p-4 sm:p-5 text-center">
+                    <Icon icon="solar:close-circle-bold" className="mx-auto text-xl text-slate-400" />
+                  </td>
+                  <td className="p-4 sm:p-5 text-center">
+                    <Icon icon="solar:close-circle-bold" className="mx-auto text-xl text-slate-400" />
+                  </td>
+                  <td className="p-4 sm:p-5 text-center bg-brand-green/5">
+                    <Icon icon="solar:check-circle-bold" className="mx-auto text-xl text-brand-green" />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
       </div>

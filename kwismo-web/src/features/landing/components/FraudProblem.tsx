@@ -1,49 +1,50 @@
+import { useTranslation } from 'react-i18next';
+
 export default function FraudProblem() {
+  const { t } = useTranslation('landing');
+
   const statistics = [
     {
-      value: '1 / 3 min',
-      label: 'Vishing',
+      value: t('fraudProblem.stats.vishing.val', '1 / 3 min'),
+      label: t('fraudProblem.stats.vishing.label', 'Vishing'),
     },
     {
-      value: '87 %',
-      label: 'SIM Swap de tentatives\nréussies',
+      value: t('fraudProblem.stats.simswap.val', '87 %'),
+      label: t('fraudProblem.stats.simswap.label', 'SIM Swap de tentatives réussies'),
     },
     {
-      value: '+340 %',
-      label: 'Piratage WhatsApp\nen un an',
+      value: t('fraudProblem.stats.whatsapp.val', '+340 %'),
+      label: t('fraudProblem.stats.whatsapp.label', 'Piratage WhatsApp en un an'),
     },
     {
-      value: '65 %',
-      label: 'Ingénierie sociale de\ntoutes les fraudes',
+      value: t('fraudProblem.stats.socialEng.val', '65 %'),
+      label: t('fraudProblem.stats.socialEng.label', 'Ingénierie sociale de toutes les fraudes'),
     },
   ];
 
   return (
-    <section
-      id="fraud"
-      className="w-full bg-white px-6 py-[70px]"
-    >
+    <section id="fraud" className="w-full bg-white dark:bg-[#0F1626] px-6 py-16 transition-colors">
       <div className="mx-auto max-w-[1200px]">
 
-        {/* Titre */}
+        {/* Header */}
         <div className="text-center">
-          <h2 className="font-title text-[40px] font-bold leading-[56px] text-[#151D34]">
-            La fraude mobile money explose
+          <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-slate-900 dark:text-white">
+            {t('fraudProblem.title', 'La fraude Mobile Money explose')}
           </h2>
         </div>
 
-        {/* Statistiques */}
-        <div className="mt-7 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {statistics.map((stat) => (
+        {/* Grid Stats */}
+        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {statistics.map((stat, idx) => (
             <div
-              key={stat.value}
-              className="flex h-[84px] flex-col items-center justify-center rounded-[10px] border border-[#E5E7EB] bg-white px-4 text-center"
+              key={idx}
+              className="flex h-[110px] flex-col items-center justify-center rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#161E33] px-4 text-center shadow-sm transition hover:shadow-md"
             >
-              <span className="font-body text-[20px] font-semibold leading-[27px] text-[#31B58A]">
+              <span className="font-title text-2xl sm:text-3xl font-extrabold text-[#32B07F]">
                 {stat.value}
               </span>
 
-              <span className="mt-1 whitespace-pre-line font-body text-[12px] font-normal leading-[16px] text-[#151D34]">
+              <span className="mt-1.5 font-body text-xs font-medium text-slate-700 dark:text-slate-200">
                 {stat.label}
               </span>
             </div>

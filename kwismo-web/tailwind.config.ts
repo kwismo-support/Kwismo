@@ -6,6 +6,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        brand: {
+          navy: 'var(--color-brand-navy)',
+          orange: 'var(--color-brand-orange)',
+          green: 'var(--color-brand-green)',
+          blue: 'var(--color-brand-blue)',
+          darkBg: 'var(--color-brand-dark-bg)',
+        },
         primary: {
           50:  'var(--color-primary-50)',
           100: 'var(--color-primary-100)',
@@ -30,10 +37,37 @@ const config: Config = {
         info:    'var(--color-info)',
       },
       fontFamily: {
-        sans:  ["var(--font-sans)"],
-        title: ["Montserrat Alternates", "sans-serif"],
-        body: ["Ageo", "sans-serif"],
-        mono: ["JetBrains Mono", "Fira Code", "monospace"],
+        sans:  ['var(--font-sans)'],
+        title: ['var(--font-title)'],
+        body:  ['var(--font-body)'],
+        mono:  ['var(--font-mono)'],
+      },
+      fontSize: {
+        '2xs': ['var(--text-2xs)', { lineHeight: 'var(--leading-tight)' }],
+        xs:    ['var(--text-xs)',  { lineHeight: 'var(--leading-normal)' }],
+        sm:    ['var(--text-sm)',  { lineHeight: 'var(--leading-normal)' }],
+        base:  ['var(--text-base)',{ lineHeight: 'var(--leading-relaxed)' }],
+        lg:    ['var(--text-lg)',  { lineHeight: 'var(--leading-relaxed)' }],
+        xl:    ['var(--text-xl)',  { lineHeight: 'var(--leading-snug)' }],
+        '2xl': ['var(--text-2xl)', { lineHeight: 'var(--leading-snug)' }],
+        '3xl': ['var(--text-3xl)', { lineHeight: 'var(--leading-tight)' }],
+        '4xl': ['var(--text-4xl)', { lineHeight: 'var(--leading-tight)' }],
+        '5xl': ['var(--text-5xl)', { lineHeight: 'var(--leading-none)' }],
+      },
+      lineHeight: {
+        none:    'var(--leading-none)',
+        tight:   'var(--leading-tight)',
+        snug:    'var(--leading-snug)',
+        normal:  'var(--leading-normal)',
+        relaxed: 'var(--leading-relaxed)',
+        loose:   'var(--leading-loose)',
+      },
+      letterSpacing: {
+        tighter: 'var(--tracking-tighter)',
+        tight:   'var(--tracking-tight)',
+        normal:  'var(--tracking-normal)',
+        wide:    'var(--tracking-wide)',
+        wider:   'var(--tracking-wider)',
       },
       borderRadius: {
         sm:   'var(--radius-sm)',
