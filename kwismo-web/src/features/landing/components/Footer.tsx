@@ -1,4 +1,4 @@
-import { Apple, Facebook, Instagram, Play, Twitter } from 'lucide-react';
+import { Apple, Facebook, Play } from 'lucide-react';
 
 export default function Footer() {
   return (
