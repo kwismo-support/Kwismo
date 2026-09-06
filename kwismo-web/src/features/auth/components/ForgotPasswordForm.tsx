@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
+import { Icon } from '@iconify/react';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { forgotPasswordSchema, type ForgotPasswordInput } from '../schemas/auth.schema';
@@ -44,11 +45,12 @@ export default function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordForm
         </div>
       ) : (
         <Input
-          label={t('identifierLabel')}
-          placeholder={t('identifierPlaceholder')}
+          type="email"
+          label={t('emailLabel')}
+          placeholder={t('emailPlaceholder')}
           leftIcon="solar:letter-bold"
-          errorKey={errors.emailOrPhone?.message}
-          {...register('emailOrPhone')}
+          errorKey={errors.email?.message}
+          {...register('email')}
         />
       )}
 
@@ -66,18 +68,30 @@ export default function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordForm
         </Button>
       )}
 
-      {onBackToLogin && (
-        <Button
-          type="button"
-          variant="outline"
-          size="md"
-          fullWidth
-          onClick={onBackToLogin}
-          leftIcon="solar:alt-arrow-left-bold"
+      <div className="mt-4 flex flex-col items-center gap-3 pt-4 border-t border-slate-200 dark:border-white/10 text-xs">
+        <a
+          href="/auth/login"
+          onClick={(e) => {
+            if (onBackToLogin) {
+              e.preventDefault();
+              onBackToLogin();
+            }
+          }}
+          className="font-medium text-brand-green hover:underline flex items-center gap-1.5"
         >
-          {t('backToLogin')}
-        </Button>
-      )}
+          <Icon icon="solar:alt-arrow-left-bold" className="text-sm" />
+          <span>{t('backToLogin')}</span>
+        </a>
+
+        <a
+          href="/"
+          className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition flex items-center gap-1"
+        >
+          <Icon icon="solar:arrow-left-linear" className="text-sm" />
+          <span>{t('backToHomeLink')}</span>
+        </a>
+      </div>
     </form>
   );
 }
+

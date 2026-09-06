@@ -1,17 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import LoginForm from './components/LoginForm';
 import ForgotPasswordForm from './components/ForgotPasswordForm';
 import ResetPasswordForm from './components/ResetPasswordForm';
+import PartnerRegisterForm from './components/PartnerRegisterForm';
 import LogoNavBar from '@/assets/logo/Logo_NavBar.png';
 import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher';
 import { ThemeToggle } from '@/shared/components/ThemeToggle';
 
-type AuthMode = 'login' | 'forgot' | 'reset';
+type AuthMode = 'login' | 'forgot' | 'reset' | 'register';
 
 export default function AuthPage() {
   const { t } = useTranslation('auth');
   const [mode, setMode] = useState<AuthMode>('login');
+
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path.includes('register')) {
+      setMode('register');
+    } else if (path.includes('forgot')) {
+      setMode('forgot');
+    } else if (path.includes('reset')) {
+      setMode('reset');
+    }
+  }, []);
 
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center p-4 sm:p-6 font-body overflow-hidden">
@@ -28,7 +40,7 @@ export default function AuthPage() {
         <ThemeToggle />
       </div>
 
-      <div className="relative z-20 w-full max-w-md bg-white/95 dark:bg-[#161E33]/95 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-white/10 shadow-2xl p-6 sm:p-8 flex flex-col items-center transition-all">
+      <div className={`relative z-20 w-full ${mode === 'register' ? 'max-w-xl' : 'max-w-md'} bg-white/95 dark:bg-[#161E33]/95 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-white/10 shadow-2xl p-6 sm:p-8 flex flex-col items-center transition-all`}>
         <a href="/" className="mb-6 flex justify-center hover:opacity-90 transition">
           <img src={LogoNavBar} alt="KWISMO" className="h-10 w-auto object-contain" />
         </a>
@@ -38,18 +50,27 @@ export default function AuthPage() {
             {mode === 'login' && t('loginTitle')}
             {mode === 'forgot' && t('forgotTitle')}
             {mode === 'reset' && t('resetTitle')}
+            {mode === 'register' && t('registerTitle')}
           </h2>
-          <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-300 max-w-xs leading-relaxed">
+          <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-300 max-w-sm leading-relaxed">
             {mode === 'login' && t('loginSubtitle')}
             {mode === 'forgot' && t('forgotSubtitle')}
             {mode === 'reset' && t('resetSubtitle')}
+            {mode === 'register' && t('registerSubtitle')}
           </p>
         </div>
 
-        {mode === 'login' && <LoginForm onForgotPassword={() => setMode('forgot')} />}
+        {mode === 'login' && (
+          <LoginForm
+            onForgotPassword={() => setMode('forgot')}
+            onRegisterPartner={() => setMode('register')}
+          />
+        )}
         {mode === 'forgot' && <ForgotPasswordForm onBackToLogin={() => setMode('login')} />}
         {mode === 'reset' && <ResetPasswordForm onSuccess={() => setMode('login')} />}
+        {mode === 'register' && <PartnerRegisterForm onBackToLogin={() => setMode('login')} />}
       </div>
     </div>
   );
 }
+

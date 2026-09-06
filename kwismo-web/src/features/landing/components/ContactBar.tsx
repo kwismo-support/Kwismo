@@ -1,4 +1,3 @@
-// Top contact bar displaying support contact info, social links, theme toggle, and language switcher.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher';
@@ -12,11 +11,11 @@ export default function ContactBar() {
 
   return (
     <div className="w-full bg-slate-100 dark:bg-brand-darkBg text-slate-800 dark:text-white text-xs py-2 px-4 sm:px-8 border-b border-slate-200 dark:border-white/10 transition-colors">
-      <div className="mx-auto flex max-w-[1200px] flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto flex max-w-[90%] flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-5 font-semibold text-brand-green">
           <a
             href={`mailto:${email}`}
-            className="flex items-center gap-1.5 transition hover:underline"
+            className="flex items-center gap-1.5 dark:text-white/80 hover:text-brand-green dark:hover:text-brand-green transition"
           >
             <Icon icon="solar:letter-bold" className="text-sm text-brand-green" />
             <span>{email}</span>
@@ -24,7 +23,7 @@ export default function ContactBar() {
 
           <a
             href={`tel:${phone.replace(/\s+/g, '')}`}
-            className="flex items-center gap-1.5 transition hover:underline"
+            className="flex items-center gap-1.5 dark:text-white/80 hover:text-brand-green dark:hover:text-brand-green transition"
           >
             <Icon icon="solar:phone-calling-bold" className="text-sm text-brand-green" />
             <span>{phone}</span>
@@ -33,13 +32,13 @@ export default function ContactBar() {
 
         <div className="flex items-center justify-between sm:justify-end gap-4">
           <div className="flex items-center gap-3 text-slate-600 dark:text-white/80">
-            <a href="#" aria-label="Facebook" className="hover:text-brand-green transition">
+            <a href="#" aria-label="Facebook" className="dark:text-white/80 hover:text-brand-green dark:hover:text-brand-green transition">
               <Icon icon="bxl:facebook" className="text-base" />
             </a>
-            <a href="#" aria-label="X" className="hover:text-brand-green transition">
+            <a href="#" aria-label="X" className="dark:text-white/80 hover:text-brand-green dark:hover:text-brand-green transition">
               <Icon icon="ri:twitter-x-fill" className="text-sm" />
             </a>
-            <a href="#" aria-label="YouTube" className="hover:text-brand-green transition">
+            <a href="#" aria-label="YouTube" className="dark:text-white/80 hover:text-brand-green dark:hover:text-brand-green transition">
               <Icon icon="bxl:youtube" className="text-base" />
             </a>
           </div>

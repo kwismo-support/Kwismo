@@ -2,7 +2,7 @@
 import { env } from '@/config/env';
 import { apiClient } from '@/shared/lib/axios';
 import { toast } from '@/shared/store/toastStore';
-import type { LoginInput, ForgotPasswordInput, ResetPasswordInput } from '../schemas/auth.schema';
+import type { LoginInput, ForgotPasswordInput, ResetPasswordInput, PartnerRegisterInput } from '../schemas/auth.schema';
 
 const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -10,7 +10,7 @@ export const authApi = {
   login: async (data: LoginInput) => {
     if (env.useMock) {
       await delay();
-      if (data.identifier.includes('fail')) {
+      if (data.email.includes('fail')) {
         toast.error('auth:errors.invalidCredentials');
         throw new Error('Invalid credentials');
       }
@@ -21,16 +21,45 @@ export const authApi = {
           id: 'usr-001',
           nom: 'Mbarga',
           prenom: 'Jean-Baptiste',
-          email: data.identifier,
+          email: data.email,
           role: 'admin',
         },
       };
     }
-    return apiClient.post('/api/v1/auth/login', data).then((r) => {
+    return apiClient.post('/auth/login', {
+      email: data.email,
+      mot_de_passe: data.password,
+      device_id: 'web-browser-device',
+      device_name: 'Kwismo Web App',
+    }).then((r) => {
       toast.success('auth:loginSuccess');
       return r.data;
     }).catch((err) => {
       toast.error(err.response?.data?.message ?? 'auth:errors.invalidCredentials');
+      throw err;
+    });
+  },
+
+  registerPartner: async (data: PartnerRegisterInput) => {
+    if (env.useMock) {
+      await delay(500);
+      toast.success('auth:partnerRegisterSuccess');
+      return { success: true };
+    }
+    return apiClient.post('/auth/register', {
+      nom: data.nomContact,
+      prenom: data.prenomContact,
+      email: data.email,
+      mot_de_passe: 'DefaultPartnerPass123!',
+      nomEntreprise: data.nomEntreprise,
+      typePartenariat: data.typePartenariat,
+      telephone: data.telephone,
+      message: data.message,
+    }).then((r) => {
+      toast.success('auth:partnerRegisterSuccess');
+      return r.data;
+    }).catch((err) => {
+      toast.error(err.response?.data?.message ?? 'errors:http.serverError');
       throw err;
     });
   },
@@ -41,7 +70,7 @@ export const authApi = {
       toast.success('auth:emailSent');
       return { success: true };
     }
-    return apiClient.post('/api/v1/auth/forgot-password', data).then((r) => {
+    return apiClient.post('/auth/password/forgot', data).then((r) => {
       toast.success('auth:emailSent');
       return r.data;
     }).catch((err) => {
@@ -56,7 +85,10 @@ export const authApi = {
       toast.success('auth:passwordChanged');
       return { success: true };
     }
-    return apiClient.post('/api/v1/auth/reset-password', data).then((r) => {
+    return apiClient.post('/auth/password/reset', {
+      token: 'reset-token',
+      new_password: data.newPassword,
+    }).then((r) => {
       toast.success('auth:passwordChanged');
       return r.data;
     }).catch((err) => {
@@ -65,3 +97,4 @@ export const authApi = {
     });
   },
 };
+

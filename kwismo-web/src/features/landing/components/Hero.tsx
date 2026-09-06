@@ -1,4 +1,3 @@
-// Main landing hero section introducing Kwismo value proposition, CTAs, and key metrics.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import ImgHero from '@/assets/illustrations/Img_Hero.png';
@@ -44,8 +43,8 @@ export default function Hero() {
               className="flex h-[44px] items-center gap-3 rounded-xl bg-brand-orange pl-5 pr-2.5 text-xs sm:text-sm font-semibold text-white no-underline transition hover:bg-brand-orange/90 shadow-md"
             >
               <span>{t('landing:hero.ctaPartner')}</span>
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-brand-orange shadow-sm">
-                <Icon icon="solar:arrow-right-linear" className="text-sm stroke-[2.5]" />
+              <div className="flex h-7 w-7 items-center justify-center text-white">
+                <Icon icon="solar:arrow-right-linear" className="text-2xl stroke-[2.5]" />
               </div>
             </a>
           </div>

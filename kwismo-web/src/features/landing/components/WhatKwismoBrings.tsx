@@ -1,4 +1,3 @@
-// Value proposition list highlighting core benefits offered by Kwismo to Mobile Money users.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 
@@ -23,10 +22,10 @@ export default function WhatKwismoBrings() {
           {Array.isArray(points) && points.map((text: string, idx: number) => (
             <div
               key={idx}
-              className="flex items-start gap-3.5 p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-darkBg shadow-sm hover:shadow-md transition"
+              className="flex items-start gap-3.5 p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-darkBg shadow-sm transition"
             >
               <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-green/10 text-brand-green mt-0.5">
-                <Icon icon="solar:check-circle-bold" className="text-base" />
+                <Icon icon="solar:check-circle-bold" className="text-base text-brand-green" />
               </div>
               <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 leading-snug">
                 {text}

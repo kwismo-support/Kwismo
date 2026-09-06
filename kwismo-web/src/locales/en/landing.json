@@ -185,11 +185,20 @@
     "successTitle": "Message Sent!",
     "successDesc": "Thank you for reaching out. We will get back to you within 24 to 48 hours."
   },
+  "pricingTitleNav": "Pricing",
   "footer": {
     "desc": "Mobile Money anti-fraud protection for African markets.",
     "colDownload": "Download",
     "colAbout": "About",
     "colLegal": "Legal",
+    "navTarifs": "Pricing",
+    "navApi": "API",
+    "navPartners": "Partners",
+    "navNews": "News",
+    "legalPrivacy": "Privacy Policy",
+    "legalTerms": "Terms of Use",
+    "legalCookies": "Cookies",
+    "legalSecurity": "Security",
     "rights": "All rights reserved.",
     "login": "Log in"
   },

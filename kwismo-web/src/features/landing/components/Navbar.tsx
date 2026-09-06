@@ -1,5 +1,4 @@
-// Main navigation header bar with desktop links, partner/login CTAs, and mobile responsive drawer.
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import LogoNavBar from '@/assets/logo/Logo_NavBar.png';
@@ -7,13 +6,37 @@ import LogoNavBar from '@/assets/logo/Logo_NavBar.png';
 export default function Navbar() {
   const { t } = useTranslation('landing');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('accueil');
+
+  useEffect(() => {
+    const sections = ['accueil', 'fraud', 'services', 'pricing', 'contact'];
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 200;
+      for (const sectionId of sections) {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          const top = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPosition >= top && scrollPosition < top + height) {
+            setActiveSection(sectionId);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navItems = [
-    { label: t('landing:nav.home'), href: '#accueil', active: true },
-    { label: t('landing:nav.about'), href: '#about' },
-    { label: t('landing:nav.security'), href: '#fraud' },
-    { label: t('landing:nav.features'), href: '#services' },
-    { label: t('landing:nav.contact'), href: '#contact' },
+    { id: 'accueil', label: t('landing:nav.home'), href: '#accueil' },
+    { id: 'fraud', label: t('landing:nav.security'), href: '#fraud' },
+    { id: 'services', label: t('landing:nav.features'), href: '#services' },
+    { id: 'pricing', label: t('landing:pricingTitleNav'), href: '#pricing' },
+    { id: 'contact', label: t('landing:nav.contact'), href: '#contact' },
   ];
 
   return (
@@ -23,37 +46,40 @@ export default function Navbar() {
           <img
             src={LogoNavBar}
             alt="KWISMO Logo"
-            className="h-20 w-auto object-contain transition duration-200 group-hover:scale-105"
+            className="h-20 w-auto object-contain transition duration-200"
           />
         </a>
 
         <nav className="hidden items-center gap-6 lg:flex">
-          {navItems.map((item, idx) => (
-            <a
-              key={idx}
-              href={item.href}
-              className={`font-body text-xs sm:text-sm font-medium transition-colors ${
-                item.active
-                  ? 'text-white font-bold underline underline-offset-4 decoration-brand-orange'
-                  : 'text-white/80 hover:text-white'
-              }`}
-            >
-              {item.label}
-            </a>
-          ))}
+          {navItems.map((item) => {
+            const isActive = activeSection === item.id;
+            return (
+              <a
+                key={item.id}
+                href={item.href}
+                className={`font-body text-xs sm:text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'text-white font-bold underline underline-offset-4 decoration-brand-orange scale-105'
+                    : 'text-white/80 hover:text-white'
+                }`}
+              >
+                {item.label}
+              </a>
+            );
+          })}
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
           <a
-            href="#pricing"
-            className="flex h-[38px] items-center justify-center rounded-full border border-white/40 px-5 font-body text-xs font-semibold text-white no-underline transition hover:bg-white/10"
+            href="/auth/register"
+            className="flex h-[38px] items-center justify-center rounded-full bg-brand-navy px-5 font-body text-xs font-semibold text-white no-underline transition hover:bg-brand-navy/90"
           >
             {t('landing:nav.partner')}
           </a>
 
           <a
             href="/auth/login"
-            className="flex h-[38px] items-center justify-center rounded-full bg-brand-orange px-5 font-body text-xs font-semibold text-white no-underline transition hover:bg-brand-orange/90 shadow-md"
+            className="flex h-[38px] items-center justify-center rounded-full bg-brand-orange px-5 font-body text-xs font-semibold text-white no-underline transition hover:bg-brand-orange/90"
           >
             {t('landing:nav.login')}
           </a>
@@ -61,7 +87,7 @@ export default function Navbar() {
 
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="flex p-2 text-white hover:text-brand-orange lg:hidden"
+          className="flex p-2 text-white hover:text-brand-navy lg:hidden"
           aria-label="Toggle Menu"
         >
           <Icon
@@ -72,30 +98,35 @@ export default function Navbar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="border-t border-white/10 bg-brand-darkGreen px-4 pt-4 pb-6 lg:hidden animate-in slide-in-from-top duration-200">
+        <div className="border-t border-white/10 bg-brand-green px-4 pt-4 pb-6 lg:hidden animate-in slide-in-from-top duration-200">
           <nav className="flex flex-col gap-4">
-            {navItems.map((item, idx) => (
-              <a
-                key={idx}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="font-body text-sm font-medium text-white transition hover:text-brand-orange"
-              >
-                {item.label}
-              </a>
-            ))}
+            {navItems.map((item) => {
+              const isActive = activeSection === item.id;
+              return (
+                <a
+                  key={item.id}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex font-body text-sm font-medium transition justify-center items-center ${
+                    isActive ? 'text-brand-orange font-bold underline' : 'text-white hover:text-brand-orange'
+                  }`}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
 
             <div className="mt-4 flex flex-col gap-3 pt-4 border-t border-white/10">
               <a
-                href="#pricing"
-                className="flex h-[40px] items-center justify-center rounded-full border border-white/40 font-body text-xs font-semibold text-white"
+                href="/auth/register"
+                className="flex h-[40px] items-center justify-center rounded-full bg-brand-navy font-body text-xs font-semibold text-white"
               >
                 {t('landing:nav.partner')}
               </a>
 
               <a
                 href="/auth/login"
-                className="flex h-[40px] items-center justify-center rounded-full bg-brand-orange font-body text-xs font-semibold text-white shadow-md"
+                className="flex h-[40px] items-center justify-center rounded-full bg-brand-orange font-body text-xs font-semibold text-white"
               >
                 {t('landing:nav.login')}
               </a>

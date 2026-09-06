@@ -185,11 +185,20 @@
     "successTitle": "Message envoyé !",
     "successDesc": "Merci de nous avoir contactés. Nous vous répondrons dans un délai de 24 à 48 heures."
   },
+  "pricingTitleNav": "Tarifs",
   "footer": {
     "desc": "Protection anti-fraude Mobile Money pour les marchés africains.",
     "colDownload": "Téléchargement",
     "colAbout": "À propos",
     "colLegal": "Légal",
+    "navTarifs": "Tarifs",
+    "navApi": "API",
+    "navPartners": "Partenaires",
+    "navNews": "Actualités",
+    "legalPrivacy": "Confidentialité",
+    "legalTerms": "CGU",
+    "legalCookies": "Cookies",
+    "legalSecurity": "Sécurité",
     "rights": "Tous droits réservés.",
     "login": "Se connecter"
   },

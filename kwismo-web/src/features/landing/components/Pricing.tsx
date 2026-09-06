@@ -1,4 +1,3 @@
-// Pricing section detailing API billing tiers and enterprise subscription plans.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 
@@ -34,7 +33,7 @@ export default function Pricing() {
 
   return (
     <section id="pricing" className="w-full bg-slate-50 dark:bg-brand-darkBg px-6 py-16 transition-colors font-body">
-      <div className="mx-auto max-w-[1200px]">
+      <div className="mx-auto max-w-[90%]">
         <div className="text-center">
           <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white">
             {t('landing:pricing.title')}
@@ -45,11 +44,10 @@ export default function Pricing() {
           {plans.map((plan, idx) => (
             <div
               key={idx}
-              className={`flex flex-col justify-between rounded-3xl border p-6 shadow-lg transition hover:scale-[1.02] ${
-                plan.featured
-                  ? 'border-brand-green bg-brand-navy text-white ring-2 ring-brand-green'
-                  : 'border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy text-slate-900 dark:text-white'
-              }`}
+              className={`flex flex-col justify-between rounded-3xl border p-6 transition ${plan.featured
+                  ? 'border-brand-green bg-brand-navy text-white'
+                  : 'border-brand-navy dark:border-brand-green border-slate-200 bg-transparent dark:bg-transparent text-slate-900 dark:text-white'
+                }`}
             >
               <div>
                 <span className="text-xs font-semibold uppercase tracking-wider text-brand-green">
@@ -69,7 +67,7 @@ export default function Pricing() {
                   {Array.isArray(plan.features) && plan.features.map((feature, fIdx) => (
                     <div key={fIdx} className="flex items-center gap-2">
                       <Icon icon="solar:check-circle-bold" className="text-brand-green text-sm shrink-0" />
-                      <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                      <span className="text-xs sm:text-sm text-slate-500 dark:text-slate-300">
                         {feature}
                       </span>
                     </div>
@@ -79,7 +77,7 @@ export default function Pricing() {
 
               <a
                 href="#contact"
-                className="mt-8 flex h-11 w-full items-center justify-center rounded-xl bg-brand-green text-xs sm:text-sm font-semibold text-white shadow-md hover:bg-brand-green/90 transition"
+                className="mt-8 flex h-11 w-full items-center justify-center rounded-xl bg-brand-green text-xs sm:text-sm font-semibold text-white hover:bg-brand-green/90 transition"
               >
                 {plan.button}
               </a>

@@ -10,7 +10,7 @@ export default function DownloadCTA() {
     <section id="download" className="w-full bg-brand-navy text-white px-6 py-16 transition-colors relative overflow-hidden font-body">
       <div className="absolute inset-0 bg-gradient-to-r from-brand-navy via-brand-navy to-brand-darkBg opacity-95 pointer-events-none" />
 
-      <div className="relative mx-auto max-w-[1200px] grid grid-cols-1 lg:grid-cols-2 items-center gap-12">
+      <div className="relative mx-auto max-w-[90%] grid grid-cols-1 lg:grid-cols-2 items-center gap-12">
         <div className="flex flex-col items-start">
           <span className="text-xs font-semibold uppercase tracking-wider text-brand-green">
             {t('landing:download.badge')}

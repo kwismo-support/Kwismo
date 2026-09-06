@@ -10,9 +10,10 @@ import { authApi } from '../services/auth.api';
 
 interface LoginFormProps {
   onForgotPassword?: () => void;
+  onRegisterPartner?: () => void;
 }
 
-export default function LoginForm({ onForgotPassword }: LoginFormProps) {
+export default function LoginForm({ onForgotPassword, onRegisterPartner }: LoginFormProps) {
   const { t } = useTranslation('auth');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -40,11 +41,12 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full font-body">
       <Input
-        label={t('identifierLabel')}
-        placeholder={t('identifierPlaceholder')}
-        leftIcon="solar:user-bold"
-        errorKey={errors.identifier?.message}
-        {...register('identifier')}
+        type="email"
+        label={t('emailLabel')}
+        placeholder={t('emailPlaceholder')}
+        leftIcon="solar:letter-bold"
+        errorKey={errors.email?.message}
+        {...register('email')}
       />
 
       <div className="flex flex-col gap-1.5">
@@ -92,6 +94,31 @@ export default function LoginForm({ onForgotPassword }: LoginFormProps) {
       >
         {t('submitLogin')}
       </Button>
+
+      <div className="mt-4 flex flex-col items-center gap-3 pt-4 border-t border-slate-200 dark:border-white/10 text-xs">
+        <a
+          href="/auth/register"
+          onClick={(e) => {
+            if (onRegisterPartner) {
+              e.preventDefault();
+              onRegisterPartner();
+            }
+          }}
+          className="font-medium text-brand-green hover:underline flex items-center gap-1.5"
+        >
+          <Icon icon="solar:hand-stars-bold" className="text-sm" />
+          <span>{t('partnerRegisterLink')}</span>
+        </a>
+
+        <a
+          href="/"
+          className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition flex items-center gap-1"
+        >
+          <Icon icon="solar:arrow-left-linear" className="text-sm" />
+          <span>{t('backToHomeLink')}</span>
+        </a>
+      </div>
     </form>
   );
 }
+

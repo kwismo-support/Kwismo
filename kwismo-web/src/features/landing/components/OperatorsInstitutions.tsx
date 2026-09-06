@@ -1,4 +1,3 @@
-// Partner section tailored for telecommunication operators and financial institutions.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import ImgOperateur from '@/assets/illustrations/Img_Operateur.jpeg';
@@ -10,7 +9,7 @@ export default function OperatorsInstitutions() {
 
   return (
     <section className="w-full bg-slate-50 dark:bg-brand-navy px-6 py-16 transition-colors font-body">
-      <div className="mx-auto max-w-[1200px] grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12">
+      <div className="mx-auto max-w-[90%] grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12">
         <div className="relative flex justify-center h-full">
           <div className="relative overflow-hidden rounded-3xl border border-slate-200 dark:border-white/10 shadow-2xl w-full h-full min-h-[340px]">
             <img
@@ -54,8 +53,8 @@ export default function OperatorsInstitutions() {
             className="mt-8 flex h-[44px] items-center gap-3 rounded-xl bg-brand-green pl-6 pr-2.5 text-xs sm:text-sm font-semibold text-white shadow-md hover:bg-brand-green/90 transition"
           >
             <span>{t('landing:operatorsInstitutions.cta')}</span>
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-brand-green shadow-sm">
-              <Icon icon="solar:arrow-right-linear" className="text-sm stroke-[2.5]" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-full text-white">
+              <Icon icon="solar:arrow-right-linear" className="text-xl stroke-[2.5]" />
             </div>
           </a>
         </div>

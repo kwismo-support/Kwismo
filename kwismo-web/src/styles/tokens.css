@@ -7,7 +7,7 @@
 :root {
   /* ── 1. POLICES DE CARACTÈRES AVEC FALLBACKS UNIVERSELS ──── */
   --font-title: 'Montserrat Alternates', system-ui, -apple-system, sans-serif;
-  --font-body: 'Inter', 'Ageo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Ageo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-sans: var(--font-body);
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 

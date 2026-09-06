@@ -29,7 +29,7 @@ export default function AfricanTeam() {
 
   return (
     <section id="about" className="w-full bg-brand-darkGreen text-white px-6 py-16 transition-colors">
-      <div className="mx-auto max-w-[1200px] grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12">
+      <div className="mx-auto max-w-[90%] grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12">
         <div className="flex flex-col justify-between items-start">
           <div>
             <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-white">

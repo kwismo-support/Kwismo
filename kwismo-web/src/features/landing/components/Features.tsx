@@ -46,7 +46,7 @@ export default function Features() {
 
   return (
     <section id="services" className="w-full bg-slate-50 dark:bg-brand-darkBg px-6 py-16 transition-colors font-body">
-      <div className="mx-auto max-w-[1200px]">
+      <div className="mx-auto max-w-[90%]">
         <div className="text-center max-w-2xl mx-auto">
           <span className="text-xs font-semibold uppercase tracking-wider text-brand-orange">
             {t('features.subtitle')}

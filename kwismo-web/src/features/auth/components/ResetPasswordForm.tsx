@@ -77,6 +77,25 @@ export default function ResetPasswordForm({ onSuccess }: ResetPasswordFormProps)
       >
         {t('submitReset')}
       </Button>
+
+      <div className="mt-4 flex flex-col items-center gap-3 pt-4 border-t border-slate-200 dark:border-white/10 text-xs">
+        <a
+          href="/auth/login"
+          className="font-medium text-brand-green hover:underline flex items-center gap-1.5"
+        >
+          <Icon icon="solar:alt-arrow-left-bold" className="text-sm" />
+          <span>{t('backToLogin')}</span>
+        </a>
+
+        <a
+          href="/"
+          className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition flex items-center gap-1"
+        >
+          <Icon icon="solar:arrow-left-linear" className="text-sm" />
+          <span>{t('backToHomeLink')}</span>
+        </a>
+      </div>
     </form>
   );
 }
+
