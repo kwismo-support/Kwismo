@@ -1,39 +1,62 @@
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
+import { Button } from '@/shared/ui/button';
+import type { OperatorDTO } from '@/shared/mock';
 
-const mockOperators = [
-  { name: 'Orange Money CM', country: 'Cameroun', ussdCode: '*150#', status: 'Opérationnel' },
-  { name: 'MTN MoMo CM', country: 'Cameroun', ussdCode: '*126#', status: 'Opérationnel' },
-  { name: 'Moov Money CI', country: 'Côte d\'Ivoire', ussdCode: '*155#', status: 'Opérationnel' },
-  { name: 'Wave CI', country: 'Côte d\'Ivoire', ussdCode: 'API Direct', status: 'Opérationnel' },
-];
+interface OperatorsPanelProps {
+  operators: OperatorDTO[];
+  isLoading?: boolean;
+  onAddOperator?: () => void;
+}
 
-export default function OperatorsPanel() {
+export default function OperatorsPanel({ operators, isLoading = false, onAddOperator }: OperatorsPanelProps) {
+  const { t } = useTranslation(['admin', 'common']);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-4 p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm animate-pulse font-body">
+        <div className="h-4 bg-slate-200 dark:bg-white/10 rounded w-48 mb-2" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-16 rounded-xl bg-slate-100 dark:bg-white/5" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col gap-4 p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy shadow-sm font-body">
+    <div className="flex flex-col gap-4 p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm font-body">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="font-title text-base font-bold text-slate-900 dark:text-white">
-            Opérateurs Réseau Supportés
+            {t('admin:ussd.operators')}
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Intégrations réseau et passerelles USSD.
-          </p>
         </div>
+        {onAddOperator && (
+          <Button size="xs" variant="primary" leftIcon="solar:cellphone-bold" onClick={onAddOperator}>
+            {t('admin:ussd.addOperator')}
+          </Button>
+        )}
       </div>
 
       <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {mockOperators.map((op, idx) => (
-          <div key={idx} className="p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-darkBg flex items-center justify-between">
+        {operators.map((op) => (
+          <div key={op.id} className="p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Icon icon="solar:cellphone-linear" className="text-2xl text-brand-orange" />
               <div>
-                <h4 className="font-title text-xs font-bold text-slate-900 dark:text-white">{op.name}</h4>
-                <p className="font-mono text-[11px] text-slate-500">{op.country} • {op.ussdCode}</p>
+                <h4 className="font-title text-xs font-bold text-slate-900 dark:text-white">{op.nom}</h4>
+                <p className="font-mono text-[11px] text-slate-500">{op.countryName}</p>
               </div>
             </div>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-brand-green/10 text-brand-green">
-              {op.status}
-            </span>
+            <div className="flex gap-1 flex-wrap justify-end">
+              {op.prefixes.slice(0, 3).map((p) => (
+                <span key={p} className="px-2 py-0.5 rounded-md bg-white dark:bg-white/10 text-slate-700 dark:text-slate-200 font-mono text-[10px]">
+                  {p}
+                </span>
+              ))}
+            </div>
           </div>
         ))}
       </div>
