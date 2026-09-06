@@ -1,3 +1,4 @@
+// Comparison section table contrasting Kwismo features against generic caller ID applications.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 
@@ -5,34 +6,31 @@ export default function Comparison() {
   const { t } = useTranslation('landing');
 
   const rows = [
-    { key: 'africaFocus', label: t('comparison.features.africaFocus') },
-    { key: 'ussd', label: t('comparison.features.ussd') },
-    { key: 'community', label: t('comparison.features.community') },
-    { key: 'realtime', label: t('comparison.features.realtime') },
-    { key: 'whatsapp', label: t('comparison.features.whatsapp') },
-    { key: 'offline', label: t('comparison.features.offline') },
+    { key: 'africaFocus', label: t('landing:comparison.features.africaFocus') },
+    { key: 'ussd', label: t('landing:comparison.features.ussd') },
+    { key: 'community', label: t('landing:comparison.features.community') },
+    { key: 'realtime', label: t('landing:comparison.features.realtime') },
+    { key: 'whatsapp', label: t('landing:comparison.features.whatsapp') },
+    { key: 'offline', label: t('landing:comparison.features.offline') },
   ];
 
   return (
     <section id="comparison" className="w-full bg-white dark:bg-[#161E33] px-6 py-16 transition-colors">
       <div className="mx-auto max-w-[1000px]">
-
-        {/* Header */}
         <div className="text-center max-w-2xl mx-auto">
           <span className="font-body text-xs font-semibold uppercase tracking-wider text-brand-green">
-            {t('comparison.subtitle')}
+            {t('landing:comparison.subtitle')}
           </span>
           <h2 className="mt-2 font-title text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
-            {t('comparison.title')}
+            {t('landing:comparison.title')}
           </h2>
         </div>
 
-        {/* Table Container */}
         <div className="mt-10 overflow-x-auto rounded-2xl border border-slate-200 dark:border-white/10 shadow-lg">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 dark:bg-[#0F1626] border-b border-slate-200 dark:border-white/10 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-200">
-                <th className="p-4 sm:p-5 font-title">Fonctionnalité</th>
+                <th className="p-4 sm:p-5 font-title">{t('landing:comparison.featureHeader')}</th>
                 <th className="p-4 sm:p-5 text-center text-slate-400">Truecaller</th>
                 <th className="p-4 sm:p-5 text-center text-slate-400">Whoscall</th>
                 <th className="p-4 sm:p-5 text-center font-bold text-brand-green bg-brand-green/10">
@@ -61,7 +59,6 @@ export default function Comparison() {
             </tbody>
           </table>
         </div>
-
       </div>
     </section>
   );

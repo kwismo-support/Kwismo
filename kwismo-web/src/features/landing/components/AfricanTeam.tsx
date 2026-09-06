@@ -1,3 +1,4 @@
+// African team presentation section displaying team mission, community, and approach.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import ImgEquipe from '@/assets/illustrations/Img_Equipe.jpeg';
@@ -7,54 +8,48 @@ export default function AfricanTeam() {
 
   const cards = [
     {
-      title: t('africanTeam.cards.mission.title', 'Notre mission'),
-      desc: t('africanTeam.cards.mission.desc', 'Rendre chaque transaction Mobile Money sûre et sereine, partout en Afrique.'),
+      title: t('africanTeam.cards.mission.title'),
+      desc: t('africanTeam.cards.mission.desc'),
       icon: 'solar:target-bold-duotone',
-      iconBg: 'bg-[#FF9900]/10 text-[#FF9900]',
+      iconBg: 'bg-brand-orange/10 text-brand-orange',
     },
     {
-      title: t('africanTeam.cards.community.title', 'Notre communauté'),
-      desc: t('africanTeam.cards.community.desc', 'Des millions d\'utilisateurs qui signalent et protègent, ensemble, en temps réel.'),
+      title: t('africanTeam.cards.community.title'),
+      desc: t('africanTeam.cards.community.desc'),
       icon: 'solar:users-group-two-rounded-bold',
-      iconBg: 'bg-[#32B07F]/10 text-[#32B07F]',
+      iconBg: 'bg-brand-green/10 text-brand-green',
     },
     {
-      title: t('africanTeam.cards.approach.title', 'Notre approche'),
-      desc: t('africanTeam.cards.approach.desc', 'Une technologie locale, pensée pour les usages et les réseaux africains.'),
+      title: t('africanTeam.cards.approach.title'),
+      desc: t('africanTeam.cards.approach.desc'),
       icon: 'solar:bolt-bold',
-      iconBg: 'bg-[#FF9900]/10 text-[#FF9900]',
+      iconBg: 'bg-brand-orange/10 text-brand-orange',
     },
   ];
 
   return (
-    <section id="about" className="w-full bg-[#104E37] text-white px-6 py-16 transition-colors">
+    <section id="about" className="w-full bg-brand-darkGreen text-white px-6 py-16 transition-colors">
       <div className="mx-auto max-w-[1200px] grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12">
-
-        {/* Left Column */}
         <div className="flex flex-col justify-between items-start">
           <div>
             <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-white">
-              {t('africanTeam.title', 'Une équipe africaine au service de la confiance numérique')}
+              {t('africanTeam.title')}
             </h2>
 
             <p className="mt-4 font-body text-xs sm:text-sm leading-relaxed text-white/90">
-              {t(
-                'africanTeam.desc',
-                "KWISMO est né d'un constat simple : le Mobile Money a transformé nos économies, mais la fraude avance aussi vite que l'innovation. Nous construisons le bouclier collectif qui manquait."
-              )}
+              {t('africanTeam.desc')}
             </p>
           </div>
 
           <div className="mt-6 overflow-hidden rounded-3xl border-2 border-white/20 shadow-2xl w-full flex-1 min-h-[260px]">
             <img
               src={ImgEquipe}
-              alt="Équipe KWISMO"
+              alt="KWISMO"
               className="w-full h-full object-cover object-center"
             />
           </div>
         </div>
 
-        {/* Right Column: 3 White Cards filling 100% height matching left column */}
         <div className="flex flex-col justify-between gap-5 h-full">
           {cards.map((card, idx) => (
             <div
@@ -76,7 +71,6 @@ export default function AfricanTeam() {
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );

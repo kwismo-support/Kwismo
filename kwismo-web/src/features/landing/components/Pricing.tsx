@@ -1,163 +1,91 @@
+// Pricing section detailing API billing tiers and enterprise subscription plans.
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@iconify/react';
+
 export default function Pricing() {
+  const { t } = useTranslation('landing');
+
   const plans = [
     {
-      type: 'Pay-as-you-go',
-      price: '0,001 $',
-      suffix: '/ appel API',
-      description: 'Analysez vos numéros en temps réel.',
-      features: [
-        'Analyse numéro temps réel',
-        'Score de risque détaillé',
-        'Détection communautaire',
-        'Documentation Swagger',
-        'Support email',
-      ],
-      button: 'Obtenir une clé API',
+      type: t('landing:pricing.plans.payg.badge'),
+      price: t('landing:pricing.plans.payg.price'),
+      suffix: t('landing:pricing.plans.payg.perCall'),
+      features: t('landing:pricing.plans.payg.features', { returnObjects: true }) as string[],
+      button: t('landing:pricing.plans.payg.cta'),
       featured: false,
     },
     {
-      type: 'Volume',
-      price: 'Sur devis',
-      suffix: '',
-      description: 'Pour les gros volumes.',
-      features: [
-        'Tout Pay-as-you-go',
-        'Quotas élevés garantis',
-        'SLA contractuel',
-        'Support prioritaire 24/7',
-        'Webhooks fraudés temps réel',
-      ],
-      button: "Contacter l'équipe",
+      type: t('landing:pricing.plans.volume.badge'),
+      price: t('landing:pricing.plans.volume.title'),
+      suffix: t('landing:pricing.plans.volume.sub'),
+      features: t('landing:pricing.plans.volume.features', { returnObjects: true }) as string[],
+      button: t('landing:pricing.plans.volume.cta'),
       featured: true,
     },
     {
-      type: 'Entreprise',
-      price: 'Sur mesure',
-      suffix: '',
-      description: 'Pour les besoins personnalisés.',
-      features: [
-        'Tout Volume',
-        'Tableaux de bord dédiés',
-        'Rapports stratégiques',
-        'Intégration accompagnée',
-        'Contrat SLA personnalisé',
-      ],
-      button: "Contacter l'équipe",
+      type: t('landing:pricing.plans.enterprise.badge'),
+      price: t('landing:pricing.plans.enterprise.title'),
+      suffix: t('landing:pricing.plans.enterprise.sub'),
+      features: t('landing:pricing.plans.enterprise.features', { returnObjects: true }) as string[],
+      button: t('landing:pricing.plans.enterprise.cta'),
       featured: false,
     },
   ];
 
   return (
-    <section
-      id="pricing"
-      className="w-full bg-white px-6 py-[58px]"
-    >
+    <section id="pricing" className="w-full bg-slate-50 dark:bg-brand-darkBg px-6 py-16 transition-colors font-body">
       <div className="mx-auto max-w-[1200px]">
-
-        {/* Titre */}
         <div className="text-center">
-          <h2 className="font-title text-[28px] font-bold leading-[40px] text-[#151D34]">
-            Facturation transparente à l'usage
+          <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white">
+            {t('landing:pricing.title')}
           </h2>
         </div>
 
-        {/* Cards */}
-        <div className="mx-auto mt-5 grid max-w-[1060px] grid-cols-1 gap-3 md:grid-cols-3">
-
-          {plans.map((plan) => (
+        <div className="mx-auto mt-10 grid max-w-[1060px] grid-cols-1 gap-6 md:grid-cols-3 items-stretch">
+          {plans.map((plan, idx) => (
             <div
-              key={plan.type}
-              className={`flex min-h-[168px] flex-col rounded-[7px] border p-3 ${
+              key={idx}
+              className={`flex flex-col justify-between rounded-3xl border p-6 shadow-lg transition hover:scale-[1.02] ${
                 plan.featured
-                  ? 'border-[#151D34] bg-[#151D34] text-white'
-                  : 'border-[#AEB4BE] bg-white text-[#151D34]'
+                  ? 'border-brand-green bg-brand-navy text-white ring-2 ring-brand-green'
+                  : 'border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy text-slate-900 dark:text-white'
               }`}
             >
-
-              {/* Type */}
-              <span
-                className={`font-body text-[9px] font-semibold ${
-                  plan.featured
-                    ? 'text-[#31B58A]'
-                    : 'text-[#31B58A]'
-                }`}
-              >
-                {plan.type}
-              </span>
-
-              {/* Prix */}
-              <div className="mt-1">
-                <span className="font-title text-[20px] font-bold leading-[24px]">
-                  {plan.price}
+              <div>
+                <span className="text-xs font-semibold uppercase tracking-wider text-brand-green">
+                  {plan.type}
                 </span>
 
-                {plan.suffix && (
-                  <span
-                    className={`font-body ml-1 text-[8px] ${
-                      plan.featured
-                        ? 'text-white/60'
-                        : 'text-[#7A8496]'
-                    }`}
-                  >
-                    {plan.suffix}
+                <div className="mt-2 flex items-baseline gap-1">
+                  <span className="font-title text-2xl sm:text-3xl font-extrabold">
+                    {plan.price}
                   </span>
-                )}
+                  {plan.suffix && (
+                    <span className="text-xs opacity-75">{plan.suffix}</span>
+                  )}
+                </div>
+
+                <div className="mt-6 flex flex-col gap-2.5">
+                  {Array.isArray(plan.features) && plan.features.map((feature, fIdx) => (
+                    <div key={fIdx} className="flex items-center gap-2">
+                      <Icon icon="solar:check-circle-bold" className="text-brand-green text-sm shrink-0" />
+                      <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                        {feature}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Description */}
-              <p
-                className={`font-body mt-0.5 text-[8px] leading-[12px] ${
-                  plan.featured
-                    ? 'text-white/70'
-                    : 'text-[#7A8496]'
-                }`}
-              >
-                {plan.description}
-              </p>
-
-              {/* Features */}
-              <div className="mt-2 flex flex-col gap-1">
-                {plan.features.map((feature) => (
-                  <div
-                    key={feature}
-                    className="flex items-start gap-1.5"
-                  >
-                    <span
-                      className={`mt-[3px] text-[8px] ${
-                        plan.featured
-                          ? 'text-white/70'
-                          : 'text-[#667085]'
-                      }`}
-                    >
-                      ✓
-                    </span>
-
-                    <span
-                      className={`font-body text-[8px] leading-[11px] ${
-                        plan.featured
-                          ? 'text-white/75'
-                          : 'text-[#667085]'
-                      }`}
-                    >
-                      {feature}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Bouton */}
-              <button
-                type="button"
-                className="font-body mt-auto flex h-[28px] w-full items-center justify-center rounded-[6px] bg-[#31B58A] text-[8px] font-semibold text-white transition-opacity hover:opacity-90"
+              <a
+                href="#contact"
+                className="mt-8 flex h-11 w-full items-center justify-center rounded-xl bg-brand-green text-xs sm:text-sm font-semibold text-white shadow-md hover:bg-brand-green/90 transition"
               >
                 {plan.button}
-              </button>
-
+              </a>
             </div>
           ))}
-
         </div>
-
       </div>
     </section>
   );

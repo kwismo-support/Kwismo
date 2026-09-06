@@ -191,6 +191,27 @@
     "colAbout": "About",
     "colLegal": "Legal",
     "rights": "All rights reserved.",
-    "login": "Sign In"
+    "login": "Log in"
+  },
+  "download": {
+    "badge": "KWISMO Mobile App",
+    "title": "Download KWISMO for Free",
+    "subtitle": "Protect your daily Mobile Money transactions.",
+    "downloadOn": "Download on",
+    "ios": "App Store",
+    "android": "Google Play"
+  },
+  "comparison": {
+    "title": "Why Choose KWISMO?",
+    "subtitle": "Anti-fraud Solution Comparison",
+    "featureHeader": "Feature",
+    "features": {
+      "africaFocus": "Specific to African Mobile Money",
+      "ussd": "USSD Protection & Overlay",
+      "community": "Community Reports Database",
+      "realtime": "Real-time AI Risk Score",
+      "whatsapp": "WhatsApp Impersonation Detection",
+      "offline": "Works Offline via USSD"
+    }
   }
 }

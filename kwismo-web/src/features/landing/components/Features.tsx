@@ -1,3 +1,4 @@
+// Features grid section presenting main Kwismo functional capabilities.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 
@@ -44,12 +45,10 @@ export default function Features() {
   ];
 
   return (
-    <section id="services" className="w-full bg-slate-50 dark:bg-brand-darkBg px-6 py-16 transition-colors">
+    <section id="services" className="w-full bg-slate-50 dark:bg-brand-darkBg px-6 py-16 transition-colors font-body">
       <div className="mx-auto max-w-[1200px]">
-
-        {/* Header */}
         <div className="text-center max-w-2xl mx-auto">
-          <span className="font-body text-xs font-semibold uppercase tracking-wider text-brand-orange">
+          <span className="text-xs font-semibold uppercase tracking-wider text-brand-orange">
             {t('features.subtitle')}
           </span>
           <h2 className="mt-2 font-title text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
@@ -57,7 +56,6 @@ export default function Features() {
           </h2>
         </div>
 
-        {/* Features Grid */}
         <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {featureList.map((item, idx) => (
             <div
@@ -72,13 +70,12 @@ export default function Features() {
                 {item.title}
               </h3>
 
-              <p className="mt-2 font-body text-xs sm:text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+              <p className="mt-2 text-xs sm:text-sm leading-relaxed text-slate-600 dark:text-slate-300">
                 {item.desc}
               </p>
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );

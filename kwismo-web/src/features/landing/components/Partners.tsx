@@ -1,87 +1,61 @@
-import { ArrowRight, Check } from 'lucide-react';
+// Partners showcase component presenting ecosystem benefits for financial institutions.
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@iconify/react';
 import ImgOperateur from '@/assets/illustrations/Img_Operateur.jpeg';
 
 export default function Partners() {
-  const benefits = [
-    'Intelligence collective multi-opérateurs',
-    'API REST documentée, intégration rapide',
-    'Tableaux de bord et rapports dédiés',
-  ];
+  const { t } = useTranslation('landing');
+
+  const benefits = t('operatorsInstitutions.points', { returnObjects: true }) as string[];
 
   return (
-    <section
-      id="partner"
-      className="w-full bg-white px-6 pb-[65px] pt-[25px]"
-    >
+    <section id="partner" className="w-full bg-white dark:bg-brand-darkBg px-6 py-12 font-body transition-colors">
       <div className="mx-auto grid max-w-[1060px] grid-cols-1 items-center gap-8 md:grid-cols-2">
-
-        {/* Image */}
-        <div className="relative overflow-hidden rounded-[8px]">
+        <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10 shadow-lg">
           <img
             src={ImgOperateur}
-            alt="Rejoignez l'écosystème KWISMO"
+            alt="KWISMO"
             className="h-auto w-full object-cover"
           />
 
-          {/* Texte sur l'image */}
-          <div className="absolute bottom-3 left-3">
-            <p className="font-body text-[11px] font-semibold text-white">
-              Rejoignez l'écosystème
+          <div className="absolute bottom-3 left-3 p-3 rounded-xl bg-black/60 backdrop-blur-md border border-white/20 text-white">
+            <p className="font-title text-xs font-semibold">
+              {t('landing:operatorsInstitutions.badgeTitle')}
             </p>
-
-            <p className="font-body text-[8px] text-white/80">
-              Contactez-nous
+            <p className="text-[10px] text-white/80">
+              {t('landing:operatorsInstitutions.badgeDesc')}
             </p>
           </div>
         </div>
 
-        {/* Contenu */}
         <div className="flex flex-col items-start">
-
-          <h2 className="font-title max-w-[390px] text-[28px] font-bold leading-[32px] text-[#151D34]">
-            Pour les opérateurs et
-            <br />
-            institutions
+          <h2 className="font-title text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
+            {t('landing:operatorsInstitutions.title')}
           </h2>
 
-          <p className="font-body mt-3 max-w-[390px] text-[12px] font-normal leading-[16px] text-[#7A8496]">
-            Intégrez l'intelligence collective KWISMO et détectez la fraude à
-            l'échelle de votre réseau.
+          <p className="mt-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            {t('landing:operatorsInstitutions.subtitle')}
           </p>
 
-          {/* Liste */}
-          <div className="mt-4 flex flex-col gap-2">
-            {benefits.map((benefit) => (
-              <div
-                key={benefit}
-                className="flex items-center gap-2"
-              >
-                <span className="flex h-[13px] w-[13px] shrink-0 items-center justify-center rounded-full bg-[#E7F7F1]">
-                  <Check
-                    size={8}
-                    strokeWidth={3}
-                    className="text-[#31B58A]"
-                  />
-                </span>
-
-                <span className="font-body text-[10px] font-medium leading-[14px] text-[#394052]">
+          <div className="mt-4 flex flex-col gap-2.5">
+            {Array.isArray(benefits) && benefits.map((benefit, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <Icon icon="solar:check-circle-bold" className="text-brand-green text-sm shrink-0" />
+                <span className="text-xs text-slate-700 dark:text-slate-200">
                   {benefit}
                 </span>
               </div>
             ))}
           </div>
 
-          {/* Bouton */}
           <a
             href="#contact"
-            className="font-body mt-4 flex h-[30px] items-center gap-2 rounded-[7px] bg-[#31B58A] px-4 text-[9px] font-semibold text-white no-underline transition-opacity hover:opacity-90"
+            className="mt-6 flex h-10 items-center gap-2 rounded-xl bg-brand-green px-5 text-xs font-semibold text-white transition hover:bg-brand-green/90 shadow-md"
           >
-            Devenir partenaire
-            <ArrowRight size={11} />
+            <span>{t('landing:operatorsInstitutions.cta')}</span>
+            <Icon icon="solar:arrow-right-linear" className="text-sm" />
           </a>
-
         </div>
-
       </div>
     </section>
   );

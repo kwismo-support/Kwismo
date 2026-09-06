@@ -1,3 +1,4 @@
+// Footer navigation component rendering links, legal notices, language selector, and login CTA.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher';
@@ -7,21 +8,16 @@ export default function Footer() {
   const { t } = useTranslation('landing');
 
   return (
-    <footer className="w-full bg-slate-100 dark:bg-[#0E1726] text-slate-800 dark:text-white pt-16 pb-8 border-t border-slate-200 dark:border-white/10 transition-colors">
+    <footer className="w-full bg-slate-100 dark:bg-brand-darkBg text-slate-800 dark:text-white pt-16 pb-8 border-t border-slate-200 dark:border-white/10 transition-colors font-body">
       <div className="mx-auto max-w-[1200px] px-6">
-
-        {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-10 pb-12 border-b border-slate-200 dark:border-white/10">
-
-          {/* Left 2 Cols: Brand & Stores */}
           <div className="md:col-span-2 flex flex-col items-start">
             <img src={LogoNavBar} alt="KWISMO Logo" className="h-9 w-auto object-contain" />
 
-            <p className="mt-4 font-body text-xs text-slate-600 dark:text-white/70 max-w-sm leading-relaxed">
-              {t('footer.desc', 'Protection anti-fraude Mobile Money pour les marchés africains.')}
+            <p className="mt-4 text-xs text-slate-600 dark:text-white/70 max-w-sm leading-relaxed">
+              {t('landing:footer.desc')}
             </p>
 
-            {/* App Store / Play Store Buttons */}
             <div className="mt-6 flex items-center gap-3">
               <a
                 href="#"
@@ -35,82 +31,60 @@ export default function Footer() {
                 href="#"
                 className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-white/10 border border-slate-300 dark:border-white/15 hover:bg-slate-200 dark:hover:bg-white/20 transition text-xs font-semibold"
               >
-                <Icon icon="bxl:play-store" className="text-xl text-[#32B07F]" />
+                <Icon icon="bxl:play-store" className="text-xl text-brand-green" />
                 <span className="font-mono text-[11px]">Google Play</span>
               </a>
             </div>
           </div>
 
-          {/* Col 3: Téléchargement */}
-          <div className="flex flex-col gap-3 font-body text-xs">
+          <div className="flex flex-col gap-3 text-xs">
             <h4 className="font-title text-sm font-bold text-slate-900 dark:text-white mb-1">
-              {t('footer.colDownload', 'Téléchargement')}
+              {t('landing:footer.colDownload')}
             </h4>
-            <a href="#services" className="text-slate-600 dark:text-white/70 hover:text-[#32B07F] dark:hover:text-white transition">
-              {t('nav.features', 'Fonctionnalités')}
+            <a href="#services" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:nav.features')}
             </a>
-            <a href="#pricing" className="text-slate-600 dark:text-white/70 hover:text-[#32B07F] dark:hover:text-white transition">
-              {t('nav.pricing', 'Tarifs')}
-            </a>
-            <a href="#pricing" className="text-slate-600 dark:text-white/70 hover:text-[#32B07F] dark:hover:text-white transition">
+            <a href="#pricing" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
               API
             </a>
           </div>
 
-          {/* Col 4: À propos */}
-          <div className="flex flex-col gap-3 font-body text-xs">
+          <div className="flex flex-col gap-3 text-xs">
             <h4 className="font-title text-sm font-bold text-slate-900 dark:text-white mb-1">
-              {t('footer.colAbout', 'À propos')}
+              {t('landing:footer.colAbout')}
             </h4>
-            <a href="#about" className="text-slate-600 dark:text-white/70 hover:text-[#32B07F] dark:hover:text-white transition">
-              {t('nav.about', 'À propos')}
+            <a href="#about" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:nav.about')}
             </a>
-            <a href="#partners" className="text-slate-600 dark:text-white/70 hover:text-[#32B07F] dark:hover:text-white transition">
-              {t('nav.partners', 'Partenaires')}
-            </a>
-            <a href="#" className="text-slate-600 dark:text-white/70 hover:text-[#32B07F] dark:hover:text-white transition">
-              Actualités
-            </a>
-            <a href="#contact" className="text-slate-600 dark:text-white/70 hover:text-[#32B07F] dark:hover:text-white transition">
-              {t('nav.contact', 'Contact')}
+            <a href="#contact" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:nav.contact')}
             </a>
           </div>
 
-          {/* Col 5: Légal */}
-          <div className="flex flex-col gap-3 font-body text-xs">
+          <div className="flex flex-col gap-3 text-xs">
             <h4 className="font-title text-sm font-bold text-slate-900 dark:text-white mb-1">
-              {t('footer.colLegal', 'Légal')}
+              {t('landing:footer.colLegal')}
             </h4>
-            <a href="#" className="text-slate-600 dark:text-white/70 hover:text-[#32B07F] dark:hover:text-white transition">
-              Confidentialité
-            </a>
-            <a href="#" className="text-slate-600 dark:text-white/70 hover:text-[#32B07F] dark:hover:text-white transition">
-              CGU
-            </a>
-            <a href="#" className="text-slate-600 dark:text-white/70 hover:text-[#32B07F] dark:hover:text-white transition">
-              Sécurité
+            <a href="#" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:footer.colLegal')}
             </a>
           </div>
-
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-body text-slate-600 dark:text-white/60">
-          <p>© 2026 KWISMO. {t('footer.rights', 'Tous droits réservés.')}</p>
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 dark:text-white/60">
+          <p>© 2026 KWISMO. {t('landing:footer.rights')}</p>
 
           <div className="flex items-center gap-4">
-            {/* Interactive Language Switcher in Footer */}
             <LanguageSwitcher className="border-slate-300 dark:border-white/20 text-slate-800 dark:text-white bg-white dark:bg-white/10" />
 
             <a
               href="/auth/login"
-              className="flex h-8 items-center px-4 rounded-full bg-[#32B07F] text-white font-semibold text-xs hover:bg-[#2aa072] transition"
+              className="flex h-8 items-center px-4 rounded-full bg-brand-green text-white font-semibold text-xs hover:bg-brand-green/90 transition"
             >
-              {t('footer.login', 'Se connecter')}
+              {t('landing:footer.login')}
             </a>
           </div>
         </div>
-
       </div>
     </footer>
   );
