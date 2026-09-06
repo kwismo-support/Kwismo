@@ -58,6 +58,21 @@
     "selectCountry": "Select a country",
     "verificationHistory": "Verification history",
     "noVerificationHistory": "No recent verification yet.",
+    "currentPassword": "Current password",
+    "saveChanges": "Save changes",
+    "cancel": "Cancel",
+    "save": "Save",
+    "statusVerified": "Verified",
+    "statusPending": "Pending",
+    "statusCompromised": "Compromised",
+    "noDataAvailable": "No data available",
+    "items": "items",
+    "searchPlaceholder": "Search feature, phone number...",
+    "searchResults": "Results",
+    "quickSuggestions": "Quick suggestions",
+    "noResultsFound": "No results found for this search",
+    "goBack": "Go back",
+    "retry": "Retry",
     "analyzing": "Analysis in progress...",
     "analyzingSubtitle": "We are checking this number in our database and community",
     "dbAnalysis": "Database analysis",
@@ -226,13 +241,42 @@
     "darkMode": "Theme",
     "accountSection": "My account",
     "personalInfo": "Personal information",
-    "security": "Security & Password",
+    "security": "Change my password",
+    "twoFactor": "Two-Factor Authentication",
     "aboutSection": "About",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "appVersion": "App version",
     "logout": "Log Out",
     "verifiedUser": "Verified user account"
+  },
+  "twoFactor": {
+    "title": "Two-Factor Authentication",
+    "securityHeader": "Biometric Security & PIN Code",
+    "securitySubtitle": "Manage biometric protections and backup PIN code.",
+    "biometricsTitle": "Biometric Unlock",
+    "biometricsSub": "Require Face ID or Fingerprint to open Kwismo",
+    "bioEnabled": "Biometric authentication enabled!",
+    "bioDisabled": "Biometrics disabled successfully.",
+    "pinTitle": "Backup PIN Code (6 digits)",
+    "pinActive": "PIN configured • Change PIN",
+    "pinNotConfigured": "Set mandatory PIN code",
+    "otpSectionTitle": "SMS / OTP Verification",
+    "smsTitle": "SMS OTP Code on Logins",
+    "smsSub": "Send SMS verification on every new login attempt",
+    "confirmPinTitle": "Enter your PIN code",
+    "confirmPinSub": "Enter your 6-digit PIN code to disable biometrics.",
+    "invalidPin": "Incorrect PIN code (6 digits)"
+  },
+  "notifications": {
+    "tabAll": "All",
+    "tabUnread": "Unread",
+    "tabSecurity": "Alerts",
+    "markAll": "Mark all read",
+    "markedAllRead": "All notifications marked as read",
+    "emptyTitle": "No notifications",
+    "emptySub": "You are up to date! No pending alerts.",
+    "preferencesTitle": "Notification Channels"
   },
   "theme": {
     "light": "Light",
@@ -271,8 +315,22 @@
     "transferInitiated": "Transfer initiated safely.",
     "networkError": "Unable to connect to the server. Check your network.",
     "generalSuccess": "Operation completed successfully",
-    "ussdLaunched": "USSD Code sent to native dialer",
-    "ussdCopied": "USSD Code copied to clipboard",
+    "ussdLaunched": "USSD code sent to native dialer",
+    "ussdCopied": "USSD code copied to clipboard",
     "copiedToClipboard": "Copied to clipboard!"
+  },
+  "auth": {
+    "logout": "Log out"
+  },
+  "errors": {
+    "forbiddenTitle": "Unauthorized access",
+    "forbiddenMessage": "You do not have permission to access this section.",
+    "generalTitle": "An error occurred",
+    "generalMessage": "Unable to load resource. Please try again."
+  },
+  "management": {
+    "title": "My SIM Numbers",
+    "subtitle": "Manage and secure your SIM cards and associated phone numbers",
+    "addBtn": "Add"
   }
 }

@@ -26,15 +26,7 @@ import { toast } from '../../src/shared/store/toastStore';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
 
-export interface UserSimNumber {
-  id: string;
-  countryCode: string;
-  callingCode: string;
-  phone: string;
-  operator: 'Orange' | 'MTN' | 'Camtel' | 'Autre';
-  status: 'verified' | 'pending' | 'compromised';
-  addedDate: string;
-}
+import { UserSimNumber, MOCK_SIM_NUMBERS } from '../../src/shared/mock/simNumbersMock';
 
 export default function ManagementScreen() {
   const router = useRouter();
@@ -43,28 +35,7 @@ export default function ManagementScreen() {
   const { isDark, colors: themeColors } = useAppTheme();
 
   const [loading, setLoading] = useState(true);
-
-  // Liste des numéros de l'utilisateur
-  const [numbers, setNumbers] = useState<UserSimNumber[]>([
-    {
-      id: 'num-1',
-      countryCode: 'CM',
-      callingCode: '+237',
-      phone: '6 98 44 43 88',
-      operator: 'Orange',
-      status: 'verified',
-      addedDate: '12 Août',
-    },
-    {
-      id: 'num-2',
-      countryCode: 'CM',
-      callingCode: '+237',
-      phone: '6 77 12 34 56',
-      operator: 'MTN',
-      status: 'pending',
-      addedDate: '28 Août',
-    },
-  ]);
+  const [numbers, setNumbers] = useState<UserSimNumber[]>(MOCK_SIM_NUMBERS);
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 500);
@@ -283,9 +254,9 @@ export default function ManagementScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* En-tête : Titre + Bouton d'ajout positionné en haut pour éviter de scroller */}
+        {/* En-tête : Titre et description des numéros */}
         <View style={styles.topSectionRow}>
-          <View style={{ flex: 1, marginRight: 8 }}>
+          <View style={{ flex: 1 }}>
             <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
               {t('management.title', 'Mes numéros')} ({numbers.length})
             </Text>
@@ -293,15 +264,6 @@ export default function ManagementScreen() {
               {t('management.subtitle', 'Gérez et sécurisez vos cartes SIM et numéros associés')}
             </Text>
           </View>
-
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={handleOpenAddNumber}
-            style={[styles.addTopBtn, { backgroundColor: colors.green, flexShrink: 0 }]}
-          >
-            <Icon name="solar:add-circle-bold" color={colors.white} size={18} style={{ marginRight: 6 }} />
-            <Text style={styles.addTopBtnText}>{t('management.addBtn', 'Ajouter')}</Text>
-          </TouchableOpacity>
         </View>
 
         {/* Grille : Exactement 2 numéros par ligne pour un affichage dense et sans scroll */}
@@ -506,6 +468,21 @@ export default function ManagementScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Bouton flottant (FAB) d'ajout de numéro style WhatsApp */}
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={handleOpenAddNumber}
+        style={[
+          styles.fabButton,
+          {
+            bottom: Math.max(insets.bottom + 72, 84),
+            backgroundColor: colors.green,
+          },
+        ]}
+      >
+        <Icon name="solar:add-circle-bold" color={colors.white} size={28} />
+      </TouchableOpacity>
 
       {/* Navigation TabBar basse */}
       <TabBar activeTab="management" />
@@ -1058,5 +1035,20 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bold,
     fontSize: scaleFont(14),
     color: colors.white,
+  },
+  fabButton: {
+    position: 'absolute',
+    right: 20,
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+    zIndex: 99,
   },
 });

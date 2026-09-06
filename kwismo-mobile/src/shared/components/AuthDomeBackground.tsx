@@ -13,16 +13,18 @@ export const AuthDomeBackground: React.FC<AuthDomeBackgroundProps> = ({ children
   const screenWidth = Dimensions.get('window').width;
 
   const headerGradientColors = isDark
-    ? ['#2BB673', '#249460', '#1B2E3D', '#162035', '#0F1626']
-    : ['#2BB673', '#28A86B', '#249460', '#213E35', '#2A3742', '#60707F', '#FFFFFF'];
+    ? ['#0F766E', '#1E293B', '#0F172A']
+    : ['#15A362', '#3D5A50', '#FFFFFF'];
+
+  const locations = isDark ? [0, 0.5, 0.85] : [0, 0.45, 0.75];
 
   return (
     <View style={styles.wrapper}>
-      {/* Arrière-plan Gradient Global */}
+      {/* Arrière-plan Gradient Global inspiré de CreateAccountScreen */}
       <View style={StyleSheet.absoluteFill} pointerEvents="none">
         <LinearGradient
           colors={headerGradientColors}
-          locations={isDark ? [0, 0.3, 0.6, 0.8, 1] : [0, 0.15, 0.3, 0.45, 0.6, 0.75, 1]}
+          locations={locations}
           style={StyleSheet.absoluteFill}
         />
 
@@ -36,8 +38,8 @@ export const AuthDomeBackground: React.FC<AuthDomeBackgroundProps> = ({ children
           >
             <Defs>
               <SvgGradient id="domeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <Stop offset="0%" stopColor="#2BB673" stopOpacity={0.9} />
-                <Stop offset="50%" stopColor="#1E3A3A" stopOpacity={0.7} />
+                <Stop offset="0%" stopColor={isDark ? '#0F766E' : '#15A362'} stopOpacity={0.9} />
+                <Stop offset="45%" stopColor={isDark ? '#1E293B' : '#3D5A50'} stopOpacity={0.7} />
                 <Stop offset="100%" stopColor={isDark ? '#0F172A' : '#FFFFFF'} stopOpacity={0} />
               </SvgGradient>
             </Defs>

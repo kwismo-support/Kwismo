@@ -58,6 +58,21 @@
     "selectCountry": "Sélectionner un pays",
     "verificationHistory": "Historique des vérifications",
     "noVerificationHistory": "Aucune vérification récente pour le moment.",
+    "currentPassword": "Mot de passe actuel",
+    "saveChanges": "Enregistrer les modifications",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "statusVerified": "Vérifié",
+    "statusPending": "En attente",
+    "statusCompromised": "Compromis",
+    "noDataAvailable": "Aucune donnée disponible",
+    "items": "éléments",
+    "searchPlaceholder": "Rechercher une fonction, un numéro...",
+    "searchResults": "Résultats",
+    "quickSuggestions": "Suggestions rapides",
+    "noResultsFound": "Aucun résultat trouvé pour cette recherche",
+    "goBack": "Retourner",
+    "retry": "Réessayer",
     "analyzing": "Analyse en cours...",
     "analyzingSubtitle": "Nous vérifions ce numéro dans notre base de données et auprès de la communauté",
     "dbAnalysis": "Analyse de la base de données",
@@ -226,13 +241,42 @@
     "darkMode": "Thème",
     "accountSection": "Mon compte",
     "personalInfo": "Informations personnelles",
-    "security": "Sécurité & Mot de passe",
+    "security": "Modifier mon mot de passe",
+    "twoFactor": "Authentification à deux facteurs",
     "aboutSection": "À propos",
     "privacyPolicy": "Politique de confidentialité",
     "termsOfService": "Conditions d'utilisation",
     "appVersion": "Version de l'application",
     "logout": "Se déconnecter",
     "verifiedUser": "Compte utilisateur vérifié"
+  },
+  "twoFactor": {
+    "title": "Authentification à deux facteurs",
+    "securityHeader": "Sécurisation biométrique & Code PIN",
+    "securitySubtitle": "Gérez les moyens de protection biométriques et le code PIN de secours.",
+    "biometricsTitle": "Déverrouillage Biométrique",
+    "biometricsSub": "Exiger Face ID ou votre empreinte pour ouvrir Kwismo",
+    "bioEnabled": "Authentification biométrique activée !",
+    "bioDisabled": "Biométrie désactivée avec succès.",
+    "pinTitle": "Code PIN de secours (6 chiffres)",
+    "pinActive": "Code PIN configuré • Modifier le code",
+    "pinNotConfigured": "Définir un code PIN obligatoire",
+    "otpSectionTitle": "Vérification par SMS / OTP",
+    "smsTitle": "Code OTP par SMS aux connexions",
+    "smsSub": "Envoyer un SMS de vérification lors de toute nouvelle connexion",
+    "confirmPinTitle": "Saisissez votre code PIN",
+    "confirmPinSub": "Entrez votre code PIN à 6 chiffres pour désactiver la biométrie.",
+    "invalidPin": "Code PIN incorrect (6 chiffres)"
+  },
+  "notifications": {
+    "tabAll": "Toutes",
+    "tabUnread": "Non lues",
+    "tabSecurity": "Alertes",
+    "markAll": "Tout lire",
+    "markedAllRead": "Toutes les notifications sont marquées comme lues",
+    "emptyTitle": "Aucune notification",
+    "emptySub": "Vous êtes à jour ! Aucune alerte en attente.",
+    "preferencesTitle": "Canaux de notification"
   },
   "theme": {
     "light": "Clair",
@@ -274,5 +318,19 @@
     "ussdLaunched": "Code USSD envoyé au composeur natif",
     "ussdCopied": "Code USSD copié dans le presse-papier",
     "copiedToClipboard": "Copié dans le presse-papier !"
+  },
+  "auth": {
+    "logout": "Se déconnecter"
+  },
+  "errors": {
+    "forbiddenTitle": "Accès non autorisé",
+    "forbiddenMessage": "Vous n'avez pas les permissions nécessaires pour accéder à cette zone.",
+    "generalTitle": "Une erreur est survenue",
+    "generalMessage": "Impossible de charger la ressource. Veuillez réessayer."
+  },
+  "management": {
+    "title": "Mes numéros",
+    "subtitle": "Gérez et sécurisez vos cartes SIM et numéros associés",
+    "addBtn": "Ajouter"
   }
 }

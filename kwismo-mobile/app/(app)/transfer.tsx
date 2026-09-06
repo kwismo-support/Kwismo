@@ -28,20 +28,12 @@ import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
 
-interface SenderNumberOption {
-  id: string;
-  label: string;
-  phone: string;
-  callingCode: string;
-  operator: 'Orange' | 'MTN';
-}
-
-interface ActionOption {
-  id: string;
-  label: string;
-  description: string;
-  ussdFormat: string; // Ex: '#150*1*1*{dest}*{amount}#'
-}
+import {
+  SenderNumberOption,
+  ActionOption,
+  MOCK_REGISTERED_SENDERS,
+  MOCK_AVAILABLE_ACTIONS,
+} from '../../src/shared/mock/transactionsMock';
 
 export default function TransferScreen() {
   const router = useRouter();
@@ -56,39 +48,8 @@ export default function TransferScreen() {
     callingCode: `+${getCountryCallingCode('CM')}`,
   };
 
-  // Liste des numéros enregistrés de l'utilisateur (Expéditeurs valides)
-  const registeredSenders: SenderNumberOption[] = [
-    {
-      id: 'sim1',
-      label: 'SIM 1 (Orange Money)',
-      phone: '6 98 44 43 88',
-      callingCode: '+237',
-      operator: 'Orange',
-    },
-    {
-      id: 'sim2',
-      label: 'SIM 2 (MTN MoMo)',
-      phone: '6 70 12 34 56',
-      callingCode: '+237',
-      operator: 'MTN',
-    },
-  ];
-
-  // Actions dynamiques configurées côté backend
-  const availableActions: ActionOption[] = [
-    {
-      id: 'transfer_momo',
-      label: "Transfert d'argent Mobile Money",
-      description: 'Envoi direct vers un compte Mobile Money / Orange Money',
-      ussdFormat: '#150*1*1*{dest}*{amount}#',
-    },
-    {
-      id: 'merchant_pay',
-      label: 'Paiement Marchand USSD',
-      description: 'Règlement chez un marchand partenaire Kwismo',
-      ussdFormat: '#150*3*{dest}*{amount}#',
-    },
-  ];
+  const registeredSenders: SenderNumberOption[] = MOCK_REGISTERED_SENDERS;
+  const availableActions: ActionOption[] = MOCK_AVAILABLE_ACTIONS;
 
   // États du formulaire
   const [step, setStep] = useState<'form' | 'summary' | 'ussd'>('form');
@@ -187,20 +148,19 @@ export default function TransferScreen() {
       const supported = await Linking.canOpenURL(telUrl);
       if (supported) {
         await Linking.openURL(telUrl);
-        toast.success(t('toasts.ussdLaunched', 'Code USSD envoyé au composeur natif'));
+        toast.success(t('toasts.ussdLaunched'));
       } else {
         await Linking.openURL(telUrl);
       }
     } catch {
-      // Fallback copie
       Clipboard.setString(generatedUssdCode);
-      toast.info(t('toasts.ussdCopied', 'Code USSD copié dans le presse-papier'));
+      toast.info(t('toasts.ussdCopied'));
     }
   };
 
   const handleCopyUssd = () => {
     Clipboard.setString(generatedUssdCode);
-    toast.success(t('toasts.copiedToClipboard', 'Code USSD copié !'));
+    toast.success(t('toasts.copiedToClipboard'));
   };
 
   const handleReset = () => {
@@ -215,9 +175,8 @@ export default function TransferScreen() {
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <StatusBar style="light" />
 
-      {/* Header Unifié Kwismo */}
       <HeaderBar
-        title={t('common.moneyTransfer', "Transfert d'argent")}
+        title={t('common.transfer')}
         showBack={step !== 'form'}
         onBack={() => {
           if (step === 'summary') setStep('form');

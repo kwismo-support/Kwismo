@@ -54,9 +54,9 @@ export default function ProfileScreen() {
   };
 
   const getThemeLabel = (pref: ThemePreference) => {
-    if (pref === 'light') return t('theme.light', 'Clair');
-    if (pref === 'dark') return t('theme.dark', 'Sombre');
-    return t('theme.system', 'Système');
+    if (pref === 'light') return t('theme.light');
+    if (pref === 'dark') return t('theme.dark');
+    return t('theme.system');
   };
 
   const getLanguageLabel = (lang: string) => {
@@ -68,8 +68,7 @@ export default function ProfileScreen() {
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <StatusBar style="light" />
 
-      {/* En-tête global "Profil & Sécurité" */}
-      <HeaderBar title={t('common.profile', 'Profil & Sécurité')} />
+      <HeaderBar title={t('common.profile')} />
 
       <ScrollView
         contentContainerStyle={[
@@ -78,7 +77,6 @@ export default function ProfileScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* CARTE UTILISATEUR (Affichage du nom + EMAIL en dessous) */}
         {loading ? (
           <SkeletonLoader>
             <View style={[styles.userHeaderCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
@@ -116,13 +114,11 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        {/* SECTION 1 : COMPTE (Redirection vers pages secondaires) */}
         <Text style={[styles.groupSectionLabel, { color: themeColors.textSecondary }]}>
-          {t('profile.accountSection', 'Compte')}
+          {t('profile.accountSection')}
         </Text>
 
         <View style={[styles.groupCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
-          {/* Éditer le profil -> Page secondaire */}
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => router.push('/(app)/edit-profile')}
@@ -131,7 +127,7 @@ export default function ProfileScreen() {
             <View style={styles.itemLeft}>
               <Icon name="solar:user-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
               <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
-                {t('profile.personalInfo', 'Éditer le profil')}
+                {t('profile.personalInfo')}
               </Text>
             </View>
             <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
@@ -139,7 +135,6 @@ export default function ProfileScreen() {
 
           <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
 
-          {/* Sécurité & mot de passe -> Page secondaire */}
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => router.push('/(app)/security')}
@@ -148,7 +143,7 @@ export default function ProfileScreen() {
             <View style={styles.itemLeft}>
               <Icon name="solar:lock-keyhole-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
               <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
-                {t('profile.security', 'Sécurité & mot de passe')}
+                {t('profile.security')}
               </Text>
             </View>
             <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
@@ -156,7 +151,22 @@ export default function ProfileScreen() {
 
           <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
 
-          {/* Notifications -> Page secondaire */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => router.push('/(app)/two-factor')}
+            style={styles.itemRow}
+          >
+            <View style={styles.itemLeft}>
+              <Icon name="solar:shield-keyhole-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
+              <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
+                {t('profile.twoFactor')}
+              </Text>
+            </View>
+            <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
+          </TouchableOpacity>
+
+          <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
+
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => router.push('/(app)/notifications')}
@@ -165,20 +175,18 @@ export default function ProfileScreen() {
             <View style={styles.itemLeft}>
               <Icon name="solar:bell-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
               <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
-                {t('common.notifications', 'Notifications')}
+                {t('common.notifications')}
               </Text>
             </View>
             <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
           </TouchableOpacity>
         </View>
 
-        {/* SECTION 2 : PRÉFÉRENCES */}
         <Text style={[styles.groupSectionLabel, { color: themeColors.textSecondary, marginTop: 16 }]}>
-          {t('profile.preferences', 'Préférences')}
+          {t('profile.preferences')}
         </Text>
 
         <View style={[styles.groupCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
-          {/* Thème */}
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setThemeModalVisible(true)}
@@ -187,7 +195,7 @@ export default function ProfileScreen() {
             <View style={styles.itemLeft}>
               <Icon name="solar:sun-2-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
               <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
-                {t('profile.darkMode', 'Thème')}
+                {t('profile.darkMode')}
               </Text>
             </View>
 
@@ -201,7 +209,6 @@ export default function ProfileScreen() {
 
           <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
 
-          {/* Langues */}
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setLanguageModalVisible(true)}
@@ -210,7 +217,7 @@ export default function ProfileScreen() {
             <View style={styles.itemLeft}>
               <Icon name="solar:global-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
               <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
-                {t('profile.language', 'Langues')}
+                {t('profile.language')}
               </Text>
             </View>
 
@@ -224,7 +231,6 @@ export default function ProfileScreen() {
 
           <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
 
-          {/* Détection d'appel (Switch) */}
           <View style={styles.itemRow}>
             <View style={styles.itemLeft}>
               <Icon name="solar:phone-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
@@ -241,9 +247,7 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* BOUTONS D'ACTION DU BAS (Design Maquette Designer) */}
         <View style={styles.bottomButtonsContainer}>
-          {/* Supprimer son compte (Bouton Rouge) */}
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => toast.info('Action de suppression temporisée.')}
@@ -252,13 +256,12 @@ export default function ProfileScreen() {
             <Text style={styles.dangerBtnText}>Supprimer son compte</Text>
           </TouchableOpacity>
 
-          {/* Se Déconnecter (Bouton Sombre) */}
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={handleLogout}
             style={[styles.logoutDarkBtn, { backgroundColor: isDark ? '#334155' : '#0F172A' }]}
           >
-            <Text style={styles.logoutDarkBtnText}>{t('auth.logout', 'Se Déconnecter')}</Text>
+            <Text style={styles.logoutDarkBtnText}>{t('auth.logout')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
