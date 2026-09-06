@@ -1,0 +1,31 @@
+{
+  "403": {
+    "title": "Accès Refusé (403)",
+    "subtitle": "Vous n'avez pas les permissions nécessaires pour accéder à cette ressource ou cette section.",
+    "button": "Retour à l'accueil"
+  },
+  "404": {
+    "title": "Page Introuvable (404)",
+    "subtitle": "La page ou la ressource recherchée n'existe pas ou a été déplacée.",
+    "button": "Retour au tableau de bord"
+  },
+  "500": {
+    "title": "Erreur Serveur (500)",
+    "subtitle": "Un problème technique temporaire est survenu côté serveur. Nos équipes ont été notifiées.",
+    "button": "Réessayer"
+  },
+  "validation": {
+    "required": "Ce champ est obligatoire",
+    "invalidEmail": "Adresse e-mail invalide",
+    "invalidPhone": "Numéro de téléphone invalide (ex: +237 6XX XX XX XX)",
+    "minLength": "Au moins {{count}} caractères requis",
+    "passwordMismatch": "Les mots de passe ne correspondent pas"
+  },
+  "http": {
+    "unauthorized": "Session expirée ou non autorisée. Veuillez vous reconnecter.",
+    "forbidden": "Vous n'avez pas les droits suffisants pour effectuer cette action.",
+    "notFound": "Ressource demandée introuvable.",
+    "serverError": "Erreur interne du serveur. Veuillez réinstaller ou réessayer plus tard.",
+    "networkError": "Impossible de contacter le serveur. Vérifiez votre connexion internet."
+  }
+}

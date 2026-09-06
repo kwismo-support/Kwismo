@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard, Users, Hash, Building2,
-  PhoneCall, ShieldCheck, FileBarChart, X,
+  PhoneCall, ShieldCheck, FileBarChart, User, X,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/shared/store/authStore';
@@ -24,6 +24,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/app/dashboard', icon: <LayoutDashboard size={18} />, label: 'nav.dashboard' },
   { to: '/app/numbers',   icon: <Hash            size={18} />, label: 'nav.numbers'   },
   { to: '/app/reports',   icon: <FileBarChart     size={18} />, label: 'nav.reports'   },
+  { to: '/app/user',      icon: <User             size={18} />, label: 'nav.userPortal'},
   { to: '/app/users',     icon: <Users            size={18} />, label: 'nav.users',    roles: [ROLES.ADMIN] },
   { to: '/app/partners',  icon: <Building2        size={18} />, label: 'nav.partners', roles: [ROLES.ADMIN] },
   { to: '/app/ussd',      icon: <PhoneCall        size={18} />, label: 'nav.ussd',     roles: [ROLES.ADMIN] },
@@ -78,7 +79,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 }
               >
                 {item.icon}
-                {t(item.label)}
+                {t(item.label) || item.label}
               </NavLink>
             </li>
           ))}

@@ -41,13 +41,17 @@
     "ussd": "USSD",
     "access": "Contrôle d'accès",
     "profile": "Mon profil",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "userPortal": "Espace Utilisateur"
   },
   "pagination": {
     "previous": "Précédent",
     "next": "Suivant",
     "of": "sur",
-    "results": "résultats"
+    "results": "résultats",
+    "show": "Afficher",
+    "rowsPerPage": "lignes par page (Total : {{total}})",
+    "page": "Page"
   },
   "table": {
     "noResults": "Aucun résultat",

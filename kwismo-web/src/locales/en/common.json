@@ -41,13 +41,17 @@
     "ussd": "USSD",
     "access": "Access Control",
     "profile": "My Profile",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "userPortal": "User Portal"
   },
   "pagination": {
     "previous": "Previous",
     "next": "Next",
     "of": "of",
-    "results": "results"
+    "results": "results",
+    "show": "Show",
+    "rowsPerPage": "rows per page (Total: {{total}})",
+    "page": "Page"
   },
   "table": {
     "noResults": "No results",
