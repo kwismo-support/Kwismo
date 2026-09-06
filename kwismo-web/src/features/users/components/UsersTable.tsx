@@ -1,109 +1,130 @@
 import { useState } from 'react';
-import { Icon } from '@iconify/react';
-
-export interface UserItem {
-  id: string;
-  name: string;
-  phone: string;
-  role: 'admin' | 'partner' | 'user';
-  status: 'active' | 'suspended' | 'pending';
-  lastActive: string;
-}
-
-const mockUsers: UserItem[] = [
-  { id: '1', name: 'Jean-Marc Nkoa', phone: '+237 698 44 43 88', role: 'admin', status: 'active', lastActive: 'Il y a 5 min' },
-  { id: '2', name: 'Alain Tchakounte', phone: '+237 655 12 34 56', role: 'partner', status: 'active', lastActive: 'Il y a 1h' },
-  { id: '3', name: 'Béatrice Mbarga', phone: '+237 677 88 99 00', role: 'user', status: 'suspended', lastActive: 'Il y a 3j' },
-  { id: '4', name: 'Orange Cameroun API', phone: '+237 699 00 11 22', role: 'partner', status: 'active', lastActive: 'En ligne' },
-  { id: '5', name: 'Paul Etoundi', phone: '+237 680 11 22 33', role: 'user', status: 'pending', lastActive: 'Jamais' },
-];
+import { useTranslation } from 'react-i18next';
+import { DataTable, type Column } from '@/shared/components/DataTable';
+import { Input } from '@/shared/ui/input';
+import { Button } from '@/shared/ui/button';
+import type { UserDTO } from '@/shared/mock';
 
 interface UsersTableProps {
-  onSelectUser: (user: UserItem) => void;
+  users: UserDTO[];
+  isLoading?: boolean;
+  onSelectUser: (user: UserDTO) => void;
+  onAddUser?: () => void;
 }
 
-export default function UsersTable({ onSelectUser }: UsersTableProps) {
+export default function UsersTable({ users, isLoading = false, onSelectUser, onAddUser }: UsersTableProps) {
+  const { t } = useTranslation(['admin', 'common']);
   const [search, setSearch] = useState('');
 
-  const filtered = mockUsers.filter(
-    (u) => u.name.toLowerCase().includes(search.toLowerCase()) || u.phone.includes(search)
+  const filteredUsers = users.filter(
+    (u) =>
+      u.nom.toLowerCase().includes(search.toLowerCase()) ||
+      u.prenom.toLowerCase().includes(search.toLowerCase()) ||
+      u.email.toLowerCase().includes(search.toLowerCase()),
   );
 
+  const columns: Column<UserDTO>[] = [
+    {
+      key: 'user',
+      header: t('admin:users.title'),
+      sortable: true,
+      cell: (user) => (
+        <div className="flex flex-col font-body">
+          <span className="font-semibold text-slate-900 dark:text-white">
+            {user.prenom} {user.nom}
+          </span>
+          <span className="text-xs text-slate-400">{user.email}</span>
+        </div>
+      ),
+    },
+    {
+      key: 'role',
+      header: t('admin:users.role'),
+      sortable: true,
+      cell: (user) => (
+        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${
+          user.role.nomRole === 'admin'
+            ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400'
+            : user.role.nomRole === 'partner'
+            ? 'bg-brand-orange/10 text-brand-orange'
+            : 'bg-slate-500/10 text-slate-600 dark:text-slate-300'
+        }`}>
+          {user.role.nomRole}
+        </span>
+      ),
+    },
+    {
+      key: 'statut',
+      header: t('common:status'),
+      sortable: true,
+      cell: (user) => (
+        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+          user.statut === 'active'
+            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+            : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+        }`}>
+          {t(`admin:users.status.${user.statut}`)}
+        </span>
+      ),
+    },
+    {
+      key: 'dateInscription',
+      header: t('admin:users.registeredAt'),
+      sortable: true,
+      cell: (user) => (
+        <span className="text-xs text-slate-500 dark:text-slate-400">
+          {new Date(user.dateInscription).toLocaleDateString()}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: t('common:actions.label'),
+      cell: (user) => (
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            size="xs"
+            variant="ghost"
+            leftIcon="solar:eye-bold"
+            onClick={() => onSelectUser(user)}
+          />
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div className="flex flex-col gap-4 w-full">
-      {/* Search & Filter Bar */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative flex-1 max-w-xs">
-          <Icon icon="solar:magnifer-linear" className="absolute left-3 top-3 text-slate-400 text-base" />
-          <input
-            type="text"
+    <div className="flex flex-col gap-4 w-full font-body">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="w-full sm:max-w-xs">
+          <Input
+            sizeVariant="sm"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher nom ou téléphone..."
-            className="w-full h-10 pl-9 pr-4 rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-brand-navy text-xs font-body focus:outline-none focus:border-brand-green"
+            placeholder={t('common:search')}
+            leftIcon="solar:magnifer-linear"
           />
         </div>
 
-        <button className="flex items-center gap-2 h-10 px-4 rounded-xl bg-brand-green text-white text-xs font-semibold shadow hover:bg-[#2aa072] transition">
-          <Icon icon="solar:user-plus-bold" className="text-base" />
-          <span>Nouvel Utilisateur</span>
-        </button>
+        {onAddUser && (
+          <Button
+            size="sm"
+            variant="secondary"
+            leftIcon="solar:user-plus-bold"
+            onClick={onAddUser}
+          >
+            {t('common:add')}
+          </Button>
+        )}
       </div>
 
-      {/* Data Table */}
-      <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy shadow-sm">
-        <table className="w-full text-left border-collapse font-body">
-          <thead>
-            <tr className="border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              <th className="p-4">Utilisateur</th>
-              <th className="p-4">Téléphone</th>
-              <th className="p-4">Rôle</th>
-              <th className="p-4">Statut</th>
-              <th className="p-4">Activité</th>
-              <th className="p-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200 dark:divide-white/10 text-xs text-slate-800 dark:text-slate-200">
-            {filtered.map((user) => (
-              <tr key={user.id} className="hover:bg-slate-50/50 dark:hover:bg-white/5 transition">
-                <td className="p-4 font-semibold text-slate-900 dark:text-white">{user.name}</td>
-                <td className="p-4 font-mono text-xs">{user.phone}</td>
-                <td className="p-4">
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
-                    user.role === 'admin'
-                      ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400'
-                      : user.role === 'partner'
-                      ? 'bg-brand-orange/10 text-brand-orange'
-                      : 'bg-slate-500/10 text-slate-600 dark:text-slate-300'
-                  }`}>
-                    {user.role}
-                  </span>
-                </td>
-                <td className="p-4">
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
-                    user.status === 'active'
-                      ? 'bg-brand-green/10 text-brand-green'
-                      : user.status === 'suspended'
-                      ? 'bg-danger/10 text-danger'
-                      : 'bg-yellow-500/10 text-yellow-600'
-                  }`}>
-                    {user.status}
-                  </span>
-                </td>
-                <td className="p-4 text-slate-500">{user.lastActive}</td>
-                <td className="p-4 text-right">
-                  <button
-                    onClick={() => onSelectUser(user)}
-                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition"
-                  >
-                    <Icon icon="solar:eye-linear" className="text-base" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        columns={columns}
+        data={filteredUsers}
+        isLoading={isLoading}
+        getRowKey={(user) => user.id}
+        pageSize={10}
+      />
     </div>
   );
 }
