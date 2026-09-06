@@ -1,67 +1,134 @@
-import { Icon } from '@iconify/react';
-
-export interface PartnerItem {
-  id: string;
-  name: string;
-  apiKey: string;
-  monthlyQuota: string;
-  callsThisMonth: string;
-  status: 'active' | 'pending' | 'suspended';
-}
-
-const mockPartners: PartnerItem[] = [
-  { id: 'p1', name: 'Orange Money West Africa', apiKey: 'kw_live_99a8b7c6...', monthlyQuota: '10 000 000', callsThisMonth: '4 250 100', status: 'active' },
-  { id: 'p2', name: 'MTN Mobile Financial Services', apiKey: 'kw_live_11d2e3f4...', monthlyQuota: '8 000 000', callsThisMonth: '3 890 000', status: 'active' },
-  { id: 'p3', name: 'Express Union Mobile', apiKey: 'kw_live_77x8y9z0...', monthlyQuota: '2 000 000', callsThisMonth: '950 000', status: 'active' },
-  { id: 'p4', name: 'UBA Cameroon Fintech Hub', apiKey: 'kw_test_44m5n6p7...', monthlyQuota: '500 000', callsThisMonth: '12 400', status: 'pending' },
-];
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { DataTable, type Column } from '@/shared/components/DataTable';
+import { Input } from '@/shared/ui/input';
+import { Button } from '@/shared/ui/button';
+import type { PartnerDTO } from '@/shared/mock';
 
 interface PartnersTableProps {
-  onEditPartner: (partner: PartnerItem) => void;
+  partners: PartnerDTO[];
+  isLoading?: boolean;
+  onEditPartner: (partner: PartnerDTO) => void;
+  onAddPartner?: () => void;
 }
 
-export default function PartnersTable({ onEditPartner }: PartnersTableProps) {
+export default function PartnersTable({ partners, isLoading = false, onEditPartner, onAddPartner }: PartnersTableProps) {
+  const { t } = useTranslation(['partner', 'common']);
+  const [search, setSearch] = useState('');
+
+  const filteredPartners = partners.filter(
+    (p) =>
+      p.nomEntreprise.toLowerCase().includes(search.toLowerCase()) ||
+      p.typePartenariat.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const columns: Column<PartnerDTO>[] = [
+    {
+      key: 'nomEntreprise',
+      header: t('partner:partners.name'),
+      sortable: true,
+      cell: (partner) => (
+        <div className="flex flex-col font-body">
+          <span className="font-semibold text-slate-900 dark:text-white">
+            {partner.nomEntreprise}
+          </span>
+          <span className="text-xs text-slate-400 font-mono">
+            {partner.webhookUrl || t('common:noData')}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: 'typePartenariat',
+      header: t('partner:partners.type'),
+      sortable: true,
+      cell: (partner) => (
+        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider bg-brand-blue/10 text-brand-blue">
+          {t(`partner:partners.type${partner.typePartenariat.charAt(0).toUpperCase() + partner.typePartenariat.slice(1)}`)}
+        </span>
+      ),
+    },
+    {
+      key: 'prefixes',
+      header: t('partner:partners.prefixes'),
+      cell: (partner) => (
+        <div className="flex items-center gap-1 flex-wrap">
+          {partner.prefixes.length > 0 ? (
+            partner.prefixes.slice(0, 4).map((pref) => (
+              <span key={pref} className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/10 text-xs font-mono">
+                {pref}
+              </span>
+            ))
+          ) : (
+            <span className="text-xs text-slate-400">-</span>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: 'statut',
+      header: t('common:status'),
+      sortable: true,
+      cell: (partner) => (
+        <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+          partner.statut === 'active'
+            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+            : partner.statut === 'pending'
+            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+            : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+        }`}>
+          {t(`partner:partners.status${partner.statut.charAt(0).toUpperCase() + partner.statut.slice(1)}`)}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: t('common:actions.label'),
+      cell: (partner) => (
+        <div className="flex items-center justify-end gap-2">
+          <Button
+            size="xs"
+            variant="ghost"
+            leftIcon="solar:pen-bold"
+            onClick={() => onEditPartner(partner)}
+          />
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy shadow-sm font-body">
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            <th className="p-4">Entreprise / Partenaire</th>
-            <th className="p-4">Clé API (Live)</th>
-            <th className="p-4">Quota Mensuel</th>
-            <th className="p-4">Consommation</th>
-            <th className="p-4">Statut</th>
-            <th className="p-4 text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-200 dark:divide-white/10 text-xs text-slate-800 dark:text-slate-200">
-          {mockPartners.map((p) => (
-            <tr key={p.id} className="hover:bg-slate-50/50 dark:hover:bg-white/5 transition">
-              <td className="p-4 font-semibold text-slate-900 dark:text-white">{p.name}</td>
-              <td className="p-4 font-mono text-[11px] text-slate-500">{p.apiKey}</td>
-              <td className="p-4 font-semibold">{p.monthlyQuota} d'appels</td>
-              <td className="p-4 text-brand-green font-semibold">{p.callsThisMonth}</td>
-              <td className="p-4">
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
-                  p.status === 'active'
-                    ? 'bg-brand-green/10 text-brand-green'
-                    : 'bg-yellow-500/10 text-yellow-600'
-                }`}>
-                  {p.status}
-                </span>
-              </td>
-              <td className="p-4 text-right">
-                <button
-                  onClick={() => onEditPartner(p)}
-                  className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition"
-                >
-                  <Icon icon="solar:pen-bold-duotone" className="text-base text-brand-orange" />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="flex flex-col gap-4 w-full font-body">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="w-full sm:max-w-xs">
+          <Input
+            sizeVariant="sm"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={t('common:search')}
+            leftIcon="solar:magnifer-linear"
+          />
+        </div>
+
+        {onAddPartner && (
+          <Button
+            size="sm"
+            variant="secondary"
+            leftIcon="solar:add-circle-bold"
+            onClick={onAddPartner}
+          >
+            {t('partner:partners.create')}
+          </Button>
+        )}
+      </div>
+
+      <DataTable
+        columns={columns}
+        data={filteredPartners}
+        isLoading={isLoading}
+        getRowKey={(partner) => partner.id}
+        pageSize={10}
+      />
     </div>
   );
 }
