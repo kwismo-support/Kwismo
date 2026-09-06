@@ -1,12 +1,9 @@
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import { useTranslation } from 'react-i18next';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+interface TrendChartProps {
+  isLoading?: boolean;
+}
 
 const mockData = [
   { day: 'Lun', verifications: 1200, fraudes: 45 },
@@ -18,16 +15,28 @@ const mockData = [
   { day: 'Dim', verifications: 2900, fraudes: 95 },
 ];
 
-export default function TrendChart() {
+export default function TrendChart({ isLoading = false }: TrendChartProps) {
+  const { t } = useTranslation('admin');
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm animate-pulse">
+        <div className="h-4 bg-slate-200 dark:bg-white/10 rounded w-48 mb-2" />
+        <div className="h-3 bg-slate-200 dark:bg-white/10 rounded w-64 mb-6" />
+        <div className="h-64 bg-slate-100 dark:bg-white/5 rounded-xl w-full" />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy shadow-sm">
+    <div className="flex flex-col p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm font-body">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-title text-base font-bold text-slate-900 dark:text-white">
-            Évolution des vérifications & fraudes
+            {t('dashboard.trendChartTitle')}
           </h3>
-          <p className="font-body text-xs text-slate-500 dark:text-slate-400">
-            Volume quotidien sur les 7 derniers jours
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {t('dashboard.trendChartSubtitle')}
           </p>
         </div>
       </div>
@@ -56,7 +65,7 @@ export default function TrendChart() {
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorVerif)"
-              name="Vérifications"
+              name={t('dashboard.verifiedNumbers')}
             />
             <Area
               type="monotone"
@@ -65,7 +74,7 @@ export default function TrendChart() {
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorFraude)"
-              name="Fraudes Bloquées"
+              name={t('dashboard.blockedFrauds')}
             />
           </AreaChart>
         </ResponsiveContainer>

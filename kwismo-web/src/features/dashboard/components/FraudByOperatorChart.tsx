@@ -1,13 +1,9 @@
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from 'recharts';
+import { useTranslation } from 'react-i18next';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+
+interface FraudByOperatorChartProps {
+  isLoading?: boolean;
+}
 
 const operatorData = [
   { name: 'Orange', fraudes: 420, color: '#FF9900' },
@@ -17,16 +13,28 @@ const operatorData = [
   { name: 'Free', fraudes: 85, color: '#EF4444' },
 ];
 
-export default function FraudByOperatorChart() {
+export default function FraudByOperatorChart({ isLoading = false }: FraudByOperatorChartProps) {
+  const { t } = useTranslation('admin');
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm animate-pulse font-body">
+        <div className="h-4 bg-slate-200 dark:bg-white/10 rounded w-48 mb-2" />
+        <div className="h-3 bg-slate-200 dark:bg-white/10 rounded w-64 mb-6" />
+        <div className="h-64 bg-slate-100 dark:bg-white/5 rounded-xl w-full" />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy shadow-sm">
+    <div className="flex flex-col p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm font-body">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-title text-base font-bold text-slate-900 dark:text-white">
-            Signalements par Opérateur
+            {t('dashboard.operatorChartTitle')}
           </h3>
-          <p className="font-body text-xs text-slate-500 dark:text-slate-400">
-            Répartition globale des tentatives de fraude
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {t('dashboard.operatorChartSubtitle')}
           </p>
         </div>
       </div>
@@ -38,7 +46,7 @@ export default function FraudByOperatorChart() {
             <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
             <YAxis stroke="#94a3b8" fontSize={11} />
             <Tooltip contentStyle={{ borderRadius: '12px', fontSize: '12px' }} />
-            <Bar dataKey="fraudes" radius={[8, 8, 0, 0]} name="Tentatives de Fraude">
+            <Bar dataKey="fraudes" radius={[8, 8, 0, 0]} name={t('dashboard.blockedFrauds')}>
               {operatorData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
