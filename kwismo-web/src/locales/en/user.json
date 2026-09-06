@@ -1,0 +1,59 @@
+{
+  "title": "User Space",
+  "subtitle": "Personal protection against Mobile Money fraud",
+  "nav": {
+    "home": "Home",
+    "compromised": "Compromised number",
+    "numbers": "My numbers",
+    "verify": "Verify a number",
+    "report": "Report fraud",
+    "profile": "My profile"
+  },
+  "compromisedModal": {
+    "title": "Report a compromised number",
+    "subtitle": "Stolen phone, SIM swap, WhatsApp hacked",
+    "phoneLabel": "Affected phone number",
+    "reasonLabel": "Incident type",
+    "reasons": {
+      "stolen": "Stolen phone",
+      "sim_swap": "SIM swapped",
+      "whatsapp_hack": "WhatsApp account hacked",
+      "other": "Other compromise"
+    },
+    "submit": "Report urgently",
+    "cancel": "Cancel"
+  },
+  "quickVerify": {
+    "title": "Instant Number Verification",
+    "subtitle": "Check if a number is reported before sending money",
+    "placeholder": "e.g. +237 690 00 00 00",
+    "verify": "Verify",
+    "riskScore": "Risk score"
+  },
+  "emergency": {
+    "title": "Emergency Stolen Phone?",
+    "subtitle": "Instantly block your linked phone lines and alert the community if your SIM was stolen or swapped.",
+    "button": "Block my lines"
+  },
+  "compromisedSuccess": {
+    "title": "Compromise report submitted!",
+    "subtitle": "Your phone lines are now under priority surveillance."
+  },
+  "verifyView": {
+    "title": "Verify a number",
+    "subtitle": "Analyze a number's reputation before making a transaction",
+    "placeholder": "Enter phone number (e.g. +237 6XX XX XX XX)",
+    "button": "Analyze",
+    "safe": "Verified Number - Safe",
+    "warning": "Warning - Moderate Risk",
+    "danger": "Alert - Fraudulent Number"
+  },
+  "reportView": {
+    "title": "Report a fraud attempt",
+    "subtitle": "Help protect the community by reporting scams",
+    "targetPhone": "Scammer's phone number",
+    "fraudType": "Fraud type",
+    "details": "Report details",
+    "submit": "Submit report"
+  }
+}
