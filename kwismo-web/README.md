@@ -110,7 +110,14 @@ kwismo-web/
 ├─ public/
 │  ├─ favicon.svg
 │  ├─ robots.txt
-│  └─ fonts/                         # Poppins auto-hébergée (performance)
+│  └─ fonts/                         # Polices auto-hébergées
+│     ├─ AgeoTrial-Regular.woff2
+│     ├─ AgeoTrial-Medium.woff2
+│     ├─ AgeoTrial-SemiBold.woff2
+│     ├─ AgeoTrial-Bold.woff2
+│     ├─ MontserratAlternates-Regular.woff2
+│     ├─ MontserratAlternates-Medium.woff2
+│     ├─ MontserratAlternates-Bold.woff2
 │     ├─ Poppins-Regular.woff2
 │     ├─ Poppins-Medium.woff2
 │     ├─ Poppins-SemiBold.woff2
@@ -119,14 +126,15 @@ kwismo-web/
 ├─ src/
 │  ├─ main.tsx                       # Point d'entrée React (montage <App/>)
 │  ├─ App.tsx                        # Composition des providers + router
+│  ├─ index.css                      # Import globals.css
 │  ├─ vite-env.d.ts
 │  │
 │  ├─ app/                           # Cœur applicatif
 │  │  ├─ router.tsx                  # Définition des routes + lazy loading
 │  │  ├─ providers.tsx               # Query, Theme, i18n, Auth (composés)
 │  │  └─ guards/
-│  │     ├─ AuthGuard.tsx            # Vérifie la session au montage (fetchMe)
-│  │     ├─ GuestGuard.tsx           # Redirige si déjà connecté (pages /auth/*)
+│  │     ├─ AuthGuard.tsx            # Vérifie la session au montage
+│  │     ├─ GuestGuard.tsx           # Redirige si déjà connecté
 │  │     ├─ ProtectedRoute.tsx       # Bloque l'accès si non authentifié
 │  │     └─ RoleGuard.tsx            # Bloque selon le rôle (admin/partner)
 │  │
@@ -146,155 +154,104 @@ kwismo-web/
 │  ├─ features/                      # ★ Une fonctionnalité = un dossier
 │  │  │
 │  │  ├─ landing/
-│  │  │  ├─ index.tsx                # Page d'assemblage de la landing
+│  │  │  ├─ index.tsx                # Page d'assemblage landing page
 │  │  │  ├─ components/
 │  │  │  │  ├─ Navbar.tsx
 │  │  │  │  ├─ Hero.tsx
 │  │  │  │  ├─ FraudProblem.tsx
-│  │  │  │  ├─ Comparison.tsx        # Tableau Truecaller/Whoscall/KWISMO
+│  │  │  │  ├─ Comparison.tsx        # Tableau comparatif
 │  │  │  │  ├─ Features.tsx
 │  │  │  │  ├─ HowItWorks.tsx
 │  │  │  │  ├─ Partners.tsx
-│  │  │  │  ├─ Pricing.tsx           # Offre API 0,001 $/appel
+│  │  │  │  ├─ Pricing.tsx           # Tarification transparente
+│  │  │  │  ├─ ContactBar.tsx        # Barre de contact rapide
 │  │  │  │  ├─ DownloadCTA.tsx
 │  │  │  │  └─ Footer.tsx
 │  │  │  └─ sections/
-│  │  │     └─ landingSections.ts    # Ordre et configuration des sections
+│  │  │     └─ landingSections.ts
 │  │  │
-│  │  ├─ auth/
+│  │  ├─ auth/                       # Connexion, oubli mot de passe, reset
 │  │  │  ├─ index.tsx
 │  │  │  ├─ components/
 │  │  │  │  ├─ LoginForm.tsx
 │  │  │  │  ├─ ForgotPasswordForm.tsx
 │  │  │  │  └─ ResetPasswordForm.tsx
 │  │  │  ├─ hooks/
-│  │  │  │  ├─ useLogin.ts
-│  │  │  │  └─ useResetPassword.ts
-│  │  │  ├─ services/
-│  │  │  │  └─ auth.api.ts
-│  │  │  └─ schemas/
-│  │  │     └─ auth.schema.ts        # Zod : loginSchema, resetSchema
-│  │  │
-│  │  ├─ dashboard/                  # KPI globaux (admin) / KPI partenaire
-│  │  │  ├─ index.tsx
-│  │  │  ├─ components/
-│  │  │  │  ├─ KpiCard.tsx
-│  │  │  │  ├─ TrendChart.tsx
-│  │  │  │  └─ FraudByOperatorChart.tsx
-│  │  │  ├─ hooks/
-│  │  │  │  └─ useKpi.ts
 │  │  │  └─ services/
-│  │  │     └─ kpi.api.ts
 │  │  │
-│  │  ├─ users/
+│  │  ├─ dashboard/                  # Vue KPI d'ensemble
 │  │  │  ├─ index.tsx
-│  │  │  ├─ components/
-│  │  │  │  ├─ UsersTable.tsx
-│  │  │  │  └─ UserDetailPanel.tsx
-│  │  │  ├─ hooks/
-│  │  │  │  └─ useUsers.ts
-│  │  │  └─ services/
-│  │  │     └─ users.api.ts
+│  │  │  └─ components/
 │  │  │
-│  │  ├─ partners/                   # Admin uniquement
+│  │  ├─ user/                       # Espace Partenaire (Profil, Clés API, Paramètres)
 │  │  │  ├─ index.tsx
-│  │  │  ├─ components/
-│  │  │  │  ├─ PartnersTable.tsx
-│  │  │  │  ├─ PartnerForm.tsx
-│  │  │  │  └─ AffiliationRulesEditor.tsx   # Préfixes 69, 651-654, 68…
-│  │  │  ├─ hooks/
-│  │  │  │  └─ usePartners.ts
-│  │  │  └─ services/
-│  │  │     └─ partners.api.ts
+│  │  │  └─ components/
 │  │  │
-│  │  ├─ numbers/
+│  │  ├─ users/                      # Espace Admin (Gestion des Utilisateurs)
 │  │  │  ├─ index.tsx
-│  │  │  ├─ components/
-│  │  │  │  ├─ NumbersTable.tsx
-│  │  │  │  └─ NumberStatusBadge.tsx
-│  │  │  ├─ hooks/
-│  │  │  │  └─ useNumbers.ts
-│  │  │  └─ services/
-│  │  │     └─ numbers.api.ts
+│  │  │  └─ components/
 │  │  │
-│  │  ├─ ussd/                       # Pays / Opérateurs / Codes USSD (admin)
+│  │  ├─ partners/                   # Espace Admin (Gestion des Partenaires & Règles)
 │  │  │  ├─ index.tsx
-│  │  │  ├─ components/
-│  │  │  │  ├─ CountriesPanel.tsx
-│  │  │  │  ├─ OperatorsPanel.tsx
-│  │  │  │  └─ UssdActionsPanel.tsx
-│  │  │  ├─ hooks/
-│  │  │  │  └─ useUssd.ts
-│  │  │  └─ services/
-│  │  │     └─ ussd.api.ts
+│  │  │  └─ components/
 │  │  │
-│  │  ├─ access-control/             # Rôles & droits (admin)
+│  │  ├─ numbers/                    # Base des Numéros et Signalements
 │  │  │  ├─ index.tsx
-│  │  │  ├─ components/
-│  │  │  │  ├─ RolesList.tsx
-│  │  │  │  └─ PermissionsMatrix.tsx
-│  │  │  └─ services/
-│  │  │     └─ access.api.ts
+│  │  │  └─ components/
 │  │  │
-│  │  └─ reports/                    # Rapports stratégiques (partenaire)
+│  │  ├─ ussd/                       # Pays, Opérateurs et Actions USSD
+│  │  │  ├─ index.tsx
+│  │  │  └─ components/
+│  │  │
+│  │  ├─ access-control/             # Contrôle d'Accès et Matrice de Droits
+│  │  │  ├─ index.tsx
+│  │  │  └─ components/
+│  │  │
+│  │  └─ reports/                    # Rapports et Analyses Stratégiques
 │  │     ├─ index.tsx
-│  │     ├─ components/
-│  │     │  └─ ReportsView.tsx
-│  │     └─ services/
-│  │        └─ reports.api.ts
+│  │     └─ components/
 │  │
 │  ├─ shared/                        # Code transverse réellement partagé
-│  │  ├─ ui/                         # Composants shadcn/ui habillés
-│  │  │  ├─ button.tsx
-│  │  │  ├─ input.tsx
+│  │  ├─ ui/                         # Composants UI de base (boutons, champs, dialogue)
 │  │  │  ├─ badge.tsx
+│  │  │  ├─ button.tsx
 │  │  │  ├─ card.tsx
 │  │  │  ├─ dialog.tsx
 │  │  │  ├─ dropdown-menu.tsx
-│  │  │  ├─ toast.tsx
-│  │  │  └─ table.tsx
-│  │  ├─ components/                 # Composants applicatifs transverses
+│  │  │  ├─ input.tsx
+│  │  │  ├─ phone-input.tsx          # Champ téléphone international avec libphonenumber-js
+│  │  │  ├─ table.tsx
+│  │  │  └─ toast.tsx
+│  │  ├─ components/                 # Composants applicatifs (Layout, Navigation)
 │  │  │  ├─ layout/
 │  │  │  │  ├─ AppLayout.tsx
 │  │  │  │  ├─ Sidebar.tsx
-│  │  │  │  ├─ Topbar.tsx
-│  │  │  │  └─ Breadcrumb.tsx
-│  │  │  ├─ DataTable.tsx            # Tableau générique (tri, filtres, pagination)
-│  │  │  ├─ ThemeToggle.tsx          # Bascule clair/sombre
-│  │  │  ├─ LanguageSwitcher.tsx     # FR/EN
+│  │  │  │  └─ Topbar.tsx
+│  │  │  ├─ DataTable.tsx            # Table paginée universelle avec skeletons & i18n
+│  │  │  ├─ ThemeToggle.tsx
+│  │  │  ├─ LanguageSwitcher.tsx
 │  │  │  ├─ EmptyState.tsx
 │  │  │  ├─ ErrorState.tsx
 │  │  │  └─ LoadingSkeleton.tsx
 │  │  ├─ hooks/
-│  │  │  ├─ useTheme.ts
-│  │  │  ├─ useDebounce.ts
-│  │  │  └─ useMediaQuery.ts
 │  │  ├─ lib/
-│  │  │  ├─ axios.ts                 # Instance Axios + intercepteurs (auth, refresh)
-│  │  │  ├─ api.ts                   # Helpers get/post/patch/put/delete (wrappent axios)
-│  │  │  ├─ i18n.ts                  # Initialisation i18next + namespaces + détecteur
-│  │  │  ├─ queryClient.ts           # Configuration TanStack Query
-│  │  │  ├─ utils.ts                 # cn() et helpers
-│  │  │  └─ formatters.ts            # Dates, nombres, devises (Intl)
+│  │  │  ├─ api.ts
+│  │  │  ├─ axios.ts
+│  │  │  ├─ formatters.ts
+│  │  │  ├─ i18n.ts
+│  │  │  ├─ phone.ts                 # Validation & formatage E.164 + i18n-iso-countries
+│  │  │  ├─ queryClient.ts
+│  │  │  └─ utils.ts
+│  │  ├─ mock/
 │  │  ├─ store/
-│  │  │  ├─ authStore.ts             # Zustand : session
-│  │  │  ├─ themeStore.ts
-│  │  │  └─ languageStore.ts
 │  │  ├─ types/
-│  │  │  ├─ user.ts
-│  │  │  ├─ number.ts
-│  │  │  ├─ partner.ts
-│  │  │  ├─ api.ts                   # ApiError, Paginated<T>…
-│  │  │  └─ index.ts                 # Barrel : re-exports de tous les types
 │  │  └─ constants/
-│  │     ├─ roles.ts                 # ROLE_LABELS, ROLE_COLORS
-│  │     └─ index.ts                 # Barrel : re-exports des constantes
 │  │
 │  ├─ styles/
-│  │  ├─ globals.css                 # Directives Tailwind + reset
-│  │  └─ tokens.css                  # Design tokens (couleurs clair/sombre)
+│  │  ├─ globals.css                 # Configuration typographique base, reset, utilitaires
+│  │  └─ tokens.css                  # Source unique design tokens (couleurs, polices, tailles)
 │  │
-│  └─ locales/                       # Traductions i18n
+│  └─ locales/                       # Fichiers de traduction i18n (100% sans fallback)
 │     ├─ fr/
 │     │  ├─ common.json
 │     │  ├─ landing.json
@@ -308,18 +265,14 @@ kwismo-web/
 │        ├─ admin.json
 │        └─ partner.json
 │
-├─ .env                             # Variables réelles (NON versionné)
+├─ .env
 ├─ .env.example
-├─ .gitignore
-├─ .eslintrc.cjs
-├─ .prettierrc
-├─ index.html                        # Point d'entrée HTML (Vite)
+├─ index.html
 ├─ package.json
-├─ postcss.config.js
-├─ tailwind.config.ts                # Mapping des design tokens
-├─ tsconfig.json                     # Alias @/ vers src/
+├─ tailwind.config.ts                # Mappage des design tokens & typographies
+├─ tsconfig.json
 ├─ vite.config.ts
-└─ README.md                         # Ce fichier
+└─ README.md
 ```
 
 ---
