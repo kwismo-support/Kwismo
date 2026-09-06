@@ -1,86 +1,83 @@
 import { useState } from 'react';
-import { Icon } from '@iconify/react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
+import { Input } from '@/shared/ui/input';
+import { Button } from '@/shared/ui/button';
+import { forgotPasswordSchema, type ForgotPasswordInput } from '../schemas/auth.schema';
+import { authApi } from '../services/auth.api';
 
 interface ForgotPasswordFormProps {
-  onBackToLogin: () => void;
+  onBackToLogin?: () => void;
 }
 
 export default function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordFormProps) {
-  const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const { t } = useTranslation('auth');
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ForgotPasswordInput>({
+    resolver: zodResolver(forgotPasswordSchema),
+  });
+
+  const onSubmit = async (data: ForgotPasswordInput) => {
     setLoading(true);
-    setTimeout(() => {
+    try {
+      await authApi.forgotPassword(data);
+      setSent(true);
+    } catch {
+      // Toast notification is automatically dispatched by authApi
+    } finally {
       setLoading(false);
-      setSubmitted(true);
-    }, 800);
+    }
   };
 
   return (
-    <div className="flex flex-col gap-4 w-full">
-      {submitted ? (
-        <div className="flex flex-col items-center text-center p-4 rounded-xl bg-brand-green/10 border border-brand-green/30">
-          <Icon icon="solar:check-circle-bold" className="text-4xl text-brand-green mb-2" />
-          <h4 className="font-title text-base font-bold text-slate-900 dark:text-white">Email envoyé !</h4>
-          <p className="mt-1 font-body text-xs text-slate-600 dark:text-slate-300">
-            Un lien de réinitialisation a été envoyé à <strong>{email}</strong>.
-          </p>
-          <button
-            type="button"
-            onClick={onBackToLogin}
-            className="mt-4 font-body text-xs font-semibold text-brand-green hover:underline"
-          >
-            Retour à la connexion
-          </button>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full font-body">
+      {sent ? (
+        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold text-center">
+          {t('emailSent')}
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <p className="font-body text-xs text-slate-600 dark:text-slate-300">
-            Entrez votre adresse email ou votre numéro de téléphone pour recevoir des instructions.
-          </p>
-
-          <div className="flex flex-col gap-1.5">
-            <label className="font-body text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Email / Téléphone
-            </label>
-            <div className="relative flex items-center">
-              <Icon icon="solar:letter-bold" className="absolute left-3.5 text-slate-400 text-lg" />
-              <input
-                type="text"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="votre@email.com ou +237..."
-                className="w-full h-11 pl-10 pr-4 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-brand-darkBg text-slate-900 dark:text-white text-xs sm:text-sm font-body focus:outline-none focus:border-brand-orange focus:ring-1 focus:ring-brand-orange transition"
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-brand-orange text-white font-body text-sm font-semibold shadow-md hover:bg-[#e08700] transition active:scale-[0.99] disabled:opacity-50"
-          >
-            {loading ? (
-              <Icon icon="solar:spinner-bold-duotone" className="animate-spin text-xl" />
-            ) : (
-              <span>Envoyer le lien</span>
-            )}
-          </button>
-
-          <button
-            type="button"
-            onClick={onBackToLogin}
-            className="mt-2 flex items-center justify-center gap-1.5 font-body text-xs font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-          >
-            <Icon icon="solar:alt-arrow-left-bold" className="text-sm" />
-            <span>Retour à la connexion</span>
-          </button>
-        </form>
+        <Input
+          label={t('identifierLabel')}
+          placeholder={t('identifierPlaceholder')}
+          leftIcon="solar:letter-bold"
+          errorKey={errors.emailOrPhone?.message}
+          {...register('emailOrPhone')}
+        />
       )}
-    </div>
+
+      {!sent && (
+        <Button
+          type="submit"
+          variant="primary"
+          size="md"
+          fullWidth
+          isLoading={loading}
+          leftIcon="solar:plain-bold"
+          className="mt-2"
+        >
+          {t('submitForgot')}
+        </Button>
+      )}
+
+      {onBackToLogin && (
+        <Button
+          type="button"
+          variant="outline"
+          size="md"
+          fullWidth
+          onClick={onBackToLogin}
+          leftIcon="solar:alt-arrow-left-bold"
+        >
+          {t('backToLogin')}
+        </Button>
+      )}
+    </form>
   );
 }
