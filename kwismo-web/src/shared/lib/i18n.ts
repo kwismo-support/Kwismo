@@ -4,7 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import { env } from '@/config/env';
 import { LANG_STORAGE_KEY } from '@/config/constants';
 
-/* ── Traductions FR ──────────────────────────────────────── */
+
 import frCommon  from '@/locales/fr/common.json';
 import frLanding from '@/locales/fr/landing.json';
 import frAuth    from '@/locales/fr/auth.json';
@@ -14,7 +14,7 @@ import frPartnerRequest from '@/locales/fr/partnerRequest.json';
 import frUser    from '@/locales/fr/user.json';
 import frErrors  from '@/locales/fr/errors.json';
 
-/* ── Traductions EN ──────────────────────────────────────── */
+
 import enCommon  from '@/locales/en/common.json';
 import enLanding from '@/locales/en/landing.json';
 import enAuth    from '@/locales/en/auth.json';

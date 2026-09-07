@@ -7,9 +7,7 @@ interface RoleGuardProps {
   roles: Role[];
 }
 
-/**
- * Bloque l'accès et affiche ForbiddenPage si le rôle de l'utilisateur ne figure pas dans `roles`.
- */
+
 export function RoleGuard({ roles }: RoleGuardProps) {
   const user = useAuthStore((s) => s.user);
 

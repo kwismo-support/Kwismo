@@ -1,4 +1,3 @@
-// Fraud statistics section highlighting key metrics on Mobile Money threats.
 import { useTranslation } from 'react-i18next';
 
 export default function FraudProblem() {

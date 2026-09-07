@@ -1,4 +1,3 @@
-// Mobile application download call-to-action section with store buttons and illustration.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import ImgEquipe from '@/assets/illustrations/Img_Equipe.jpeg';

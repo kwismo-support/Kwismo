@@ -1,4 +1,3 @@
-// Step-by-step workflow section showing how Kwismo protects transactions in 3 steps.
 import { useTranslation } from 'react-i18next';
 import ImgEtape from '@/assets/illustrations/Img_Etape.png';
 

@@ -1,4 +1,3 @@
-// Store and service for managing public partnership requests (Demandes de partenariat)
 export interface PartnerRequestItem {
   id: string;
   nomEntreprise: string;

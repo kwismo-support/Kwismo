@@ -1,20 +1,14 @@
 import axios from 'axios';
 import { env } from '@/config/env';
 
-/**
- * Instance Axios partagée.
- * - Base URL : VITE_API_URL
- * - Credentials (cookies httpOnly) inclus automatiquement
- * - Intercepteur requête  : injecte Content-Type JSON
- * - Intercepteur réponse  : normalise les erreurs API
- */
+
 export const apiClient = axios.create({
   baseURL: env.apiUrl,
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 });
 
-/* ── Intercepteur réponse ──────────────────────────────────── */
+
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -22,7 +16,6 @@ apiClient.interceptors.response.use(
     const message = error.response?.data?.detail ?? error.message ?? 'Une erreur est survenue';
 
     if (status === 401) {
-      // Session expirée → rediriger vers login
       window.location.href = '/auth/login';
     }
 
@@ -30,10 +23,7 @@ apiClient.interceptors.response.use(
   },
 );
 
-/**
- * Helpers génériques pour les appels API.
- * Chaque feature service les utilise directement.
- */
+
 export const api = {
   get: <T>(url: string, params?: Record<string, unknown>) =>
     apiClient.get<T>(url, { params }).then((r) => r.data),

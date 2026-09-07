@@ -33,7 +33,6 @@ export default function LoginForm({ onForgotPassword, onRegisterPartner: _onRegi
       await authApi.login(data);
       window.location.href = '/app/dashboard';
     } catch {
-      // Toast notification is automatically dispatched by authApi
     } finally {
       setLoading(false);
     }
@@ -41,7 +40,7 @@ export default function LoginForm({ onForgotPassword, onRegisterPartner: _onRegi
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full font-body">
-      {/* Demo Credentials Helper Box */}
+      {}
       <div className="p-3.5 bg-brand-green/10 dark:bg-white/5 rounded-2xl border border-brand-green/30 dark:border-white/10 text-xs flex flex-col gap-2 font-body">
         <div className="flex items-center justify-between font-bold text-slate-800 dark:text-white">
           <span className="flex items-center gap-1.5 text-brand-green dark:text-brand-green">

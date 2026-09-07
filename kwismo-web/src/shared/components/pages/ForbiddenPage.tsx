@@ -1,4 +1,3 @@
-// 403 Forbidden error page rendered when a user lacks required role permissions.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { Button } from '@/shared/ui/button';

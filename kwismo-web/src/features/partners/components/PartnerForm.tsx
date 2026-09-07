@@ -1,4 +1,3 @@
-// Partner creation and edition modal form with company details and webhook configuration.
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';

@@ -31,7 +31,6 @@ export default function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordForm
       await authApi.forgotPassword(data);
       setSent(true);
     } catch {
-      // Toast notification is automatically dispatched by authApi
     } finally {
       setLoading(false);
     }

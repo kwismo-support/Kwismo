@@ -1,4 +1,3 @@
-// Access control management page rendering role cards and permissions matrix with RBAC rules.
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '@/shared/lib/api';

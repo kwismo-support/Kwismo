@@ -1,4 +1,3 @@
-// Roles card list displaying application security roles and assigned user counts.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { Button } from '@/shared/ui/button';

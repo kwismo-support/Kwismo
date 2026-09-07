@@ -85,7 +85,7 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-3 md:flex">
           <a
-            href="/devenir-partenaire"
+            href="/partner"
             className="flex h-[38px] items-center justify-center rounded-full bg-brand-navy px-5 font-body text-xs font-semibold text-white no-underline transition hover:bg-brand-navy/90"
           >
             {t('landing:nav.partner')}
@@ -132,7 +132,7 @@ export default function Navbar() {
 
             <div className="mt-4 flex flex-col gap-3 pt-4 border-t border-white/10">
               <a
-                href="#operators"
+                href="/partner"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex h-[40px] items-center justify-center rounded-full bg-brand-navy font-body text-xs font-semibold text-white"
               >

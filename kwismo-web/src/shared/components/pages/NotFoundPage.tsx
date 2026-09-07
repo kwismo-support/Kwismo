@@ -1,4 +1,3 @@
-// 404 Not Found page rendered when an invalid URL route is accessed.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { Button } from '@/shared/ui/button';

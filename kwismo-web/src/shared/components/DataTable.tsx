@@ -1,4 +1,3 @@
-// Reusable data table component supporting pagination, sorting, skeletons, and empty states.
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';

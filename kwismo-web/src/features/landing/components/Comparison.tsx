@@ -1,4 +1,3 @@
-// Comparison section table contrasting Kwismo features against generic caller ID applications.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 

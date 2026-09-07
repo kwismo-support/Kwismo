@@ -1,4 +1,3 @@
-// Application client router with lazy loading, role guards, and route definitions.
 import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './guards/ProtectedRoute';
@@ -33,6 +32,7 @@ export function AppRouter() {
     <Suspense fallback={<PageRouteLoader />}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/partner" element={<PartnerRequestPage />} />
         <Route path="/devenir-partenaire" element={<PartnerRequestPage />} />
         <Route path="/partner-request" element={<PartnerRequestPage />} />
         <Route path="/partner/request" element={<PartnerRequestPage />} />

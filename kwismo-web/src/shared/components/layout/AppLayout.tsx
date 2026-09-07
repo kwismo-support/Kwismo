@@ -3,22 +3,19 @@ import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { useState } from 'react';
 
-/**
- * Layout principal de l'espace protégé.
- * Sidebar fixe à gauche + Topbar + zone de contenu (Outlet).
- */
+
 export function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[var(--color-bg)]">
-      {/* Sidebar desktop (toujours visible) */}
+      {}
       <Sidebar
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
 
-      {/* Overlay mobile */}
+      {}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-20 bg-black/40 lg:hidden"
@@ -27,7 +24,7 @@ export function AppLayout() {
         />
       )}
 
-      {/* Contenu principal */}
+      {}
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar onMenuClick={() => setSidebarOpen(true)} />
         <main

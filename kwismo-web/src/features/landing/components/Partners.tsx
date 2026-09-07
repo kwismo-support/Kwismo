@@ -1,4 +1,3 @@
-// Partners showcase component presenting ecosystem benefits for financial institutions.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import ImgOperateur from '@/assets/illustrations/Img_Operateur.jpeg';

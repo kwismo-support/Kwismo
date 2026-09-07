@@ -35,7 +35,6 @@ export default function PartnerRegisterForm({ onSuccess, onBackToLogin }: Partne
   const onSubmit = async (data: PartnerRegisterInput) => {
     setLoading(true);
     try {
-      // Save pending request to store
       partnerRequestsStore.addRequest({
         nomEntreprise: data.nomEntreprise,
         typePartenariat: data.typePartenariat,
@@ -50,7 +49,6 @@ export default function PartnerRegisterForm({ onSuccess, onBackToLogin }: Partne
       setSubmittedData(data);
       if (onSuccess) onSuccess();
     } catch {
-      // Toast handles error
     } finally {
       setLoading(false);
     }

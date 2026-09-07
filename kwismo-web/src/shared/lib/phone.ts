@@ -1,4 +1,3 @@
-// Phone number parsing, international validation (E.164), and country helper utilities.
 import {
   parsePhoneNumber,
   isValidPhoneNumber as isValidLibPhone,
@@ -25,7 +24,6 @@ export interface CountryOption {
 const frNames = countries.getNames('fr');
 const enNames = countries.getNames('en');
 
-// Specific custom placeholders for African & major markets
 const CUSTOM_PLACEHOLDERS: Record<string, string> = {
   CM: '690 00 00 00',
   CI: '07 01 02 03 04',
@@ -44,8 +42,6 @@ const CUSTOM_PLACEHOLDERS: Record<string, string> = {
   GB: '07123 456789',
   CA: '(416) 555-0143',
 };
-
-const PRIORITY_CODES = ['CM', 'CI', 'SN', 'GA', 'CG', 'CD', 'TG', 'BJ', 'BF', 'ML', 'GN', 'NE', 'FR', 'US', 'GB', 'CA'];
 
 function getFlagEmoji(countryCode: string) {
   const codePoints = countryCode
@@ -76,19 +72,10 @@ export function getAllCountries(): CountryOption[] {
         examplePlaceholder: CUSTOM_PLACEHOLDERS[iso2] || '000 000 000',
       });
     } catch {
-      // Ignore codes without valid calling codes in libphonenumber-js
     }
   }
 
-  return list.sort((a, b) => {
-    const aPriority = PRIORITY_CODES.indexOf(a.code);
-    const bPriority = PRIORITY_CODES.indexOf(b.code);
-
-    if (aPriority !== -1 && bPriority !== -1) return aPriority - bPriority;
-    if (aPriority !== -1) return -1;
-    if (bPriority !== -1) return 1;
-    return a.nameFr.localeCompare(b.nameFr, 'fr');
-  });
+  return list.sort((a, b) => a.nameFr.localeCompare(b.nameFr, 'fr'));
 }
 
 export const COUNTRY_LIST: CountryOption[] = getAllCountries();
@@ -107,7 +94,6 @@ export function formatE164(phone: string, countryCode?: CountryCode): string {
     const parsed = parsePhoneNumber(phone, countryCode);
     if (parsed) return parsed.format('E.164');
   } catch {
-    // Return original string if parse fails
   }
   return phone;
 }
@@ -117,7 +103,6 @@ export function formatInternational(phone: string, countryCode?: CountryCode): s
     const parsed = parsePhoneNumber(phone, countryCode);
     if (parsed) return parsed.formatInternational();
   } catch {
-    // Return original string if parse fails
   }
   return phone;
 }

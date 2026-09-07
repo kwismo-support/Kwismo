@@ -31,7 +31,6 @@ export default function ResetPasswordForm({ onSuccess }: ResetPasswordFormProps)
       await authApi.resetPassword(data);
       if (onSuccess) onSuccess();
     } catch {
-      // Toast notification is automatically dispatched by authApi
     } finally {
       setLoading(false);
     }

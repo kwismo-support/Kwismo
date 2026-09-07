@@ -1,4 +1,3 @@
-// RBAC permissions matrix component showing role permissions mapping.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import type { PermissionDTO } from '@/shared/mock';

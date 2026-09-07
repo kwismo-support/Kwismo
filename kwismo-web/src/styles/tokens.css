@@ -1,65 +1,59 @@
-/* ============================================================
-   KWISMO — Design Tokens (Fichier Unique de Configuration)
-   Source unique globale pour : Polices, Tailles, Interlignes,
-   Approches (tracking), Couleurs, Rayons et Ombres.
-   ============================================================ */
-
 :root {
-  /* ── 1. POLICES DE CARACTÈRES AVEC FALLBACKS UNIVERSELS ──── */
+  
   --font-title: 'Montserrat Alternates', system-ui, -apple-system, sans-serif;
   --font-body: 'Ageo', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-sans: var(--font-body);
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-  /* ── 2. TAILLES DE POLICES ET INTERLIGNES (TYPOGRAPHIE SPEC) ── */
-  /* Titres (Montserrat Alternates) */
-  --text-h1: 3.5rem;         /* 56px */
-  --leading-h1: 4.5rem;      /* 72px */
+  
+  
+  --text-h1: 3.5rem;         
+  --leading-h1: 4.5rem;      
 
-  --text-h2: 2.5rem;         /* 40px */
-  --leading-h2: 3.5rem;      /* 56px */
+  --text-h2: 2.5rem;         
+  --leading-h2: 3.5rem;      
 
-  --text-h3: 1.75rem;        /* 28px */
-  --leading-h3: 2.5rem;      /* 40px */
+  --text-h3: 1.75rem;        
+  --leading-h3: 2.5rem;      
 
-  --text-h4: 1.625rem;       /* 26px */
-  --leading-h4: 2rem;        /* 32px */
+  --text-h4: 1.625rem;       
+  --leading-h4: 2rem;        
 
-  --text-h5: 1.375rem;       /* 22px */
-  --leading-h5: 2rem;        /* 32px */
+  --text-h5: 1.375rem;       
+  --leading-h5: 2rem;        
 
-  --text-h6: 1.25rem;        /* 20px */
-  --leading-h6: 1.75rem;     /* 28px */
+  --text-h6: 1.25rem;        
+  --leading-h6: 1.75rem;     
 
-  /* Corps de texte (Ageo) */
-  --text-body-lg: 1rem;          /* 16px */
-  --leading-body-lg: 1.6875rem;  /* 27px */
+  
+  --text-body-lg: 1rem;          
+  --leading-body-lg: 1.6875rem;  
 
-  --text-body-md: 0.875rem;      /* 14px */
-  --leading-body-md: 1.25rem;    /* 20px */
+  --text-body-md: 0.875rem;      
+  --leading-body-md: 1.25rem;    
 
-  --text-body-sm: 0.75rem;       /* 12px */
-  --leading-body-sm: 1rem;       /* 16px */
+  --text-body-sm: 0.75rem;       
+  --leading-body-sm: 1rem;       
 
-  --text-caption: 0.875rem;      /* 14px */
-  --leading-caption: 1.3125rem;  /* 21px */
+  --text-caption: 0.875rem;      
+  --leading-caption: 1.3125rem;  
 
-  --text-footnote: 0.75rem;      /* 12px */
-  --leading-footnote: 1rem;      /* 16px */
+  --text-footnote: 0.75rem;      
+  --leading-footnote: 1rem;      
 
-  /* Tailles génériques */
-  --text-2xs: 0.6875rem; /* 11px */
-  --text-xs:  0.75rem;   /* 12px */
-  --text-sm:  0.875rem;  /* 14px */
-  --text-base: 1rem;     /* 16px */
-  --text-lg:  1.125rem;  /* 18px */
-  --text-xl:  1.25rem;   /* 20px */
-  --text-2xl: 1.5rem;    /* 24px */
-  --text-3xl: 1.875rem;  /* 30px */
-  --text-4xl: 2.25rem;   /* 36px */
-  --text-5xl: 2.625rem;  /* 42px */
+  
+  --text-2xs: 0.6875rem; 
+  --text-xs:  0.75rem;   
+  --text-sm:  0.875rem;  
+  --text-base: 1rem;     
+  --text-lg:  1.125rem;  
+  --text-xl:  1.25rem;   
+  --text-2xl: 1.5rem;    
+  --text-3xl: 1.875rem;  
+  --text-4xl: 2.25rem;   
+  --text-5xl: 2.625rem;  
 
-  /* ── 3. INTERLIGNES (LINE-HEIGHTS / LEADING) ─────────────── */
+  
   --leading-none:    1;
   --leading-tight:   1.15;
   --leading-snug:    1.25;
@@ -67,14 +61,14 @@
   --leading-relaxed: 1.6;
   --leading-loose:   1.8;
 
-  /* ── 4. APPROCHE / ESPACEMENT DE LETTRES (TRACKING) ──────── */
+  
   --tracking-tighter: -0.03em;
   --tracking-tight:   -0.015em;
   --tracking-normal:  0em;
   --tracking-wide:    0.025em;
   --tracking-wider:   0.05em;
 
-  /* ── 5. PALETTE DE COULEURS MARQUE (KWISMO MOBILE) ──────── */
+  
   --color-brand-navy:       #161E33;
   --color-brand-orange:     #FF9900;
   --color-brand-green:      #32B07F;
@@ -83,7 +77,7 @@
   --color-brand-blue:       #6B98FF;
   --color-brand-dark-bg:    #0F1626;
 
-  /* ── 6. PALETTE PRINCIPALE (ÉCHELLE NAVY) ────────────────── */
+  
   --color-primary-50:  #e7e9f0;
   --color-primary-100: #c4c9da;
   --color-primary-200: #9ba4bf;
@@ -95,45 +89,45 @@
   --color-primary-800: #0a0e18;
   --color-primary-900: #05070c;
 
-  /* ── 7. PALETTE SECONDAIRE (ÉCHELLE ORANGE) ──────────────── */
+  
   --color-secondary-50:  #fff4e5;
   --color-secondary-100: #ffe0b2;
   --color-secondary-500: var(--color-brand-orange);
   --color-secondary-600: #e08700;
 
-  /* ── 8. COULEURS SÉMANTIQUES ─────────────────────────────── */
+  
   --color-success: var(--color-brand-green);
   --color-danger:  #e53e3e;
   --color-warning: var(--color-brand-orange);
   --color-info:    var(--color-brand-blue);
 
-  /* ── 9. FOND & TEXTE (MODE CLAIR) ────────────────────────── */
+  
   --color-bg:         #f8fafc;
   --color-bg-subtle:  #ffffff;
   --color-border:     #e2e8f0;
   --color-text:       var(--color-brand-navy);
   --color-text-muted: #64748b;
 
-  /* ── 10. RAYONS DE BORDURE (BORDER-RADIUS) ──────────────── */
+  
   --radius-sm:   0.25rem;
   --radius:      0.5rem;
   --radius-md:   0.75rem;
   --radius-lg:   1rem;
   --radius-full: 9999px;
 
-  /* ── 11. OMBRES PORTÉES (BOX-SHADOWS) ────────────────────── */
+  
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow:    0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
-  /* ── 12. TRANSITIONS ─────────────────────────────────────── */
+  
   --transition-fast: 150ms ease-in-out;
   --transition-base: 250ms ease-in-out;
   --transition-slow: 400ms ease-in-out;
 }
 
-/* ── MODE SOMBRE (.dark) ────────────────────────────────────── */
+
 .dark {
   --color-bg:         var(--color-brand-dark-bg);
   --color-bg-subtle:  var(--color-brand-navy);

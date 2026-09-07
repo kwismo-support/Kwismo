@@ -1,11 +1,5 @@
-/**
- * Chemins des routes API backend.
- * Toujours préfixés par env.apiUrl (via l'instance axios).
- *
- * Aligné sur le schéma OpenAPI de https://api.kwismo.com/docs
- */
 export const ENDPOINTS = {
-  /* ── Auth ──────────────────────────────────────────── */
+  
   auth: {
     register:       '/auth/register',
     emailVerify:    '/auth/email/verify',
@@ -18,7 +12,7 @@ export const ENDPOINTS = {
     logout:         '/auth/logout',
   },
 
-  /* ── Utilisateurs ───────────────────────────────────── */
+  
   users: {
     me:     '/users/me',
     list:   '/users',
@@ -27,7 +21,7 @@ export const ENDPOINTS = {
     status: (id: string) => `/users/${id}/status`,
   },
 
-  /* ── Mes Numéros ─────────────────────────────────────── */
+  
   myPhones: {
     list:   '/users/me/phones',
     add:    '/users/me/phones',
@@ -35,7 +29,7 @@ export const ENDPOINTS = {
     delete: (phoneId: string) => `/users/me/phones/${phoneId}`,
   },
 
-  /* ── Numéros ────────────────────────────────────────── */
+  
   numbers: {
     list:   '/numbers',
     detail: (id: string) => `/numbers/${id}`,
@@ -43,7 +37,7 @@ export const ENDPOINTS = {
     report: '/numbers/report',
   },
 
-  /* ── Partenaires ─────────────────────────────────────── */
+  
   partners: {
     list:       '/partners',
     detail:     (id: string) => `/partners/${id}`,
@@ -54,7 +48,7 @@ export const ENDPOINTS = {
     scope:      (id: string) => `/partners/${id}/scope`,
   },
 
-  /* ── USSD / Pays / Opérateurs ────────────────────────── */
+  
   ussd: {
     countries:       '/ussd/countries',
     country:         (id: string) => `/ussd/countries/${id}`,
@@ -64,20 +58,20 @@ export const ENDPOINTS = {
     action:          (id: string) => `/ussd/actions/${id}`,
   },
 
-  /* ── Dashboard / KPI ─────────────────────────────────── */
+  
   dashboard: {
     kpi:     '/dashboard/kpi',
     trend:   '/dashboard/trend',
     byOp:    '/dashboard/by-operator',
   },
 
-  /* ── Rapports ────────────────────────────────────────── */
+  
   reports: {
     list:   '/reports',
     export: '/reports/export',
   },
 
-  /* ── Contrôle d'accès ────────────────────────────────── */
+  
   access: {
     roles:       '/access/roles',
     role:        (id: string) => `/access/roles/${id}`,

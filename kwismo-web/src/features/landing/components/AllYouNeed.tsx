@@ -1,4 +1,3 @@
-// Section grid highlighting all essential Kwismo security features.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 

@@ -1,4 +1,3 @@
-// Reports and audits page container for downloading periodic security and API activity reports.
 import { useTranslation } from 'react-i18next';
 import ReportsView from './components/ReportsView';
 

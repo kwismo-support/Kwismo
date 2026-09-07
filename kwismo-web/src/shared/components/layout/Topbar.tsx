@@ -23,7 +23,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-bg-subtle)] px-4 sm:px-6">
-      {/* Gauche */}
+      {}
       <div className="flex items-center gap-3">
         <button
           onClick={onMenuClick}
@@ -35,7 +35,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         <Breadcrumb />
       </div>
 
-      {/* Droite */}
+      {}
       <div className="flex items-center gap-2">
         <LanguageSwitcher />
         <ThemeToggle />

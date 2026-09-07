@@ -1,4 +1,3 @@
-// 500 Server Error page rendered when a internal server failure occurs.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { Button } from '@/shared/ui/button';

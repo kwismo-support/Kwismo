@@ -7,6 +7,7 @@ import Navbar from '@/features/landing/components/Navbar';
 import Footer from '@/features/landing/components/Footer';
 import { Input } from '@/shared/ui/input';
 import { PhoneInput } from '@/shared/ui/phone-input';
+import { CountrySelect } from '@/shared/ui/country-select';
 import { COUNTRY_LIST } from '@/shared/lib/phone';
 import { partnerRequestsStore } from '@/features/partners/services/partnerRequestsStore';
 import { authApi } from '@/features/auth/services/auth.api';
@@ -72,7 +73,6 @@ export default function PartnerRequestPage() {
 
       setSubmittedData(data);
     } catch {
-      // Error handled by toast
     } finally {
       setLoading(false);
     }
@@ -85,7 +85,6 @@ export default function PartnerRequestPage() {
 
       <main className="flex-1 py-12 px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl flex flex-col items-center">
-          {/* Header Title Block */}
           <span className="text-brand-orange text-xs sm:text-sm font-bold tracking-widest uppercase mb-2 text-center">
             {t('partnerRequest:badge')}
           </span>
@@ -98,7 +97,6 @@ export default function PartnerRequestPage() {
             {t('partnerRequest:subtitle')}
           </p>
 
-          {/* Form Card */}
           <div className="mt-10 w-full max-w-3xl bg-white dark:bg-brand-navy rounded-3xl border border-slate-200 dark:border-white/10 shadow-xl p-6 sm:p-10 transition-all">
             {submittedData ? (
               <div className="flex flex-col items-center text-center py-8 px-4 gap-4">
@@ -121,7 +119,6 @@ export default function PartnerRequestPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-                {/* Row 1 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <Input
                     label={t('partnerRequest:companyNameLabel')}
@@ -140,7 +137,6 @@ export default function PartnerRequestPage() {
                   />
                 </div>
 
-                {/* Row 2 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <Input
                     type="email"
@@ -165,7 +161,6 @@ export default function PartnerRequestPage() {
                   />
                 </div>
 
-                {/* Row 3 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="flex flex-col gap-1.5 font-body">
                     <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
@@ -185,26 +180,21 @@ export default function PartnerRequestPage() {
                     </select>
                   </div>
 
-                  <div className="flex flex-col gap-1.5 font-body">
-                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                      {t('partnerRequest:countryLabel')} <span className="text-rose-500">*</span>
-                    </label>
-                    <select
-                      required
-                      className="w-full h-11 px-4 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-brand-navy text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-brand-green transition cursor-pointer"
-                      {...register('pays', { required: true })}
-                    >
-                      <option value="" disabled>{t('partnerRequest:countrySelect')}</option>
-                      {COUNTRY_LIST.map((c) => (
-                        <option key={c.code} value={c.code}>
-                          {lang === 'en' ? c.nameEn : c.nameFr} ({c.dialCode})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <Controller
+                    name="pays"
+                    control={control}
+                    render={({ field }) => (
+                      <CountrySelect
+                        label={t('partnerRequest:countryLabel')}
+                        required
+                        value={field.value ?? 'CM'}
+                        onChange={(val) => field.onChange(val)}
+                      />
+                    )}
+                  />
                 </div>
 
-                {/* Row 4 */}
+                {}
                 <div className="flex flex-col gap-1.5 font-body">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     {t('partnerRequest:messageLabel')}
@@ -217,7 +207,7 @@ export default function PartnerRequestPage() {
                   />
                 </div>
 
-                {/* Submit Button */}
+                {}
                 <div className="flex justify-end mt-2">
                   <button
                     type="submit"

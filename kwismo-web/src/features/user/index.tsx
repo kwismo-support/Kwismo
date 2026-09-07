@@ -1,4 +1,3 @@
-// User portal dashboard providing instant number verification, compromised number alerts, and fraud reporting.
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';

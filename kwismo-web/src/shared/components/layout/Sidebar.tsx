@@ -49,7 +49,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         open ? 'translate-x-0' : '-translate-x-full',
       )}
     >
-      {/* Logo */}
+      {}
       <div className="flex h-16 items-center justify-between px-5 border-b border-[var(--color-border)]">
         <span className="text-xl font-bold text-primary-500 tracking-tight">KWISMO</span>
         <button
@@ -61,7 +61,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </button>
       </div>
 
-      {/* Navigation */}
+      {}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
         <ul className="space-y-1">
           {visibleItems.map((item) => (

@@ -1,4 +1,3 @@
-// Authentication API service integrating login, password recovery, and token management.
 import { env } from '@/config/env';
 import { apiClient } from '@/shared/lib/axios';
 import { toast } from '@/shared/store/toastStore';
@@ -32,7 +31,6 @@ export const authApi = {
         localStorage.setItem('kwismo_user', JSON.stringify(userObj));
         localStorage.setItem('kwismo_token', 'mock-jwt-token-kwismo-2026');
       } catch {
-        // localStorage fallback
       }
 
       toast.success('auth:loginSuccess');

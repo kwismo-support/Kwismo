@@ -47,17 +47,14 @@ export function ToastItem({ toast }: { toast: ToastMessage }) {
 
   const formatText = (text?: string) => {
     if (!text) return '';
-    // Try exact key (e.g. "auth:loginSuccess")
     if (i18n.exists(text)) return t(text);
 
-    // Try converting dot to namespace colon (e.g. "auth.loginSuccess" -> "auth:loginSuccess")
     if (text.includes('.')) {
       const parts = text.split('.');
       const nsKey = `${parts[0]}:${parts.slice(1).join('.')}`;
       if (i18n.exists(nsKey)) return t(nsKey);
     }
 
-    // Try converting colon to dot
     if (text.includes(':')) {
       const dotKey = text.replace(':', '.');
       if (i18n.exists(dotKey)) return t(dotKey);

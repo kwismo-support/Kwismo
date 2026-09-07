@@ -1,4 +1,3 @@
-// African team presentation section displaying team mission, community, and approach.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import ImgEquipe from '@/assets/illustrations/Img_Equipe.jpeg';

@@ -49,7 +49,7 @@ export default function OperatorsInstitutions() {
           </div>
 
           <a
-            href="/auth/register"
+            href="/partner"
             className="mt-8 flex h-[44px] items-center gap-3 rounded-xl bg-brand-green pl-6 pr-2.5 text-xs sm:text-sm font-semibold text-white shadow-md hover:bg-brand-green/90 transition"
           >
             <span>{t('landing:operatorsInstitutions.cta')}</span>

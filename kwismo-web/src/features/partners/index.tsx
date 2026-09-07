@@ -1,4 +1,3 @@
-// Partners management page rendering partner directory table, pending partner requests, and affiliation rules editor.
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
@@ -68,7 +67,6 @@ export default function PartnersPage() {
   ) => {
     const updatedReq = partnerRequestsStore.validateRequest(requestId, emailConnexion, role);
     if (updatedReq) {
-      // Add to active partners list
       const newPartner: PartnerDTO = {
         id: `part-${Date.now()}`,
         nomEntreprise: updatedReq.nomEntreprise,
@@ -107,7 +105,7 @@ export default function PartnersPage() {
           </p>
         </div>
 
-        {/* Tab Navigation */}
+        {}
         <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-brand-navy border border-slate-200 dark:border-white/10 self-start sm:self-auto">
           <button
             onClick={() => setActiveTab('active')}

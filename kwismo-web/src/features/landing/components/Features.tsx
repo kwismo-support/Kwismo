@@ -1,4 +1,3 @@
-// Features grid section presenting main Kwismo functional capabilities.
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 

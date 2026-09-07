@@ -1,4 +1,3 @@
-// International phone input component supporting searchable country selection, live E.164 validation, vector flag badges, and dynamic placeholders.
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
@@ -23,7 +22,6 @@ export function PhoneInput({ value, onChange, label, required = false, className
 
   const lang = i18n.language.startsWith('en') ? 'en' : 'fr';
 
-  // Close dropdown on click outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -76,7 +74,7 @@ export function PhoneInput({ value, onChange, label, required = false, className
       )}
 
       <div className="flex items-center gap-2 relative">
-        {/* Searchable Country Selector Popover */}
+        {}
         <div className="relative" ref={dropdownRef}>
           <button
             type="button"
@@ -88,10 +86,10 @@ export function PhoneInput({ value, onChange, label, required = false, className
             <Icon icon="solar:alt-arrow-down-linear" className={`text-xs transition-transform ${isOpen ? 'rotate-180' : ''}`} />
           </button>
 
-          {/* Dropdown Menu with Search */}
+          {}
           {isOpen && (
             <div className="absolute top-12 left-0 z-50 w-72 max-h-80 overflow-hidden rounded-2xl bg-white dark:bg-brand-navy border border-slate-200 dark:border-white/15 shadow-2xl flex flex-col font-body animate-in fade-in zoom-in-95 duration-150">
-              {/* Search Bar */}
+              {}
               <div className="p-2 border-b border-slate-100 dark:border-white/10 sticky top-0 bg-white dark:bg-brand-navy z-10">
                 <div className="relative flex items-center">
                   <Icon icon="solar:magnifer-linear" className="absolute left-3 text-slate-400 text-sm" />
@@ -106,7 +104,7 @@ export function PhoneInput({ value, onChange, label, required = false, className
                 </div>
               </div>
 
-              {/* Country List */}
+              {}
               <div className="overflow-y-auto p-1 max-h-64 divide-y divide-slate-50 dark:divide-white/5">
                 {filteredCountries.length === 0 ? (
                   <div className="p-4 text-center text-xs text-slate-500 dark:text-slate-400">
@@ -145,7 +143,7 @@ export function PhoneInput({ value, onChange, label, required = false, className
           )}
         </div>
 
-        {/* Input Field with Dynamic Placeholder */}
+        {}
         <div className="relative flex-1">
           <input
             type="tel"

@@ -11,7 +11,7 @@ interface ProvidersProps {
   children: ReactNode;
 }
 
-/** Applique la classe `.dark` sur <html> en réaction au store de thème. */
+
 function ThemeApplier() {
   const theme = useThemeStore((s) => s.theme);
 
@@ -27,13 +27,7 @@ function ThemeApplier() {
   return null;
 }
 
-/**
- * Composition de tous les providers globaux :
- *  - BrowserRouter (React Router)
- *  - QueryClientProvider (TanStack Query)
- *  - I18nextProvider (i18next)
- *  - ThemeApplier (classe .dark sur <html>)
- */
+
 export function Providers({ children }: ProvidersProps) {
   return (
     <BrowserRouter>

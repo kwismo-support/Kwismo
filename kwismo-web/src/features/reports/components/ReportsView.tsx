@@ -1,4 +1,3 @@
-// Strategic reports view displaying periodic audit logs and security downloads with skeleton states.
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';

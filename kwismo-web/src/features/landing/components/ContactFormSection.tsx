@@ -1,4 +1,3 @@
-// Contact form section allowing public users to send messages and support inquiries.
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
