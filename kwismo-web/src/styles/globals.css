@@ -33,14 +33,14 @@
   font-display: swap;
 }
 
-/* Ageo Trial — Corps, boutons, footer (Restreint au Latin de base U+0000-007F pour éviter la corruption des caractères accentués) */
+/* Ageo Trial — Corps, boutons, footer (Restreint aux caractères alphanumériques A-Z, a-z, 0-9 ; les symboles &, @, + et accents basculent sur Inter) */
 @font-face {
   font-family: "Ageo";
   src: url("/fonts/AgeoTrial-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0000-007F;
+  unicode-range: U+0030-0039, U+0041-005A, U+0061-007A;
 }
 
 @font-face {
@@ -49,7 +49,7 @@
   font-weight: 500;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0000-007F;
+  unicode-range: U+0030-0039, U+0041-005A, U+0061-007A;
 }
 
 @font-face {
@@ -58,7 +58,7 @@
   font-weight: 600;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0000-007F;
+  unicode-range: U+0030-0039, U+0041-005A, U+0061-007A;
 }
 
 @font-face {
@@ -67,7 +67,7 @@
   font-weight: 700;
   font-style: normal;
   font-display: swap;
-  unicode-range: U+0000-007F;
+  unicode-range: U+0030-0039, U+0041-005A, U+0061-007A;
 }
 
 /* ── Reset & base ───────────────────────────────────────────── */

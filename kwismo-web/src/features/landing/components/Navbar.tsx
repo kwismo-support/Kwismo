@@ -9,7 +9,7 @@ export default function Navbar() {
   const [activeSection, setActiveSection] = useState('accueil');
 
   useEffect(() => {
-    const sections = ['accueil', 'about', 'fraud', 'pricing', 'contact'];
+    const sections = ['accueil', 'about', 'fraud', 'services', 'pricing', 'contact'];
 
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 200;
@@ -35,6 +35,7 @@ export default function Navbar() {
     { id: 'accueil', label: t('landing:nav.home'), href: '#accueil' },
     { id: 'about', label: t('landing:nav.about'), href: '#about' },
     { id: 'fraud', label: t('landing:nav.security'), href: '#fraud' },
+    { id: 'services', label: t('landing:nav.features'), href: '#services' },
     { id: 'pricing', label: t('landing:pricingTitleNav'), href: '#pricing' },
     { id: 'contact', label: t('landing:nav.contact'), href: '#contact' },
   ];
@@ -76,7 +77,7 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-3 md:flex">
           <a
-            href="/auth/register"
+            href="#operators"
             className="flex h-[38px] items-center justify-center rounded-full bg-brand-navy px-5 font-body text-xs font-semibold text-white no-underline transition hover:bg-brand-navy/90"
           >
             {t('landing:nav.partner')}
@@ -123,7 +124,8 @@ export default function Navbar() {
 
             <div className="mt-4 flex flex-col gap-3 pt-4 border-t border-white/10">
               <a
-                href="/auth/register"
+                href="#operators"
+                onClick={() => setMobileMenuOpen(false)}
                 className="flex h-[40px] items-center justify-center rounded-full bg-brand-navy font-body text-xs font-semibold text-white"
               >
                 {t('landing:nav.partner')}
@@ -131,6 +133,7 @@ export default function Navbar() {
 
               <a
                 href="/auth/login"
+                onClick={() => setMobileMenuOpen(false)}
                 className="flex h-[40px] items-center justify-center rounded-full bg-brand-orange font-body text-xs font-semibold text-white"
               >
                 {t('landing:nav.login')}

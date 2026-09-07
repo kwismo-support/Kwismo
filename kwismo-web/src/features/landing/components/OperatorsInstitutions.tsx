@@ -8,7 +8,7 @@ export default function OperatorsInstitutions() {
   const points = t('operatorsInstitutions.points', { returnObjects: true }) as string[];
 
   return (
-    <section className="w-full bg-slate-50 dark:bg-brand-navy px-6 py-16 transition-colors font-body">
+    <section id="operators" className="w-full bg-slate-50 dark:bg-brand-navy px-6 py-16 transition-colors font-body">
       <div className="mx-auto max-w-[90%] grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12">
         <div className="relative flex justify-center h-full">
           <div className="relative overflow-hidden rounded-3xl border border-slate-200 dark:border-white/10 shadow-2xl w-full h-full min-h-[340px]">

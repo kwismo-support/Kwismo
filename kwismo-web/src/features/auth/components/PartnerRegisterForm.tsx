@@ -8,6 +8,7 @@ import { PhoneInput } from '@/shared/ui/phone-input';
 import { Button } from '@/shared/ui/button';
 import { partnerRegisterSchema, type PartnerRegisterInput } from '../schemas/auth.schema';
 import { authApi } from '../services/auth.api';
+import { partnerRequestsStore } from '@/features/partners/services/partnerRequestsStore';
 
 interface PartnerRegisterFormProps {
   onSuccess?: () => void;
@@ -17,7 +18,7 @@ interface PartnerRegisterFormProps {
 export default function PartnerRegisterForm({ onSuccess, onBackToLogin }: PartnerRegisterFormProps) {
   const { t } = useTranslation('auth');
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [submittedData, setSubmittedData] = useState<PartnerRegisterInput | null>(null);
 
   const {
     register,
@@ -34,8 +35,19 @@ export default function PartnerRegisterForm({ onSuccess, onBackToLogin }: Partne
   const onSubmit = async (data: PartnerRegisterInput) => {
     setLoading(true);
     try {
+      // Save pending request to store
+      partnerRequestsStore.addRequest({
+        nomEntreprise: data.nomEntreprise,
+        typePartenariat: data.typePartenariat,
+        nomContact: data.nomContact,
+        prenomContact: data.prenomContact,
+        email: data.email,
+        telephone: data.telephone,
+        message: data.message,
+      });
+
       await authApi.registerPartner(data);
-      setSubmitted(true);
+      setSubmittedData(data);
       if (onSuccess) onSuccess();
     } catch {
       // Toast handles error
@@ -44,17 +56,26 @@ export default function PartnerRegisterForm({ onSuccess, onBackToLogin }: Partne
     }
   };
 
-  if (submitted) {
+  if (submittedData) {
     return (
       <div className="flex flex-col items-center gap-4 text-center p-6 bg-brand-green/10 border border-brand-green/30 rounded-3xl font-body">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-green text-white">
-          <Icon icon="solar:check-circle-bold" className="text-2xl" />
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-green text-white shadow-lg">
+          <Icon icon="solar:check-circle-bold" className="text-3xl" />
         </div>
-        <h3 className="font-title text-lg font-bold text-slate-900 dark:text-white">
-          {t('partnerRegisterSuccessTitle')}
+        <h3 className="font-title text-xl font-bold text-slate-900 dark:text-white">
+          Demande de partenariat transmise !
         </h3>
-        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed max-w-sm">
-          {t('partnerRegisterSuccessDesc')}
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-md">
+          Votre demande pour <strong className="text-brand-green font-semibold">{submittedData.nomEntreprise}</strong> a bien été enregistrée et transmise.
+          Elle est actuellement <strong className="text-brand-orange font-semibold">en attente de validation par le Super Administrateur</strong>.
+        </p>
+        <div className="p-3.5 bg-white dark:bg-brand-navy rounded-2xl border border-slate-200 dark:border-white/10 w-full text-left text-xs text-slate-600 dark:text-slate-300 flex flex-col gap-1.5 font-mono">
+          <div><span className="text-slate-400">Email contact :</span> {submittedData.email}</div>
+          <div><span className="text-slate-400">Téléphone :</span> {submittedData.telephone}</div>
+          <div><span className="text-slate-400">Statut dossier :</span> <span className="inline-flex px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 font-bold uppercase text-[10px]">En attente validation super admin</span></div>
+        </div>
+        <p className="text-[11px] text-slate-500 dark:text-slate-400 italic">
+          Un email de confirmation a été envoyé à {submittedData.email}. Vous recevrez vos accès dès validation.
         </p>
         <a
           href="/"
@@ -157,7 +178,7 @@ export default function PartnerRegisterForm({ onSuccess, onBackToLogin }: Partne
         leftIcon="solar:hand-stars-bold"
         className="mt-2"
       >
-        {t('submitPartnerRegister')}
+        Soumettre ma demande de partenariat
       </Button>
 
       <div className="mt-4 flex flex-col items-center gap-3 pt-4 border-t border-slate-200 dark:border-white/10 text-xs">
@@ -186,3 +207,4 @@ export default function PartnerRegisterForm({ onSuccess, onBackToLogin }: Partne
     </form>
   );
 }
+

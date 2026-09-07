@@ -17,7 +17,7 @@ export default function AllYouNeed() {
   const items = t('allYouNeed.items', { returnObjects: true }) as { title: string; desc: string }[];
 
   return (
-    <section className="w-full bg-brand-darkGreen text-white px-6 py-16 transition-colors">
+    <section id="services" className="w-full bg-brand-darkGreen text-white px-6 py-16 transition-colors">
       <div className="mx-auto max-w-[90%]">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
