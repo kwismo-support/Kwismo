@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Icon } from '@iconify/react';
+import { useTranslation } from 'react-i18next';
 import { useToastStore, type ToastMessage, type ToastType } from '@/shared/store/toastStore';
 import { cn } from '@/shared/lib/utils';
 
@@ -31,6 +32,7 @@ const toastConfig: Record<ToastType, { icon: string; bg: string; border: string;
 };
 
 export function ToastItem({ toast }: { toast: ToastMessage }) {
+  const { t, i18n } = useTranslation();
   const removeToast = useToastStore((s) => s.removeToast);
   const [visible, setVisible] = useState(true);
   const config = toastConfig[toast.type];
@@ -42,6 +44,30 @@ export function ToastItem({ toast }: { toast: ToastMessage }) {
     }, toast.duration ?? 4000);
     return () => clearTimeout(timer);
   }, [toast, removeToast]);
+
+  const formatText = (text?: string) => {
+    if (!text) return '';
+    // Try exact key (e.g. "auth:loginSuccess")
+    if (i18n.exists(text)) return t(text);
+
+    // Try converting dot to namespace colon (e.g. "auth.loginSuccess" -> "auth:loginSuccess")
+    if (text.includes('.')) {
+      const parts = text.split('.');
+      const nsKey = `${parts[0]}:${parts.slice(1).join('.')}`;
+      if (i18n.exists(nsKey)) return t(nsKey);
+    }
+
+    // Try converting colon to dot
+    if (text.includes(':')) {
+      const dotKey = text.replace(':', '.');
+      if (i18n.exists(dotKey)) return t(dotKey);
+    }
+
+    return text;
+  };
+
+  const titleText = formatText(toast.title);
+  const messageText = formatText(toast.message);
 
   return (
     <div
@@ -58,8 +84,8 @@ export function ToastItem({ toast }: { toast: ToastMessage }) {
       <Icon icon={config.icon} className="text-xl shrink-0 mt-0.5" />
 
       <div className="flex-1 min-w-0">
-        {toast.title && <h4 className="text-xs font-bold uppercase tracking-wider mb-0.5">{toast.title}</h4>}
-        <p className="text-xs leading-relaxed font-medium">{toast.message}</p>
+        {titleText && <h4 className="text-xs font-bold uppercase tracking-wider mb-0.5">{titleText}</h4>}
+        <p className="text-xs leading-relaxed font-medium">{messageText}</p>
       </div>
 
       <button
@@ -72,6 +98,7 @@ export function ToastItem({ toast }: { toast: ToastMessage }) {
     </div>
   );
 }
+
 
 export function ToastContainer() {
   const toasts = useToastStore((s) => s.toasts);

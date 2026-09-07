@@ -2,6 +2,7 @@
 import { env } from '@/config/env';
 import { apiClient } from '@/shared/lib/axios';
 import { toast } from '@/shared/store/toastStore';
+import { MOCK_USERS } from '@/shared/mock/mockUsers';
 import type { LoginInput, ForgotPasswordInput, ResetPasswordInput, PartnerRegisterInput } from '../schemas/auth.schema';
 
 const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -14,16 +15,30 @@ export const authApi = {
         toast.error('auth:errors.invalidCredentials');
         throw new Error('Invalid credentials');
       }
+
+      const foundUser = MOCK_USERS.find((u) => u.email.toLowerCase() === data.email.toLowerCase());
+      const role = foundUser ? foundUser.role.nomRole : 'admin';
+      const userObj = {
+        id: foundUser ? foundUser.id : 'usr-001',
+        nom: foundUser ? foundUser.nom : 'Mbarga',
+        prenom: foundUser ? foundUser.prenom : 'Jean-Baptiste',
+        email: data.email,
+        role,
+        partnerId: foundUser?.partnerId,
+        partnerName: foundUser?.partner?.nomEntreprise,
+      };
+
+      try {
+        localStorage.setItem('kwismo_user', JSON.stringify(userObj));
+        localStorage.setItem('kwismo_token', 'mock-jwt-token-kwismo-2026');
+      } catch {
+        // localStorage fallback
+      }
+
       toast.success('auth:loginSuccess');
       return {
         token: 'mock-jwt-token-kwismo-2026',
-        user: {
-          id: 'usr-001',
-          nom: 'Mbarga',
-          prenom: 'Jean-Baptiste',
-          email: data.email,
-          role: 'admin',
-        },
+        user: userObj,
       };
     }
     return apiClient.post('/auth/login', {

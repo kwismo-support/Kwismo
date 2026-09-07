@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher';
+import { ThemeToggle } from '@/shared/components/ThemeToggle';
 import LogoNavBar from '@/assets/logo/Logo_Footer.png';
 
 export default function Footer() {
@@ -92,6 +93,7 @@ export default function Footer() {
           <p>© 2026 KWISMO. {t('landing:footer.rights')}</p>
 
           <div className="flex items-center gap-4">
+            <ThemeToggle className="text-slate-700 dark:text-white/80 hover:bg-slate-200 dark:hover:bg-white/10" />
             <LanguageSwitcher className="border-slate-300 dark:border-white/20 text-slate-800 dark:text-white bg-white dark:bg-white/10" />
 
             <a
