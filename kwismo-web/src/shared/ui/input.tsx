@@ -70,9 +70,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               'focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition-all duration-150',
               'disabled:cursor-not-allowed disabled:opacity-50',
               displayError && 'border-rose-500 focus:border-rose-500 focus:ring-rose-500',
-              leftIcon && 'pl-10',
-              (rightIcon || isLoading) && 'pr-10',
               inputSizes[sizeVariant],
+              leftIcon && '!pl-11',
+              (rightIcon || isLoading) && '!pr-11',
               className,
             )}
             {...props}

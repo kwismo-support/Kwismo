@@ -52,17 +52,22 @@ export function PhoneInput({ value, onChange, label, required = false, className
       )}
 
       <div className="flex items-center gap-2">
-        <select
-          value={selectedCountry.code}
-          onChange={(e) => handleCountryChange(e.target.value)}
-          className="h-11 px-3 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-brand-navy text-slate-900 dark:text-white text-xs sm:text-sm font-semibold focus:outline-none focus:border-brand-green"
-        >
-          {COUNTRY_LIST.map((country) => (
-            <option key={country.code} value={country.code}>
-              {country.flag} {country.dialCode} ({lang === 'en' ? country.nameEn : country.nameFr})
-            </option>
-          ))}
-        </select>
+        <div className="relative flex items-center">
+          <span className="absolute left-2.5 pointer-events-none flex items-center justify-center">
+            <Icon icon={selectedCountry.icon} className="text-xl" />
+          </span>
+          <select
+            value={selectedCountry.code}
+            onChange={(e) => handleCountryChange(e.target.value)}
+            className="h-11 pl-9 pr-3 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-brand-navy text-slate-900 dark:text-white text-xs sm:text-sm font-semibold focus:outline-none focus:border-brand-green cursor-pointer"
+          >
+            {COUNTRY_LIST.map((country) => (
+              <option key={country.code} value={country.code}>
+                {country.dialCode} ({lang === 'en' ? country.nameEn : country.nameFr})
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div className="relative flex-1">
           <input

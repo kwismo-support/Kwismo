@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { Icon } from '@iconify/react';
 import { Button } from '@/shared/ui/button';
 import type { CountryDTO } from '@/shared/mock';
 
@@ -44,7 +45,7 @@ export default function CountriesPanel({ countries, isLoading = false, onAddCoun
           <div key={c.id} className="p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-green/10 text-brand-green font-title font-bold text-sm">
-                {c.codePays}
+                <Icon icon={`circle-flags:${c.codePays.toLowerCase()}`} className="text-2xl shrink-0" />
               </div>
               <div>
                 <h4 className="font-title text-sm font-bold text-slate-900 dark:text-white">{c.nom}</h4>

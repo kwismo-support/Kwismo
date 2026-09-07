@@ -9,7 +9,7 @@ export default function Navbar() {
   const [activeSection, setActiveSection] = useState('accueil');
 
   useEffect(() => {
-    const sections = ['accueil', 'fraud', 'services', 'pricing', 'contact'];
+    const sections = ['accueil', 'about', 'fraud', 'pricing', 'contact'];
 
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 200;
@@ -33,8 +33,8 @@ export default function Navbar() {
 
   const navItems = [
     { id: 'accueil', label: t('landing:nav.home'), href: '#accueil' },
+    { id: 'about', label: t('landing:nav.about'), href: '#about' },
     { id: 'fraud', label: t('landing:nav.security'), href: '#fraud' },
-    { id: 'services', label: t('landing:nav.features'), href: '#services' },
     { id: 'pricing', label: t('landing:pricingTitleNav'), href: '#pricing' },
     { id: 'contact', label: t('landing:nav.contact'), href: '#contact' },
   ];
@@ -57,13 +57,18 @@ export default function Navbar() {
               <a
                 key={item.id}
                 href={item.href}
-                className={`font-body text-xs sm:text-sm font-medium transition-colors ${
+                className={`relative py-2 font-body text-xs sm:text-sm font-medium transition-all duration-300 ${
                   isActive
-                    ? 'text-white font-bold underline underline-offset-4 decoration-brand-orange scale-105'
+                    ? 'text-white font-bold scale-105'
                     : 'text-white/80 hover:text-white'
                 }`}
               >
-                {item.label}
+                <span>{item.label}</span>
+                <span
+                  className={`absolute bottom-0 left-0 h-0.5 bg-brand-orange rounded-full transition-all duration-300 ease-in-out ${
+                    isActive ? 'w-full opacity-100 scale-x-100' : 'w-0 opacity-0 scale-x-0'
+                  }`}
+                />
               </a>
             );
           })}
