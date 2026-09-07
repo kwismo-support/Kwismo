@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
-import { COUNTRY_LIST, type CountryOption } from '@/shared/lib/phone';
+import { COUNTRY_LIST, detectUserCountryCode, type CountryOption } from '@/shared/lib/phone';
 
 interface CountrySelectProps {
   value: string;
@@ -19,7 +19,8 @@ export function CountrySelect({ value, onChange, label, required = false, classN
 
   const lang = i18n.language.startsWith('en') ? 'en' : 'fr';
 
-  const selectedCountry = COUNTRY_LIST.find((c) => c.code === value) || COUNTRY_LIST[0];
+  const detectedCode = detectUserCountryCode();
+  const selectedCountry = COUNTRY_LIST.find((c) => c.code === value) || COUNTRY_LIST.find((c) => c.code === detectedCode) || COUNTRY_LIST[0];
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {

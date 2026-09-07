@@ -8,7 +8,7 @@ import Footer from '@/features/landing/components/Footer';
 import { Input } from '@/shared/ui/input';
 import { PhoneInput } from '@/shared/ui/phone-input';
 import { CountrySelect } from '@/shared/ui/country-select';
-import { COUNTRY_LIST } from '@/shared/lib/phone';
+import { COUNTRY_LIST, detectUserCountryCode } from '@/shared/lib/phone';
 import { partnerRequestsStore } from '@/features/partners/services/partnerRequestsStore';
 import { authApi } from '@/features/auth/services/auth.api';
 
@@ -37,7 +37,7 @@ export default function PartnerRequestPage() {
   } = useForm<FormInputs>({
     defaultValues: {
       typePartenariat: '',
-      pays: 'CM',
+      pays: detectUserCountryCode(),
     },
   });
 

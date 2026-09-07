@@ -107,3 +107,90 @@ export function formatInternational(phone: string, countryCode?: CountryCode): s
   return phone;
 }
 
+const TIMEZONE_COUNTRY_MAP: Record<string, CountryCode> = {
+  'Africa/Douala': 'CM',
+  'Africa/Lagos': 'NG',
+  'Africa/Abidjan': 'CI',
+  'Africa/Dakar': 'SN',
+  'Africa/Libreville': 'GA',
+  'Africa/Brazzaville': 'CG',
+  'Africa/Kinshasa': 'CD',
+  'Africa/Lubumbashi': 'CD',
+  'Africa/Lome': 'TG',
+  'Africa/Cotonou': 'BJ',
+  'Africa/Ouagadougou': 'BF',
+  'Africa/Bamako': 'ML',
+  'Africa/Conakry': 'GN',
+  'Africa/Niamey': 'NE',
+  'Africa/Bangui': 'CF',
+  'Africa/Ndjamena': 'TD',
+  'Africa/Malabo': 'GQ',
+  'Africa/Banjul': 'GM',
+  'Africa/Freetown': 'SL',
+  'Africa/Monrovia': 'LR',
+  'Africa/Bissau': 'GW',
+  'Africa/Praia': 'CV',
+  'Africa/Luanda': 'AO',
+  'Africa/Casablanca': 'MA',
+  'Africa/Tunis': 'TN',
+  'Africa/Algiers': 'DZ',
+  'Africa/Cairo': 'EG',
+  'Africa/Nairobi': 'KE',
+  'Africa/Kampala': 'UG',
+  'Africa/Kigali': 'RW',
+  'Africa/Bujumbura': 'BI',
+  'Africa/Dar_es_Salaam': 'TZ',
+  'Africa/Addis_Ababa': 'ET',
+  'Africa/Asmara': 'ER',
+  'Africa/Djibouti': 'DJ',
+  'Africa/Mogadishu': 'SO',
+  'Africa/Khartoum': 'SD',
+  'Africa/Juba': 'SS',
+  'Africa/Johannesburg': 'ZA',
+  'Africa/Harare': 'ZW',
+  'Africa/Lusaka': 'ZM',
+  'Africa/Maputo': 'MZ',
+  'Europe/Paris': 'FR',
+  'Europe/London': 'GB',
+  'Europe/Brussels': 'BE',
+  'Europe/Berlin': 'DE',
+  'Europe/Madrid': 'ES',
+  'Europe/Rome': 'IT',
+  'Europe/Geneva': 'CH',
+  'Europe/Zurich': 'CH',
+  'Europe/Amsterdam': 'NL',
+  'Europe/Lisbon': 'PT',
+  'America/New_York': 'US',
+  'America/Chicago': 'US',
+  'America/Denver': 'US',
+  'America/Los_Angeles': 'US',
+  'America/Toronto': 'CA',
+  'America/Montreal': 'CA',
+  'America/Vancouver': 'CA',
+  'America/Sao_Paulo': 'BR',
+};
+
+export function detectUserCountryCode(): CountryCode {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (tz && TIMEZONE_COUNTRY_MAP[tz]) {
+      return TIMEZONE_COUNTRY_MAP[tz];
+    }
+  } catch {}
+
+  try {
+    const languages = navigator.languages || [navigator.language];
+    for (const lang of languages) {
+      if (lang.includes('-')) {
+        const region = lang.split('-')[1].toUpperCase();
+        if (region.length === 2 && COUNTRY_LIST.some((c) => c.code === region)) {
+          return region as CountryCode;
+        }
+      }
+    }
+  } catch {}
+
+  return 'CM';
+}
+
+

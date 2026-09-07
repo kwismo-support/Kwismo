@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
-import { COUNTRY_LIST, validatePhone, formatE164, type CountryOption } from '@/shared/lib/phone';
+import { COUNTRY_LIST, validatePhone, formatE164, detectUserCountryCode, type CountryOption } from '@/shared/lib/phone';
 import type { CountryCode } from 'libphonenumber-js';
 
 interface PhoneInputProps {
@@ -14,7 +14,9 @@ interface PhoneInputProps {
 
 export function PhoneInput({ value, onChange, label, required = false, className = '' }: PhoneInputProps) {
   const { i18n } = useTranslation();
-  const [selectedCountry, setSelectedCountry] = useState<CountryOption>(COUNTRY_LIST[0]);
+  const defaultCountryCode = detectUserCountryCode();
+  const defaultCountry = COUNTRY_LIST.find((c) => c.code === defaultCountryCode) || COUNTRY_LIST[0];
+  const [selectedCountry, setSelectedCountry] = useState<CountryOption>(defaultCountry);
   const [rawInput, setRawInput] = useState(value);
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
