@@ -4,7 +4,7 @@ import LoginForm from './components/LoginForm';
 import ForgotPasswordForm from './components/ForgotPasswordForm';
 import ResetPasswordForm from './components/ResetPasswordForm';
 import PartnerRegisterForm from './components/PartnerRegisterForm';
-import LogoNavBar from '@/assets/logo/Logo_NavBar.png';
+import Icon from '@/assets/logo/icon.png';
 import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher';
 import { ThemeToggle } from '@/shared/components/ThemeToggle';
 
@@ -41,8 +41,8 @@ export default function AuthPage() {
       </div>
 
       <div className={`relative z-20 w-full ${mode === 'register' ? 'max-w-xl' : 'max-w-md'} bg-white/95 dark:bg-[#161E33]/95 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-white/10 shadow-2xl p-6 sm:p-8 flex flex-col items-center transition-all`}>
-        <a href="/" className="mb-6 flex justify-center hover:opacity-90 transition">
-          <img src={LogoNavBar} alt="KWISMO" className="h-10 w-auto object-contain" />
+        <a href="/" className="mb-4 flex justify-center hover:opacity-90 transition">
+          <img src={Icon} alt="KWISMO" className="h-12 w-auto object-contain" />
         </a>
 
         <div className="text-center mb-6">

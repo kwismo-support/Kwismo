@@ -13,7 +13,7 @@ interface LoginFormProps {
   onRegisterPartner?: () => void;
 }
 
-export default function LoginForm({ onForgotPassword, onRegisterPartner }: LoginFormProps) {
+export default function LoginForm({ onForgotPassword, onRegisterPartner: _onRegisterPartner }: LoginFormProps) {
   const { t } = useTranslation('auth');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -154,20 +154,6 @@ export default function LoginForm({ onForgotPassword, onRegisterPartner }: Login
       </Button>
 
       <div className="mt-4 flex flex-col items-center gap-3 pt-4 border-t border-slate-200 dark:border-white/10 text-xs">
-        <a
-          href="/auth/register"
-          onClick={(e) => {
-            if (onRegisterPartner) {
-              e.preventDefault();
-              onRegisterPartner();
-            }
-          }}
-          className="font-medium text-brand-green hover:underline flex items-center gap-1.5"
-        >
-          <Icon icon="solar:hand-stars-bold" className="text-sm" />
-          <span>{t('partnerRegisterLink')}</span>
-        </a>
-
         <a
           href="/"
           className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition flex items-center gap-1"
