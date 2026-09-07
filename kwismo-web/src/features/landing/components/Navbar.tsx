@@ -9,6 +9,11 @@ export default function Navbar() {
   const [activeSection, setActiveSection] = useState('accueil');
 
   useEffect(() => {
+    if (window.location.pathname !== '/') {
+      setActiveSection('');
+      return;
+    }
+
     const sections = ['accueil', 'about', 'fraud', 'services', 'pricing', 'contact'];
 
     const handleScroll = () => {
@@ -31,19 +36,22 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const isHome = window.location.pathname === '/';
+  const prefix = isHome ? '' : '/';
+
   const navItems = [
-    { id: 'accueil', label: t('landing:nav.home'), href: '#accueil' },
-    { id: 'about', label: t('landing:nav.about'), href: '#about' },
-    { id: 'fraud', label: t('landing:nav.security'), href: '#fraud' },
-    { id: 'services', label: t('landing:nav.features'), href: '#services' },
-    { id: 'pricing', label: t('landing:pricingTitleNav'), href: '#pricing' },
-    { id: 'contact', label: t('landing:nav.contact'), href: '#contact' },
+    { id: 'accueil', label: t('landing:nav.home'), href: `${prefix}#accueil` },
+    { id: 'about', label: t('landing:nav.about'), href: `${prefix}#about` },
+    { id: 'fraud', label: t('landing:nav.security'), href: `${prefix}#fraud` },
+    { id: 'services', label: t('landing:nav.features'), href: `${prefix}#services` },
+    { id: 'pricing', label: t('landing:pricingTitleNav'), href: `${prefix}#pricing` },
+    { id: 'contact', label: t('landing:nav.contact'), href: `${prefix}#contact` },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-brand-green border-b border-white/10 shadow-md backdrop-blur-md transition-colors duration-200">
+    <header className="sticky top-0 z-50 w-full bg-brand-green border-b border-white/10 shadow-md backdrop-blur-md transition-colors duration-200 font-body">
       <div className="mx-auto flex h-[72px] max-w-[90%] items-center justify-between px-4 sm:px-6 lg:px-8">
-        <a href="#accueil" className="flex items-center gap-2 group">
+        <a href="/" className="flex items-center gap-2 group">
           <img
             src={LogoNavBar}
             alt="KWISMO Logo"
@@ -77,7 +85,7 @@ export default function Navbar() {
 
         <div className="hidden items-center gap-3 md:flex">
           <a
-            href="#operators"
+            href="/devenir-partenaire"
             className="flex h-[38px] items-center justify-center rounded-full bg-brand-navy px-5 font-body text-xs font-semibold text-white no-underline transition hover:bg-brand-navy/90"
           >
             {t('landing:nav.partner')}

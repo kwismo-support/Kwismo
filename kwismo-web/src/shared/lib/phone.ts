@@ -2,6 +2,7 @@
 import {
   parsePhoneNumber,
   isValidPhoneNumber as isValidLibPhone,
+  getCountryCallingCode,
   CountryCode,
 } from 'libphonenumber-js';
 import countries from 'i18n-iso-countries';
@@ -21,24 +22,76 @@ export interface CountryOption {
   examplePlaceholder: string;
 }
 
-export const COUNTRY_LIST: CountryOption[] = [
-  { code: 'CM', nameFr: 'Cameroun', nameEn: 'Cameroon', dialCode: '+237', flag: '🇨🇲', icon: 'circle-flags:cm', examplePlaceholder: '690 00 00 00' },
-  { code: 'CI', nameFr: "Côte d'Ivoire", nameEn: 'Ivory Coast', dialCode: '+225', flag: '🇨🇮', icon: 'circle-flags:ci', examplePlaceholder: '07 01 02 03 04' },
-  { code: 'SN', nameFr: 'Sénégal', nameEn: 'Senegal', dialCode: '+221', flag: '🇸🇳', icon: 'circle-flags:sn', examplePlaceholder: '77 000 00 00' },
-  { code: 'GA', nameFr: 'Gabon', nameEn: 'Gabon', dialCode: '+241', flag: '🇬🇦', icon: 'circle-flags:ga', examplePlaceholder: '066 00 00 00' },
-  { code: 'CG', nameFr: 'Congo', nameEn: 'Congo', dialCode: '+242', flag: '🇨🇬', icon: 'circle-flags:cg', examplePlaceholder: '06 000 00 00' },
-  { code: 'CD', nameFr: 'RDC', nameEn: 'DR Congo', dialCode: '+243', flag: '🇨🇩', icon: 'circle-flags:cd', examplePlaceholder: '810 000 000' },
-  { code: 'TG', nameFr: 'Togo', nameEn: 'Togo', dialCode: '+228', flag: '🇹🇬', icon: 'circle-flags:tg', examplePlaceholder: '90 00 00 00' },
-  { code: 'BJ', nameFr: 'Bénin', nameEn: 'Benin', dialCode: '+229', flag: '🇧🇯', icon: 'circle-flags:bj', examplePlaceholder: '97 00 00 00' },
-  { code: 'BF', nameFr: 'Burkina Faso', nameEn: 'Burkina Faso', dialCode: '+226', flag: '🇧🇫', icon: 'circle-flags:bf', examplePlaceholder: '70 00 00 00' },
-  { code: 'ML', nameFr: 'Mali', nameEn: 'Mali', dialCode: '+223', flag: '🇲🇱', icon: 'circle-flags:ml', examplePlaceholder: '66 00 00 00' },
-  { code: 'GN', nameFr: 'Guinée', nameEn: 'Guinea', dialCode: '+224', flag: '🇬🇳', icon: 'circle-flags:gn', examplePlaceholder: '620 00 00 00' },
-  { code: 'NE', nameFr: 'Niger', nameEn: 'Niger', dialCode: '+227', flag: '🇳🇪', icon: 'circle-flags:ne', examplePlaceholder: '90 00 00 00' },
-  { code: 'FR', nameFr: 'France', nameEn: 'France', dialCode: '+33', flag: '🇫🇷', icon: 'circle-flags:fr', examplePlaceholder: '06 12 34 56 78' },
-  { code: 'US', nameFr: 'États-Unis', nameEn: 'United States', dialCode: '+1', flag: '🇺🇸', icon: 'circle-flags:us', examplePlaceholder: '(202) 555-0143' },
-  { code: 'GB', nameFr: 'Royaume-Uni', nameEn: 'United Kingdom', dialCode: '+44', flag: '🇬🇧', icon: 'circle-flags:gb', examplePlaceholder: '07123 456789' },
-  { code: 'CA', nameFr: 'Canada', nameEn: 'Canada', dialCode: '+1', flag: '🇨🇦', icon: 'circle-flags:ca', examplePlaceholder: '(416) 555-0143' },
-];
+const frNames = countries.getNames('fr');
+const enNames = countries.getNames('en');
+
+// Specific custom placeholders for African & major markets
+const CUSTOM_PLACEHOLDERS: Record<string, string> = {
+  CM: '690 00 00 00',
+  CI: '07 01 02 03 04',
+  SN: '77 000 00 00',
+  GA: '066 00 00 00',
+  CG: '06 000 00 00',
+  CD: '810 000 000',
+  TG: '90 00 00 00',
+  BJ: '97 00 00 00',
+  BF: '70 00 00 00',
+  ML: '66 00 00 00',
+  GN: '620 00 00 00',
+  NE: '90 00 00 00',
+  FR: '06 12 34 56 78',
+  US: '(202) 555-0143',
+  GB: '07123 456789',
+  CA: '(416) 555-0143',
+};
+
+const PRIORITY_CODES = ['CM', 'CI', 'SN', 'GA', 'CG', 'CD', 'TG', 'BJ', 'BF', 'ML', 'GN', 'NE', 'FR', 'US', 'GB', 'CA'];
+
+function getFlagEmoji(countryCode: string) {
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map((char) => 127397 + char.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+}
+
+export function getAllCountries(): CountryOption[] {
+  const allCodes = Object.keys(frNames);
+  const list: CountryOption[] = [];
+
+  for (const iso2 of allCodes) {
+    try {
+      const dialCode = `+${getCountryCallingCode(iso2 as CountryCode)}`;
+      const nameFr = frNames[iso2] || iso2;
+      const nameEn = enNames[iso2] || nameFr;
+      const lowerIso = iso2.toLowerCase();
+
+      list.push({
+        code: iso2 as CountryCode,
+        nameFr,
+        nameEn,
+        dialCode,
+        flag: getFlagEmoji(iso2),
+        icon: `circle-flags:${lowerIso}`,
+        examplePlaceholder: CUSTOM_PLACEHOLDERS[iso2] || '000 000 000',
+      });
+    } catch {
+      // Ignore codes without valid calling codes in libphonenumber-js
+    }
+  }
+
+  return list.sort((a, b) => {
+    const aPriority = PRIORITY_CODES.indexOf(a.code);
+    const bPriority = PRIORITY_CODES.indexOf(b.code);
+
+    if (aPriority !== -1 && bPriority !== -1) return aPriority - bPriority;
+    if (aPriority !== -1) return -1;
+    if (bPriority !== -1) return 1;
+    return a.nameFr.localeCompare(b.nameFr, 'fr');
+  });
+}
+
+export const COUNTRY_LIST: CountryOption[] = getAllCountries();
 
 export function validatePhone(phone: string, countryCode?: CountryCode): boolean {
   if (!phone.trim()) return false;
@@ -68,3 +121,4 @@ export function formatInternational(phone: string, countryCode?: CountryCode): s
   }
   return phone;
 }
+

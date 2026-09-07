@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import ContactBar from '@/features/landing/components/ContactBar';
 import Navbar from '@/features/landing/components/Navbar';
 import Footer from '@/features/landing/components/Footer';
+import { Input } from '@/shared/ui/input';
 import { PhoneInput } from '@/shared/ui/phone-input';
+import { COUNTRY_LIST } from '@/shared/lib/phone';
 import { partnerRequestsStore } from '@/features/partners/services/partnerRequestsStore';
 import { authApi } from '@/features/auth/services/auth.api';
 
@@ -19,8 +22,11 @@ interface FormInputs {
 }
 
 export default function PartnerRequestPage() {
+  const { t, i18n } = useTranslation(['partnerRequest', 'common']);
   const [loading, setLoading] = useState(false);
   const [submittedData, setSubmittedData] = useState<FormInputs | null>(null);
+
+  const lang = i18n.language.startsWith('en') ? 'en' : 'fr';
 
   const {
     register,
@@ -30,19 +36,20 @@ export default function PartnerRequestPage() {
   } = useForm<FormInputs>({
     defaultValues: {
       typePartenariat: '',
-      pays: 'Cameroun',
+      pays: 'CM',
     },
   });
 
   const onSubmit = async (data: FormInputs) => {
     setLoading(true);
     try {
-      // Split nomContact into nom/prenom for backend consistency
       const nameParts = data.nomContact.trim().split(' ');
       const prenom = nameParts[0] || '';
       const nom = nameParts.slice(1).join(' ') || prenom;
 
-      // Save to pending partner requests store
+      const selectedCountryObj = COUNTRY_LIST.find((c) => c.code === data.pays);
+      const countryName = selectedCountryObj ? (lang === 'en' ? selectedCountryObj.nameEn : selectedCountryObj.nameFr) : data.pays;
+
       partnerRequestsStore.addRequest({
         nomEntreprise: data.nomEntreprise,
         typePartenariat: data.typePartenariat || 'mno',
@@ -50,7 +57,7 @@ export default function PartnerRequestPage() {
         prenomContact: prenom,
         email: data.email,
         telephone: data.telephone,
-        message: data.message ? `[Pays: ${data.pays}] ${data.message}` : `[Pays: ${data.pays}]`,
+        message: data.message ? `[Pays: ${countryName}] ${data.message}` : `[Pays: ${countryName}]`,
       });
 
       await authApi.registerPartner({
@@ -65,14 +72,14 @@ export default function PartnerRequestPage() {
 
       setSubmittedData(data);
     } catch {
-      // Toast handles error
+      // Error handled by toast
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#F8FAFC] dark:bg-[#0F1626] font-body text-slate-900 dark:text-white transition-colors duration-200">
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-brand-darkBg font-body text-slate-900 dark:text-white transition-colors duration-200">
       <ContactBar />
       <Navbar />
 
@@ -80,162 +87,132 @@ export default function PartnerRequestPage() {
         <div className="mx-auto max-w-4xl flex flex-col items-center">
           {/* Header Title Block */}
           <span className="text-brand-orange text-xs sm:text-sm font-bold tracking-widest uppercase mb-2 text-center">
-            PARTENARIAT
+            {t('partnerRequest:badge')}
           </span>
 
           <h1 className="font-title text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight text-center">
-            Devenir partenaire KWISMO
+            {t('partnerRequest:title')}
           </h1>
 
           <p className="mt-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-xl text-center leading-relaxed">
-            Rejoignez l'écosystème KWISMO et protégez vos clients contre la fraude Mobile Money. Notre équipe vous contactera sous 48h.
+            {t('partnerRequest:subtitle')}
           </p>
 
           {/* Form Card */}
-          <div className="mt-10 w-full max-w-3xl bg-white dark:bg-[#161E33] rounded-3xl border border-slate-200 dark:border-white/10 shadow-xl p-6 sm:p-10 transition-all">
+          <div className="mt-10 w-full max-w-3xl bg-white dark:bg-brand-navy rounded-3xl border border-slate-200 dark:border-white/10 shadow-xl p-6 sm:p-10 transition-all">
             {submittedData ? (
               <div className="flex flex-col items-center text-center py-8 px-4 gap-4">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-green text-white shadow-lg">
                   <Icon icon="solar:check-circle-bold" className="text-4xl" />
                 </div>
                 <h3 className="font-title text-2xl font-bold text-slate-900 dark:text-white">
-                  Demande de partenariat transmise !
+                  {t('partnerRequest:successTitle')}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-md leading-relaxed">
-                  Merci ! Votre demande pour <strong className="text-brand-green font-semibold">{submittedData.nomEntreprise}</strong> a bien été enregistrée. Elle est désormais <strong className="text-brand-orange font-semibold">en attente de validation par le Super Administrateur</strong>. Notre équipe vous contactera sous 48h.
+                  {t('partnerRequest:successDesc', { company: submittedData.nomEntreprise })}
                 </p>
                 <a
                   href="/"
                   className="mt-4 inline-flex items-center gap-2 px-6 h-11 rounded-xl bg-brand-green text-white text-xs font-semibold hover:bg-brand-green/90 shadow-md transition"
                 >
                   <Icon icon="solar:arrow-left-linear" className="text-base" />
-                  <span>Retour à l'accueil</span>
+                  <span>{t('partnerRequest:backToHome')}</span>
                 </a>
               </div>
             ) : (
               <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
                 {/* Row 1 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
-                      Nom de l'entreprise <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="MTN Cameroun"
-                      className="h-11 sm:h-12 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition"
-                      {...register('nomEntreprise', { required: true })}
-                    />
-                    {errors.nomEntreprise && <span className="text-[11px] text-rose-500">Champ requis</span>}
-                  </div>
+                  <Input
+                    label={t('partnerRequest:companyNameLabel')}
+                    placeholder={t('partnerRequest:companyNamePlaceholder')}
+                    required
+                    errorKey={errors.nomEntreprise?.message}
+                    {...register('nomEntreprise', { required: true })}
+                  />
 
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
-                      Nom du contact <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Nom Prénom"
-                      className="h-11 sm:h-12 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition"
-                      {...register('nomContact', { required: true })}
-                    />
-                    {errors.nomContact && <span className="text-[11px] text-rose-500">Champ requis</span>}
-                  </div>
+                  <Input
+                    label={t('partnerRequest:contactNameLabel')}
+                    placeholder={t('partnerRequest:contactNamePlaceholder')}
+                    required
+                    errorKey={errors.nomContact?.message}
+                    {...register('nomContact', { required: true })}
+                  />
                 </div>
 
                 {/* Row 2 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
-                      Email professionnel <span className="text-rose-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="contact@co.com"
-                      className="h-11 sm:h-12 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition"
-                      {...register('email', { required: true })}
-                    />
-                    {errors.email && <span className="text-[11px] text-rose-500">Champ requis</span>}
-                  </div>
+                  <Input
+                    type="email"
+                    label={t('partnerRequest:emailLabel')}
+                    placeholder={t('partnerRequest:emailPlaceholder')}
+                    required
+                    errorKey={errors.email?.message}
+                    {...register('email', { required: true })}
+                  />
 
-                  <div className="flex flex-col gap-1.5">
-                    <Controller
-                      name="telephone"
-                      control={control}
-                      render={({ field }) => (
-                        <PhoneInput
-                          label="Téléphone"
-                          required
-                          value={field.value ?? ''}
-                          onChange={(val) => field.onChange(val)}
-                        />
-                      )}
-                    />
-                  </div>
+                  <Controller
+                    name="telephone"
+                    control={control}
+                    render={({ field }) => (
+                      <PhoneInput
+                        label={t('partnerRequest:phoneLabel')}
+                        required
+                        value={field.value ?? ''}
+                        onChange={(val) => field.onChange(val)}
+                      />
+                    )}
+                  />
                 </div>
 
                 {/* Row 3 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
-                      Type de partenariat <span className="text-rose-500">*</span>
+                  <div className="flex flex-col gap-1.5 font-body">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      {t('partnerRequest:partnershipTypeLabel')} <span className="text-rose-500">*</span>
                     </label>
                     <select
                       required
-                      className="h-11 sm:h-12 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition cursor-pointer"
+                      className="w-full h-11 px-4 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-brand-navy text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-brand-green transition cursor-pointer"
                       {...register('typePartenariat', { required: true })}
                     >
-                      <option value="" disabled>Choisir...</option>
-                      <option value="mno">Opérateur Télécom (MNO)</option>
-                      <option value="bank">Banque & Établissement de crédit</option>
-                      <option value="fintech">Fintech & Agrégateur</option>
-                      <option value="microfinance">Microfinance</option>
-                      <option value="merchant">Marchand & Grande Entreprise</option>
+                      <option value="" disabled>{t('partnerRequest:partnershipTypeSelect')}</option>
+                      <option value="mno">{t('partnerRequest:partnershipTypes.mno')}</option>
+                      <option value="bank">{t('partnerRequest:partnershipTypes.bank')}</option>
+                      <option value="fintech">{t('partnerRequest:partnershipTypes.fintech')}</option>
+                      <option value="microfinance">{t('partnerRequest:partnershipTypes.microfinance')}</option>
+                      <option value="merchant">{t('partnerRequest:partnershipTypes.merchant')}</option>
                     </select>
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
-                      Pays <span className="text-rose-500">*</span>
+                  <div className="flex flex-col gap-1.5 font-body">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      {t('partnerRequest:countryLabel')} <span className="text-rose-500">*</span>
                     </label>
                     <select
                       required
-                      className="h-11 sm:h-12 px-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition cursor-pointer"
+                      className="w-full h-11 px-4 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-brand-navy text-xs sm:text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-brand-green transition cursor-pointer"
                       {...register('pays', { required: true })}
                     >
-                      <option value="" disabled>Choisir...</option>
-                      <option value="Cameroun">Cameroun</option>
-                      <option value="Côte d'Ivoire">Côte d'Ivoire</option>
-                      <option value="Sénégal">Sénégal</option>
-                      <option value="Gabon">Gabon</option>
-                      <option value="Congo">Congo</option>
-                      <option value="RDC">République Démocratique du Congo</option>
-                      <option value="Togo">Togo</option>
-                      <option value="Bénin">Bénin</option>
-                      <option value="Burkina Faso">Burkina Faso</option>
-                      <option value="Mali">Mali</option>
-                      <option value="Guinée">Guinée</option>
-                      <option value="Niger">Niger</option>
-                      <option value="France">France</option>
-                      <option value="États-Unis">États-Unis</option>
-                      <option value="Royaume-Uni">Royaume-Uni</option>
-                      <option value="Canada">Canada</option>
+                      <option value="" disabled>{t('partnerRequest:countrySelect')}</option>
+                      {COUNTRY_LIST.map((c) => (
+                        <option key={c.code} value={c.code}>
+                          {lang === 'en' ? c.nameEn : c.nameFr} ({c.dialCode})
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
 
                 {/* Row 4 */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
-                    Message (optionnel)
+                <div className="flex flex-col gap-1.5 font-body">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    {t('partnerRequest:messageLabel')}
                   </label>
                   <textarea
                     rows={4}
-                    placeholder="Décrivez votre besoin..."
-                    className="p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green transition resize-none"
+                    placeholder={t('partnerRequest:messagePlaceholder')}
+                    className="p-4 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-brand-navy text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-brand-green transition resize-none"
                     {...register('message')}
                   />
                 </div>
@@ -245,10 +222,10 @@ export default function PartnerRequestPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex h-12 items-center gap-2.5 rounded-xl bg-[#4C64AC] hover:bg-[#3E528F] px-7 text-xs sm:text-sm font-semibold text-white shadow-md transition disabled:opacity-50 cursor-pointer"
+                    className="flex h-12 items-center gap-2.5 rounded-xl bg-brand-navy dark:bg-brand-green hover:bg-brand-navy/90 dark:hover:bg-brand-green/90 px-7 text-xs sm:text-sm font-semibold text-white shadow-md transition disabled:opacity-50 cursor-pointer"
                   >
                     <Icon icon="solar:plain-bold" className="text-lg" />
-                    <span>{loading ? 'Traitement en cours...' : 'Envoyer la demande'}</span>
+                    <span>{loading ? t('partnerRequest:submitting') : t('partnerRequest:submit')}</span>
                   </button>
                 </div>
               </form>

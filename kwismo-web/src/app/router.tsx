@@ -12,7 +12,7 @@ import { ServerErrorPage } from '@/shared/components/pages/ServerErrorPage';
 
 const LandingPage          = lazy(() => import('@/features/landing'));
 const AuthPage             = lazy(() => import('@/features/auth'));
-const PartnerRequestPage   = lazy(() => import('@/features/partner-request/PartnerRequestPage'));
+const PartnerRequestPage   = lazy(() => import('@/features/partner-request'));
 const DashboardPage        = lazy(() => import('@/features/dashboard'));
 const UsersPage            = lazy(() => import('@/features/users'));
 const NumbersPage          = lazy(() => import('@/features/numbers'));
