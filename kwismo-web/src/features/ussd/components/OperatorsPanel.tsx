@@ -7,9 +7,10 @@ interface OperatorsPanelProps {
   operators: OperatorDTO[];
   isLoading?: boolean;
   onAddOperator?: () => void;
+  onSelectOperator?: (op: OperatorDTO) => void;
 }
 
-export default function OperatorsPanel({ operators, isLoading = false, onAddOperator }: OperatorsPanelProps) {
+export default function OperatorsPanel({ operators, isLoading = false, onAddOperator, onSelectOperator }: OperatorsPanelProps) {
   const { t } = useTranslation(['admin', 'common']);
 
   if (isLoading) {
@@ -42,7 +43,11 @@ export default function OperatorsPanel({ operators, isLoading = false, onAddOper
 
       <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
         {operators.map((op) => (
-          <div key={op.id} className="p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] flex items-center justify-between">
+          <div
+            key={op.id}
+            onClick={() => onSelectOperator?.(op)}
+            className="p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] flex items-center justify-between cursor-pointer hover:border-brand-orange transition"
+          >
             <div className="flex items-center gap-3">
               <Icon icon="solar:cellphone-linear" className="text-2xl text-brand-orange" />
               <div>
