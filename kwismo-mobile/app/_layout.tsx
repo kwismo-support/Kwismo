@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -85,27 +85,14 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 });
 
 export default function RootLayout() {
-  const [fontsLoaded, fontError] = useFonts({
-    'MontserratAlternates-Bold': require('../assets/fonts/Aptos-Bold.ttf'),
-    'MontserratAlternates-Medium': require('../assets/fonts/Aptos-Medium.ttf'),
-    'MontserratAlternates-Regular': require('../assets/fonts/Aptos-Regular.ttf'),
-    'Ageo-Regular': require('../assets/fonts/Aptos-Regular.ttf'),
-    'Ageo-Medium': require('../assets/fonts/Aptos-Medium.ttf'),
-    'Ageo-SemiBold': require('../assets/fonts/Aptos-SemiBold.ttf'),
-    'Ageo-Bold': require('../assets/fonts/Aptos-Bold.ttf'),
-  });
+  const [fontsLoaded] = useState(true);
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
-      SplashScreen.hideAsync().catch(() => {
-        /* ignore */
-      });
-    }
-  }, [fontsLoaded, fontError]);
+    SplashScreen.hideAsync().catch(() => {
+      /* ignore */
+    });
+  }, []);
 
-  if (!fontsLoaded && !fontError) {
-    return null;
-  }
 
   return (
     <SafeAreaProvider>

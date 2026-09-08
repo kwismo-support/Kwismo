@@ -1,0 +1,10 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "allow": "Allow",
+    "save": "Save",
+    "error": "An error occurred",
+    "networkError": "Unable to connect to server"
+  }
+}

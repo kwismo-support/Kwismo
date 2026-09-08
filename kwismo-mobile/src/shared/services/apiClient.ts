@@ -1,3 +1,5 @@
+// Client API unifié avec internationalisation (i18n) et messages d'erreur courts & professionnels
+import i18next from 'i18next';
 import { env } from '../config/env';
 import { toast } from '../store/toastStore';
 
@@ -21,10 +23,6 @@ export class ApiClient {
     }
   }
 
-  /**
-   * Effectue un appel réseau HTTP unifié avec gestion automatique des tokens,
-   * des erreurs et des notifications toast.
-   */
   public static async request<T = any>(
     endpoint: string,
     options: {
@@ -36,12 +34,11 @@ export class ApiClient {
   ): Promise<ApiResponse<T>> {
     const { method = 'GET', body, mockDataFallback, silent = false } = options;
 
-    // Si le mode Mock est activé, renvoie les données structurées immédiatement
     if (env.USE_MOCK_DATA) {
       return {
         success: true,
         data: mockDataFallback,
-        message: 'Données mockées chargées avec succès',
+        message: i18next.t('common.mockSuccess', 'Données chargées avec succès'),
       };
     }
 
@@ -66,13 +63,19 @@ export class ApiClient {
       const json = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        const errorMsg = json.detail || json.message || 'Une erreur est survenue sur le serveur';
-        
-        if (response.status === 401 && !silent) {
-          toast.error('Session expirée. Veuillez vous reconnecter.');
-        } else if (response.status === 403 && !silent) {
-          toast.error('Droits insuffisants pour effectuer cette action.');
-        } else if (!silent) {
+        let errorMsg = json.detail || json.message;
+
+        if (response.status === 401) {
+          errorMsg = i18next.t('errors.sessionExpired', 'Session expirée. Veuillez vous reconnecter.');
+        } else if (response.status === 403) {
+          errorMsg = i18next.t('errors.accessDenied', 'Accès non autorisé.');
+        } else if (response.status >= 500) {
+          errorMsg = i18next.t('errors.serverError', 'Erreur serveur. Veuillez réessayer.');
+        } else if (!errorMsg) {
+          errorMsg = i18next.t('errors.generic', 'Une erreur est survenue.');
+        }
+
+        if (!silent) {
           toast.error(errorMsg);
         }
 
@@ -90,21 +93,20 @@ export class ApiClient {
         message: json.message,
       };
     } catch (err: any) {
-      const isNetworkError = err?.message?.includes('Network') || err?.message?.includes('Failed to fetch');
-      const fallbackMsg = isNetworkError
-        ? 'Impossible de joindre le serveur. Passage automatique aux données sécurisées.'
-        : 'Erreur lors de la communication avec le serveur.';
+      const fallbackMsg = i18next.t(
+        'errors.networkError',
+        'Connexion au serveur impossible. Vérifiez votre réseau.'
+      );
 
       if (!silent) {
         toast.error(fallbackMsg);
       }
 
-      // En cas de panne serveur, bascule transparente sur le mock si disponible
       if (mockDataFallback !== undefined) {
         return {
           success: true,
           data: mockDataFallback,
-          message: 'Repli sur données locales',
+          message: i18next.t('common.localFallback', 'Données locales chargées'),
         };
       }
 
