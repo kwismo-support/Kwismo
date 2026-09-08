@@ -6,4 +6,4 @@ from app.db.repositories.base_repository import BaseRepository
 
 class TransactionRepository(BaseRepository):
     def __init__(self) -> None:
-        super().__init__(db.transaction)
+        super().__init__(lambda: getattr(db, "transaction", None))

@@ -6,4 +6,4 @@ from app.db.repositories.base_repository import BaseRepository
 
 class PartnerRepository(BaseRepository):
     def __init__(self) -> None:
-        super().__init__(db.partner)
+        super().__init__(lambda: getattr(db, "partner", None))

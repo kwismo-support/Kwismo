@@ -6,7 +6,7 @@ from app.db.repositories.base_repository import BaseRepository
 
 class NumberRepository(BaseRepository):
     def __init__(self) -> None:
-        super().__init__(db.numero)
+        super().__init__(lambda: getattr(db, "numero", None))
 
     async def get_by_valeur(self, valeur: str):
         return await self.delegate.find_unique(where={"valeur": valeur})

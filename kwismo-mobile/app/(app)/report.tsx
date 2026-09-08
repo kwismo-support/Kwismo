@@ -16,6 +16,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
 import { HeaderBar } from '../../src/shared/components/HeaderBar';
+import { CountryFlag } from '../../src/shared/components/CountryFlag';
+import { PermissionModal } from '../../src/shared/components/PermissionModal';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { toast } from '../../src/shared/store/toastStore';
 import { colors, fonts } from '../../src/styles/tokens';
@@ -30,11 +32,11 @@ const REPORT_REASONS = [
   { id: 'wrong_transfer', labelKey: 'report.reasonWrongTransfer', label: 'Faux transfert ou demande de remboursement', icon: 'solar:card-transfer-bold' },
 ];
 
-// Historique des appels récents reçus sur l'appareil (simulés issus de l'analyse d'appels §9.6)
+// Historique des appels récents reçus sur l'appareil (simulés issus de l'analyse d'appels des 30 dernières minutes §9.6)
 const RECENT_CALLS_HISTORY = [
-  { phone: '+237 6 55 98 76 54', raw: '655987654', date: "Aujourd'hui à 11:42", duration: '18s', type: 'incoming' },
-  { phone: '+237 6 70 88 99 00', raw: '670889900', date: 'Hier à 16:15', duration: '45s', type: 'incoming' },
-  { phone: '+237 6 98 44 43 88', raw: '698444388', date: 'Il y a 3 jours', duration: '2m 10s', type: 'incoming' },
+  { phone: '+237 6 55 98 76 54', raw: '655987654', date: 'Il y a 5 minutes', duration: '18s', type: 'incoming' },
+  { phone: '+237 6 70 88 99 00', raw: '670889900', date: 'Il y a 18 minutes', duration: '45s', type: 'incoming' },
+  { phone: '+237 6 98 44 43 88', raw: '698444388', date: 'Il y a 28 minutes', duration: '2m 10s', type: 'incoming' },
 ];
 
 export default function ReportScreen() {
@@ -49,9 +51,15 @@ export default function ReportScreen() {
   const [selectedReason, setSelectedReason] = useState<string>('');
   const [description, setDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [permissionModalVisible, setPermissionModalVisible] = useState(false);
   const [showCallPickerModal, setShowCallPickerModal] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [successModalVisible, setSuccessModalVisible] = useState(false);
+
+  const handleGrantCallLogPermission = () => {
+    setPermissionModalVisible(false);
+    setShowCallPickerModal(true);
+  };
 
   // Règle d'or : On ne peut signaler qu'un numéro qui nous a appelé
   const verifyCallerInHistory = (inputPhone: string): boolean => {
@@ -128,7 +136,7 @@ export default function ReportScreen() {
             </Text>
           </View>
 
-          {/* 1. Sélection du numéro concerné */}
+          {/* 1. Sélection du numéro concerné avec sélecteur d'indicatif pays */}
           <Text style={[styles.inputLabel, { color: themeColors.textPrimary }]}>
             {t('report.phoneLabel', 'Numéro concerné')}
           </Text>
@@ -142,28 +150,35 @@ export default function ReportScreen() {
               },
             ]}
           >
-            <Icon name="solar:phone-calling-rounded-linear" color={colors.green} size={20} style={{ marginRight: 10 }} />
+            {/* Indicatif pays Cameroun (+237) */}
+            <View style={styles.countryPrefixBox}>
+              <CountryFlag countryCode="CM" size={20} style={{ marginRight: 4 }} />
+              <Text style={[styles.countryPrefixText, { color: themeColors.textPrimary }]}>+237</Text>
+            </View>
+
             <TextInput
               style={[
                 styles.phoneInputField,
                 { color: themeColors.textPrimary },
                 Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
               ]}
-              placeholder="+237 6 55 98 76 54"
+              placeholder="6 55 98 76 54"
               placeholderTextColor={themeColors.inputPlaceholder}
+              keyboardType="phone-pad"
               value={targetPhone}
               onChangeText={(text) => {
                 setTargetPhone(text);
                 if (validationError) setValidationError('');
               }}
             />
+
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={() => setShowCallPickerModal(true)}
+              onPress={() => setPermissionModalVisible(true)}
               style={styles.recentCallTriggerBtn}
             >
               <Icon name="solar:history-bold" color={colors.green} size={18} style={{ marginRight: 4 }} />
-              <Text style={styles.recentCallTriggerText}>{t('report.recentCalls', 'Appels récents')}</Text>
+              <Text style={styles.recentCallTriggerText}>{t('report.recentCalls', 'Appels (30min)')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -357,6 +372,18 @@ export default function ReportScreen() {
           </View>
         </View>
       </Modal>
+      {/* Popup de demande de permission pour l'accès aux appels récents des 30 dernières minutes */}
+      <PermissionModal
+        visible={permissionModalVisible}
+        title="Accès au journal d'appels"
+        description="Kwismo a besoin d'analyser vos appels entrants des 30 dernières minutes pour vous permettre de sélectionner rapidement un numéro inconnu à signaler."
+        iconName="solar:phone-calling-rounded-bold"
+        iconColor={colors.green}
+        confirmText="Autoriser l'accès"
+        cancelText="Refuser"
+        onConfirm={handleGrantCallLogPermission}
+        onCancel={() => setPermissionModalVisible(false)}
+      />
     </View>
   );
 }
@@ -402,6 +429,19 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     borderWidth: 1,
     paddingHorizontal: 14,
+  },
+  countryPrefixBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 8,
+    paddingRight: 8,
+    borderRightWidth: 1,
+    borderRightColor: '#E2E8F0',
+  },
+  countryPrefixText: {
+    fontFamily: fonts.headlineBold,
+    fontSize: scaleFont(14),
+    fontWeight: '700',
   },
   phoneInputField: {
     flex: 1,

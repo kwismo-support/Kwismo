@@ -1,3 +1,4 @@
+// Page d'accueil conforme exactement au design de la maquette (Image 3)
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -5,150 +6,55 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Platform,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
-import Svg, { Path, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { Icon } from '../../src/shared/ui/Icon';
 import { HeaderBar } from '../../src/shared/components/HeaderBar';
-import { Skeleton, SkeletonCircle, SkeletonLoader } from '../../src/shared/ui/Skeleton';
 import { TabBar } from '../../src/shared/components/TabBar';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
+import { useAuthStore } from '../../src/shared/store/authStore';
+import { useDashboard } from '../../src/features/dashboard/hooks/useDashboard';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
-
-// Composant Sparkline Graphique identique au design du designer
-const SparklineGraph = ({ color = '#10B981' }: { color?: string }) => (
-  <Svg width={65} height={28} viewBox="0 0 65 28" fill="none">
-    <Defs>
-      <LinearGradient id="sparklineGrad" x1="0" y1="0" x2="0" y2="1">
-        <Stop offset="0%" stopColor={color} stopOpacity={0.35} />
-        <Stop offset="100%" stopColor={color} stopOpacity={0.0} />
-      </LinearGradient>
-    </Defs>
-    <Path
-      d="M0 22 C10 24, 15 15, 25 18 C35 21, 45 10, 52 14 C58 18, 60 4, 65 2 L65 28 L0 28 Z"
-      fill="url(#sparklineGrad)"
-    />
-    <Path
-      d="M0 22 C10 24, 15 15, 25 18 C35 21, 45 10, 52 14 C58 18, 60 4, 65 2"
-      stroke={color}
-      strokeWidth="2"
-      strokeLinecap="round"
-    />
-  </Svg>
-);
-
-// Données des KPI personnels selon la Section 9.1
-const KPI_CARDS = [
-  {
-    id: 'kpi-verified',
-    title: 'Numéros vérifiés',
-    value: '3',
-    variation: '+1 ce mois',
-    icon: 'solar:shield-check-bold',
-    accentColor: colors.green,
-  },
-  {
-    id: 'kpi-threats',
-    title: 'Menaces évitées',
-    value: '12',
-    variation: '+3 sem.',
-    icon: 'solar:shield-warning-bold',
-    accentColor: colors.green,
-  },
-  {
-    id: 'kpi-reports',
-    title: 'Signalements faits',
-    value: '5',
-    variation: 'Communauté',
-    icon: 'heroicons:signal-16-solid',
-    accentColor: colors.orange,
-  },
-  {
-    id: 'kpi-transfers',
-    title: 'Transferts protégés',
-    value: '85 000 F',
-    variation: '100% sécurisés',
-    icon: 'solar:card-transfer-bold',
-    accentColor: '#3B82F6',
-  },
-];
-
-// Activité récente selon la Section 9.1
-const RECENT_ACTIVITIES = [
-  {
-    id: '1',
-    phone: '+237 6 98 44 43 88',
-    title: 'Vérification numéro',
-    titleKey: 'numberVerification',
-    status: 'Protégé',
-    statusKey: 'protected',
-    statusType: 'green',
-    date: "Aujourd'hui à 11:42",
-    icon: 'solar:shield-check-bold',
-  },
-  {
-    id: '2',
-    phone: '+237 6 55 98 76 54',
-    title: 'Appel suspect détecté',
-    titleKey: 'suspectCallDetected',
-    status: 'Suspect',
-    statusKey: 'suspect',
-    statusType: 'red',
-    date: 'Hier à 16:15',
-    icon: 'solar:danger-triangle-bold',
-  },
-  {
-    id: '3',
-    phone: 'Orange Money (5 000 F)',
-    title: 'Transfert USSD sécurisé',
-    titleKey: 'secureUssdTransfer',
-    status: 'Sécurisé',
-    statusKey: 'secured',
-    statusType: 'green',
-    date: 'Il y a 2 jours',
-    icon: 'solar:card-transfer-bold',
-  },
-  {
-    id: '4',
-    phone: '+237 6 70 12 34 56',
-    title: 'Signalement arnaque',
-    titleKey: 'scamReport',
-    status: 'Transmis',
-    statusKey: 'submitted',
-    statusType: 'orange',
-    date: 'Il y a 3 jours',
-    icon: 'heroicons:signal-16-solid',
-  },
-];
 
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
+  const { user } = useAuthStore();
+  const { summary } = useDashboard();
 
-  const [loading, setLoading] = useState(true);
+  const userName = user?.firstName
+    ? `${user.firstName} ${user.lastName || ''}`.trim()
+    : user?.email
+    ? user.email.split('@')[0]
+    : 'LOREM Ipsum';
 
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, []);
+  const activities = [
+    { id: '1', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Faible', badgeType: 'blue', date: 'hier, 21:47' },
+    { id: '2', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Détectée', badgeType: 'red', date: 'hier, 21:47' },
+    { id: '3', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Protégé', badgeType: 'green', date: 'hier, 21:47' },
+    { id: '4', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'En cour', badgeType: 'yellow', date: 'hier, 21:47' },
+    { id: '5', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Protégé', badgeType: 'green', date: 'hier, 21:47' },
+    { id: '6', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Protégé', badgeType: 'green', date: 'hier, 21:47' },
+  ];
 
-  const getBadgeColors = (type: string) => {
-    switch (type) {
+  const getBadgeStyle = (badgeType: string) => {
+    switch (badgeType) {
       case 'green':
-        return { bg: isDark ? '#064E3B' : '#E6F7F0', text: colors.green };
+        return { bg: '#E6F4EA', text: '#1E8E3E' };
       case 'red':
-        return { bg: isDark ? '#7F1D1D' : '#FEE2E2', text: '#EF4444' };
-      case 'orange':
-        return { bg: isDark ? '#78350F' : '#FEF3C7', text: colors.orange };
+        return { bg: '#FCE8E6', text: '#D93025' };
+      case 'yellow':
+        return { bg: '#FEF7E0', text: '#B06000' };
+      case 'blue':
       default:
-        return { bg: isDark ? '#1E293B' : '#F1F5F9', text: themeColors.textSecondary };
+        return { bg: '#E8F0FE', text: '#1A73E8' };
     }
   };
 
@@ -156,274 +62,161 @@ export default function HomeScreen() {
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <StatusBar style="light" />
 
-      {/* Header global unifié : KWISMO à gauche, Cloche et options à droite */}
+      {/* Header Bar avec Logo KWISMO, Cloche et Loupe */}
       <HeaderBar isHome={true} />
 
       <ScrollView
         contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: insets.bottom + 105 },
+          styles.scrollBody,
+          { paddingBottom: insets.bottom + 100 },
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Salutation personnalisée & Titre Dashboard (§9.1) */}
-        <View style={styles.greetingHeader}>
-          <Text style={[styles.welcomeGreeting, { color: themeColors.textPrimary }]}>
-            {t('common.greetingUser', 'Bonjour, Alain 👋')}
-          </Text>
-          <Text style={[styles.welcomeSub, { color: themeColors.textSecondary }]}>
-            {t('common.dashboardSubtitle', 'Votre tableau de bord anti-fraude Mobile Money')}
-          </Text>
-        </View>
-
-        {/* 1. KPI PERSONNELS (§9.1) : Grille 2x2 identique à la maquette du designer */}
-        <View style={styles.kpiContainer}>
-          {loading ? (
-            <SkeletonLoader>
-              <View style={styles.kpiGrid}>
-                {[1, 2, 3, 4].map((i) => (
-                  <View key={i} style={[styles.kpiCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
-                    <Skeleton width={90} height={12} borderRadius={4} />
-                    <Skeleton width={70} height={10} borderRadius={4} style={{ marginVertical: 6 }} />
-                    <Skeleton width={60} height={22} borderRadius={6} style={{ marginTop: 6 }} />
-                  </View>
-                ))}
-              </View>
-            </SkeletonLoader>
-          ) : (
-            <View style={styles.kpiGrid}>
-              {[
-                {
-                  id: 'kpi-verified',
-                  title: 'NUMÉRO VÉRIFIÉ',
-                  value: '124,592',
-                  trendPercent: '↑ 12,5%',
-                  trendPeriod: 'vs Avr. 2024',
-                  icon: 'solar:users-group-rounded-bold',
-                  iconBg: isDark ? '#1E293B' : '#EEF2FF',
-                  iconColor: '#3B82F6',
-                  sparklineColor: '#10B981',
-                },
-                {
-                  id: 'kpi-threats',
-                  title: 'MENACE EVITEE',
-                  value: '1 049',
-                  trendPercent: '↑ 12,5%',
-                  trendPeriod: 'vs Avr. 2024',
-                  icon: 'solar:verified-check-bold',
-                  iconBg: isDark ? '#143324' : '#DCFCE7',
-                  iconColor: '#16A34A',
-                  sparklineColor: '#10B981',
-                },
-                {
-                  id: 'kpi-reports',
-                  title: 'SIGNALEMENT EFFECTUE',
-                  value: '1 049',
-                  trendPercent: '↑ 12,5%',
-                  trendPeriod: 'vs Avr. 2024',
-                  icon: 'solar:danger-triangle-bold',
-                  iconBg: isDark ? '#3B2914' : '#FEF3C7',
-                  iconColor: '#D97706',
-                  sparklineColor: '#10B981',
-                },
-                {
-                  id: 'kpi-transfers',
-                  title: 'TRANSFERT USSD',
-                  value: '124,592',
-                  trendPercent: '↑ 12,5%',
-                  trendPeriod: 'vs Avr. 2024',
-                  icon: 'solar:card-transfer-bold',
-                  iconBg: isDark ? '#3B181E' : '#FEE2E2',
-                  iconColor: '#DC2626',
-                  sparklineColor: '#10B981',
-                },
-              ].map((kpi) => (
-                <View
-                  key={kpi.id}
-                  style={[
-                    styles.kpiCard,
-                    {
-                      backgroundColor: themeColors.cardBg,
-                      borderColor: themeColors.inputBorder,
-                    },
-                  ]}
-                >
-                  {/* Partie Haute : Titre à gauche + Icône dans conteneur arrondi à droite */}
-                  <View style={styles.kpiCardTop}>
-                    <View style={{ flex: 1, paddingRight: 4 }}>
-                      <Text
-                        numberOfLines={1}
-                        style={[styles.kpiTitleUpper, { color: themeColors.textPrimary }]}
-                      >
-                        {kpi.title}
-                      </Text>
-                      {/* Ligne Tendance : Flèche verte + Période */}
-                      <View style={styles.trendRow}>
-                        <Text style={styles.trendGreenText}>{kpi.trendPercent} </Text>
-                        <Text style={[styles.trendPeriodText, { color: themeColors.textSecondary }]}>
-                          {kpi.trendPeriod}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View style={[styles.iconContainerBox, { backgroundColor: kpi.iconBg }]}>
-                      <Icon name={kpi.icon} color={kpi.iconColor} size={20} />
-                    </View>
-                  </View>
-
-                  {/* Partie Basse : Grosse valeur à gauche + Sparkline Graphique à droite */}
-                  <View style={styles.kpiCardBottom}>
-                    <Text
-                      numberOfLines={1}
-                      style={[styles.kpiBigValue, { color: themeColors.textPrimary }]}
-                    >
-                      {kpi.value}
-                    </Text>
-
-                    <SparklineGraph color={kpi.sparklineColor} />
-                  </View>
+        {/* CARTE HERO UNIFIÉE PROFIL + KPIS (Maquette Image 3) */}
+        <View style={styles.heroCard}>
+          {/* Ligne utilisateur : Avatar + "Bienvenu" avec check vert + Nom */}
+          <View style={styles.userRow}>
+            <View style={styles.avatarContainer}>
+              {user?.avatarUrl ? (
+                <Image source={{ uri: user.avatarUrl }} style={styles.avatarImage} />
+              ) : (
+                <View style={styles.avatarFallback}>
+                  <Text style={styles.avatarInitial}>
+                    {userName.charAt(0).toUpperCase()}
+                  </Text>
                 </View>
-              ))}
+              )}
             </View>
-          )}
+            <View style={styles.userInfo}>
+              <View style={styles.welcomeRow}>
+                <Text style={styles.welcomeText}>Bienvenu</Text>
+                <Icon name="solar:verified-check-bold" color={colors.green} size={16} style={{ marginLeft: 4 }} />
+              </View>
+              <Text style={styles.userNameText}>{userName}</Text>
+            </View>
+          </View>
+
+          {/* Ligne des 4 KPIs Horizontaux */}
+          <View style={styles.kpiRow}>
+            <View style={styles.kpiItem}>
+              <Text style={styles.kpiValue}>{summary?.activeNumbersCount ?? 127}</Text>
+              <Text style={styles.kpiLabel}>Numéro{'\n'}vérifié</Text>
+            </View>
+            <View style={styles.kpiItem}>
+              <Text style={styles.kpiValue}>{summary?.compromisedNumbersCount ?? 25}</Text>
+              <Text style={styles.kpiLabel}>Menace{'\n'}évitée</Text>
+            </View>
+            <View style={styles.kpiItem}>
+              <Text style={styles.kpiValue}>10</Text>
+              <Text style={styles.kpiLabel}>Signalement{'\n'}effectué</Text>
+            </View>
+            <View style={styles.kpiItem}>
+              <Text style={styles.kpiValue}>50</Text>
+              <Text style={styles.kpiLabel}>Transfert{'\n'}d'argent</Text>
+            </View>
+          </View>
         </View>
 
-        {/* 2. ACTIONS RAPIDES (§9.1) : 4 Raccourcis directs en 1 clic */}
-        <Text style={[styles.sectionTitle, { color: themeColors.textPrimary, marginTop: 24 }]}>
-          {t('common.quickActions', 'Actions rapides')}
-        </Text>
-
-        <View style={styles.quickActionsGrid}>
+        {/* 4 BOUTONS D'ACTIONS RAPIDES CIRCULAIRES (Maquette Image 3) */}
+        <View style={styles.quickActionsRow}>
           {/* Vérifier un numéro */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/verify')}
-            style={[styles.quickActionBtn, { backgroundColor: colors.green }]}
+            style={styles.actionBtnWrapper}
           >
-            <Icon name="solar:shield-check-bold" color={colors.white} size={22} style={{ marginBottom: 6 }} />
-            <Text style={styles.quickActionBtnText}>{t('common.verifyNumber', 'Vérifier un numéro')}</Text>
+            <View style={[styles.actionCircle, { backgroundColor: '#E8F0FE' }]}>
+              <Icon name="solar:qr-code-scan-bold" color="#1A73E8" size={26} />
+            </View>
+            <Text style={[styles.actionText, { color: '#1A73E8' }]}>Vérifier{'\n'}numéro</Text>
           </TouchableOpacity>
 
-          {/* Transfert USSD */}
+          {/* Transfert d'argent */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/transfer')}
-            style={[styles.quickActionBtnSecondary, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
+            style={styles.actionBtnWrapper}
           >
-            <Icon name="solar:card-transfer-bold" color={colors.green} size={22} style={{ marginBottom: 6 }} />
-            <Text style={[styles.quickActionBtnSecondaryText, { color: themeColors.textPrimary }]}>
-              {t('common.moneyTransfer', 'Transfert USSD')}
-            </Text>
+            <View style={[styles.actionCircle, { backgroundColor: '#FEF7E0' }]}>
+              <Icon name="solar:card-transfer-bold" color="#B06000" size={26} />
+            </View>
+            <Text style={[styles.actionText, { color: '#B06000' }]}>Transfert{'\n'}d'argent</Text>
           </TouchableOpacity>
 
-          {/* Alerte WhatsApp */}
+          {/* Alerte Whatsapp */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/alert-whatsapp')}
-            style={[styles.quickActionBtnSecondary, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
+            style={styles.actionBtnWrapper}
           >
-            <Icon name="ic:baseline-whatsapp" color="#25D366" size={22} style={{ marginBottom: 6 }} />
-            <Text style={[styles.quickActionBtnSecondaryText, { color: themeColors.textPrimary }]}>
-              {t('common.whatsappAlert', 'Alerte WhatsApp')}
-            </Text>
+            <View style={[styles.actionCircle, { backgroundColor: '#E6F4EA' }]}>
+              <Icon name="ic:baseline-whatsapp" color="#1E8E3E" size={26} />
+            </View>
+            <Text style={[styles.actionText, { color: '#1E8E3E' }]}>Alerte{'\n'}Whatsapp</Text>
           </TouchableOpacity>
 
           {/* Signaler */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/report')}
-            style={[styles.quickActionBtnSecondary, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
+            style={styles.actionBtnWrapper}
           >
-            <Icon name="heroicons:signal-16-solid" color={colors.orange} size={22} style={{ marginBottom: 6 }} />
-            <Text style={[styles.quickActionBtnSecondaryText, { color: themeColors.textPrimary }]}>
-              {t('common.report', 'Signaler')}
-            </Text>
+            <View style={[styles.actionCircle, { backgroundColor: '#FCE8E6' }]}>
+              <Icon name="heroicons:signal-16-solid" color="#D93025" size={26} />
+            </View>
+            <Text style={[styles.actionText, { color: '#D93025' }]}>Signaler</Text>
           </TouchableOpacity>
         </View>
 
-        {/* 3. ACTIVITÉ RÉCENTE (§9.1) */}
-        <View style={styles.recentSectionHeader}>
+        {/* SECTION ACTIVITÉ RÉCENTE (Maquette Image 3) */}
+        <View style={styles.activityHeaderRow}>
           <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
-            {t('common.recentActivity', 'Activité récente')}
+            Activité récente
           </Text>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => router.push('/(app)/verify')}
-          >
-            <Text style={[styles.viewAllLink, { color: colors.green }]}>
-              {t('common.seeAll', 'Voir tout')}
-            </Text>
+          <TouchableOpacity activeOpacity={0.7} onPress={() => router.push('/(app)/verify')}>
+            <Text style={styles.seeAllText}>Voir tout</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.activitiesList}>
-          {loading ? (
-            <SkeletonLoader>
-              {[1, 2, 3].map((i) => (
-                <View
-                  key={i}
-                  style={[styles.activityItem, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
-                >
-                  <SkeletonCircle size={36} />
-                  <View style={{ flex: 1, marginLeft: 12 }}>
-                    <Skeleton width={140} height={14} borderRadius={4} />
-                    <Skeleton width={90} height={12} borderRadius={4} style={{ marginTop: 6 }} />
-                  </View>
-                  <Skeleton width={60} height={20} borderRadius={10} />
+        <View style={styles.activityList}>
+          {activities.map((item) => {
+            const badgeStyle = getBadgeStyle(item.badgeType);
+            return (
+              <TouchableOpacity
+                key={item.id}
+                activeOpacity={0.75}
+                onPress={() => router.push({ pathname: '/(app)/verify', params: { phone: item.phone } })}
+                style={[styles.activityCard, { backgroundColor: themeColors.cardBg }]}
+              >
+                <View style={styles.activityAvatar}>
+                  <Icon name="solar:user-bold" color="#94A3B8" size={20} />
                 </View>
-              ))}
-            </SkeletonLoader>
-          ) : (
-            RECENT_ACTIVITIES.map((item) => {
-              const badge = getBadgeColors(item.statusType);
-              return (
-                <View
-                  key={item.id}
-                  style={[
-                    styles.activityItem,
-                    {
-                      backgroundColor: themeColors.cardBg,
-                      borderColor: themeColors.inputBorder,
-                    },
-                  ]}
-                >
-                  {/* Icône pleine sans rond de fond */}
-                  <Icon
-                    name={item.icon}
-                    size={22}
-                    color={
-                      item.statusType === 'green'
-                        ? colors.green
-                        : item.statusType === 'red'
-                        ? '#EF4444'
-                        : colors.orange
-                    }
-                    style={{ marginRight: 12 }}
-                  />
 
-                  <View style={{ flex: 1 }}>
-                    <Text style={[styles.activityTitle, { color: themeColors.textPrimary }]}>
-                      {t(`common.${item.titleKey}`, item.title)}
-                    </Text>
-                    <Text style={[styles.activityPhone, { color: themeColors.textSecondary }]}>
-                      {item.phone} · {item.date}
-                    </Text>
-                  </View>
-
-                  {/* Badge de statut centré */}
-                  <View style={[styles.statusBadge, { backgroundColor: badge.bg }]}>
-                    <Text style={[styles.statusBadgeText, { color: badge.text }]}>
-                      {t(`common.${item.statusKey}`, item.status)}
-                    </Text>
-                  </View>
+                <View style={styles.activityInfo}>
+                  <Text style={[styles.activityPhone, { color: themeColors.textPrimary }]}>
+                    {item.phone}
+                  </Text>
+                  <Text style={[styles.activityType, { color: themeColors.textSecondary }]}>
+                    {item.type}
+                  </Text>
                 </View>
-              );
-            })
-          )}
+
+                <View style={styles.activityRight}>
+                  <View style={[styles.statusPill, { backgroundColor: badgeStyle.bg }]}>
+                    <Text style={[styles.statusPillText, { color: badgeStyle.text }]}>
+                      {item.status}
+                    </Text>
+                  </View>
+                  <Text style={styles.activityDate}>{item.date}</Text>
+                  <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={16} style={{ marginLeft: 6 }} />
+                </View>
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </ScrollView>
 
-      {/* Barre d'onglets basse officielle */}
+      {/* Navigation TabBar officielle */}
       <TabBar activeTab="home" />
     </View>
   );
@@ -433,175 +226,184 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollContent: {
+  scrollBody: {
     paddingHorizontal: 16,
     paddingTop: 16,
   },
-  greetingHeader: {
-    marginBottom: 16,
-  },
-  welcomeGreeting: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(22),
-    fontWeight: '800',
-  },
-  welcomeSub: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(13),
-    marginTop: 2,
-  },
-  kpiContainer: {
-    marginBottom: 10,
-  },
-  kpiGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    rowGap: 10,
-  },
-  kpiCard: {
-    width: '48.5%',
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 12,
+  heroCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    padding: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 4,
+    marginBottom: 20,
   },
-  kpiCardTop: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  kpiTitleUpper: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(10),
-    fontWeight: '800',
-    letterSpacing: 0.3,
-  },
-  trendRow: {
+  userRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 2,
+    marginBottom: 20,
   },
-  trendGreenText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(10),
-    fontWeight: '700',
-    color: '#16A34A',
+  avatarContainer: {
+    marginRight: 14,
   },
-  trendPeriodText: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(9),
+  avatarImage: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
   },
-  iconContainerBox: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
-    alignItems: 'center',
+  avatarFallback: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: colors.green,
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  kpiCardBottom: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    marginTop: 4,
+  avatarInitial: {
+    color: '#FFFFFF',
+    fontSize: 22,
+    fontWeight: 'bold',
   },
-  kpiBigValue: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(20),
-    fontWeight: '800',
+  userInfo: {
     flex: 1,
   },
-  sectionTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(17),
-    fontWeight: '800',
-  },
-  quickActionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    rowGap: 10,
-    marginTop: 12,
-    marginBottom: 24,
-  },
-  quickActionBtn: {
-    width: '48.5%',
-    height: 80,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.green,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  quickActionBtnText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(12),
-    fontWeight: '700',
-    color: colors.white,
-    textAlign: 'center',
-  },
-  quickActionBtnSecondary: {
-    width: '48.5%',
-    height: 80,
-    borderRadius: 16,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  quickActionBtnSecondaryText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(12),
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  recentSectionHeader: {
+  welcomeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
   },
-  viewAllLink: {
-    fontFamily: fonts.bold,
+  welcomeText: {
     fontSize: scaleFont(13),
-    fontWeight: '700',
-  },
-  activitiesList: {
-    gap: 10,
-  },
-  activityItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 14,
-  },
-  activityTitle: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(13),
-    fontWeight: '700',
-  },
-  activityPhone: {
+    color: '#64748B',
     fontFamily: fonts.regular,
-    fontSize: scaleFont(11),
+  },
+  userNameText: {
+    fontSize: scaleFont(18),
+    fontFamily: fonts.headlineBold,
+    fontWeight: '800',
+    color: '#0F172A',
     marginTop: 2,
   },
-  statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 10,
-    marginLeft: 8,
+  kpiRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+    paddingTop: 16,
   },
-  statusBadgeText: {
-    fontFamily: fonts.bold,
+  kpiItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  kpiValue: {
+    fontSize: scaleFont(20),
+    fontFamily: fonts.headlineBold,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  kpiLabel: {
+    fontSize: scaleFont(10),
+    fontFamily: fonts.regular,
+    color: '#64748B',
+    textAlign: 'center',
+    marginTop: 4,
+    lineHeight: 13,
+  },
+  quickActionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  actionBtnWrapper: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  actionCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  actionText: {
     fontSize: scaleFont(11),
+    fontFamily: fonts.headlineBold,
     fontWeight: '700',
+    textAlign: 'center',
+    lineHeight: 14,
+  },
+  activityHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: scaleFont(16),
+    fontFamily: fonts.headlineBold,
+    fontWeight: '800',
+  },
+  seeAllText: {
+    fontSize: scaleFont(13),
+    fontFamily: fonts.headlineBold,
+    fontWeight: '700',
+    color: colors.green,
+  },
+  activityList: {
+    gap: 10,
+  },
+  activityCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
+  },
+  activityAvatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#F1F5F9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  activityInfo: {
+    flex: 1,
+  },
+  activityPhone: {
+    fontSize: scaleFont(14),
+    fontFamily: fonts.headlineBold,
+    fontWeight: '700',
+  },
+  activityType: {
+    fontSize: scaleFont(11),
+    fontFamily: fonts.regular,
+    color: '#94A3B8',
+    marginTop: 2,
+  },
+  activityRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statusPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    marginRight: 8,
+  },
+  statusPillText: {
+    fontSize: scaleFont(11),
+    fontFamily: fonts.headlineBold,
+    fontWeight: '700',
+  },
+  activityDate: {
+    fontSize: scaleFont(11),
+    color: '#94A3B8',
+    fontFamily: fonts.regular,
   },
 });
