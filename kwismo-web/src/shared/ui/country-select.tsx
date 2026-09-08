@@ -8,10 +8,12 @@ interface CountrySelectProps {
   onChange: (countryCode: string) => void;
   label?: string;
   required?: boolean;
+  disabled?: boolean;
+  placeholder?: string;
   className?: string;
 }
 
-export function CountrySelect({ value, onChange, label, required = false, className = '' }: CountrySelectProps) {
+export function CountrySelect({ value, onChange, label, required = false, disabled = false, placeholder, className = '' }: CountrySelectProps) {
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,8 +60,9 @@ export function CountrySelect({ value, onChange, label, required = false, classN
       <div className="relative">
         <button
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-full h-11 px-4 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-brand-navy text-slate-900 dark:text-white text-xs sm:text-sm font-semibold flex items-center justify-between hover:border-brand-green focus:outline-none focus:border-brand-green transition cursor-pointer"
+          disabled={disabled}
+          onClick={() => !disabled && setIsOpen(!isOpen)}
+          className="w-full h-11 px-4 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-brand-navy text-slate-900 dark:text-white text-xs sm:text-sm font-semibold flex items-center justify-between hover:border-brand-green focus:outline-none focus:border-brand-green transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
         >
           <div className="flex items-center gap-2.5 min-w-0">
             <Icon icon={selectedCountry.icon} className="text-xl shrink-0" />
@@ -80,7 +83,7 @@ export function CountrySelect({ value, onChange, label, required = false, classN
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Rechercher un pays (nom, code, indicatif...)"
+                  placeholder={placeholder || "Rechercher un pays (nom, code, indicatif...)"}
                   autoFocus
                   className="w-full h-9 pl-9 pr-3 rounded-xl bg-slate-100 dark:bg-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-brand-green"
                 />

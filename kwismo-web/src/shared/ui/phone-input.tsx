@@ -9,10 +9,11 @@ interface PhoneInputProps {
   onChange: (e164Value: string, isValid: boolean) => void;
   label?: string;
   required?: boolean;
+  disabled?: boolean;
   className?: string;
 }
 
-export function PhoneInput({ value, onChange, label, required = false, className = '' }: PhoneInputProps) {
+export function PhoneInput({ value, onChange, label, required = false, disabled = false, className = '' }: PhoneInputProps) {
   const { i18n } = useTranslation();
   const defaultCountryCode = detectUserCountryCode();
   const defaultCountry = COUNTRY_LIST.find((c) => c.code === defaultCountryCode) || COUNTRY_LIST[0];
@@ -80,8 +81,9 @@ export function PhoneInput({ value, onChange, label, required = false, className
         <div className="relative" ref={dropdownRef}>
           <button
             type="button"
-            onClick={() => setIsOpen(!isOpen)}
-            className="h-11 px-3 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-brand-navy text-slate-900 dark:text-white text-xs sm:text-sm font-semibold flex items-center gap-2 hover:border-brand-green focus:outline-none focus:border-brand-green transition shrink-0"
+            disabled={disabled}
+            onClick={() => !disabled && setIsOpen(!isOpen)}
+            className="h-11 px-3 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-brand-navy text-slate-900 dark:text-white text-xs sm:text-sm font-semibold flex items-center gap-2 hover:border-brand-green focus:outline-none focus:border-brand-green transition shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <Icon icon={selectedCountry.icon} className="text-xl" />
             <span>{selectedCountry.dialCode}</span>
@@ -149,10 +151,11 @@ export function PhoneInput({ value, onChange, label, required = false, className
         <div className="relative flex-1">
           <input
             type="tel"
+            disabled={disabled}
             value={rawInput}
             onChange={(e) => handleInputChange(e.target.value)}
             placeholder={selectedCountry.examplePlaceholder || '690 00 00 00'}
-            className={`w-full h-11 pl-4 pr-10 rounded-xl border bg-slate-50 dark:bg-brand-navy text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none transition ${
+            className={`w-full h-11 pl-4 pr-10 rounded-xl border bg-slate-50 dark:bg-brand-navy text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none transition disabled:opacity-60 disabled:cursor-not-allowed ${
               rawInput
                 ? isValid
                   ? 'border-brand-green focus:border-brand-green'
