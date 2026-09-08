@@ -4,7 +4,7 @@ import { Icon } from '@iconify/react';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { toast } from '@/shared/store/toastStore';
-import type { PartnerDTO } from '@/shared/mock';
+import type { PartnerDTO, PartnerType } from '@/shared/mock';
 
 interface PartnerFormProps {
   partner: PartnerDTO | null;
@@ -16,7 +16,7 @@ interface PartnerFormProps {
 export default function PartnerForm({ partner, isOpen, onClose, onSave }: PartnerFormProps) {
   const { t } = useTranslation(['partner', 'common']);
   const [nomEntreprise, setNomEntreprise] = useState('');
-  const [typePartenariat, setTypePartenariat] = useState<'telco' | 'bank' | 'fintech'>('telco');
+  const [typePartenariat, setTypePartenariat] = useState<PartnerType>('Opérateur');
   const [webhookUrl, setWebhookUrl] = useState('');
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function PartnerForm({ partner, isOpen, onClose, onSave }: Partne
       setWebhookUrl(partner.webhookUrl ?? '');
     } else {
       setNomEntreprise('');
-      setTypePartenariat('telco');
+      setTypePartenariat('Opérateur');
       setWebhookUrl('');
     }
   }, [partner]);
@@ -68,12 +68,13 @@ export default function PartnerForm({ partner, isOpen, onClose, onSave }: Partne
             </label>
             <select
               value={typePartenariat}
-              onChange={(e) => setTypePartenariat(e.target.value as 'telco' | 'bank' | 'fintech')}
+              onChange={(e) => setTypePartenariat(e.target.value as PartnerType)}
               className="h-11 px-4 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] text-slate-900 dark:text-white text-xs sm:text-sm font-body focus:outline-none focus:border-brand-green"
             >
-              <option value="telco">{t('partner:partners.typeTelco')}</option>
-              <option value="bank">{t('partner:partners.typeBank')}</option>
-              <option value="fintech">{t('partner:partners.typeFintech')}</option>
+              <option value="Opérateur">{t('partner:partners.typeTelco', 'Opérateur Telecommunication')}</option>
+              <option value="Banque">{t('partner:partners.typeBank', 'Banque')}</option>
+              <option value="Fintech">{t('partner:partners.typeFintech', 'Fintech')}</option>
+              <option value="Régulateur">Régulateur</option>
             </select>
           </div>
 

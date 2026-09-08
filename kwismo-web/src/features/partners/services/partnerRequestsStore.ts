@@ -6,6 +6,7 @@ export interface PartnerRequestItem {
   prenomContact: string;
   email: string;
   telephone: string;
+  pays?: string;
   message?: string;
   dateDemande: string;
   statut: 'pending' | 'validated' | 'rejected';
