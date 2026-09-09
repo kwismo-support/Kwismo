@@ -13,13 +13,9 @@ export default function FaqSection() {
   const faqItems = t('landing:faq.items', { returnObjects: true }) as Array<{ q: string; a: string }>;
 
   return (
-    <section id="faq" className="py-20 bg-slate-50 dark:bg-[#0E1526] transition-colors duration-200">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-green/10 text-brand-green dark:bg-brand-green/20 dark:text-green-300 text-xs font-semibold uppercase tracking-wider mb-4">
-            <Icon icon="solar:question-square-bold" className="text-base" />
-            <span>{t('landing:nav.faq')}</span>
-          </div>
+    <section id="faq" className="py-20 bg-slate-50 dark:bg-brand-navy transition-colors duration-200">
+      <div className="mx-auto max-w-[90%]">
+        <div className="text-center">
           <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white sm:text-4xl">
             {t('landing:faq.title')}
           </h2>
@@ -28,7 +24,7 @@ export default function FaqSection() {
           </p>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 mt-10">
           {Array.isArray(faqItems) &&
             faqItems.map((item, idx) => {
               const isOpen = openIndex === idx;
@@ -37,8 +33,8 @@ export default function FaqSection() {
                   key={idx}
                   className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                     isOpen
-                      ? 'border-brand-green/40 bg-white dark:bg-[#161E33] shadow-md'
-                      : 'border-slate-200 dark:border-white/10 bg-white/80 dark:bg-[#12192C] hover:border-slate-300 dark:hover:border-white/20'
+                      ? 'border-brand-green/40 bg-white dark:bg-brand-darkBg shadow-md'
+                      : 'border-slate-200 dark:border-white/10 bg-white/80 dark:bg-brand-darkBg hover:border-slate-300 dark:hover:border-white/20'
                   }`}
                 >
                   <button
@@ -50,17 +46,15 @@ export default function FaqSection() {
                     <span className="flex items-center gap-3 pr-4 font-semibold text-slate-900 dark:text-white text-base">
                       <Icon
                         icon="solar:help-bold-duotone"
-                        className={`text-xl flex-shrink-0 transition-colors ${
-                          isOpen ? 'text-brand-green' : 'text-slate-400 dark:text-slate-500'
-                        }`}
+                        className={`text-xl flex-shrink-0 transition-colors ${isOpen ? 'text-brand-green' : 'text-slate-400 dark:text-slate-500'
+                          }`}
                       />
                       <span>{item.q}</span>
                     </span>
                     <Icon
                       icon="solar:alt-arrow-down-bold"
-                      className={`text-xl text-slate-400 transition-transform duration-300 flex-shrink-0 ${
-                        isOpen ? 'rotate-180 text-brand-green' : ''
-                      }`}
+                      className={`text-xl text-slate-400 transition-transform duration-300 flex-shrink-0 ${isOpen ? 'rotate-180 text-brand-green' : ''
+                        }`}
                     />
                   </button>
                   {isOpen && (
