@@ -23,7 +23,7 @@ export default function FraudProblem() {
   ];
 
   return (
-    <section id="fraud" className="w-full bg-white dark:bg-brand-darkBg px-6 py-16 transition-colors font-body">
+    <section id="fraud" className="w-full bg-[#1F2430] text-white py-16 px-6 font-body">
       <div className="mx-auto max-w-[90%]">
         <div className="text-center">
           <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight text-slate-900 dark:text-white">

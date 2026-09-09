@@ -7,7 +7,7 @@ export default function WhatKwismoBrings() {
   const points = t('whatKwismoBrings.points', { returnObjects: true }) as string[];
 
   return (
-    <section className="w-full bg-slate-50 dark:bg-brand-navy px-6 py-16 transition-colors font-body">
+    <section id="services" className="w-full bg-slate-50 dark:bg-brand-navy px-6 py-16 transition-colors font-body">
       <div className="mx-auto max-w-[1200px]">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white">

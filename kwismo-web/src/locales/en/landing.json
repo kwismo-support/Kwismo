@@ -8,6 +8,7 @@
     "about": "About Us",
     "security": "Security",
     "features": "Features",
+    "faq": "FAQ",
     "contact": "Contact",
     "partner": "Partner",
     "login": "Sign In"
@@ -222,5 +223,35 @@
       "whatsapp": "WhatsApp Impersonation Detection",
       "offline": "Works Offline via USSD"
     }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find quick answers to your questions about KWISMO protection.",
+    "items": [
+      {
+        "q": "How does KWISMO protect me against Mobile Money fraud?",
+        "a": "KWISMO analyzes incoming calls and transaction recipients in real time using our AI engine and community database. Before running a USSD code or answering a suspicious call, a clear visual alert warns you of the risk level."
+      },
+      {
+        "q": "Does the app work without an internet connection?",
+        "a": "Yes! KWISMO includes a secure local database on your device. During USSD transfers or offline calls, number verification and USSD code generation are handled locally."
+      },
+      {
+        "q": "Which telecom operators are supported?",
+        "a": "KWISMO supports all major operators across Central and West Africa, including MTN (MoMo), Orange Money, MoMo Express, Camtel, Moov, Wave, and Airtel Money."
+      },
+      {
+        "q": "Is my personal and financial information secure?",
+        "a": "Absolutely. KWISMO never has access to your Mobile Money PIN code or account balance. All data is encrypted on your device and no passwords are stored in plain text."
+      },
+      {
+        "q": "How much does KWISMO cost for an individual user?",
+        "a": "The KWISMO mobile app is 100% free for individual users. You can download it freely from Google Play and the App Store."
+      },
+      {
+        "q": "How do I integrate the KWISMO API into my business or FinTech?",
+        "a": "KWISMO offers a highly available REST API (Pay-as-you-go at $0.001 per API call). You can check our interactive Swagger documentation and submit a partner request directly on this website."
+      }
+    ]
   }
 }

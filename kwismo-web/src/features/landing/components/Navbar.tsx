@@ -14,7 +14,7 @@ export default function Navbar() {
       return;
     }
 
-    const sections = ['accueil', 'about', 'fraud', 'services', 'pricing', 'contact'];
+    const sections = ['accueil', 'fraud', 'about', 'pricing', 'services', 'faq', 'contact'];
 
     const handleScroll = () => {
       const scrollPosition = window.scrollY + 200;
@@ -41,10 +41,11 @@ export default function Navbar() {
 
   const navItems = [
     { id: 'accueil', label: t('landing:nav.home'), href: `${prefix}#accueil` },
-    { id: 'about', label: t('landing:nav.about'), href: `${prefix}#about` },
     { id: 'fraud', label: t('landing:nav.security'), href: `${prefix}#fraud` },
-    { id: 'services', label: t('landing:nav.features'), href: `${prefix}#services` },
+    { id: 'about', label: t('landing:nav.about'), href: `${prefix}#about` },
     { id: 'pricing', label: t('landing:pricingTitleNav'), href: `${prefix}#pricing` },
+    { id: 'services', label: t('landing:nav.features'), href: `${prefix}#services` },
+    { id: 'faq', label: t('landing:nav.faq'), href: `${prefix}#faq` },
     { id: 'contact', label: t('landing:nav.contact'), href: `${prefix}#contact` },
   ];
 

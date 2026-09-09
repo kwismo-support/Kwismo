@@ -8,6 +8,7 @@
     "about": "À propos de nous",
     "security": "Sécurité",
     "features": "Fonctionnalités",
+    "faq": "FAQ",
     "contact": "Contact",
     "partner": "Partenaires",
     "login": "Se connecter"
@@ -222,5 +223,35 @@
       "whatsapp": "Détection d'usurpation WhatsApp",
       "offline": "Fonctionne hors connexion via USSD"
     }
+  },
+  "faq": {
+    "title": "Foire Aux Questions",
+    "subtitle": "Trouvez rapidement des réponses à vos interrogations sur la protection KWISMO.",
+    "items": [
+      {
+        "q": "Comment KWISMO me protège contre la fraude Mobile Money ?",
+        "a": "KWISMO analyse les numéros entrants et les destinataires de vos transferts en temps réel grâce à notre moteur IA et notre base communautaire. Avant d'exécuter un code USSD ou de répondre à un appel suspect, une alerte visuelle claire vous avertit du niveau de risque."
+      },
+      {
+        "q": "L'application fonctionne-t-elle sans connexion Internet ?",
+        "a": "Oui ! KWISMO intègre une base de données locale sécurisée sur votre appareil. Lors des transferts USSD ou des appels hors réseau, la vérification du numéro et la génération sécurisée du code USSD s'effectuent localement."
+      },
+      {
+        "q": "Quels sont les opérateurs télécoms supportés ?",
+        "a": "KWISMO prend en charge l'ensemble des opérateurs majeurs en Afrique centrale et de l'Ouest, notamment MTN (MoMo), Orange Money, MoMo Express, Camtel, Moov, Wave et Airtel Money."
+      },
+      {
+        "q": "Mes informations personnelles et financières sont-elles en sécurité ?",
+        "a": "Absolument. KWISMO n'a jamais accès à votre code secret Mobile Money ni au solde de votre compte. Toutes vos données sont chiffrées sur votre appareil et aucun mot de passe n'est stocké en clair."
+      },
+      {
+        "q": "Combien coûte l'utilisation de KWISMO pour un particulier ?",
+        "a": "L'application mobile KWISMO est 100 % gratuite pour tous les utilisateurs particuliers. Vous pouvez la télécharger librement sur Google Play et App Store."
+      },
+      {
+        "q": "Comment intégrer l'API KWISMO dans mon entreprise ou ma FinTech ?",
+        "a": "KWISMO propose une API REST hautement disponible (Pay-as-you-go à 0,001 $ par appel API). Vous pouvez consulter notre documentation Swagger interactive et faire une demande d'accès partenaire directement sur ce site."
+      }
+    ]
   }
 }
