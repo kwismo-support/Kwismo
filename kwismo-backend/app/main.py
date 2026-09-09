@@ -212,7 +212,7 @@ for router in (
     settings_router,
     ai_gateway_router,
 ):
-    app.include_router(router)
+    app.include_router(router, prefix="/api/v1")
 
 
 @app.get("/health",
@@ -221,6 +221,7 @@ for router in (
     summary="Health check / Vérification de santé",
     description="**FR** — Point de contrôle pour la supervision.\n\n**EN** — Health check for supervision/orchestration.",
 )
+@app.get("/api/v1/health", response_model=HealthOut, include_in_schema=False)
 async def health() -> HealthOut:
     from app.db.prisma_client import db
     try:

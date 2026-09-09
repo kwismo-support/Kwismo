@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
 const getApiBaseUrl = (): string => {
-  const configuredUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:7001';
+  const configuredUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:7001/api/v1';
 
   if (Platform.OS === 'web') {
     return configuredUrl;
@@ -14,12 +14,13 @@ const getApiBaseUrl = (): string => {
   if (hostUri) {
     const hostIp = hostUri.split(':')[0];
     if (hostIp) {
-      return `http://${hostIp}:7001`;
+      return `http://${hostIp}:7001/api/v1`;
     }
   }
 
   // Fallback IP LAN Wi-Fi direct si pas détecté dans l'hôte Expo
-  return configuredUrl.replace('localhost', '172.17.4.55').replace('127.0.0.1', '172.17.4.55');
+  const base = configuredUrl.replace('localhost', '172.17.4.55').replace('127.0.0.1', '172.17.4.55');
+  return base.endsWith('/api/v1') ? base : `${base}/api/v1`;
 };
 
 export const env = {

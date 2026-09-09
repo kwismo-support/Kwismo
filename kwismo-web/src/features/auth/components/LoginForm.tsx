@@ -21,7 +21,6 @@ export default function LoginForm({ onForgotPassword, onRegisterPartner: _onRegi
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -40,63 +39,6 @@ export default function LoginForm({ onForgotPassword, onRegisterPartner: _onRegi
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full font-body">
-      {}
-      <div className="p-3.5 bg-brand-green/10 dark:bg-white/5 rounded-2xl border border-brand-green/30 dark:border-white/10 text-xs flex flex-col gap-2 font-body">
-        <div className="flex items-center justify-between font-bold text-slate-800 dark:text-white">
-          <span className="flex items-center gap-1.5 text-brand-green dark:text-brand-green">
-            <Icon icon="solar:key-minimalistic-bold-duotone" className="text-base" />
-            <span>Identifiants de démonstration</span>
-          </span>
-          <span className="text-[10px] text-slate-400 font-mono">MDP: Password123!</span>
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <button
-            type="button"
-            onClick={() => {
-              setValue('email', 'admin@kwismo.com');
-              setValue('password', 'Password123!');
-            }}
-            className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-white dark:bg-brand-navy border border-slate-200 dark:border-white/10 text-[11px] font-medium text-slate-700 dark:text-slate-200 hover:border-brand-green hover:text-brand-green transition cursor-pointer"
-          >
-            <span className="flex items-center gap-1.5">
-              <Icon icon="solar:shield-user-bold" className="text-brand-orange" />
-              <strong>Super Admin:</strong> admin@kwismo.com
-            </span>
-            <span className="text-[10px] text-brand-green font-semibold">Remplir →</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setValue('email', 'claire.kamga@orange.cm');
-              setValue('password', 'Password123!');
-            }}
-            className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-white dark:bg-brand-navy border border-slate-200 dark:border-white/10 text-[11px] font-medium text-slate-700 dark:text-slate-200 hover:border-brand-green hover:text-brand-green transition cursor-pointer"
-          >
-            <span className="flex items-center gap-1.5">
-              <Icon icon="solar:buildings-bold" className="text-brand-green" />
-              <strong>Partenaire Orange:</strong> claire.kamga@orange.cm
-            </span>
-            <span className="text-[10px] text-brand-green font-semibold">Remplir →</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              setValue('email', 'alain.fosso@mtn.cm');
-              setValue('password', 'Password123!');
-            }}
-            className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-white dark:bg-brand-navy border border-slate-200 dark:border-white/10 text-[11px] font-medium text-slate-700 dark:text-slate-200 hover:border-brand-green hover:text-brand-green transition cursor-pointer"
-          >
-            <span className="flex items-center gap-1.5">
-              <Icon icon="solar:buildings-bold" className="text-brand-orange" />
-              <strong>Partenaire MTN:</strong> alain.fosso@mtn.cm
-            </span>
-            <span className="text-[10px] text-brand-green font-semibold">Remplir →</span>
-          </button>
-        </div>
-      </div>
-
       <Input
         type="email"
         label={t('emailLabel')}
