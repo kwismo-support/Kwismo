@@ -4,12 +4,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "installCommand": "npm install",
-  "env": {
-    "VITE_API_URL": "http://localhost:7001/api/v1",
-    "VITE_APP_NAME": "KWISMO",
-    "VITE_DEFAULT_LANG": "fr",
-    "VITE_USE_MOCK": "false"
-  },
   "rewrites": [
     {
       "source": "/(.*)",
