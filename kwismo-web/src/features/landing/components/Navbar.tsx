@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
-import LogoNavBar from '@/assets/logo/Logo_NavBar.png';
+import LogoNavBar from '@/assets/logo/White_Logo.png';
 
 export default function Navbar() {
   const { t } = useTranslation('landing');
@@ -67,17 +67,15 @@ export default function Navbar() {
               <a
                 key={item.id}
                 href={item.href}
-                className={`relative py-2 font-body text-xs sm:text-sm font-medium transition-all duration-300 ${
-                  isActive
+                className={`relative py-2 font-body text-xs sm:text-sm font-medium transition-all duration-300 ${isActive
                     ? 'text-white font-bold scale-105'
                     : 'text-white/80 hover:text-white'
-                }`}
+                  }`}
               >
                 <span>{item.label}</span>
                 <span
-                  className={`absolute bottom-0 left-0 h-0.5 bg-brand-orange rounded-full transition-all duration-300 ease-in-out ${
-                    isActive ? 'w-full opacity-100 scale-x-100' : 'w-0 opacity-0 scale-x-0'
-                  }`}
+                  className={`absolute bottom-0 left-0 h-0.5 bg-brand-orange rounded-full transition-all duration-300 ease-in-out ${isActive ? 'w-full opacity-100 scale-x-100' : 'w-0 opacity-0 scale-x-0'
+                    }`}
                 />
               </a>
             );
@@ -122,9 +120,8 @@ export default function Navbar() {
                   key={item.id}
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex font-body text-sm font-medium transition justify-center items-center ${
-                    isActive ? 'text-brand-orange font-bold underline' : 'text-white hover:text-brand-orange'
-                  }`}
+                  className={`flex font-body text-sm font-medium transition justify-center items-center ${isActive ? 'text-brand-orange font-bold underline' : 'text-white hover:text-brand-orange'
+                    }`}
                 >
                   {item.label}
                 </a>

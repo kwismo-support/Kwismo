@@ -2,7 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher';
 import { ThemeToggle } from '@/shared/components/ThemeToggle';
-import LogoNavBar from '@/assets/logo/Logo_Footer.png';
+import LogoColor from '@/assets/logo/Color_Logo.png';
+import LogoWhite from '@/assets/logo/White_Logo.png';
 
 export default function Footer() {
   const { t } = useTranslation('landing');
@@ -12,7 +13,8 @@ export default function Footer() {
       <div className="mx-auto max-w-[90%] px-6">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-10 pb-12 border-b border-slate-200 dark:border-white/10">
           <div className="md:col-span-2 flex flex-col items-start">
-            <img src={LogoNavBar} alt="KWISMO Logo" className="h-12 w-auto object-contain" />
+            <img src={LogoColor} alt="KWISMO Logo" className="h-12 w-auto object-contain dark:hidden" />
+            <img src={LogoWhite} alt="KWISMO Logo" className="h-12 w-auto object-contain hidden dark:block" />
 
             <p className="mt-0 text-xs text-slate-600 dark:text-white/70 max-w-sm leading-relaxed">
               {t('landing:footer.desc')}

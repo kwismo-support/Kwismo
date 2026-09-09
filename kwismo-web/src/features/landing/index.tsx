@@ -15,7 +15,7 @@ import ScrollToTopButton from '@/shared/components/ScrollToTopButton';
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-white dark:bg-[#0F1626] font-body text-slate-900 dark:text-white transition-colors duration-200 relative">
+    <div className="flex min-h-screen flex-col bg-white dark:bg-brand-navy font-body text-slate-900 dark:text-white transition-colors duration-200 relative">
       <ContactBar />
       <Navbar />
       <main className="flex-1">

@@ -27,7 +27,7 @@ export default function AfricanTeam() {
   ];
 
   return (
-    <section id="about" className="py-20 bg-slate-50 dark:bg-[#0E1526] font-body transition-colors duration-200">
+    <section id="about" className="py-20 bg-brand-green font-body transition-colors duration-200">
       <div className="mx-auto max-w-[90%] grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12">
         <div className="flex flex-col justify-between items-start">
           <div>
@@ -35,7 +35,7 @@ export default function AfricanTeam() {
               {t('africanTeam.title')}
             </h2>
 
-            <p className="mt-4 font-body text-xs sm:text-sm leading-relaxed text-white/90">
+            <p className="mt-4 font-body text-xs sm:text-sm leading-relaxed text-white">
               {t('africanTeam.desc')}
             </p>
           </div>
