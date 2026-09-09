@@ -123,34 +123,34 @@ kwismo-mobile/
 ├─ app/                             # ★ Routes (Expo Router, file-based)
 │  ├─ _layout.tsx                   # Layout racine : providers globaux
 │  ├─ index.tsx                     # Redirection initiale (splash → auth/app)
-│  ├─ onboarding.tsx                # Écrans d'onboarding animés
+│  ├─ onboarding.tsx
 │  │
 │  ├─ (auth)/                       # Groupe NON authentifié
-│  │  ├─ _layout.tsx                # Pile de navigation d'auth
-│  │  ├─ login.tsx                  # Sélection pays + saisie numéro
-│  │  ├─ otp.tsx                    # Vérification OTP
-│  │  ├─ forgot-password.tsx        # Réinitialisation par email
+│  │  ├─ _layout.tsx
+│  │  ├─ login.tsx
+│  │  ├─ otp.tsx
+│  │  ├─ forgot-password.tsx
 │  │  └─ reset-password.tsx
 │  │
 │  └─ (app)/                        # Groupe authentifié (protégé)
-│     ├─ _layout.tsx                # Barre d'onglets (tabs)
-│     ├─ index.tsx                  # Accueil / Dashboard + KPI perso
-│     ├─ verify.tsx                 # Vérification de numéro
-│     ├─ transfer.tsx               # Transfert USSD
-│     ├─ contacts.tsx               # Liste de contacts à insignes
-│     ├─ alert-whatsapp.tsx         # Alerte WhatsApp (compte piraté)
-│     ├─ report.tsx                 # Signalement
-│     ├─ survey.tsx                 # Formulaire d'enquête
-│     └─ profile.tsx                # Profil & sécurité
+│     ├─ _layout.tsx
+│     ├─ index.tsx
+│     ├─ verify.tsx
+│     ├─ transfer.tsx
+│     ├─ contacts.tsx
+│     ├─ alert-whatsapp.tsx
+│     ├─ report.tsx
+│     ├─ survey.tsx
+│     └─ profile.tsx
 │
 ├─ src/
 │  ├─ features/                     # Logique métier par fonctionnalité
 │  │  │
 │  │  ├─ auth/
 │  │  │  ├─ components/
-│  │  │  │  ├─ CountrySelector.tsx  # Bottom sheet drapeaux + indicatifs
-│  │  │  │  ├─ PhoneInput.tsx       # Saisie + validation (libphonenumber)
-│  │  │  │  └─ OtpInput.tsx         # Cases OTP auto-avançantes
+│  │  │  │  ├─ CountrySelector.tsx
+│  │  │  │  ├─ PhoneInput.tsx
+│  │  │  │  └─ OtpInput.tsx
 │  │  │  ├─ hooks/
 │  │  │  │  ├─ useLogin.ts
 │  │  │  │  └─ useOtp.ts
@@ -172,7 +172,7 @@ kwismo-mobile/
 │  │  ├─ verify/
 │  │  │  ├─ components/
 │  │  │  │  ├─ VerifyInput.tsx
-│  │  │  │  └─ RiskResultCard.tsx   # Carte colorée sécurisé/suspect/frauduleux
+│  │  │  │  └─ RiskResultCard.tsx
 │  │  │  ├─ hooks/
 │  │  │  │  └─ useVerify.ts
 │  │  │  └─ services/
@@ -180,22 +180,22 @@ kwismo-mobile/
 │  │  │
 │  │  ├─ transfer/
 │  │  │  ├─ components/
-│  │  │  │  ├─ TransferStepper.tsx  # Étapes pays→opérateur→action
+│  │  │  │  ├─ TransferStepper.tsx
 │  │  │  │  ├─ AmountInput.tsx
-│  │  │  │  └─ UssdConfirm.tsx      # Récap + code USSD généré
+│  │  │  │  └─ UssdConfirm.tsx
 │  │  │  ├─ hooks/
 │  │  │  │  └─ useTransfer.ts
 │  │  │  ├─ services/
 │  │  │  │  └─ transfer.api.ts
 │  │  │  └─ lib/
-│  │  │     └─ ussd.ts              # Composition du code USSD (lien tel:)
+│  │  │     └─ ussd.ts
 │  │  │
 │  │  ├─ contacts/
 │  │  │  ├─ components/
 │  │  │  │  ├─ ContactItem.tsx
-│  │  │  │  └─ StatusBadge.tsx      # Insigne par contact
+│  │  │  │  └─ StatusBadge.tsx
 │  │  │  ├─ hooks/
-│  │  │  │  └─ useContacts.ts       # Lecture répertoire (permissions)
+│  │  │  │  └─ useContacts.ts
 │  │  │  └─ services/
 │  │  │     └─ contacts.api.ts
 │  │  │
@@ -210,7 +210,7 @@ kwismo-mobile/
 │  │  │
 │  │  ├─ call-detection/
 │  │  │  ├─ components/
-│  │  │  │  ├─ CallOverlay.tsx      # Superposition d'alerte appel
+│  │  │  │  ├─ CallOverlay.tsx
 │  │  │  │  └─ DetectionSettings.tsx
 │  │  │  ├─ hooks/
 │  │  │  │  └─ useCallDetection.ts
@@ -236,8 +236,8 @@ kwismo-mobile/
 │  │  └─ profile/
 │  │     ├─ components/
 │  │     │  ├─ ProfileForm.tsx
-│  │     │  ├─ SecuritySettings.tsx # Biométrie, session
-│  │     │  └─ PreferencesSettings.tsx  # Thème, langue, notifications
+│  │     │  ├─ SecuritySettings.tsx
+│  │     │  └─ PreferencesSettings.tsx
 │  │     ├─ hooks/
 │  │     │  └─ useProfile.ts
 │  │     └─ services/
@@ -255,21 +255,26 @@ kwismo-mobile/
 │  │  ├─ components/
 │  │  │  ├─ AppHeader.tsx
 │  │  │  ├─ TabBar.tsx
-│  │  │  ├─ ScreenState.tsx         # États chargement/vide/erreur/hors-ligne
+│  │  │  ├─ ScreenState.tsx
 │  │  │  ├─ ThemeToggle.tsx
 │  │  │  └─ LanguageSwitcher.tsx
 │  │  ├─ hooks/
 │  │  │  ├─ useTheme.ts
 │  │  │  ├─ useDebounce.ts
-│  │  │  └─ useNetworkStatus.ts     # Détection hors-ligne
+│  │  │  └─ useNetworkStatus.ts
 │  │  ├─ lib/
-│  │  │  ├─ axios.ts                # Instance + intercepteurs
+│  │  │  ├─ axios.ts
 │  │  │  ├─ queryClient.ts
-│  │  │  ├─ phone.ts                # libphonenumber (validation par indicatif)
-│  │  │  ├─ secureStore.ts          # Wrapper expo-secure-store (tokens)
+│  │  │  ├─ phone.ts
+│  │  │  ├─ secureStore.ts
 │  │  │  └─ utils.ts
+│  │  ├─ services/
+│  │  │  ├─ apiClient.ts
+│  │  │  ├─ database.ts
+│  │  │  ├─ device.ts
+│  │  │  └─ syncEngine.ts
 │  │  ├─ store/
-│  │  │  ├─ authStore.ts            # Session (token en SecureStore)
+│  │  │  ├─ authStore.ts
 │  │  │  ├─ themeStore.ts
 │  │  │  └─ languageStore.ts
 │  │  ├─ types/

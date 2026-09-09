@@ -31,10 +31,10 @@ export default function FraudByOperatorChart({ isLoading = false }: FraudByOpera
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-title text-base font-bold text-slate-900 dark:text-white">
-            {t('dashboard.operatorChartTitle', 'Répartition des Fraudes par Opérateur')}
+            {t('dashboard.operatorChartTitle')}
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            {t('dashboard.operatorChartSubtitle', 'Volume de tentatives bloquées par réseau télécom')}
+            {t('dashboard.operatorChartSubtitle')}
           </p>
         </div>
       </div>
@@ -55,7 +55,7 @@ export default function FraudByOperatorChart({ isLoading = false }: FraudByOpera
                 fontFamily: 'Ageo, sans-serif',
               }}
             />
-            <Bar dataKey="fraudes" radius={[8, 8, 0, 0]} name={t('dashboard.blockedFrauds', 'Fraudes Bloquées')}>
+            <Bar dataKey="fraudes" radius={[8, 8, 0, 0]} name={t('dashboard.blockedFrauds')}>
               {operatorData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}

@@ -54,7 +54,7 @@ export default function UsersPage() {
   return (
     <div className="flex flex-col gap-6 p-6 font-body">
       <PageHeader
-        title={t('admin:users.title', 'Gestion des Utilisateurs')}
+        title={t('admin:users.title')}
         subtitle="Supervision des accès utilisateurs, attribution des rôles administratifs et gestion des comptes."
         rolePerspective="ADMIN"
         showBreadcrumb={true}

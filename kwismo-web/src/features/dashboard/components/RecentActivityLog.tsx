@@ -65,10 +65,10 @@ export default function RecentActivityLog({ isLoading = false }: RecentActivityL
         <div>
           <h3 className="font-title text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Icon icon="solar:history-bold-duotone" className="text-brand-orange text-lg" />
-            {t('dashboard.activityTitle', 'Dernières Actions')}
+            {t('dashboard.activityTitle')}
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            {t('dashboard.activitySubtitle', 'Journal d’activité en temps réel de la plateforme')}
+            {t('dashboard.activitySubtitle')}
           </p>
         </div>
       </div>

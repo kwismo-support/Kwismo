@@ -305,7 +305,7 @@ export default function UssdPage() {
   return (
     <div className="flex flex-col gap-6 p-6 font-body">
       <PageHeader
-        title={t('ussd.title', 'Pays et codes USSD')}
+        title={t('ussd.title')}
         subtitle="Arborescence interactive : Pays → Opérateurs → Actions USSD."
         showBreadcrumb={true}
         actions={[

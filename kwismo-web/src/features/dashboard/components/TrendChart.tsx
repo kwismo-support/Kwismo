@@ -47,11 +47,11 @@ export default function TrendChart({ isLoading = false }: TrendChartProps) {
         <div>
           <div className="flex items-center gap-2">
             <h3 className="font-title text-base font-bold text-slate-900 dark:text-white">
-              {t('dashboard.trendChartTitle', 'Tendance des Vérifications & Fraudes')}
+              {t('dashboard.trendChartTitle')}
             </h3>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            {t('dashboard.trendChartSubtitle', 'Évolution comparative du volume d\'OTPs et des attaques bloquées')}
+            {t('dashboard.trendChartSubtitle')}
           </p>
         </div>
 

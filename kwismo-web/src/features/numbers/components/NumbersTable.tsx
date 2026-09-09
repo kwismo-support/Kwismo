@@ -95,7 +95,7 @@ export default function NumbersTable({
   const columns: Column<NumeroDTO>[] = [
     {
       key: 'valeur',
-      header: t('admin:numbers.phoneNumber', 'Numéro Virtuel'),
+      header: t('admin:numbers.phoneNumber'),
       sortable: true,
       cell: (numero) => (
         <div>
@@ -110,7 +110,7 @@ export default function NumbersTable({
     },
     {
       key: 'operatorName',
-      header: t('admin:ussd.operators', 'Opérateur / Pays'),
+      header: t('admin:ussd.operators'),
       sortable: true,
       cell: (numero) => {
         const flagCode = getCountryFlagCode(numero.countryCode);
@@ -146,7 +146,7 @@ export default function NumbersTable({
     },
     {
       key: 'scoreRisque',
-      header: t('admin:numbers.riskScore', 'Score IA'),
+      header: t('admin:numbers.riskScore'),
       sortable: true,
       cell: (numero) => {
         const isLowScore = numero.scoreRisque <= 40;
@@ -170,13 +170,13 @@ export default function NumbersTable({
     },
     {
       key: 'statut',
-      header: t('common:status', 'Statut'),
+      header: t('common:status'),
       sortable: true,
       cell: (numero) => <StatusBadge status={numero.statut} size="sm" showDot={true} />,
     },
     {
       key: 'actions',
-      header: t('common:actions.label', 'Actions'),
+      header: t('common:actions.label'),
       align: 'right',
       cell: (numero) => (
         <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>

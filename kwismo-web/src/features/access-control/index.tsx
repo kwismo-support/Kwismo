@@ -258,7 +258,7 @@ export default function AccessControlPage() {
   return (
     <div className="flex flex-col gap-6 p-6 font-body max-w-7xl mx-auto">
       <PageHeader
-        title={t('access.title', 'Droits d’accès & Matrice des permissions')}
+        title={t('access.title')}
         subtitle="Gestion centralisée des rôles système, attribution des privilèges et matrice de sécurité par module."
         showBreadcrumb={true}
         actions={[

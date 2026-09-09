@@ -75,7 +75,7 @@ export default function PartnersTable({
   const columns: Column<PartnerDTO>[] = [
     {
       key: 'nomEntreprise',
-      header: t('partner:partners.name', 'Partenaire / Structure'),
+      header: t('partner:partners.name'),
       sortable: true,
       cell: (partner) => (
         <div className="flex items-center gap-3">
@@ -114,7 +114,7 @@ export default function PartnersTable({
     },
     {
       key: 'typePartenariat',
-      header: t('partner:partners.type', 'Type'),
+      header: t('partner:partners.type'),
       sortable: true,
       cell: (partner) => (
         <StatusBadge
@@ -154,13 +154,13 @@ export default function PartnersTable({
     },
     {
       key: 'statut',
-      header: t('common:status', 'Statut'),
+      header: t('common:status'),
       sortable: true,
       cell: (partner) => <StatusBadge status={partner.statut} size="sm" showDot={true} />,
     },
     {
       key: 'actions',
-      header: t('common:actions.label', 'Actions'),
+      header: t('common:actions.label'),
       align: 'right',
       cell: (partner) => (
         <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>

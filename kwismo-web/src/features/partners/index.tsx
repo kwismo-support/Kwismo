@@ -110,7 +110,7 @@ export default function PartnersPage() {
   return (
     <div className="flex flex-col gap-6 p-6 font-body">
       <PageHeader
-        title={t('pageTitle', 'Gestion des Partenaires')}
+        title={t('pageTitle')}
         subtitle="Supervision des comptes entreprises, validation des demandes d'adhésion et configuration des règles d'affiliation."
         rolePerspective="PARTNER"
         showBreadcrumb={true}

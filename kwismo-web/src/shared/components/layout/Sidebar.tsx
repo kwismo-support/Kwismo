@@ -147,14 +147,14 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         <div className="p-3 border-t border-slate-200 dark:border-white/10 shrink-0">
           <button
             onClick={() => setShowLogoutModal(true)}
-            title={isCollapsed ? t('actions.logout', 'Déconnexion') : undefined}
+            title={isCollapsed ? t('actions.logout') : undefined}
             className={cn(
               'flex items-center rounded-xl py-3 text-xs sm:text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-all cursor-pointer',
               isCollapsed ? 'w-full justify-center px-0' : 'w-full gap-3 px-3.5'
             )}
           >
             <Icon icon="solar:logout-3-bold" className="text-xl shrink-0 text-rose-500" />
-            {!isCollapsed && <span>{t('actions.logout', 'Déconnexion')}</span>}
+            {!isCollapsed && <span>{t('actions.logout')}</span>}
           </button>
         </div>
       </aside>

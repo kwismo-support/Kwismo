@@ -75,6 +75,7 @@ TAGS_METADATA = [
     {"name": "Access Control", "description": "FR — Rôles et droits d'accès (RBAC). / EN — Roles and access rights (RBAC)."},
     {"name": "Notifications", "description": "FR — Notifications utilisateur FR/EN. / EN — User notifications, FR/EN."},
     {"name": "Devices", "description": "FR — Appareils connectés. / EN — Connected devices."},
+    {"name": "Settings", "description": "FR — Configuration système et seuils de risque (SuperAdmin). / EN — System settings and risk thresholds (SuperAdmin)."},
     {"name": "System", "description": "FR — Supervision (santé). / EN — Supervision (health)."},
 ]
 

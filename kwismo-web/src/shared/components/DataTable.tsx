@@ -282,7 +282,7 @@ export function DataTable<T>({
               <tr>
                 <td colSpan={columns.length + (selectable ? 1 : 0)} className="py-12">
                   <EmptyState
-                    title={emptyTitle || t('noData', 'Aucune donnée disponible')}
+                    title={emptyTitle || t('noData')}
                     description={emptyDesc}
                     icon={emptyIcon}
                   />

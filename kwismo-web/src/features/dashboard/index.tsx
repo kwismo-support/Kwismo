@@ -39,7 +39,7 @@ export default function DashboardPage() {
 
   const adminCards = [
     {
-      title: t('dashboard.activeUsers', 'Utilisateurs actifs'),
+      title: t('dashboard.activeUsers'),
       value: (findKpi('total_utilisateurs') ?? 0).toLocaleString('fr-FR'),
       change: '+12,4 %',
       isPositive: true,
@@ -47,7 +47,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-navy bg-brand-navy/10 dark:bg-brand-navy/30 dark:text-blue-300',
     },
     {
-      title: t('dashboard.verifiedNumbers', 'Numéros vérifiés'),
+      title: t('dashboard.verifiedNumbers'),
       value: (findKpi('total_numeros_analyses') ?? 0).toLocaleString('fr-FR'),
       change: '+8,7 %',
       isPositive: true,
@@ -55,7 +55,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
-      title: t('dashboard.reports', 'Signalements'),
+      title: t('dashboard.reports'),
       value: (findKpi('total_signalements') ?? 0).toLocaleString('fr-FR'),
       change: '+23,1 %',
       isPositive: true,
@@ -63,7 +63,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-orange bg-brand-orange/10 dark:bg-brand-orange/20',
     },
     {
-      title: t('dashboard.blockedFrauds', 'Fraudes détectées'),
+      title: t('dashboard.blockedFrauds'),
       value: `${((findKpi('taux_fraude_detectee') ?? 0) * 100).toFixed(1)}%`,
       change: '+5,6 %',
       isPositive: false,
@@ -71,7 +71,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-rose-600 bg-rose-500/10 dark:text-rose-400 dark:bg-rose-500/20',
     },
     {
-      title: t('dashboard.protectedTx', 'Transactions protégées'),
+      title: t('dashboard.protectedTx'),
       value: (findKpi('total_transferts_proteges') ?? 0).toLocaleString('fr-FR'),
       change: '+18,2 %',
       isPositive: true,
@@ -79,7 +79,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
-      title: t('dashboard.apiCalls', 'Appels API partenaires'),
+      title: t('dashboard.apiCalls'),
       value: '4,1M',
       change: '+31,5 %',
       isPositive: true,
@@ -172,8 +172,8 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-6 p-6 font-body">
       <PageHeader
-        title={t('dashboard.title', 'Vue d\'ensemble')}
-        subtitle={t('dashboard.subtitle', 'Tableau de bord anti-fraude KWISMO et supervision en temps réel.')}
+        title={t('dashboard.title')}
+        subtitle={t('dashboard.subtitle')}
         showBreadcrumb={false}
       />
 

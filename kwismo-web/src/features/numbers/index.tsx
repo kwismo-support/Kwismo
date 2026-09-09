@@ -50,7 +50,7 @@ export default function NumbersPage() {
   return (
     <div className="flex flex-col gap-6 p-6 font-body">
       <PageHeader
-        title={t('numbers.title', 'Numéraux Virtuels')}
+        title={t('numbers.title')}
         subtitle="Gestion du pool de numéraux éphémères, détection de fraude et suivi de l'historique d'attribution."
         rolePerspective="ADMIN"
         showBreadcrumb={true}

@@ -18,7 +18,7 @@ export default function FaqSection() {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-green/10 text-brand-green dark:bg-brand-green/20 dark:text-green-300 text-xs font-semibold uppercase tracking-wider mb-4">
             <Icon icon="solar:question-square-bold" className="text-base" />
-            <span>FAQ</span>
+            <span>{t('landing:nav.faq')}</span>
           </div>
           <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white sm:text-4xl">
             {t('landing:faq.title')}

@@ -109,7 +109,7 @@ export default function NotificationsPage() {
   return (
     <div className="flex flex-col gap-6 p-6 font-body max-w-5xl">
       <PageHeader
-        title={t('notifications.title', 'Center de Notifications')}
+        title={t('notifications.title')}
         subtitle={`${unreadCount} notification${unreadCount > 1 ? 's' : ''} non lue${
           unreadCount > 1 ? 's' : ''
         } sur ${notifications.length}`}

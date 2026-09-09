@@ -70,7 +70,7 @@ export default function UsersTable({
   const columns: Column<UserDTO>[] = [
     {
       key: 'user',
-      header: t('admin:users.title', 'Utilisateur & Email'),
+      header: t('admin:users.title'),
       sortable: true,
       cell: (user) => {
         const role = user.role.nomRole.toLowerCase();
@@ -103,7 +103,7 @@ export default function UsersTable({
     },
     {
       key: 'role',
-      header: t('admin:users.role', 'Rôle'),
+      header: t('admin:users.role'),
       sortable: true,
       cell: (user) => <StatusBadge status={user.role.nomRole} size="xs" showDot={false} />,
     },
@@ -119,13 +119,13 @@ export default function UsersTable({
     },
     {
       key: 'statut',
-      header: t('common:status', 'Statut'),
+      header: t('common:status'),
       sortable: true,
       cell: (user) => <StatusBadge status={user.statut} size="sm" showDot={false} />,
     },
     {
       key: 'dateInscription',
-      header: t('admin:users.registeredAt', 'Inscrit le'),
+      header: t('admin:users.registeredAt'),
       sortable: true,
       cell: (user) => (
         <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 font-mono">
@@ -137,7 +137,7 @@ export default function UsersTable({
     },
     {
       key: 'actions',
-      header: t('common:actions.label', 'Actions'),
+      header: t('common:actions.label'),
       align: 'right',
       cell: (user) => (
         <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>

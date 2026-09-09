@@ -103,7 +103,7 @@ export default function ReportsPage() {
   return (
     <div className="flex flex-col gap-6 p-6 font-body max-w-7xl mx-auto">
       <PageHeader
-        title={t('reports.title', 'Rapports stratégiques')}
+        title={t('reports.title')}
         subtitle="Analyses approfondies, métriques avancées et historiques d'exportation."
         showBreadcrumb={true}
       />

@@ -253,5 +253,6 @@
         "a": "KWISMO offers a highly available REST API (Pay-as-you-go at $0.001 per API call). You can check our interactive Swagger documentation and submit a partner request directly on this website."
       }
     ]
-  }
+  },
+  "scrollToTop": "Scroll to top"
 }

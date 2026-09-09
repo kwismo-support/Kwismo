@@ -71,9 +71,9 @@ export default function PartnerForm({ partner, isOpen, onClose, onSave }: Partne
               onChange={(e) => setTypePartenariat(e.target.value as PartnerType)}
               className="h-11 px-4 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] text-slate-900 dark:text-white text-xs sm:text-sm font-body focus:outline-none focus:border-brand-green"
             >
-              <option value="Opérateur">{t('partner:partners.typeTelco', 'Opérateur Telecommunication')}</option>
-              <option value="Banque">{t('partner:partners.typeBank', 'Banque')}</option>
-              <option value="Fintech">{t('partner:partners.typeFintech', 'Fintech')}</option>
+              <option value="Opérateur">{t('partner:partners.typeTelco')}</option>
+              <option value="Banque">{t('partner:partners.typeBank')}</option>
+              <option value="Fintech">{t('partner:partners.typeFintech')}</option>
               <option value="Régulateur">Régulateur</option>
             </select>
           </div>
