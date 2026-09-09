@@ -1,9 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "installCommand": "npm install",
+  "buildCommand": "cd kwismo-web && npm install && npm run build",
+  "outputDirectory": "kwismo-web/dist",
+  "installCommand": "cd kwismo-web && npm install",
   "env": {
     "VITE_API_URL": "http://localhost:7001/api/v1",
     "VITE_APP_NAME": "KWISMO",
