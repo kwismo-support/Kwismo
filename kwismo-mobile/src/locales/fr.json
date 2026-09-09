@@ -103,7 +103,6 @@
     "protected": "Protégé",
     "inProgress": "En cours",
     "submitted": "Transmis",
-    "cancel": "Annuler",
     "confirm": "Confirmer",
     "edit": "Modifier",
     "delete": "Supprimer",
@@ -112,9 +111,6 @@
     "newTransfer": "Faire un autre transfert",
     "myNumbers": "Mes numéros enregistrés",
     "addNumber": "Ajouter un numéro",
-    "statusVerified": "Vérifié",
-    "statusPending": "En attente",
-    "statusCompromised": "Compromis",
     "confirmDeleteTitle": "Supprimer ce numéro ?",
     "confirmDeleteMessage": "Voulez-vous vraiment supprimer ce numéro de votre espace Kwismo ?",
     "enterOtp": "Saisissez le code OTP à 6 chiffres",
@@ -122,7 +118,6 @@
     "resendNow": "Renvoyer le code maintenant",
     "addPhoneTitle": "Ajouter un numéro",
     "editPhoneTitle": "Modifier le numéro",
-    "saveChanges": "Enregistrer les modifications",
     "sendOtp": "Envoyer le code SMS",
     "kpiVerifiedSub": "+1 ce mois",
     "kpiThreatsSub": "+3 cette sem.",
@@ -154,7 +149,6 @@
     "secureAccountOtpSubtitle": "Un code à 6 chiffres a été envoyé par e-mail. Veuillez le saisir ci-dessous.",
     "alreadySentQuestion": "Déjà envoyé ?",
     "resendCode": "renvoyer",
-    "logout": "Déconnexion",
     "acceptPrivacyPolicy": "J'accepte la politique de confidentialité",
     "acceptTermsOfService": "J'accepte les conditions d'utilisation",
     "acceptPrivacyPrefix": "J'accepte la",
@@ -164,7 +158,8 @@
     "privacyPolicyTitle": "Politique de confidentialité",
     "termsTitle": "Conditions d'utilisation",
     "otpSuccessTitle": "Bienvenue",
-    "otpWelcomeBackTitle": "Bon retour parmi nous"
+    "otpWelcomeBackTitle": "Bon retour parmi nous",
+    "logout": "Se déconnecter"
   },
   "transfer": {
     "enterDetails": "Détails du transfert",
@@ -319,18 +314,38 @@
     "ussdCopied": "Code USSD copié dans le presse-papier",
     "copiedToClipboard": "Copié dans le presse-papier !"
   },
-  "auth": {
-    "logout": "Se déconnecter"
-  },
   "errors": {
     "forbiddenTitle": "Accès non autorisé",
     "forbiddenMessage": "Vous n'avez pas les permissions nécessaires pour accéder à cette zone.",
     "generalTitle": "Une erreur est survenue",
     "generalMessage": "Impossible de charger la ressource. Veuillez réessayer."
   },
-  "management": {
-    "title": "Mes numéros",
-    "subtitle": "Gérez et sécurisez vos cartes SIM et numéros associés",
-    "addBtn": "Ajouter"
+  "pinPad": {
+    "setupTitlePhase1": "Entrer le nouveau code PIN",
+    "setupSubPhase1": "Définissez un code PIN à 6 chiffres pour sécuriser votre application.",
+    "setupTitlePhase2": "Saisir de nouveau le code PIN",
+    "setupSubPhase2": "Confirmez votre code PIN à 6 chiffres.",
+    "verifyTitle": "Déverrouillez avec le code PIN",
+    "verifySub": "Saisissez votre code PIN à 6 chiffres pour continuer.",
+    "changeTitleCurrent": "Entrer le code PIN actuel",
+    "changeSubCurrent": "Saisissez votre code PIN actuel pour vérifier votre identité.",
+    "changeTitleNew": "Entrer le nouveau code PIN",
+    "changeSubNew": "Saisissez votre nouveau code PIN à 6 chiffres.",
+    "changeTitleConfirm": "Saisir de nouveau le code PIN",
+    "changeSubConfirm": "Confirmez le nouveau code PIN à 6 chiffres.",
+    "pinMismatch": "Les codes PIN ne correspondent pas. Veuillez réessayer.",
+    "invalidPin": "Code PIN incorrect (6 chiffres)."
+  },
+  "emptyState": {
+    "noActivities": "Aucune activité récente",
+    "noActivitiesSub": "Vos vérifications de numéros et vos transferts apparaîtront ici.",
+    "noNumbers": "Aucun numéro enregistré",
+    "noNumbersSub": "Ajoutez vos numéros de téléphone pour activer la protection Kwismo.",
+    "noReports": "Aucun signalement effectué",
+    "noReportsSub": "Les numéros frauduleux que vous signalez apparaîtront ici.",
+    "noRecentCalls": "Aucun appel récent de numéro inconnu",
+    "noRecentCallsSub": "Vos appels entrants de numéros inconnus s'afficheront ici automatiquement.",
+    "noSearchResults": "Aucun résultat trouvé",
+    "noSearchResultsSub": "Vérifiez l'orthographe ou le numéro saisi."
   }
 }

@@ -24,32 +24,26 @@ import { validateEmail } from '../../src/shared/lib/validation';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
 
+import { useLocalSearchParams } from 'expo-router';
+import { useOtp } from '../../src/features/auth/hooks/useOtp';
+
 export default function OtpScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ email?: string }>();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
 
-  const [step, setStep] = useState<'email' | 'code'>('email');
-  const [email, setEmail] = useState('');
+  const initialEmailParam = (params.email || '').trim();
+  const [step, setStep] = useState<'email' | 'code'>(initialEmailParam ? 'code' : 'email');
+  const [email, setEmail] = useState(initialEmailParam);
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
-  const [timer, setTimer] = useState(30);
 
-  // Inline errors
+  const { verifyOtp: verifyOtpCall, resendOtp: resendOtpCall, loading, resendTimer, canResend } = useOtp(email);
   const [emailError, setEmailError] = useState('');
   const [otpError, setOtpError] = useState('');
 
   const inputRefs = useRef<Array<TextInput | null>>([]);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (step === 'code' && timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [step, timer]);
 
   const handleSendEmail = async () => {
     setEmailError('');
@@ -63,7 +57,6 @@ export default function OtpScreen() {
     }
 
     setStep('code');
-    setTimer(30);
     toast.info(t('toasts.otpSent'));
     return true;
   };
@@ -85,11 +78,10 @@ export default function OtpScreen() {
     }
   };
 
-  const handleResend = () => {
-    setTimer(30);
+  const handleResend = async () => {
     setOtpDigits(['', '', '', '', '', '']);
     inputRefs.current[0]?.focus();
-    toast.success(t('toasts.otpResent'));
+    await resendOtpCall(email);
   };
 
   const handleValidate = async () => {
@@ -100,10 +92,16 @@ export default function OtpScreen() {
       return false;
     }
 
-    toast.success(t('toasts.loginSuccess'));
-    router.replace('/(auth)/otp-success');
-    return true;
+    const res = await verifyOtpCall(enteredCode, email);
+    if (res.success) {
+      router.replace('/(app)');
+      return true;
+    } else {
+      setOtpError(res.message || t('errors.generalMessage'));
+      return false;
+    }
   };
+
 
   const headerGradientColors = isDark
     ? ['#2BB673', '#249460', '#1B2E3D', '#162035', '#0F1626', '#0F1626']
@@ -228,14 +226,14 @@ export default function OtpScreen() {
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={handleResend}
-                  disabled={timer > 0}
+                  disabled={!canResend}
                 >
                   <Text style={[styles.resendText, { color: themeColors.textPrimary }]}>
                     {t('auth.alreadySentQuestion')}{' '}
                     <Text
                       style={[
                         styles.resendLink,
-                        { color: timer > 0 ? themeColors.textSecondary : colors.green },
+                        { color: !canResend ? themeColors.textSecondary : colors.green },
                       ]}
                     >
                       {t('auth.resendCode')}
@@ -244,7 +242,7 @@ export default function OtpScreen() {
                 </TouchableOpacity>
 
                 <Text style={[styles.timerText, { color: themeColors.textPrimary }]}>
-                  {timer}s
+                  {resendTimer}s
                 </Text>
               </View>
 

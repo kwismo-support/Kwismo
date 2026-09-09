@@ -15,7 +15,7 @@ export function useDashboard() {
       if (res.success && res.data) {
         setSummary(res.data);
       } else {
-        setError(res.message || 'Erreur lors du chargement des données');
+        setError((res as any).message || 'Erreur lors du chargement des données');
       }
     } catch (err: any) {
       setError(err.message || 'Erreur réseau');

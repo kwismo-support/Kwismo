@@ -1,46 +1,61 @@
 // Service d'appel API backend pour le module Authentification
 import { ApiClient } from '../../../shared/services/apiClient';
-import { LoginPayload, RegisterPayload, VerifyOtpPayload, AuthResponse } from '../schemas/auth.schema';
+import {
+  LoginPayload,
+  RegisterPayload,
+  VerifyEmailPayload,
+  TokenOut,
+  DeviceVerificationRequiredOut,
+} from '../schemas/auth.schema';
 
 export const authApi = {
   async login(payload: LoginPayload) {
-    return ApiClient.request<AuthResponse>('/auth/login', {
+    return ApiClient.request<TokenOut | DeviceVerificationRequiredOut>('/auth/login', {
       method: 'POST',
       body: payload,
-      mockDataFallback: {
-        token: 'mock_jwt_token',
-        user: { id: 'usr-1', fullName: 'Utilisateur KWISMO', email: 'user@kwismo.cm', phone: '+237690000000', isVerified: true },
-      },
     });
   },
 
   async register(payload: RegisterPayload) {
-    return ApiClient.request<AuthResponse>('/auth/register', {
+    return ApiClient.request<{ message: string }>('/auth/register', {
       method: 'POST',
       body: payload,
-      mockDataFallback: {
-        token: 'mock_jwt_token',
-        user: { id: 'usr-1', fullName: payload.fullName, email: payload.email, phone: payload.phone, isVerified: false },
-      },
     });
   },
 
-  async verifyOtp(payload: VerifyOtpPayload) {
-    return ApiClient.request<AuthResponse>('/auth/verify-otp', {
+  async verifyEmail(payload: VerifyEmailPayload) {
+    return ApiClient.request<TokenOut>('/auth/email/verify', {
       method: 'POST',
       body: payload,
-      mockDataFallback: {
-        token: 'mock_jwt_token',
-        user: { id: 'usr-1', fullName: 'Utilisateur KWISMO', email: payload.phoneOrEmail, phone: payload.phoneOrEmail, isVerified: true },
-      },
     });
   },
 
-  async resendOtp(phoneOrEmail: string) {
-    return ApiClient.request<{ message: string }>('/auth/resend-otp', {
+  async resendEmailOtp(email: string) {
+    return ApiClient.request<{ message: string }>('/auth/email/resend', {
       method: 'POST',
-      body: { phoneOrEmail },
-      mockDataFallback: { message: 'Code OTP renvoyé avec succès.' },
+      body: { email },
+    });
+  },
+
+  async forgotPassword(email: string) {
+    return ApiClient.request<{ message: string }>('/auth/password/forgot', {
+      method: 'POST',
+      body: { email },
+    });
+  },
+
+  async resetPassword(token: string, new_password: string) {
+    return ApiClient.request<{ message: string }>('/auth/password/reset', {
+      method: 'POST',
+      body: { token, new_password },
+    });
+  },
+
+  async logout(refresh_token: string) {
+    return ApiClient.request<{ message: string }>('/auth/logout', {
+      method: 'POST',
+      body: { refresh_token },
     });
   },
 };
+

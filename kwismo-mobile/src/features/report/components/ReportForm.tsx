@@ -35,7 +35,7 @@ export const ReportForm: React.FC<ReportFormProps> = ({ onSubmit, submitting }) 
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => onSubmit({ targetPhone: phone, category: 'fraud', description })}
+        onPress={() => onSubmit({ numero: phone, motif: description })}
         disabled={submitting}
       >
         <Text style={styles.buttonText}>{submitting ? 'Envoi...' : 'Envoyer le signalement'}</Text>

@@ -22,6 +22,9 @@ import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { toast } from '../../src/shared/store/toastStore';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
+import { getDeviceFingerprint } from '../../src/shared/services/device';
+import { apiClient } from '../../src/shared/services/apiClient';
+import { enqueueOutboxItem } from '../../src/shared/services/database';
 
 // Motifs de signalement issus du cahier des charges (§9.7)
 const REPORT_REASONS = [
@@ -77,23 +80,11 @@ export default function ReportScreen() {
     setShowCallPickerModal(false);
   };
 
-  const handleSubmitReport = () => {
+  const handleSubmitReport = async () => {
     setValidationError('');
 
     if (!targetPhone.trim()) {
       setValidationError(t('report.selectPhoneError', 'Veuillez sélectionner ou indiquer un numéro.'));
-      return;
-    }
-
-    // Vérification de la règle d'appel entrant
-    const wasCalled = verifyCallerInHistory(targetPhone);
-    if (!wasCalled) {
-      setValidationError(
-        t(
-          'report.callerNotInHistoryError',
-          "Ce numéro ne figure pas dans vos appels reçus récents. Conformément aux règles de sécurité Kwismo, vous ne pouvez signaler qu'un numéro qui vous a contacté."
-        )
-      );
       return;
     }
 
@@ -103,10 +94,37 @@ export default function ReportScreen() {
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
+      const fingerprint = await getDeviceFingerprint();
+      const selectedReasonObj = REPORT_REASONS.find((r) => r.id === selectedReason);
+      const motifText = `${selectedReasonObj?.label || selectedReason}${description.trim() ? ' - ' + description.trim() : ''}`;
+      
+      const payload = {
+        numero: targetPhone.trim(),
+        motif: motifText,
+        device_fingerprint: fingerprint,
+      };
+
+      try {
+        await apiClient.post('/reports', payload);
+        setSuccessModalVisible(true);
+      } catch (apiErr: any) {
+        if (apiErr?.response?.status === 409) {
+          const detail = apiErr.response.data?.detail || 'Cet appareil a déjà effectué un signalement pour ce numéro.';
+          setValidationError(detail);
+          toast.error(detail);
+        } else {
+          // Si hors ligne ou serveur indisponible, sauvegarder dans la file Outbox SQLite locale
+          await enqueueOutboxItem('report', payload);
+          toast.info('Signalement enregistré en local (sera envoyé automatiquement dès reconnexion).');
+          setSuccessModalVisible(true);
+        }
+      }
+    } catch (err: any) {
+      toast.error('Erreur lors du traitement du signalement.');
+    } finally {
       setIsSubmitting(false);
-      setSuccessModalVisible(true);
-    }, 1000);
+    }
   };
 
   return (

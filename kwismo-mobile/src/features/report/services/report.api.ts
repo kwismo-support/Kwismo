@@ -1,22 +1,29 @@
-// Service API backend pour soumettre des signalements de fraude / numéros suspects
+// Service API backend pour soumettre des signalements de fraude avec FastAPI backend (/reports)
 import { ApiClient } from '../../../shared/services/apiClient';
 
 export interface ReportPayload {
-  targetPhone: string;
-  category: 'spam' | 'fraud' | 'impersonation' | 'whatsapp';
-  description: string;
-  evidenceUrl?: string;
+  numero: string;
+  motif: string;
+}
+
+export interface ReportResponse {
+  id: string;
+  user_id: string;
+  numero_id: string;
+  motif: string;
+  date_signalement: string;
+  statut: string;
 }
 
 export const reportApi = {
   async submitReport(payload: ReportPayload) {
-    return ApiClient.request<{ id: string; status: string }>('/reports', {
+    return ApiClient.request<ReportResponse>('/reports', {
       method: 'POST',
-      body: payload,
-      mockDataFallback: {
-        id: 'rep-' + Date.now(),
-        status: 'pending',
+      body: {
+        numero: payload.numero.trim(),
+        motif: payload.motif.trim(),
       },
     });
   },
 };
+

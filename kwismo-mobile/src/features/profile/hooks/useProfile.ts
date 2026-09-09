@@ -1,13 +1,16 @@
-// Hook React pour récupérer et mettre à jour le profil utilisateur
+// Hook React pour récupérer et mettre à jour le profil utilisateur via /users/me
 import { useState, useEffect, useCallback } from 'react';
-import { profileApi, UserProfile } from '../services/profile.api';
+import { useTranslation } from 'react-i18next';
+import { profileApi, UserMeResponse, UserUpdatePayload } from '../services/profile.api';
 import { useAuthStore } from '../../../shared/store/authStore';
+import { toast } from '../../../shared/store/toastStore';
 
 export function useProfile() {
-  const [profile, setProfileState] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<UserMeResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { login, token } = useAuthStore();
+  const { setUser } = useAuthStore();
+  const { t } = useTranslation();
 
   const fetchProfile = useCallback(async () => {
     setLoading(true);
@@ -15,53 +18,48 @@ export function useProfile() {
     try {
       const res = await profileApi.getProfile();
       if (res.success && res.data) {
-        setProfileState(res.data);
-        if (token) {
-          login(res.data, token);
-        }
+        setProfile(res.data);
+        setUser({
+          id: res.data.id,
+          email: res.data.email,
+          firstName: res.data.prenom,
+          lastName: res.data.nom,
+          role: res.data.role,
+          langue: res.data.langue,
+          kpi: res.data.kpi,
+        });
       } else {
-        setError(res.message || 'Erreur de chargement du profil');
+        setError(res.message || t('errors.generalMessage', 'Erreur de profil.'));
       }
     } catch (err: any) {
-      setError(err.message || 'Erreur réseau');
+      setError(err.message || t('toasts.networkError', 'Erreur réseau.'));
     } finally {
       setLoading(false);
     }
-  }, [login, token]);
+  }, [setUser, t]);
 
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
 
-  const updateProfile = async (updates: Partial<UserProfile>) => {
+  const updateProfile = async (payload: UserUpdatePayload) => {
     setLoading(true);
     try {
-      const res = await profileApi.updateProfile(updates);
+      const res = await profileApi.updateProfile(payload);
       if (res.success && res.data) {
-        setProfileState(res.data);
-        if (token) {
-          login(res.data, token);
-        }
+        setProfile(res.data);
+        setUser({
+          id: res.data.id,
+          email: res.data.email,
+          firstName: res.data.prenom,
+          lastName: res.data.nom,
+          role: res.data.role,
+          langue: res.data.langue,
+          kpi: res.data.kpi,
+        });
+        toast.success(t('toasts.generalSuccess', 'Modifications enregistrées.'));
       }
       return res;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updatePassword = async (currentPassword?: string, newPassword?: string) => {
-    setLoading(true);
-    try {
-      return await profileApi.updatePassword({ currentPassword, newPassword });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updatePin = async (currentPin?: string, newPin: string = '') => {
-    setLoading(true);
-    try {
-      return await profileApi.updatePin({ currentPin, newPin });
     } finally {
       setLoading(false);
     }
@@ -73,7 +71,6 @@ export function useProfile() {
     error,
     refresh: fetchProfile,
     updateProfile,
-    updatePassword,
-    updatePin,
   };
 }
+

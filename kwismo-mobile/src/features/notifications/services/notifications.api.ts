@@ -1,51 +1,36 @@
-// Service API backend pour la gestion des notifications utilisateur
+// Service API backend pour les notifications via FastAPI (/notifications)
 import { ApiClient } from '../../../shared/services/apiClient';
 
-export interface AppNotification {
+export interface NotificationItem {
   id: string;
-  title: string;
-  message: string;
-  timestamp: string;
-  isRead: boolean;
-  type: 'security' | 'transaction' | 'system';
+  titre_fr: string;
+  titre_en: string;
+  message_fr: string;
+  message_en: string;
+  date_envoi: string;
+  est_lue: boolean;
+  type_evenement: string;
+}
+
+export interface NotificationsPageResponse {
+  items: NotificationItem[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
 }
 
 export const notificationsApi = {
-  async getNotifications() {
-    return ApiClient.request<AppNotification[]>('/notifications', {
+  async getNotifications(page: number = 1, page_size: number = 20) {
+    return ApiClient.request<NotificationsPageResponse>(`/notifications?page=${page}&page_size=${page_size}`, {
       method: 'GET',
-      mockDataFallback: [
-        {
-          id: 'n1',
-          title: 'Alerte de sécurité',
-          message: 'Une nouvelle tentative de connexion a été détectée.',
-          timestamp: 'Il y a 2h',
-          isRead: false,
-          type: 'security',
-        },
-        {
-          id: 'n2',
-          title: 'Transfert réussi',
-          message: 'Votre transfert de 15 000 FCFA a été effectué.',
-          timestamp: 'Hier',
-          isRead: true,
-          type: 'transaction',
-        },
-      ],
     });
   },
 
   async markAsRead(id: string) {
-    return ApiClient.request<AppNotification>(`/notifications/${id}/read`, {
-      method: 'PUT',
-      mockDataFallback: {
-        id,
-        title: '',
-        message: '',
-        timestamp: '',
-        isRead: true,
-        type: 'system',
-      },
+    return ApiClient.request<NotificationItem>(`/notifications/${id}/read`, {
+      method: 'PATCH',
     });
   },
 };
+

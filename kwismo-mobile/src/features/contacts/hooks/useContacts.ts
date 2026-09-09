@@ -1,11 +1,14 @@
-// Hook personnalisé pour charger et modifier la liste des contacts
+// Hook React pour récupérer et synchroniser les contacts avec le backend Kwismo
 import { useState, useEffect, useCallback } from 'react';
-import { contactsApi, Contact } from '../services/contacts.api';
+import { useTranslation } from 'react-i18next';
+import { contactsApi, ContactItem } from '../services/contacts.api';
+import { toast } from '../../../shared/store/toastStore';
 
 export function useContacts() {
-  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [contacts, setContacts] = useState<ContactItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const fetchContacts = useCallback(async () => {
     setLoading(true);
@@ -13,40 +16,28 @@ export function useContacts() {
     try {
       const res = await contactsApi.getContacts();
       if (res.success && res.data) {
-        setContacts(res.data);
+        setContacts(res.data.items || []);
       } else {
-        setError(res.message || 'Erreur lors du chargement des contacts');
+        setError(res.message || t('errors.generalMessage', 'Erreur de chargement des contacts.'));
       }
     } catch (err: any) {
-      setError(err.message || 'Erreur réseau');
+      setError(err.message || t('toasts.networkError', 'Erreur réseau.'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchContacts();
   }, [fetchContacts]);
 
-  const addContact = async (name: string, phone: string) => {
+  const syncDeviceContacts = async (rawContacts: Array<{ nom?: string; prenom?: string; numero: string }>) => {
     setLoading(true);
     try {
-      const res = await contactsApi.addContact({ name, phone });
-      if (res.success && res.data) {
-        setContacts((prev) => [res.data!, ...prev]);
-      }
-      return res;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const removeContact = async (id: string) => {
-    setLoading(true);
-    try {
-      const res = await contactsApi.deleteContact(id);
+      const res = await contactsApi.syncContacts(rawContacts);
       if (res.success) {
-        setContacts((prev) => prev.filter((c) => c.id !== id));
+        toast.success(t('toasts.generalSuccess', 'Contacts synchronisés.'));
+        await fetchContacts();
       }
       return res;
     } finally {
@@ -54,5 +45,11 @@ export function useContacts() {
     }
   };
 
-  return { contacts, loading, error, refresh: fetchContacts, addContact, removeContact };
+  return {
+    contacts,
+    loading,
+    error,
+    refresh: fetchContacts,
+    syncDeviceContacts,
+  };
 }

@@ -7,13 +7,16 @@ import { HeaderBar } from '../../src/shared/components/HeaderBar';
 import { PinPad } from '../../src/shared/components/PinPad';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { toast } from '../../src/shared/store/toastStore';
-import { setBiometricPreference } from '../../src/shared/lib/secureStore';
+import { saveUserPin, setBiometricPreference } from '../../src/shared/lib/secureStore';
 
 export default function PinSetupScreen() {
   const router = useRouter();
   const { colors: themeColors } = useAppTheme();
 
   const handleSuccess = async (pin?: string) => {
+    if (pin) {
+      await saveUserPin(pin);
+    }
     await setBiometricPreference(true);
     toast.success('Code PIN configuré et sécurité biométrique activée avec succès !');
     router.back();

@@ -9,7 +9,8 @@ import {
   Switch,
   Modal,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
@@ -38,15 +39,17 @@ export default function TwoFactorScreen() {
 
   const [pinVerifyModalVisible, setPinVerifyModalVisible] = useState(false);
 
-  useEffect(() => {
-    async function loadSecurityState() {
-      const pinState = await hasConfiguredPin();
-      const bioState = await getBiometricPreference();
-      setPinConfigured(pinState);
-      setBiometricsEnabled(bioState && pinState);
-    }
-    loadSecurityState();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      async function loadSecurityState() {
+        const pinState = await hasConfiguredPin();
+        const bioState = await getBiometricPreference();
+        setPinConfigured(pinState);
+        setBiometricsEnabled(bioState && pinState);
+      }
+      loadSecurityState();
+    }, [])
+  );
 
   const handleToggleBiometrics = async (value: boolean) => {
     const hasPin = await hasConfiguredPin();
@@ -135,33 +138,6 @@ export default function TwoFactorScreen() {
             </View>
             <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={20} />
           </TouchableOpacity>
-        </View>
-
-        {/* Option 3 : 2FA par SMS */}
-        <Text style={[styles.sectionTitle, { color: themeColors.textPrimary, marginTop: 24 }]}>
-          {t('security.otpSectionTitle', 'Vérification SMS')}
-        </Text>
-        <View style={[styles.card, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder, marginTop: 12 }]}>
-          <View style={styles.row}>
-            <Icon name="solar:smartphone-rotate-2-bold" color={colors.green} size={24} style={{ marginRight: 12 }} />
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              <Text style={[styles.rowTitle, { color: themeColors.textPrimary }]}>
-                {t('security.smsTitle', 'SMS de confirmation')}
-              </Text>
-              <Text style={[styles.rowSub, { color: themeColors.textSecondary }]}>
-                {t('security.smsSub', 'Recevez un code SMS lors de chaque connexion sur un nouvel appareil.')}
-              </Text>
-            </View>
-            <Switch
-              value={twoFactorSmsEnabled}
-              onValueChange={(val) => {
-                setTwoFactorSmsEnabled(val);
-                toast.info(val ? t('security.smsEnabled', '2FA SMS activée') : t('security.smsDisabled', '2FA SMS désactivée'));
-              }}
-              trackColor={{ false: '#CBD5E1', true: colors.green }}
-              thumbColor={colors.white}
-            />
-          </View>
         </View>
       </ScrollView>
 

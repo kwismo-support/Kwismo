@@ -79,6 +79,8 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
   }
 }
 
+import { useAuthStore } from '../src/shared/store/authStore';
+
 // Keep native splash screen visible while loading resources
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* ignore */
@@ -86,13 +88,15 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 
 export default function RootLayout() {
   const [fontsLoaded] = useState(true);
+  const initializeAuth = useAuthStore((state) => state.initializeAuth);
 
   useEffect(() => {
-    SplashScreen.hideAsync().catch(() => {
-      /* ignore */
+    initializeAuth().finally(() => {
+      SplashScreen.hideAsync().catch(() => {
+        /* ignore */
+      });
     });
-  }, []);
-
+  }, [initializeAuth]);
 
   return (
     <SafeAreaProvider>
@@ -113,4 +117,5 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
+
 

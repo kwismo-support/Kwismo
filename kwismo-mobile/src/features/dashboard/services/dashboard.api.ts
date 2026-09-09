@@ -2,43 +2,51 @@
 import { ApiClient } from '../../../shared/services/apiClient';
 
 export interface DashboardSummary {
-  activeNumbersCount: number;
-  compromisedNumbersCount: number;
-  totalTransactionsMonth: number;
+  numeros_verifies: number;
+  signalements_effectues: number;
+  transferts_proteges: number;
   recentActivities: Array<{
     id: string;
-    title: string;
-    description: string;
-    timestamp: string;
-    type: 'transaction' | 'alert' | 'security';
+    phone: string;
+    type: string;
+    status: string;
+    badgeType: 'green' | 'red' | 'yellow' | 'blue';
+    date: string;
   }>;
 }
 
 export const dashboardApi = {
   async getSummary() {
-    return ApiClient.request<DashboardSummary>('/dashboard/summary', {
+    const meRes = await ApiClient.request<{ kpi: { numeros_verifies: number; signalements_effectues: number; transferts_proteges: number } }>('/users/me', {
       method: 'GET',
-      mockDataFallback: {
-        activeNumbersCount: 3,
-        compromisedNumbersCount: 1,
-        totalTransactionsMonth: 145000,
-        recentActivities: [
-          {
-            id: '1',
-            title: 'Signalement WhatsApp',
-            description: 'Numéro +237699001122 marqué comme compromis',
-            timestamp: 'Il y a 10 min',
-            type: 'alert',
-          },
-          {
-            id: '2',
-            title: 'Transfert effectué',
-            description: '25,000 FCFA vers +237677889900',
-            timestamp: 'Hier, 14:30',
-            type: 'transaction',
-          },
-        ],
-      },
     });
+
+    const txRes = await ApiClient.request<{ items: Array<{ id: string; numero_id: string; montant: number; date_transaction: string; statut: string }> }>('/transactions', {
+      method: 'GET',
+      silent: true,
+    });
+
+    const kpi = meRes.data?.kpi || { numeros_verifies: 0, signalements_effectues: 0, transferts_proteges: 0 };
+    const transactions = txRes.data?.items || [];
+
+    const recentActivities = transactions.slice(0, 6).map((tx, idx) => ({
+      id: tx.id || `tx-${idx}`,
+      phone: tx.numero_id || '+237 6 00 00 00 00',
+      type: 'Transfert d\'argent',
+      status: tx.statut === 'confirmed' ? 'Protégé' : 'En cours',
+      badgeType: (tx.statut === 'confirmed' ? 'green' : 'yellow') as 'green' | 'yellow',
+      date: new Date(tx.date_transaction || Date.now()).toLocaleDateString('fr-FR'),
+    }));
+
+    return {
+      success: meRes.success,
+      data: {
+        numeros_verifies: kpi.numeros_verifies,
+        signalements_effectues: kpi.signalements_effectues,
+        transferts_proteges: kpi.transferts_proteges,
+        recentActivities,
+      },
+    };
   },
 };
+

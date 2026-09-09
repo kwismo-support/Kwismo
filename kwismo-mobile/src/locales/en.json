@@ -103,7 +103,6 @@
     "protected": "Protected",
     "inProgress": "In Progress",
     "submitted": "Submitted",
-    "cancel": "Cancel",
     "confirm": "Confirm",
     "edit": "Edit",
     "delete": "Delete",
@@ -112,9 +111,6 @@
     "newTransfer": "Make another transfer",
     "myNumbers": "My registered numbers",
     "addNumber": "Add a number",
-    "statusVerified": "Verified",
-    "statusPending": "Pending",
-    "statusCompromised": "Compromised",
     "confirmDeleteTitle": "Delete this number?",
     "confirmDeleteMessage": "Are you sure you want to remove this number from your Kwismo account?",
     "enterOtp": "Enter the 6-digit OTP code",
@@ -122,7 +118,6 @@
     "resendNow": "Resend code now",
     "addPhoneTitle": "Add a number",
     "editPhoneTitle": "Edit number",
-    "saveChanges": "Save changes",
     "sendOtp": "Send SMS code",
     "kpiVerifiedSub": "+1 this month",
     "kpiThreatsSub": "+3 this week",
@@ -319,18 +314,38 @@
     "ussdCopied": "USSD code copied to clipboard",
     "copiedToClipboard": "Copied to clipboard!"
   },
-  "auth": {
-    "logout": "Log out"
-  },
   "errors": {
     "forbiddenTitle": "Unauthorized access",
     "forbiddenMessage": "You do not have permission to access this section.",
     "generalTitle": "An error occurred",
     "generalMessage": "Unable to load resource. Please try again."
   },
-  "management": {
-    "title": "My SIM Numbers",
-    "subtitle": "Manage and secure your SIM cards and associated phone numbers",
-    "addBtn": "Add"
+  "pinPad": {
+    "setupTitlePhase1": "Enter new PIN code",
+    "setupSubPhase1": "Set a 6-digit PIN code to secure your application.",
+    "setupTitlePhase2": "Re-enter PIN code",
+    "setupSubPhase2": "Confirm your 6-digit PIN code.",
+    "verifyTitle": "Unlock with PIN code",
+    "verifySub": "Enter your 6-digit PIN code to proceed.",
+    "changeTitleCurrent": "Enter current PIN code",
+    "changeSubCurrent": "Enter your current PIN code to verify your identity.",
+    "changeTitleNew": "Enter new PIN code",
+    "changeSubNew": "Enter your new 6-digit PIN code.",
+    "changeTitleConfirm": "Re-enter PIN code",
+    "changeSubConfirm": "Confirm your new 6-digit PIN code.",
+    "pinMismatch": "PIN codes do not match. Please try again.",
+    "invalidPin": "Incorrect PIN code (6 digits)."
+  },
+  "emptyState": {
+    "noActivities": "No recent activity",
+    "noActivitiesSub": "Your number verifications and transfers will appear here.",
+    "noNumbers": "No registered numbers",
+    "noNumbersSub": "Add your phone numbers to activate Kwismo protection.",
+    "noReports": "No reports made",
+    "noReportsSub": "Fraudulent numbers you report will appear here.",
+    "noRecentCalls": "No recent calls from unknown numbers",
+    "noRecentCallsSub": "Your recent incoming calls from unknown numbers will appear here automatically.",
+    "noSearchResults": "No results found",
+    "noSearchResultsSub": "Check the spelling or phone number entered."
   }
 }

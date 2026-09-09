@@ -2,27 +2,29 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { StatusBadge } from './StatusBadge';
-import { Contact } from '../services/contacts.api';
+import { ContactItem as ContactData } from '../services/contacts.api';
 
 interface ContactItemProps {
-  contact: Contact;
+  contact: ContactData;
   onPress?: () => void;
 }
 
 export const ContactItem: React.FC<ContactItemProps> = ({ contact, onPress }) => {
+  const displayName = `${contact.prenom || ''} ${contact.nom}`.trim() || contact.numero_valeur;
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.avatar}>
-        <Text style={styles.avatarText}>{contact.name.charAt(0).toUpperCase()}</Text>
+        <Text style={styles.avatarText}>{displayName.charAt(0).toUpperCase()}</Text>
       </View>
       <View style={styles.info}>
-        <Text style={styles.name}>{contact.name}</Text>
-        <Text style={styles.phone}>{contact.phone}</Text>
+        <Text style={styles.name}>{displayName}</Text>
+        <Text style={styles.phone}>{contact.numero_valeur}</Text>
       </View>
-      <StatusBadge status={contact.status} />
+      <StatusBadge status={contact.insigne_reputation as any || 'unknown'} />
     </TouchableOpacity>
   );
 };
+
 
 const styles = StyleSheet.create({
   card: {

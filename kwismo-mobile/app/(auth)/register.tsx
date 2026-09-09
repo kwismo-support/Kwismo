@@ -24,11 +24,14 @@ import { validateEmail, validatePassword } from '../../src/shared/lib/validation
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
 
+import { useRegister } from '../../src/features/auth/hooks/useRegister';
+
 export default function RegisterScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
+  const { handleRegister: registerApiCall, loading: apiLoading } = useRegister();
 
   const [lastName, setLastName] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -116,10 +119,20 @@ export default function RegisterScreen() {
   const handleRegister = async () => {
     if (!validateForm()) return false;
 
-    toast.success(t('toasts.registerSuccess'));
-    router.replace('/(auth)/otp');
-    return true;
+    const res = await registerApiCall({
+      nom: lastName.trim(),
+      prenom: firstName.trim(),
+      email: email.trim(),
+      mot_de_passe: password,
+    });
+
+    if (res.success) {
+      router.push({ pathname: '/(auth)/otp', params: { email: email.trim() } });
+      return true;
+    }
+    return false;
   };
+
 
   const headerGradientColors = isDark
     ? ['#2BB673', '#249460', '#1B2E3D', '#162035', '#0F1626', '#0F1626']

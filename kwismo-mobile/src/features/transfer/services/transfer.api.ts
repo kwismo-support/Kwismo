@@ -1,39 +1,62 @@
-// Service API backend pour la préparation et la validation des transferts d'argent
+// Service API backend pour la préparation des transferts protégés via FastAPI (/transactions et /ussd)
 import { ApiClient } from '../../../shared/services/apiClient';
 
-export interface PrepareTransferPayload {
-  senderNumber: string;
-  recipientNumber: string;
-  amount: number;
-  provider: 'MTN' | 'ORANGE';
+export interface PrepareTransactionPayload {
+  numero: string;
+  montant: number;
+  operator_id: string;
+  ussd_action_id: string;
 }
 
-export interface PrepareTransferResponse {
-  transactionId: string;
-  ussdCode: string;
-  fee: number;
-  status: 'prepared' | 'pending' | 'success';
+export interface TransactionOut {
+  id: string;
+  numero_id: string;
+  montant: number;
+  date_transaction: string;
+  statut: string;
+  niveau_risque?: string;
+  code_ussd_genere?: string;
+}
+
+export interface UssdOperator {
+  id: string;
+  nom: string;
+  code: string;
+  country_id: string;
+}
+
+export interface UssdAction {
+  id: string;
+  nom: string;
+  pattern_code: string;
+  operator_id: string;
 }
 
 export const transferApi = {
-  async prepareTransfer(payload: PrepareTransferPayload) {
-    return ApiClient.request<PrepareTransferResponse>('/transactions/prepare', {
-      method: 'POST',
-      body: payload,
-      mockDataFallback: {
-        transactionId: 'tx-' + Date.now(),
-        ussdCode: payload.provider === 'MTN' ? `*126*1*${payload.recipientNumber}*${payload.amount}#` : `*150*1*${payload.recipientNumber}*${payload.amount}#`,
-        fee: payload.amount * 0.01,
-        status: 'prepared',
-      },
+  async getOperators() {
+    return ApiClient.request<UssdOperator[]>('/ussd/operators', {
+      method: 'GET',
     });
   },
 
-  async confirmTransfer(transactionId: string) {
-    return ApiClient.request<{ status: string }>('/transactions/confirm', {
+  async getActions(operator_id?: string) {
+    const endpoint = operator_id ? `/ussd/actions?operator_id=${operator_id}` : '/ussd/actions';
+    return ApiClient.request<UssdAction[]>(endpoint, {
+      method: 'GET',
+    });
+  },
+
+  async prepareTransfer(payload: PrepareTransactionPayload) {
+    return ApiClient.request<TransactionOut>('/transactions/prepare', {
       method: 'POST',
-      body: { transactionId },
-      mockDataFallback: { status: 'success' },
+      body: payload,
+    });
+  },
+
+  async getTransactions() {
+    return ApiClient.request<{ items: TransactionOut[] }>('/transactions', {
+      method: 'GET',
     });
   },
 };
+

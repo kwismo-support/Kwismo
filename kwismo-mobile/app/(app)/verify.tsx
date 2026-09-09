@@ -19,6 +19,7 @@ import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
 import { verifyApi, VerifyResult } from '../../src/features/verify/services/verify.api';
+import { lookupNumberOffline } from '../../src/shared/services/database';
 
 export default function VerifyScreen() {
   const router = useRouter();
@@ -32,9 +33,15 @@ export default function VerifyScreen() {
   const [result, setResult] = useState<VerifyResult | null>(
     params.phone
       ? {
+          id: 'num-init',
+          valeur: params.phone,
           phone: params.phone,
-          riskLevel: 'HIGH',
+          score_risque: 90,
           riskScore: 90,
+          statut: 'active',
+          riskLevel: 'HIGH',
+          est_compromis: true,
+          nombre_signalements: 90,
           reportCount: 90,
           operator: 'MTN Cameroon',
           recommendation: 'Dernier signalement il y’a 8 mois',
@@ -49,21 +56,33 @@ export default function VerifyScreen() {
       const res = await verifyApi.checkNumber(inputPhone);
       if (res.success && res.data) {
         setResult(res.data);
-      } else {
-        // Mock fallback pour démo visuelle selon la maquette
-        setResult({
-          phone: inputPhone,
-          riskLevel: inputPhone.includes('99') ? 'HIGH' : inputPhone.includes('55') ? 'MEDIUM' : 'LOW',
-          riskScore: inputPhone.includes('99') ? 90 : inputPhone.includes('55') ? 50 : 10,
-          reportCount: inputPhone.includes('99') ? 90 : inputPhone.includes('55') ? 50 : 0,
-          operator: 'MTN Cameroon',
-          recommendation: 'Dernier signalement il y’a 8 mois',
-        });
       }
+    } catch (err) {
+      try {
+        const offlineResult = await lookupNumberOffline(inputPhone.trim());
+        if (offlineResult) {
+          const score = Math.round(offlineResult.score_risque * 100);
+          setResult({
+            id: `num-offline-${Date.now()}`,
+            valeur: offlineResult.valeur,
+            phone: offlineResult.valeur,
+            score_risque: score,
+            riskScore: score,
+            statut: offlineResult.statut,
+            riskLevel: offlineResult.statut === 'frauduleux' ? 'HIGH' : offlineResult.statut === 'suspect' ? 'MEDIUM' : 'LOW',
+            est_compromis: offlineResult.statut === 'frauduleux',
+            nombre_signalements: 1,
+            reportCount: 1,
+            operator: 'Réseau Mobile',
+            recommendation: 'Résultat issu de la base locale SQLite (Mode hors-ligne)',
+          });
+        }
+      } catch {}
     } finally {
       setLoading(false);
     }
   };
+
 
   const isFraudulent = result?.riskLevel === 'HIGH' || result?.riskLevel === 'CRITICAL' || (result?.riskScore || 0) >= 70;
   const isSuspect = result?.riskLevel === 'MEDIUM' || ((result?.riskScore || 0) >= 40 && (result?.riskScore || 0) < 70);

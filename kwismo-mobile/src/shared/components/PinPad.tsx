@@ -101,12 +101,18 @@ export const PinPad: React.FC<PinPadProps> = ({
   );
 
   const currentTitle =
-    title ||
     (mode === 'setup'
       ? step === 'confirm'
-        ? t('security.confirmPin', 'Confirmez votre code PIN à 6 chiffres')
-        : t('security.definePin', 'Définissez un code PIN à 6 chiffres')
-      : t('security.enterPin', 'Entrez votre code PIN'));
+        ? t('pinPad.setupTitlePhase2')
+        : t('pinPad.setupTitlePhase1')
+      : t('pinPad.verifyTitle'));
+
+  const currentSubtitle =
+    (mode === 'setup'
+      ? step === 'confirm'
+        ? t('pinPad.setupSubPhase2')
+        : t('pinPad.setupSubPhase1')
+      : t('pinPad.verifySub'));
 
   return (
     <View style={[styles.root, { backgroundColor: themeColors.background }]}>
@@ -116,9 +122,7 @@ export const PinPad: React.FC<PinPadProps> = ({
           <Icon name="solar:lock-password-bold" size={32} color={colors.green} />
         </View>
         <Text style={[styles.title, { color: themeColors.textPrimary }]}>{currentTitle}</Text>
-        {subtitle ? (
-          <Text style={[styles.subtitle, { color: themeColors.textSecondary }]}>{subtitle}</Text>
-        ) : null}
+        <Text style={[styles.subtitle, { color: themeColors.textSecondary }]}>{currentSubtitle}</Text>
       </View>
 
       {/* Indicateur de saisie à 6 points */}

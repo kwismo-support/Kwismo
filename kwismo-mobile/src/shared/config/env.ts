@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
 const getApiBaseUrl = (): string => {
-  const configuredUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:7001/api/v1';
+  const configuredUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:7001';
 
   if (Platform.OS === 'web') {
     return configuredUrl;
@@ -14,7 +14,7 @@ const getApiBaseUrl = (): string => {
   if (hostUri) {
     const hostIp = hostUri.split(':')[0];
     if (hostIp) {
-      return `http://${hostIp}:7001/api/v1`;
+      return `http://${hostIp}:7001`;
     }
   }
 

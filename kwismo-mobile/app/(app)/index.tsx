@@ -33,16 +33,11 @@ export default function HomeScreen() {
     ? `${user.firstName} ${user.lastName || ''}`.trim()
     : user?.email
     ? user.email.split('@')[0]
-    : 'LOREM Ipsum';
+    : 'Utilisateur KWISMO';
 
-  const activities = [
-    { id: '1', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Faible', badgeType: 'blue', date: 'hier, 21:47' },
-    { id: '2', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Détectée', badgeType: 'red', date: 'hier, 21:47' },
-    { id: '3', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Protégé', badgeType: 'green', date: 'hier, 21:47' },
-    { id: '4', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'En cour', badgeType: 'yellow', date: 'hier, 21:47' },
-    { id: '5', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Protégé', badgeType: 'green', date: 'hier, 21:47' },
-    { id: '6', phone: '+237 6 98 44 43 88', type: 'Verification de numero', status: 'Protégé', badgeType: 'green', date: 'hier, 21:47' },
-  ];
+  const activities = summary?.recentActivities && summary.recentActivities.length > 0
+    ? summary.recentActivities
+    : [];
 
   const getBadgeStyle = (badgeType: string) => {
     switch (badgeType) {
@@ -66,15 +61,16 @@ export default function HomeScreen() {
       <HeaderBar isHome={true} />
 
       <ScrollView
+        style={{ marginTop: -55, zIndex: 10 }}
         contentContainerStyle={[
           styles.scrollBody,
           { paddingBottom: insets.bottom + 100 },
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* CARTE HERO UNIFIÉE PROFIL + KPIS (Maquette Image 3) */}
+        {/* CARTE HERO UNIFIÉE PROFIL + KPIS (Floating over Header & Body) */}
         <View style={styles.heroCard}>
-          {/* Ligne utilisateur : Avatar + "Bienvenu" avec check vert + Nom */}
+          {/* Ligne utilisateur : Avatar + "Bienvenue" avec check vert + Nom */}
           <View style={styles.userRow}>
             <View style={styles.avatarContainer}>
               {user?.avatarUrl ? (
@@ -89,7 +85,7 @@ export default function HomeScreen() {
             </View>
             <View style={styles.userInfo}>
               <View style={styles.welcomeRow}>
-                <Text style={styles.welcomeText}>Bienvenu</Text>
+                <Text style={styles.welcomeText}>Bienvenue</Text>
                 <Icon name="solar:verified-check-bold" color={colors.green} size={16} style={{ marginLeft: 4 }} />
               </View>
               <Text style={styles.userNameText}>{userName}</Text>
@@ -99,19 +95,15 @@ export default function HomeScreen() {
           {/* Ligne des 4 KPIs Horizontaux */}
           <View style={styles.kpiRow}>
             <View style={styles.kpiItem}>
-              <Text style={styles.kpiValue}>{summary?.activeNumbersCount ?? 127}</Text>
+              <Text style={styles.kpiValue}>{user?.kpi?.numeros_verifies ?? summary?.numeros_verifies ?? 0}</Text>
               <Text style={styles.kpiLabel}>Numéro{'\n'}vérifié</Text>
             </View>
             <View style={styles.kpiItem}>
-              <Text style={styles.kpiValue}>{summary?.compromisedNumbersCount ?? 25}</Text>
-              <Text style={styles.kpiLabel}>Menace{'\n'}évitée</Text>
-            </View>
-            <View style={styles.kpiItem}>
-              <Text style={styles.kpiValue}>10</Text>
+              <Text style={styles.kpiValue}>{user?.kpi?.signalements_effectues ?? summary?.signalements_effectues ?? 0}</Text>
               <Text style={styles.kpiLabel}>Signalement{'\n'}effectué</Text>
             </View>
             <View style={styles.kpiItem}>
-              <Text style={styles.kpiValue}>50</Text>
+              <Text style={styles.kpiValue}>{user?.kpi?.transferts_proteges ?? summary?.transferts_proteges ?? 0}</Text>
               <Text style={styles.kpiLabel}>Transfert{'\n'}d'argent</Text>
             </View>
           </View>
@@ -126,7 +118,7 @@ export default function HomeScreen() {
             style={styles.actionBtnWrapper}
           >
             <View style={[styles.actionCircle, { backgroundColor: '#E8F0FE' }]}>
-              <Icon name="solar:qr-code-scan-bold" color="#1A73E8" size={26} />
+              <Icon name="solar:shield-check-bold" color="#1A73E8" size={26} />
             </View>
             <Text style={[styles.actionText, { color: '#1A73E8' }]}>Vérifier{'\n'}numéro</Text>
           </TouchableOpacity>
@@ -234,11 +226,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
     padding: 20,
+    marginTop: 0,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.1,
     shadowRadius: 10,
-    elevation: 4,
+    elevation: 5,
     marginBottom: 20,
   },
   userRow: {
