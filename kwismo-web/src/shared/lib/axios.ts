@@ -1,28 +1,36 @@
 import axios from 'axios';
 import { env } from '@/config/env';
 
-
 export const apiClient = axios.create({
   baseURL: env.apiUrl,
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 });
 
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('kwismo_auth_token');
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    const status  = error.response?.status;
+    const status = error.response?.status;
     const message = error.response?.data?.detail ?? error.message ?? 'Une erreur est survenue';
 
     if (status === 401) {
-      window.location.href = '/auth/login';
+      localStorage.removeItem('kwismo_auth_token');
+      if (window.location.pathname.startsWith('/app')) {
+        window.location.href = '/auth/login';
+      }
     }
 
     return Promise.reject(new Error(message));
   },
 );
-
 
 export const api = {
   get: <T>(url: string, params?: Record<string, unknown>) =>

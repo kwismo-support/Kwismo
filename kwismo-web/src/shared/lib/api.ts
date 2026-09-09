@@ -11,52 +11,52 @@ const delay = (ms = 150) => new Promise((resolve) => setTimeout(resolve, ms));
 export const api = {
   getUsers: async () => {
     if (env.useMock) { await delay(); return MOCK_USERS; }
-    return apiClient.get('/api/v1/users').then((r) => r.data);
+    return apiClient.get('/users').then((r) => r.data?.items || r.data);
   },
 
   getPartners: async () => {
     if (env.useMock) { await delay(); return MOCK_PARTNERS; }
-    return apiClient.get('/api/v1/partners').then((r) => r.data);
+    return apiClient.get('/partners').then((r) => r.data?.items || r.data);
   },
 
   getNumbers: async () => {
     if (env.useMock) { await delay(); return MOCK_NUMBERS; }
-    return apiClient.get('/api/v1/numbers').then((r) => r.data);
+    return apiClient.get('/numbers').then((r) => r.data?.items || r.data);
   },
 
   getCountries: async () => {
     if (env.useMock) { await delay(); return MOCK_COUNTRIES; }
-    return apiClient.get('/api/v1/ussd/countries').then((r) => r.data);
+    return apiClient.get('/ussd/countries').then((r) => r.data);
   },
 
   getOperators: async () => {
     if (env.useMock) { await delay(); return MOCK_OPERATORS; }
-    return apiClient.get('/api/v1/ussd/operators').then((r) => r.data);
+    return apiClient.get('/ussd/operators').then((r) => r.data);
   },
 
   getUssdActions: async () => {
     if (env.useMock) { await delay(); return MOCK_USSD_ACTIONS; }
-    return apiClient.get('/api/v1/ussd/actions').then((r) => r.data);
+    return apiClient.get('/ussd/actions').then((r) => r.data);
   },
 
   getRoles: async () => {
     if (env.useMock) { await delay(); return MOCK_ROLES; }
-    return apiClient.get('/api/v1/access-control/roles').then((r) => r.data);
+    return apiClient.get('/access-control/roles').then((r) => r.data);
   },
 
   getPermissions: async () => {
     if (env.useMock) { await delay(); return MOCK_PERMISSIONS; }
-    return apiClient.get('/api/v1/access-control/permissions').then((r) => r.data);
+    return apiClient.get('/access-control/permissions').then((r) => r.data);
   },
 
   getKpiSummary: async () => {
     if (env.useMock) { await delay(); return MOCK_KPIS; }
-    return apiClient.get('/api/v1/kpi/summary').then((r) => r.data);
+    return apiClient.get('/kpi/summary').then((r) => r.data);
   },
 
   getReports: async () => {
     if (env.useMock) { await delay(); return MOCK_REPORTS; }
-    return apiClient.get('/api/v1/reports').then((r) => r.data);
+    return apiClient.get('/reports').then((r) => r.data?.items || r.data);
   },
 
   verifyNumber: async (valeur: string) => {
@@ -75,7 +75,7 @@ export const api = {
         dateDerniereVerification: new Date().toISOString(),
       };
     }
-    return apiClient.post('/api/v1/numbers/verify', { valeur }).then((r) => r.data);
+    return apiClient.post('/numbers/verify', { valeur }).then((r) => r.data);
   },
 
   get: <T>(url: string, params?: Record<string, unknown>) =>

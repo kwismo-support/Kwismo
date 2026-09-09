@@ -29,9 +29,8 @@ export const authApi = {
 
       try {
         localStorage.setItem('kwismo_user', JSON.stringify(userObj));
-        localStorage.setItem('kwismo_token', 'mock-jwt-token-kwismo-2026');
-      } catch {
-      }
+        localStorage.setItem('kwismo_auth_token', 'mock-jwt-token-kwismo-2026');
+      } catch {}
 
       toast.success('auth:loginSuccess');
       return {
@@ -39,18 +38,33 @@ export const authApi = {
         user: userObj,
       };
     }
-    return apiClient.post('/auth/login', {
-      email: data.email,
-      mot_de_passe: data.password,
-      device_id: 'web-browser-device',
-      device_name: 'Kwismo Web App',
-    }).then((r) => {
+
+    try {
+      const response = await apiClient.post('/auth/login', {
+        email: data.email,
+        mot_de_passe: data.password,
+        device_id: 'web-browser-device',
+        device_name: 'Kwismo Web App',
+      });
+
+      const resData = response.data;
+      const token = resData.access_token || resData.token;
+      const user = resData.user || { email: data.email, role: 'admin' };
+
+      if (token) {
+        localStorage.setItem('kwismo_auth_token', token);
+      }
+      if (user) {
+        localStorage.setItem('kwismo_user', JSON.stringify(user));
+      }
+
       toast.success('auth:loginSuccess');
-      return r.data;
-    }).catch((err) => {
-      toast.error(err.response?.data?.message ?? 'auth:errors.invalidCredentials');
+      return { token, user };
+    } catch (err: any) {
+      const msg = err.response?.data?.detail ?? err.response?.data?.message ?? 'Email ou mot de passe incorrect.';
+      toast.error(msg);
       throw err;
-    });
+    }
   },
 
   registerPartner: async (data: PartnerRegisterInput) => {
@@ -59,11 +73,9 @@ export const authApi = {
       toast.success('auth:partnerRegisterSuccess');
       return { success: true };
     }
-    return apiClient.post('/auth/register', {
-      nom: data.nomContact,
-      prenom: data.prenomContact,
+    return apiClient.post('/partners/request', {
+      nomContact: `${data.prenomContact} ${data.nomContact}`,
       email: data.email,
-      mot_de_passe: 'DefaultPartnerPass123!',
       nomEntreprise: data.nomEntreprise,
       typePartenariat: data.typePartenariat,
       telephone: data.telephone,
@@ -72,7 +84,7 @@ export const authApi = {
       toast.success('auth:partnerRegisterSuccess');
       return r.data;
     }).catch((err) => {
-      toast.error(err.response?.data?.message ?? 'errors:http.serverError');
+      toast.error(err.response?.data?.detail ?? 'Erreur lors de la soumission de la demande.');
       throw err;
     });
   },
@@ -83,11 +95,11 @@ export const authApi = {
       toast.success('auth:emailSent');
       return { success: true };
     }
-    return apiClient.post('/auth/password/forgot', data).then((r) => {
+    return apiClient.post('/auth/forgot-password', { email: data.email }).then((r) => {
       toast.success('auth:emailSent');
       return r.data;
     }).catch((err) => {
-      toast.error(err.response?.data?.message ?? 'errors:http.serverError');
+      toast.error(err.response?.data?.detail ?? 'Erreur lors de la demande de réinitialisation.');
       throw err;
     });
   },
@@ -98,16 +110,15 @@ export const authApi = {
       toast.success('auth:passwordChanged');
       return { success: true };
     }
-    return apiClient.post('/auth/password/reset', {
+    return apiClient.post('/auth/reset-password', {
       token: 'reset-token',
-      new_password: data.newPassword,
+      nouveau_mot_de_passe: data.newPassword,
     }).then((r) => {
       toast.success('auth:passwordChanged');
       return r.data;
     }).catch((err) => {
-      toast.error(err.response?.data?.message ?? 'errors:http.serverError');
+      toast.error(err.response?.data?.detail ?? 'Erreur lors de la réinitialisation du mot de passe.');
       throw err;
     });
   },
 };
-

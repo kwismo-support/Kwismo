@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/shared/store/authStore';
-import { api } from '@/shared/lib/api';
-import type { KpiSummaryDTO } from '@/shared/mock';
+import { kpiApi, KpiItem } from './services/kpi.api';
 import { PageHeader, KpiCard } from '@/shared/components';
 import { CountrySelect } from '@/shared/ui/country-select';
 import TrendChart from './components/TrendChart';
@@ -14,7 +13,7 @@ export default function DashboardPage() {
   const { t } = useTranslation('admin');
   const user = useAuthStore((state) => state.user);
   const userRole = user?.role?.toLowerCase() || 'admin';
-  const [kpis, setKpis] = useState<KpiSummaryDTO | null>(null);
+  const [kpiItems, setKpiItems] = useState<KpiItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<'7 jours' | '30 jours' | '90 jours' | 'Cette année'>('30 jours');
   const [countryFilter, setCountryFilter] = useState('');
@@ -22,20 +21,26 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let mounted = true;
-    api.getKpiSummary()
+    const fetchKpis = userRole === 'partner' ? kpiApi.getPartnerKpi() : kpiApi.getGlobalKpi();
+    fetchKpis
       .then((data) => {
-        if (mounted) setKpis(data);
+        if (mounted) setKpiItems(data || []);
+      })
+      .catch(() => {
+        if (mounted) setKpiItems([]);
       })
       .finally(() => {
         if (mounted) setLoading(false);
       });
     return () => { mounted = false; };
-  }, []);
+  }, [userRole]);
+
+  const findKpi = (key: string) => kpiItems.find((k) => k.nom_indicateur === key)?.valeur;
 
   const adminCards = [
     {
       title: t('dashboard.activeUsers', 'Utilisateurs actifs'),
-      value: '128 432',
+      value: (findKpi('total_utilisateurs') ?? 0).toLocaleString('fr-FR'),
       change: '+12,4 %',
       isPositive: true,
       icon: 'solar:users-group-two-rounded-bold-duotone',
@@ -43,15 +48,15 @@ export default function DashboardPage() {
     },
     {
       title: t('dashboard.verifiedNumbers', 'Numéros vérifiés'),
-      value: kpis ? kpis.verifiedNumbers.toLocaleString('fr-FR') : '2 418 901',
-      change: kpis?.verifiedChange || '+8,7 %',
+      value: (findKpi('total_numeros_analyses') ?? 0).toLocaleString('fr-FR'),
+      change: '+8,7 %',
       isPositive: true,
       icon: 'solar:database-bold-duotone',
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
       title: t('dashboard.reports', 'Signalements'),
-      value: '14 873',
+      value: (findKpi('total_signalements') ?? 0).toLocaleString('fr-FR'),
       change: '+23,1 %',
       isPositive: true,
       icon: 'solar:danger-triangle-bold-duotone',
@@ -59,15 +64,15 @@ export default function DashboardPage() {
     },
     {
       title: t('dashboard.blockedFrauds', 'Fraudes détectées'),
-      value: kpis ? kpis.blockedFrauds.toLocaleString('fr-FR') : '3 241',
-      change: kpis?.blockedChange || '+5,6 %',
+      value: `${((findKpi('taux_fraude_detectee') ?? 0) * 100).toFixed(1)}%`,
+      change: '+5,6 %',
       isPositive: false,
       icon: 'solar:shield-warning-bold-duotone',
       iconBgColor: 'text-rose-600 bg-rose-500/10 dark:text-rose-400 dark:bg-rose-500/20',
     },
     {
       title: t('dashboard.protectedTx', 'Transactions protégées'),
-      value: '892 417',
+      value: (findKpi('total_transferts_proteges') ?? 0).toLocaleString('fr-FR'),
       change: '+18,2 %',
       isPositive: true,
       icon: 'solar:shield-check-bold-duotone',
@@ -75,8 +80,8 @@ export default function DashboardPage() {
     },
     {
       title: t('dashboard.apiCalls', 'Appels API partenaires'),
-      value: kpis ? `${(kpis.apiCalls24h / 1000000).toFixed(1)}M` : '4,1M',
-      change: kpis?.apiCallsChange || '+31,5 %',
+      value: '4,1M',
+      change: '+31,5 %',
       isPositive: true,
       icon: 'solar:server-bold-duotone',
       iconBgColor: 'text-brand-navy bg-brand-navy/10 dark:bg-brand-navy/30 dark:text-blue-300',
