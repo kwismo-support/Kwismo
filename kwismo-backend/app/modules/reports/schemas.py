@@ -11,6 +11,8 @@ from pydantic import BaseModel, Field
 class ReportCreateIn(BaseModel):
     numero: str = Field(..., examples=["+237690000003"])
     motif: str = Field(..., examples=["Demande de code OTP par téléphone"])
+    device_fingerprint: str | None = Field(None, description="Identifiant unique d'appareil (anti-fraude)")
+
 
 
 class ReportOut(BaseModel):

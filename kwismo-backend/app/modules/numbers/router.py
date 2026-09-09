@@ -10,6 +10,7 @@ from app.modules.numbers.schemas import (
     NumberDetailOut,
     NumberOut,
     NumberStatusIn,
+    NumberSyncOut,
     NumberVerifyIn,
 )
 
@@ -44,6 +45,24 @@ async def batch_verify_numbers(
     payload: NumberBatchVerifyIn, user=Depends(require_roles("user"))
 ) -> list[NumberOut]:
     return await service.batch_verify_numbers(payload)
+
+
+@router.get(
+    "/sync",
+    response_model=NumberSyncOut,
+    responses=AUTH_RESPONSES,
+    summary="Delta sync numbers / Synchronisation hors-ligne des numéros et seuils",
+    description=(
+        "**FR** — Synchronisation delta des numéros mis à jour et des seuils pour SQLite local.\n\n"
+        "**EN** — Delta sync updated numbers and active risk threshold configuration."
+    ),
+)
+async def sync_numbers(
+    since: str | None = Query(None, description="ISO timestamp de la dernière synchro"),
+    user=Depends(require_roles("user", "admin", "partner")),
+) -> NumberSyncOut:
+    return await service.sync_numbers(since)
+
 
 
 @router.get(

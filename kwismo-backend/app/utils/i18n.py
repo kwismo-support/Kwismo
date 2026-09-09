@@ -159,6 +159,10 @@ MESSAGES: dict[str, dict[str, str]] = {
         "fr": "Un signalement en attente existe déjà pour ce numéro.",
         "en": "A pending report already exists for this number.",
     },
+    "report_already_submitted_device": {
+        "fr": "Cet appareil a déjà effectué un signalement pour ce numéro.",
+        "en": "This device has already submitted a report for this number.",
+    },
     "report_already_processed": {
         "fr": "Ce signalement a déjà été traité.",
         "en": "This report has already been processed.",

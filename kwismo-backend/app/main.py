@@ -39,6 +39,7 @@ from app.modules.notifications.router import router as notifications_router
 from app.modules.numbers.router import router as numbers_router
 from app.modules.partners.router import router as partners_router
 from app.modules.reports.router import router as reports_router
+from app.modules.settings.router import router as settings_router
 from app.modules.surveys.router import router as surveys_router
 from app.modules.transactions.router import router as transactions_router
 from app.modules.user_phones.router import router as user_phones_router
@@ -208,6 +209,7 @@ for router in (
     access_control_router,
     notifications_router,
     devices_router,
+    settings_router,
     ai_gateway_router,
 ):
     app.include_router(router)

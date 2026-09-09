@@ -47,6 +47,21 @@ async def create_report(user_id: str, payload: ReportCreateIn, lang: str = "fr")
     if numero is None:
         numero = await db.numero.create(data={"valeur": valeur})
 
+    if payload.device_fingerprint:
+        try:
+            existing_device = await db.report.find_first(
+                where={"numeroId": numero.id, "deviceFingerprint": payload.device_fingerprint}
+            )
+            if existing_device:
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=t("report_already_submitted_device", lang),
+                )
+        except HTTPException:
+            raise
+        except Exception as exc:
+            logger.debug("Verification deviceFingerprint ignorée si champ absent : %s", exc)
+
     existing = await db.report.find_first(
         where={"userId": user_id, "numeroId": numero.id, "statut": "pending"}
     )
@@ -56,9 +71,17 @@ async def create_report(user_id: str, payload: ReportCreateIn, lang: str = "fr")
             detail=t("report_already_pending", lang),
         )
 
-    report = await db.report.create(
-        data={"userId": user_id, "numeroId": numero.id, "motif": payload.motif}
-    )
+    create_data = {"userId": user_id, "numeroId": numero.id, "motif": payload.motif}
+    if payload.device_fingerprint:
+        create_data["deviceFingerprint"] = payload.device_fingerprint
+
+    try:
+        report = await db.report.create(data=create_data)
+    except Exception:
+        # Fallback sans deviceFingerprint si non migré en BD
+        create_data.pop("deviceFingerprint", None)
+        report = await db.report.create(data=create_data)
+
 
     from app.modules.numbers.service import _score_and_upsert
     try:

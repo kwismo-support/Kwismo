@@ -43,3 +43,10 @@ class NumberDetailOut(NumberOut):
 class NumberStatusIn(BaseModel):
     statut: str = Field(..., examples=["frauduleux"])
     reanalyser: bool = Field(False, description="Forcer un nouvel appel a l'IA / Force a new AI call.")
+
+
+class NumberSyncOut(BaseModel):
+    items: list[NumberOut]
+    threshold_rules: list[dict]
+    synced_at: datetime
+
