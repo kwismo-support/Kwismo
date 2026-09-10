@@ -1,4 +1,4 @@
-name: Deploy Web to Vercel (Bypass Blocked Git Pushes)
+name: Deploy Web to Vercel (Custom Branch Deployment)
 
 on:
   push:
@@ -28,8 +28,8 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
-      - name: Deploy to Vercel Preview (dev & staging branches)
-        if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/staging'
+      - name: Deploy Dev Branch (kwismo-dev)
+        if: github.ref == 'refs/heads/dev'
         working-directory: kwismo-web
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -40,7 +40,19 @@ jobs:
           vercel build --token=$VERCEL_TOKEN
           vercel deploy --prebuilt --token=$VERCEL_TOKEN
 
-      - name: Deploy to Vercel Production (main branch)
+      - name: Deploy Staging Branch (kwismo-staging)
+        if: github.ref == 'refs/heads/staging'
+        working-directory: kwismo-web
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+          vercel build --token=$VERCEL_TOKEN
+          vercel deploy --prebuilt --token=$VERCEL_TOKEN
+
+      - name: Deploy Production Branch (main)
         if: github.ref == 'refs/heads/main'
         working-directory: kwismo-web
         env:
