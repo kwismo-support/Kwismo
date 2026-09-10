@@ -10,15 +10,15 @@ export default function HowItWorks() {
   const steps = t('howItWorks.steps', { returnObjects: true }) as { num: string; title: string; desc: string }[];
 
   return (
-    <section id="howItWorks" className="w-full bg-white dark:bg-brand-darkBg px-6 py-20 lg:py-24 transition-colors font-body">
-      <div className="mx-auto max-w-[90%]">
+    <section id="howItWorks" className="w-full bg-white dark:bg-brand-darkBg px-6 py-20 lg:py-28 transition-colors font-body">
+      <div className="mx-auto max-w-[90%] 2xl:max-w-[85%]">
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-slate-900 dark:text-white">
+          <h2 className="font-title text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-slate-900 dark:text-white">
             {t('landing:howItWorks.title')}
           </h2>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12 lg:gap-16">
+        <div className="mt-16 grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12 lg:gap-16">
           {/* Séquence des 3 Étapes à gauche */}
           <div className="flex flex-col justify-between gap-4 h-full">
             {Array.isArray(steps) && steps.map((step, idx) => {
@@ -29,18 +29,19 @@ export default function HowItWorks() {
                 <div key={idx} className="flex flex-col w-full flex-1 justify-center">
                   <div
                     onMouseEnter={() => setActiveStep(idx)}
-                    className={`cursor-pointer rounded-3xl p-6 sm:p-7 border transition-all duration-300 ${
+                    onClick={() => setActiveStep(idx)}
+                    className={`cursor-pointer rounded-3xl p-6 sm:p-7 border transition-all duration-500 ease-out ${
                       isActive
                         ? 'bg-brand-green/10 dark:bg-brand-green/15 border-brand-green shadow-xl'
                         : 'bg-slate-50 dark:bg-brand-navy/60 border-slate-200 dark:border-white/10 hover:border-brand-green/40 shadow-sm'
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      {/* Chiffre de l'étape : diminue quand actif */}
+                      {/* Chiffre de l'étape : transition fluide de taille */}
                       <div
-                        className={`flex shrink-0 items-center justify-center rounded-2xl font-title font-extrabold transition-all duration-300 ${
+                        className={`flex shrink-0 items-center justify-center rounded-2xl font-title font-extrabold transition-all duration-500 ease-out ${
                           isActive
-                            ? 'h-10 w-10 text-base bg-brand-green text-white shadow-md shadow-brand-green/30'
+                            ? 'h-11 w-11 text-lg bg-brand-green text-white shadow-lg shadow-brand-green/30'
                             : 'h-14 w-14 text-2xl bg-slate-200 dark:bg-white/15 text-slate-700 dark:text-white'
                         }`}
                       >
@@ -49,7 +50,7 @@ export default function HowItWorks() {
 
                       {/* Titre de l'étape */}
                       <h3
-                        className={`font-title font-extrabold transition-colors duration-300 ${
+                        className={`font-title font-extrabold transition-colors duration-500 ease-out ${
                           isActive
                             ? 'text-xl sm:text-2xl text-brand-green dark:text-brand-green'
                             : 'text-lg sm:text-xl text-slate-900 dark:text-white'
@@ -59,22 +60,24 @@ export default function HowItWorks() {
                       </h3>
                     </div>
 
-                    {/* Description dépliée avec animation fluide */}
+                    {/* Animation Ultra-Fluide via Grid-Rows transition */}
                     <div
-                      className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                        isActive ? 'max-h-40 opacity-100 mt-3 pt-2 border-t border-brand-green/20' : 'max-h-0 opacity-0 mt-0'
+                      className={`grid transition-[grid-template-rows,opacity] duration-500 ease-out ${
+                        isActive ? 'grid-rows-[1fr] opacity-100 mt-3 pt-3 border-t border-brand-green/20' : 'grid-rows-[0fr] opacity-0 mt-0'
                       }`}
                     >
-                      <p className="font-body text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed pl-14">
-                        {step.desc}
-                      </p>
+                      <div className="overflow-hidden">
+                        <p className="font-body text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed pl-14 font-normal">
+                          {step.desc}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
                   {/* Flèche / Ligne transversale verticale de connexion vers l'étape suivante */}
                   {!isLast && (
-                    <div className="flex items-center justify-start pl-10 py-1 text-brand-green/60">
-                      <Icon icon="solar:alt-arrow-down-bold" className="text-xl animate-pulse" />
+                    <div className="flex items-center justify-start pl-11 py-1.5 text-brand-green/60">
+                      <Icon icon="solar:alt-arrow-down-bold" className="text-xl animate-bounce" />
                     </div>
                   )}
                 </div>
@@ -87,7 +90,7 @@ export default function HowItWorks() {
             <img
               src={ImgEtape}
               alt="KWISMO Processus 3 étapes"
-              className="w-full max-h-[540px] object-contain drop-shadow-xl"
+              className="w-full max-h-[560px] object-contain drop-shadow-xl hover:scale-[1.01] transition-transform duration-500"
             />
           </div>
         </div>
