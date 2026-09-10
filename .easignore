@@ -1,4 +1,4 @@
-# Exclude non-mobile monorepo folders and git history from EAS CLI archive
+# Exclude non-mobile monorepo folders from EAS CLI archive
 .git/
 .git
 kwismo-web/
