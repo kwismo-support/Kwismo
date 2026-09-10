@@ -121,30 +121,66 @@ Puis :
 kwismo-mobile/
 │
 ├─ app.config.js                    # ★ Configuration Expo dynamique (Kwismo vs Kwismo-Test)
+├─ app.json                         # Configuration de base Expo
 ├─ eas.json                         # ★ Profils de build EAS (APK Android & IPA iOS)
-├─ package.json
+├─ .easignore                       # ★ Exclusion des fichiers hors-mobile pour EAS Build
+├─ package.json                     # Scripts & dépendances (inclut sharp, expo-updates)
+├─ babel.config.js
+├─ metro.config.js
+├─ tailwind.config.js
+├─ tsconfig.json
+│
+├─ scripts/
+│  └─ optimize-assets.js            # ★ Auto-optimisation automatique des ressources lourdes
+│
 ├─ app/                             # ★ Routes (Expo Router, file-based)
 │  ├─ _layout.tsx                   # Layout racine : providers globaux & OTA Updates silencieux
 │  ├─ index.tsx                     # Redirection initiale (splash → auth/app)
-│  ├─ onboarding.tsx
+│  ├─ onboarding.tsx                # Écran d'onboarding
 │  │
 │  ├─ (auth)/                       # Groupe NON authentifié
 │  │  ├─ _layout.tsx
 │  │  ├─ login.tsx
+│  │  ├─ register.tsx
 │  │  ├─ otp.tsx
+│  │  ├─ otp-success.tsx
+│  │  ├─ welcome.tsx
 │  │  ├─ forgot-password.tsx
 │  │  └─ reset-password.tsx
 │  │
 │  └─ (app)/                        # Groupe authentifié (protégé)
 │     ├─ _layout.tsx
-│     ├─ index.tsx
-│     ├─ verify.tsx
-│     ├─ transfer.tsx
-│     ├─ contacts.tsx
-│     ├─ alert-whatsapp.tsx
-│     ├─ report.tsx
-│     ├─ survey.tsx
-│     └─ profile.tsx
+│     ├─ index.tsx                  # Dashboard principal
+│     ├─ verify.tsx                 # Vérification de numéro
+│     ├─ transfer.tsx               # Transfert USSD
+│     ├─ contacts.tsx               # Liste des contacts
+│     ├─ alert-whatsapp.tsx         # Alerte compte piraté
+│     ├─ report.tsx                 # Signalement
+│     ├─ survey.tsx                 # Enquête
+│     ├─ profile.tsx                # Profil utilisateur
+│     ├─ edit-profile.tsx           # Édition du profil
+│     ├─ security.tsx               # Sécurité
+│     ├─ pin-setup.tsx              # Code PIN
+│     ├─ two-factor.tsx             # Double authentification (2FA)
+│     ├─ notifications.tsx          # Notifications
+│     └─ management.tsx             # Gestion & paramètres
+│
+├─ assets/                          # Ressources visuelles optimisées
+│  ├─ adaptive-icon.png
+│  ├─ icon.png
+│  ├─ logo-icon.png
+│  ├─ logo-white.png
+│  ├─ logo.png
+│  ├─ splash.png
+│  ├─ slide1.jpg
+│  ├─ slide2.jpg
+│  └─ slide3.jpg
+│
+└─ src/                            # Code source modulaire
+   ├─ features/                     # Logique métier par fonctionnalité (auth, verify, transfer, etc.)
+   ├─ locales/                      # Internationalisation i18n (fr/en)
+   ├─ shared/                       # Composants UI, hooks, store, utils & useOTAUpdates.ts
+   └─ styles/                       # Tokens de style & thèmes
 │
 ├─ src/
 │  ├─ features/                     # Logique métier par fonctionnalité
