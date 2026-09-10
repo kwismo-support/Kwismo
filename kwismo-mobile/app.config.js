@@ -7,6 +7,8 @@ module.exports = ({ config }) => {
   const packageName = isProd ? 'com.kwismo.mobile' : 'com.kwismo.mobile.test';
   const scheme = isProd ? 'kwismo' : 'kwismo-test';
 
+  const projectId = process.env.EAS_PROJECT_ID || config.extra?.eas?.projectId;
+
   return {
     ...config,
     name: appName,
@@ -42,15 +44,14 @@ module.exports = ({ config }) => {
       enabled: true,
       checkAutomatically: 'ON_LOAD',
       fallbackToCacheTimeout: 0,
-      url: process.env.EXPO_UPDATE_URL || 'https://u.expo.dev/YOUR-PROJECT-ID',
+      ...(projectId ? { url: `https://u.expo.dev/${projectId}` } : {}),
     },
     runtimeVersion: {
       policy: 'sdkVersion',
     },
     extra: {
-      eas: {
-        projectId: process.env.EAS_PROJECT_ID || 'YOUR-PROJECT-ID',
-      },
+      ...(config.extra || {}),
+      ...(projectId ? { eas: { projectId } } : {}),
       appEnv: env,
     },
   };
