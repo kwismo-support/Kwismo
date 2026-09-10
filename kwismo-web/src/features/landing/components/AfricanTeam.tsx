@@ -8,24 +8,21 @@ export default function AfricanTeam() {
   const cards = [
     {
       title: t('africanTeam.cards.mission.title'),
-      desc: t('africanTeam.cards.mission.desc') + ' Nous analysons des milliers d’appels et numéros signalés quotidiennement en Afrique subsaharienne pour bloquer la fraude Mobile Money à la source.',
-      tag: 'Engagement Anti-Fraude',
+      desc: t('africanTeam.cards.mission.desc'),
       icon: 'solar:target-bold-duotone',
-      iconBg: 'bg-brand-orange/15 text-brand-orange border border-brand-orange/20',
+      iconColor: 'text-brand-orange',
     },
     {
       title: t('africanTeam.cards.community.title'),
-      desc: t('africanTeam.cards.community.desc') + ' Grâce aux données partagées par notre communauté et les opérateurs partenaires, chaque arnaque signalée protège instantanément des milliers d’utilisateurs.',
-      tag: 'Intelligence Collective',
+      desc: t('africanTeam.cards.community.desc'),
       icon: 'solar:users-group-two-rounded-bold-duotone',
-      iconBg: 'bg-brand-green/15 text-brand-green border border-brand-green/20',
+      iconColor: 'text-brand-green',
     },
     {
       title: t('africanTeam.cards.approach.title'),
-      desc: t('africanTeam.cards.approach.desc') + ' Notre moteur IA combiné au protocole USSD natif calcule un score de risque instantané en moins d’une seconde, même sans connexion internet haut débit.',
-      tag: 'Réponse Instantanée',
+      desc: t('africanTeam.cards.approach.desc'),
       icon: 'solar:bolt-bold-duotone',
-      iconBg: 'bg-brand-orange/15 text-brand-orange border border-brand-orange/20',
+      iconColor: 'text-brand-orange',
     },
   ];
 
@@ -56,25 +53,16 @@ export default function AfricanTeam() {
           {cards.map((card, idx) => (
             <div
               key={idx}
-              className="p-7 sm:p-8 rounded-3xl bg-white text-slate-900 shadow-2xl border border-white/30 flex flex-col justify-center items-start flex-1 transition-all duration-300 hover:scale-[1.015] hover:shadow-2xl"
+              className="p-6 sm:p-7 rounded-3xl bg-white text-slate-900 shadow-xl border border-white/20 flex flex-col justify-center items-start flex-1 transition-all duration-300 hover:shadow-2xl"
             >
-              <div className="flex items-center justify-between w-full mb-3">
-                <div className="flex items-center gap-4">
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${card.iconBg}`}>
-                    <Icon icon={card.icon} className="text-2xl" />
-                  </div>
-                  <div>
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-0.5">
-                      {card.tag}
-                    </span>
-                    <h3 className="font-title text-lg sm:text-xl font-extrabold text-slate-900">
-                      {card.title}
-                    </h3>
-                  </div>
-                </div>
+              <div className="flex items-center gap-3.5 mb-2">
+                <Icon icon={card.icon} className={`text-3xl ${card.iconColor} shrink-0`} />
+                <h3 className="font-title text-lg sm:text-xl font-extrabold text-slate-900">
+                  {card.title}
+                </h3>
               </div>
 
-              <p className="mt-2 font-body text-sm sm:text-base text-slate-600 leading-relaxed">
+              <p className="font-body text-sm sm:text-base text-slate-600 leading-relaxed">
                 {card.desc}
               </p>
             </div>
