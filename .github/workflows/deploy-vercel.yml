@@ -28,7 +28,6 @@ jobs:
 
       - name: Deploy to Dev Environment (kwismo-dev.vercel.app)
         if: github.ref == 'refs/heads/dev'
-        working-directory: kwismo-web
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -44,7 +43,6 @@ jobs:
 
       - name: Deploy to Staging Environment (kwismo-preview.vercel.app)
         if: github.ref == 'refs/heads/staging'
-        working-directory: kwismo-web
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -60,11 +58,11 @@ jobs:
 
       - name: Deploy to Production Environment (kwismo.com)
         if: github.ref == 'refs/heads/main'
-        working-directory: kwismo-web
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           npx vercel deploy --prod --yes --token=$VERCEL_TOKEN -m githubCommitRef=main -m githubCommitSha=$GITHUB_SHA
+
 
