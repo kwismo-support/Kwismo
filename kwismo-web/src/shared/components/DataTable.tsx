@@ -208,9 +208,9 @@ export function DataTable<T>({
       >
         <Table>
           <TableHead>
-            <TableRow className="bg-slate-50/80 dark:bg-brand-darkBg/60 border-b border-slate-200 dark:border-white/10">
+            <TableRow className="bg-slate-50/80 dark:bg-brand-darkBg border-b border-slate-200 dark:border-white/10">
               {selectable && (
-                <TableHeader className="w-12 px-4 py-3.5 text-center">
+                <TableHeader className="w-12 px-4 py-3.5 text-center"> 
                   <input
                     type="checkbox"
                     checked={isAllPaginatedSelected}

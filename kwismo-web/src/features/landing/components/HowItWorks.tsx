@@ -7,32 +7,32 @@ export default function HowItWorks() {
   const steps = t('howItWorks.steps', { returnObjects: true }) as { num: string; title: string; desc: string }[];
 
   return (
-    <section id="howItWorks" className="w-full bg-white dark:bg-brand-darkBg px-6 py-16 transition-colors font-body">
+    <section id="howItWorks" className="w-full bg-white dark:bg-brand-darkBg px-6 py-20 lg:py-24 transition-colors font-body">
       <div className="mx-auto max-w-[90%]">
-        <div className="text-center max-w-2xl mx-auto">
-          <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white">
+        <div className="text-center max-w-3xl mx-auto">
+          <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-slate-900 dark:text-white">
             {t('landing:howItWorks.title')}
           </h2>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12">
-          <div className="flex flex-col justify-between gap-5 h-full">
+        <div className="mt-14 grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12 lg:gap-16">
+          <div className="flex flex-col justify-between gap-6 h-full">
             {Array.isArray(steps) && steps.map((step, idx) => (
               <div
                 key={idx}
-                className="flex items-start gap-4 p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-navy shadow-sm hover:border-brand-green/50 transition flex-1 justify-center flex-col"
+                className="flex flex-col p-6 sm:p-7.5 rounded-3xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-navy shadow-md hover:shadow-xl hover:border-brand-green/50 transition-all duration-300 flex-1 justify-center"
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-300 dark:border-white/20 bg-white dark:bg-brand-darkBg font-title text-lg font-bold text-brand-green">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-green text-white font-title text-xl font-extrabold shadow-lg shadow-brand-green/20">
                     {step.num || (idx + 1).toString()}
                   </div>
 
-                  <h3 className="font-title text-base font-bold text-slate-900 dark:text-white">
+                  <h3 className="font-title text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
                     {step.title}
                   </h3>
                 </div>
 
-                <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed pl-13">
+                <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed pl-16">
                   {step.desc}
                 </p>
               </div>
@@ -40,11 +40,13 @@ export default function HowItWorks() {
           </div>
 
           <div className="flex justify-center items-center h-full">
-            <img
-              src={ImgEtape}
-              alt="KWISMO"
-              className="w-full max-w-[480px] h-full max-h-[400px] object-contain drop-shadow-xl rounded-3xl"
-            />
+            <div className="relative w-full max-w-[540px] p-4 bg-slate-100 dark:bg-white/5 rounded-3xl border border-slate-200 dark:border-white/10 shadow-2xl flex items-center justify-center">
+              <img
+                src={ImgEtape}
+                alt="KWISMO Process 3 étapes"
+                className="w-full max-w-[500px] h-auto object-contain drop-shadow-2xl rounded-2xl hover:scale-[1.01] transition-transform duration-300"
+              />
+            </div>
           </div>
         </div>
       </div>

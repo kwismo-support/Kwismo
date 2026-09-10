@@ -16,34 +16,41 @@ export default function AllYouNeed() {
   const items = t('allYouNeed.items', { returnObjects: true }) as { title: string; desc: string }[];
 
   return (
-    <section id="services" className="w-full bg-brand-darkGreen text-white px-6 py-16 transition-colors">
+    <section id="services" className="w-full bg-brand-darkGreen text-white px-6 py-20 lg:py-24 transition-colors font-body">
       <div className="mx-auto max-w-[90%]">
-        <div className="text-center max-w-2xl mx-auto">
-          <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
+        <div className="text-center max-w-3xl mx-auto">
+          <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-white">
             {t('allYouNeed.title')}
           </h2>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {Array.isArray(items) && items.map((item, idx) => {
-            const icon = itemIcons[idx] ?? 'solar:shield-check-bold';
+            const icon = itemIcons[idx] ?? 'solar:shield-check-bold-duotone';
 
             return (
               <div
                 key={idx}
-                className="flex flex-col p-6 rounded-2xl bg-white text-slate-900 shadow-xl border border-white/20 transition hover:-translate-y-1"
+                className="group flex flex-col p-7 sm:p-8 rounded-3xl bg-white text-slate-900 shadow-2xl border border-white/20 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl justify-between"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-green/10 text-brand-green mb-3">
-                  <Icon icon={icon} className="text-xl" />
+                <div>
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-green/15 text-brand-green mb-5 group-hover:scale-110 transition-transform duration-300 border border-brand-green/20">
+                    <Icon icon={icon} className="text-3xl" />
+                  </div>
+
+                  <h3 className="font-title text-lg sm:text-xl font-extrabold text-slate-900">
+                    {item.title}
+                  </h3>
+
+                  <p className="mt-3 font-body text-sm sm:text-base text-slate-600 leading-relaxed">
+                    {item.desc}
+                  </p>
                 </div>
 
-                <h3 className="font-title text-base font-bold text-slate-900">
-                  {item.title}
-                </h3>
-
-                <p className="mt-2 font-body text-xs text-slate-600 leading-relaxed">
-                  {item.desc}
-                </p>
+                <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-brand-green text-xs font-bold uppercase tracking-wider">
+                  <span>Fonctionnalité KWISMO</span>
+                  <Icon icon="solar:alt-arrow-right-linear" className="text-base group-hover:translate-x-1 transition-transform" />
+                </div>
               </div>
             );
           })}
