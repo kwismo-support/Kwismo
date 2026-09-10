@@ -6,11 +6,11 @@ import { ThemeToggle } from '@/shared/components/ThemeToggle';
 export default function ContactBar() {
   const { t } = useTranslation('landing');
 
-  const email = t('contactBar.email');
-  const phone = t('contactBar.phone');
+  const email = t('landing:contactBar.email');
+  const phone = t('landing:contactBar.phone');
 
   return (
-    <div className="w-full bg-slate-100 dark:bg-brand-darkBg text-slate-800 dark:text-white text-xs py-2 px-4 sm:px-8 border-b border-slate-200 dark:border-white/10 transition-colors">
+    <div className="w-full bg-slate-100 dark:bg-brand-darkBg text-slate-800 dark:text-white text-xs py-2 px-4 sm:px-8 border-b border-slate-200 dark:border-white/10 transition-colors font-body">
       <div className="mx-auto flex max-w-[90%] flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-5 font-semibold text-brand-green">
           <a

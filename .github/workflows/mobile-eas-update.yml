@@ -1,0 +1,49 @@
+name: Mobile EAS Update CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'kwismo-mobile/**'
+      - '.github/workflows/mobile-eas-update.yml'
+
+jobs:
+  update:
+    name: Publish OTA Update to Expo EAS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: kwismo-mobile/package-lock.json
+
+      - name: Setup Expo / EAS CLI
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install Dependencies
+        working-directory: kwismo-mobile
+        run: npm ci
+
+      - name: Publish Update to Kwismo-Test (preview channel on dev branch)
+        if: github.ref == 'refs/heads/dev'
+        working-directory: kwismo-mobile
+        env:
+          APP_ENV: preview
+        run: eas update --auto --branch preview --non-interactive
+
+      - name: Publish Update to Kwismo (production channel on main branch)
+        if: github.ref == 'refs/heads/main'
+        working-directory: kwismo-mobile
+        env:
+          APP_ENV: production
+        run: eas update --auto --branch production --non-interactive

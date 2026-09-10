@@ -7,6 +7,7 @@ import LogoWhite from '@/assets/logo/White_Logo.png';
 
 export default function Footer() {
   const { t } = useTranslation('landing');
+  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="w-full bg-slate-100 dark:bg-brand-darkBg text-slate-800 dark:text-white pt-16 pb-8 border-t border-slate-200 dark:border-white/10 transition-colors font-body">
@@ -92,7 +93,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 dark:text-white/60">
-          <p>© 2026 KWISMO. {t('landing:footer.rights')}</p>
+          <p>© {currentYear} KWISMO. {t('landing:footer.rights')}</p>
 
           <div className="flex items-center gap-4">
             <ThemeToggle className="text-slate-700 dark:text-white/80 hover:bg-slate-200 dark:hover:bg-white/10" />

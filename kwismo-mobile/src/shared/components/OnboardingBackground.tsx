@@ -1,30 +1,34 @@
 import React from 'react';
-import { StyleSheet, View, Image, Platform } from 'react-native';
+import { StyleSheet, View, Image, Platform, ImageSourcePropType } from 'react-native';
 import Svg, { Path, Defs, LinearGradient as SvgLinearGradient, Stop } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface OnboardingBackgroundProps {
   slideIndex: number;
-  imageUri?: string;
+  imageSource?: ImageSourcePropType | string;
 }
 
-const DEFAULT_SLIDE_IMAGES = [
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80',
-  'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1000&q=80',
-  'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=1000&q=80',
+const DEFAULT_SLIDE_IMAGES: (ImageSourcePropType | string)[] = [
+  require('../../../assets/slide1.png'),
+  require('../../../assets/slide2.png'),
+  require('../../../assets/slide3.png'),
 ];
 
 export const OnboardingBackground: React.FC<OnboardingBackgroundProps> = ({
   slideIndex,
-  imageUri,
+  imageSource,
 }) => {
-  const activeImage = imageUri || DEFAULT_SLIDE_IMAGES[slideIndex];
+  const activeImage = imageSource || DEFAULT_SLIDE_IMAGES[slideIndex];
+
+  // Gestion automatique : image require(...) local ou URL string
+  const resolvedImageSource: ImageSourcePropType =
+    typeof activeImage === 'string' ? { uri: activeImage } : activeImage;
 
   return (
     <View style={styles.container}>
-      {activeImage && (
+      {resolvedImageSource && (
         <Image
-          source={{ uri: activeImage }}
+          source={resolvedImageSource}
           style={styles.backgroundImage}
           resizeMode="cover"
         />

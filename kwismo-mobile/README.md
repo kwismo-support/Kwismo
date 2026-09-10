@@ -120,8 +120,11 @@ Puis :
 ```text
 kwismo-mobile/
 │
+├─ app.config.js                    # ★ Configuration Expo dynamique (Kwismo vs Kwismo-Test)
+├─ eas.json                         # ★ Profils de build EAS (APK Android & IPA iOS)
+├─ package.json
 ├─ app/                             # ★ Routes (Expo Router, file-based)
-│  ├─ _layout.tsx                   # Layout racine : providers globaux
+│  ├─ _layout.tsx                   # Layout racine : providers globaux & OTA Updates silencieux
 │  ├─ index.tsx                     # Redirection initiale (splash → auth/app)
 │  ├─ onboarding.tsx
 │  │
