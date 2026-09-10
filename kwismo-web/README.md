@@ -107,45 +107,68 @@ L'application tourne sur cette **[page](http://localhost:5173)**.
 ```text
 kwismo-web/
 │
-├─ index.html                       # HTML racine & Meta SEO / Titre
-├─ package.json                     # Scripts & Dépendances
-├─ vite.config.ts                   # Configuration du serveur Vite & des alias
-├─ tailwind.config.ts               # Configuration TailwindCSS & thèmes
-├─ tsconfig.json                    # Configuration TypeScript
-├─ vercel.json                      # Configuration des redirections Vercel (SPA Routing)
-│
-├─ public/                          # Fichiers statiques servis directement
+├─ public/
 │  ├─ favicon.svg
 │  ├─ robots.txt
-│  └─ fonts/                        # Polices auto-hébergées (Ageo, Montserrat, Poppins)
+│  └─ fonts/                         # Polices auto-hébergées
+│     ├─ AgeoTrial-Regular.woff2
+│     ├─ AgeoTrial-Medium.woff2
+│     ├─ AgeoTrial-SemiBold.woff2
+│     ├─ AgeoTrial-Bold.woff2
+│     ├─ MontserratAlternates-Regular.woff2
+│     ├─ MontserratAlternates-Medium.woff2
+│     ├─ MontserratAlternates-Bold.woff2
+│     ├─ Poppins-Regular.woff2
+│     ├─ Poppins-Medium.woff2
+│     ├─ Poppins-SemiBold.woff2
+│     └─ Poppins-Bold.woff2
 │
-└─ src/
-   ├─ main.tsx                      # Point d'entrée React DOM
-   ├─ App.tsx                       # Composant racine applicatif
-   ├─ index.css                     # Directives globales CSS Tailwind & thèmes
-   │
-   ├─ app/                          # Cœur applicatif (Router, Providers, AuthGuards)
-   ├─ assets/                       # Illustrations SVG & Logos Kwismo
-   ├─ config/                       # Variables d'environnement & Endpoints API
-   │
-   ├─ features/                     # Modules applicatifs par domaine
-   │  ├─ landing/                   # Landing page publique (Navbar, Hero, Comparison, Pricing, FAQ)
-   │  ├─ auth/                      # Authentification (Login, Register, Reset, Partner Register)
-   │  ├─ dashboard/                 # Tableau de bord KPI & Graphiques
-   │  ├─ numbers/                   # Base des numéros vérifiés & signalés
-   │  ├─ partners/                  # Espace Admin : Gestion des partenaires
-   │  ├─ partner-request/           # Demandes d'adhésion Partenaire
-   │  ├─ users/                     # Espace Admin : Gestion des utilisateurs
-   │  ├─ access-control/            # Gestion des Rôles & Permissions
-   │  ├─ ussd/                      # Espace Admin/Partenaire : Gestion des codes USSD
-   │  ├─ reports/                   # Signalements de fraude & enquêtes
-   │  ├─ settings/                  # Paramètres de la plateforme
-   │  ├─ profile/                   # Gestion du profil connecté
-   │  └─ notifications/             # Centre de notifications
-   │
-   ├─ locales/                      # Dictionnaires i18n (FR / EN par domaine)
-   ├─ shared/                       # Composants réutilisables, UI Radix/Tailwind, Hooks, Lib API
-   └─ styles/                       # Fichiers CSS globaux & tokens
+├─ src/
+│  ├─ main.tsx
+│  ├─ App.tsx
+│  ├─ index.css
+│  ├─ vite-env.d.ts
+│  │
+│  ├─ app/                           # Cœur applicatif
+│  │  ├─ router.tsx
+│  │  ├─ providers.tsx
+│  │  └─ guards/
+│  │     ├─ AuthGuard.tsx
+│  │     ├─ GuestGuard.tsx
+│  │     ├─ ProtectedRoute.tsx
+│  │     └─ RoleGuard.tsx
+│  │
+│  ├─ assets/
+│  │  ├─ logo/
+│  │  │  ├─ logo-horizontal.svg
+│  │  │  └─ logo-vertical.svg
+│  │  └─ illustrations/
+│  │     ├─ hero.svg
+│  │     └─ empty-state.svg
+│  │
+│  ├─ config/
+│  │  ├─ env.ts
+│  │  ├─ constants.ts
+│  │  └─ endpoints.ts
+│  │
+│  ├─ features/
+│  │  │
+│  │  ├─ landing/
+│  │  │  ├─ index.tsx
+│  │  │  ├─ components/
+│  │  │  │  ├─ Navbar.tsx
+│  │  │  │  ├─ Hero.tsx
+│  │  │  │  ├─ FraudProblem.tsx
+│  │  │  │  ├─ Comparison.tsx
+│  │  │  │  ├─ HowItWorks.tsx
+│  │  │  │  ├─ FaqSection.tsx
+│  │  │  │  ├─ Partners.tsx
+│  │  │  │  ├─ Pricing.tsx
+│  │  │  │  ├─ ContactBar.tsx
+│  │  │  │  ├─ DownloadCTA.tsx
+│  │  │  │  └─ Footer.tsx
+│  │  │  └─ sections/
+│  │  │     └─ landingSections.ts
 │  │  │
 │  │  ├─ auth/                       # Connexion, oubli mot de passe, reset
 │  │  │  ├─ index.tsx
