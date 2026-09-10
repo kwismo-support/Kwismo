@@ -10,10 +10,11 @@ export default function HowItWorks() {
   const steps = t('howItWorks.steps', { returnObjects: true }) as { num: string; title: string; desc: string }[];
 
   return (
-    <section id="howItWorks" className="w-full bg-white dark:bg-brand-darkBg px-6 py-20 lg:py-28 transition-colors font-body">
-      <div className="mx-auto max-w-[90%] 2xl:max-w-[85%]">
+    <section id="howItWorks" className="w-full bg-white dark:bg-brand-darkBg px-6 py-20 lg:py-24 transition-colors font-body">
+      <div className="mx-auto max-w-[90%]">
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="font-title text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-slate-900 dark:text-white">
+          {/* Titre de section remis à la taille initiale */}
+          <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-slate-900 dark:text-white">
             {t('landing:howItWorks.title')}
           </h2>
         </div>

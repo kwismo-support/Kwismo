@@ -12,9 +12,8 @@ export default function Hero() {
     >
       <div className="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-darkBg to-brand-darkBg opacity-95 pointer-events-none" />
 
-      <div className="relative mx-auto grid max-w-[92%] 2xl:max-w-[85%] grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-14 w-full h-full py-4 lg:py-6">
+      <div className="relative mx-auto grid max-w-[90%] grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-14 h-full py-4 lg:py-6">
         <div className="relative z-10 flex flex-col justify-center items-start">
-          {/* Titre réactif s'agrandissant sur les écrans plus hauts / plus larges */}
           <h1 className="font-title max-w-[720px] text-3xl sm:text-4xl lg:text-[44px] xl:text-[54px] 2xl:text-[62px] font-extrabold leading-[1.12] tracking-tight text-white">
             {t('landing:hero.titleLine1')}
             <br />
@@ -26,12 +25,9 @@ export default function Hero() {
             </span>
           </h1>
 
-          {/* Sous-titre réactif */}
           <p className="mt-4 lg:mt-6 max-w-[620px] text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed text-white/90 font-normal">
             {t('landing:hero.subtitle')}
           </p>
-
-          {/* Boutons CTA s'adaptant à la hauteur */}
           <div className="mt-6 lg:mt-8 flex flex-wrap items-center gap-4 sm:gap-5">
             <a
               href="#download"
@@ -93,7 +89,7 @@ export default function Hero() {
             <img
               src={ImgHero}
               alt="KWISMO Anti-Fraude Mobile Money"
-              className="relative z-10 w-full max-h-[calc(100vh-140px)] object-contain drop-shadow-2xl hover:scale-[1.015] transition-transform duration-500"
+              className="relative z-10 w-full max-h-[calc(100vh-200px)] object-contain drop-shadow-2xl hover:scale-[1.015] transition-transform duration-500"
             />
           </div>
         </div>

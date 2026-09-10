@@ -58,15 +58,15 @@
     "cards": {
       "mission": {
         "title": "Notre mission",
-        "desc": "Rendre chaque transaction Mobile Money sûre et sereine, partout en Afrique."
+        "desc": "Rendre chaque transaction Mobile Money sûre et sereine, partout en Afrique. Nous bloquons les tentatives d'escroquerie à la source avant tout transfert."
       },
       "community": {
         "title": "Notre communauté",
-        "desc": "Des millions d'utilisateurs qui signalent et protègent, ensemble, en temps réel."
+        "desc": "Des millions d'utilisateurs qui signalent et protègent, ensemble, en temps réel. Chaque alerte partagée sécurise instantanément l'ensemble du réseau."
       },
       "approach": {
         "title": "Notre approche",
-        "desc": "Une technologie locale, pensée pour les usages et les réseaux africains."
+        "desc": "Une technologie locale, pensée pour les usages et les réseaux africains. Notre moteur IA calcule un score de risque instantané, même hors ligne."
       }
     }
   },

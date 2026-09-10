@@ -58,15 +58,15 @@
     "cards": {
       "mission": {
         "title": "Our Mission",
-        "desc": "Make every Mobile Money transaction safe and serene, everywhere in Africa."
+        "desc": "Make every Mobile Money transaction safe and serene, everywhere in Africa. We block scam attempts at the source before any transfer."
       },
       "community": {
         "title": "Our Community",
-        "desc": "Millions of users who report and protect together in real time."
+        "desc": "Millions of users who report and protect together in real time. Every shared alert instantly secures the entire network."
       },
       "approach": {
         "title": "Our Approach",
-        "desc": "A local technology designed for African networks and usage patterns."
+        "desc": "A local technology designed for African networks and usage patterns. Our AI engine computes an instant risk score, even offline."
       }
     }
   },
