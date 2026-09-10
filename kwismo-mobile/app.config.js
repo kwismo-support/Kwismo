@@ -46,9 +46,7 @@ module.exports = ({ config }) => {
       fallbackToCacheTimeout: 0,
       ...(projectId ? { url: `https://u.expo.dev/${projectId}` } : {}),
     },
-    runtimeVersion: {
-      policy: 'sdkVersion',
-    },
+    runtimeVersion: '1.0.0',
     extra: {
       ...(config.extra || {}),
       ...(projectId ? { eas: { projectId } } : {}),
