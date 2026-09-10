@@ -2,11 +2,11 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 
 const itemIcons = [
-  'solar:phone-bold-duotone',
+  'solar:phone-calling-bold-duotone',
   'solar:lock-keyhole-bold-duotone',
+  'solar:chart-line-up-bold-duotone',
   'solar:shield-warning-bold-duotone',
-  'solar:user-check-bold-duotone',
-  'solar:chat-round-call-bold-duotone',
+  'logos:whatsapp-icon',
   'solar:users-group-two-rounded-bold-duotone',
 ];
 
@@ -16,34 +16,40 @@ export default function AllYouNeed() {
   const items = t('allYouNeed.items', { returnObjects: true }) as { title: string; desc: string }[];
 
   return (
-    <section id="services" className="w-full bg-brand-darkGreen text-white px-6 py-16 transition-colors">
+    <section id="services" className="w-full bg-brand-darkGreen text-white px-6 py-20 lg:py-24 transition-colors font-body">
       <div className="mx-auto max-w-[90%]">
-        <div className="text-center max-w-2xl mx-auto">
-          <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
+        <div className="text-center max-w-3xl mx-auto">
+          {/* Titre de section remis à la taille initiale */}
+          <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-white">
             {t('allYouNeed.title')}
           </h2>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
           {Array.isArray(items) && items.map((item, idx) => {
-            const icon = itemIcons[idx] ?? 'solar:shield-check-bold';
+            const icon = itemIcons[idx] ?? 'solar:shield-check-bold-duotone';
 
             return (
               <div
                 key={idx}
-                className="flex flex-col p-6 rounded-2xl bg-white text-slate-900 shadow-xl border border-white/20 transition hover:-translate-y-1"
+                className="relative overflow-hidden group flex flex-col p-7 sm:p-8 rounded-3xl bg-white text-slate-900 shadow-xl border border-white/20 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl justify-between"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-green/10 text-brand-green mb-3">
-                  <Icon icon={icon} className="text-xl" />
+                {/* Icône en Filigrane située en haut à droite DANS la carte (Vert Navbar brand-green) sans jamais modifier la hauteur de la carte */}
+                <div className="absolute top-3 right-3 text-7xl sm:text-8xl leading-none text-brand-green/20 group-hover:text-brand-green/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 pointer-events-none select-none z-0">
+                  <Icon icon={icon} />
                 </div>
 
-                <h3 className="font-title text-base font-bold text-slate-900">
-                  {item.title}
-                </h3>
+                <div className="relative z-10">
+                  {/* Titre de la fonctionnalité */}
+                  <h3 className="font-title text-lg sm:text-xl font-black text-brand-navy dark:text-slate-900 mb-3">
+                    {item.title}
+                  </h3>
 
-                <p className="mt-2 font-body text-xs text-slate-600 leading-relaxed">
-                  {item.desc}
-                </p>
+                  {/* Description concise i18n */}
+                  <p className="font-body text-sm sm:text-base text-slate-600 leading-relaxed max-w-[85%] font-normal">
+                    {item.desc}
+                  </p>
+                </div>
               </div>
             );
           })}
