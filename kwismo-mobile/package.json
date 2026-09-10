@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {
+    "optimize": "node scripts/optimize-assets.js",
+    "prestart": "node scripts/optimize-assets.js",
     "start": "expo start",
     "start:lan": "expo start --host lan",
     "start:tunnel": "npx expo start --tunnel",
