@@ -15,3 +15,7 @@ node_modules/
 .expo/
 .git/
 *.pdf
+*.zip
+*.rar
+*.tar.gz
+

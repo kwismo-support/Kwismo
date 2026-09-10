@@ -1,6 +1,24 @@
+# Parent monorepo directories
+../kwismo-web/
+../kwismo-backend/
+../kwismo-ai/
+../maquettes/
+../marketing/
+../plan economique/
+../plan strategique/
+../cahiers des charges/
+../cadrage/
+../diagrammes/
+../reunions/
+../branding/
+../docs/
+../*.pdf
+
+# Mobile local ignores
 .git/
 node_modules/
 .expo/
 dist/
 web-build/
 *.log
+
