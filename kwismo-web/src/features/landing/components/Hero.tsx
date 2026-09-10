@@ -89,7 +89,7 @@ export default function Hero() {
             <img
               src={ImgHero}
               alt="KWISMO Anti-Fraude Mobile Money"
-              className="relative z-10 w-full max-h-[calc(100vh-200px)] object-contain drop-shadow-2xl hover:scale-[1.015] transition-transform duration-500"
+              className="relative z-10 w-full max-h-[calc(100vh-200px)] object-contain drop-shadow-2xl"
             />
           </div>
         </div>
