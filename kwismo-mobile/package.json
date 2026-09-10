@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@expo-google-fonts/montserrat-alternates": "^0.2.3",
+    "@expo/fingerprint": "^0.20.12",
     "expo": "~50.0.14",
     "expo-constants": "~15.4.6",
     "expo-contacts": "~12.8.2",
