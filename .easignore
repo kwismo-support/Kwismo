@@ -1,0 +1,22 @@
+# Exclude non-mobile monorepo folders and git history from EAS CLI archive
+.git/
+.git
+kwismo-web/
+kwismo-backend/
+kwismo-ai/
+maquettes/
+marketing/
+plan economique/
+plan strategique/
+cahiers des charges/
+cadrage/
+diagrammes/
+reunions/
+branding/
+docs/
+*.pdf
+*.zip
+*.rar
+*.tar.gz
+node_modules/
+.expo/
