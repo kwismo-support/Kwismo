@@ -1,21 +1,7 @@
-kwismo-web/
-kwismo-backend/
-kwismo-ai/
-maquettes/
-marketing/
-plan economique/
-plan strategique/
-cahiers des charges/
-cadrage/
-diagrammes/
-reunions/
-branding/
-docs/
-node_modules/
-.expo/
-.git/
-*.pdf
-*.zip
-*.rar
-*.tar.gz
+*
+!kwismo-mobile/
+!kwismo-mobile/**
+!eas.json
+!.easignore
+
 
