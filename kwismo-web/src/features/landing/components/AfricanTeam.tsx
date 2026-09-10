@@ -31,7 +31,6 @@ export default function AfricanTeam() {
   return (
     <section id="about" className="py-20 lg:py-24 bg-brand-green font-body transition-colors duration-200">
       <div className="mx-auto max-w-[90%] grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12 lg:gap-16">
-        {/* Colonne de gauche (Titre, sous-titre, image) */}
         <div className="flex flex-col justify-between items-start h-full">
           <div>
             <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-tight text-white">
@@ -53,7 +52,6 @@ export default function AfricanTeam() {
           </div>
         </div>
 
-        {/* Colonne de droite : 3 Cartes couvrant 100% de la hauteur de la colonne de gauche */}
         <div className="flex flex-col justify-between gap-6 h-full items-stretch">
           {cards.map((card, idx) => {
             const isOpen = activeCard === idx;
@@ -69,7 +67,6 @@ export default function AfricanTeam() {
                     : 'bg-white text-slate-900 border-white/40 shadow-lg hover:border-brand-green/40 hover:bg-slate-50'
                 }`}
               >
-                {/* En-tête : Icône + Titre + Flèche d'animation */}
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center gap-4">
                     <div
@@ -104,7 +101,6 @@ export default function AfricanTeam() {
                   </div>
                 </div>
 
-                {/* Animation de Révélation du texte Ultra-Nette et Visible */}
                 <div
                   className={`grid transition-[grid-template-rows,opacity,margin,padding] duration-500 ease-out w-full ${
                     isOpen

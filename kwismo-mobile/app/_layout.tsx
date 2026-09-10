@@ -80,6 +80,7 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
 }
 
 import { useAuthStore } from '../src/shared/store/authStore';
+import { useOTAUpdates } from '../src/shared/utils/useOTAUpdates';
 
 // Keep native splash screen visible while loading resources
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -89,6 +90,8 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 export default function RootLayout() {
   const [fontsLoaded] = useState(true);
   const initializeAuth = useAuthStore((state) => state.initializeAuth);
+
+  useOTAUpdates();
 
   useEffect(() => {
     initializeAuth().finally(() => {

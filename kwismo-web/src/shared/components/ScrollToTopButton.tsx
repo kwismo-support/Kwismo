@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ScrollToTopButton() {
   const { t } = useTranslation('landing');
@@ -26,18 +27,25 @@ export default function ScrollToTopButton() {
     });
   };
 
-  if (!isVisible) {
-    return null;
-  }
-
   return (
-    <button
-      type="button"
-      onClick={scrollToTop}
-      aria-label={t('landing:scrollToTop')}
-      className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-brand-navy text-white dark:bg-brand-green dark:text-slate-900 shadow-xl transition-all duration-300 hover:scale-110 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-brand-green active:scale-95"
-    >
-      <Icon icon="solar:arrow-up-bold" className="text-xl" />
-    </button>
+    <AnimatePresence>
+      {isVisible && (
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0, opacity: 0 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          type="button"
+          onClick={scrollToTop}
+          aria-label={t('landing:scrollToTop')}
+          className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-navy text-white dark:bg-brand-green dark:text-brand-navy shadow-xl focus:outline-none"
+        >
+          <Icon icon="solar:arrow-up-bold" className="text-xl" />
+        </motion.button>
+      )}
+    </AnimatePresence>
   );
 }
+
+

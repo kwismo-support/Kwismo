@@ -44,10 +44,11 @@ export default function Pricing() {
           {plans.map((plan, idx) => (
             <div
               key={idx}
-              className={`flex flex-col justify-between rounded-3xl border p-6 transition ${plan.featured
-                  ? 'border-brand-green bg-brand-navy text-white'
-                  : 'border-brand-navy dark:border-brand-green border-slate-200 bg-transparent dark:bg-transparent text-slate-900 dark:text-white'
-                }`}
+              className={`flex flex-col justify-between rounded-3xl border p-6 transition ${
+                plan.featured
+                  ? 'border-brand-green bg-brand-navy text-white shadow-xl'
+                  : 'border-slate-200 dark:border-white/10 bg-white dark:bg-brand-darkBg text-slate-900 dark:text-white shadow-sm'
+              }`}
             >
               <div>
                 <span className="text-xs font-semibold uppercase tracking-wider text-brand-green">
@@ -64,20 +65,21 @@ export default function Pricing() {
                 </div>
 
                 <div className="mt-6 flex flex-col gap-2.5">
-                  {Array.isArray(plan.features) && plan.features.map((feature, fIdx) => (
-                    <div key={fIdx} className="flex items-center gap-2">
-                      <Icon icon="solar:check-circle-bold" className="text-brand-green text-sm shrink-0" />
-                      <span className="text-xs sm:text-sm text-slate-500 dark:text-slate-300">
-                        {feature}
-                      </span>
-                    </div>
-                  ))}
+                  {Array.isArray(plan.features) &&
+                    plan.features.map((feature, fIdx) => (
+                      <div key={fIdx} className="flex items-center gap-2">
+                        <Icon icon="solar:check-circle-bold" className="text-brand-green text-sm shrink-0" />
+                        <span className="text-xs sm:text-sm text-slate-500 dark:text-slate-300">
+                          {feature}
+                        </span>
+                      </div>
+                    ))}
                 </div>
               </div>
 
               <a
                 href="#contact"
-                className="mt-8 flex h-11 w-full items-center justify-center rounded-xl bg-brand-green text-xs sm:text-sm font-semibold text-white hover:bg-brand-green/90 transition"
+                className="mt-8 flex h-11 w-full items-center justify-center rounded-xl bg-brand-green text-xs sm:text-sm font-semibold text-white hover:bg-brand-green/90 transition shadow-sm"
               >
                 {plan.button}
               </a>

@@ -27,8 +27,26 @@
       "operators": "Operators"
     },
     "badges": {
-      "protected": "Protected",
-      "alert": "Alert"
+      "protected": {
+        "title": "Active Protection",
+        "desc": "100% secure transfers"
+      },
+      "alert": {
+        "title": "Real-time Alert",
+        "desc": "Anti-Vishing & SIM Swap"
+      },
+      "offline": {
+        "title": "Offline AI Engine",
+        "desc": "Local USSD verification"
+      },
+      "verified": {
+        "title": "Trust Score",
+        "desc": "0 Fraud reported"
+      },
+      "operators": {
+        "title": "Multi-Operators",
+        "desc": "Orange Money & MTN MoMo"
+      }
     }
   },
   "fraudProblem": {
@@ -72,6 +90,7 @@
   },
   "pricing": {
     "title": "Transparent Pay-As-You-Go Pricing",
+    "recommended": "Recommended",
     "plans": {
       "payg": {
         "badge": "Pay-as-you-go",
@@ -178,6 +197,12 @@
   "contactForm": {
     "title": "A Question? An Idea?",
     "subtitle": "Our team is available to answer all your questions.",
+    "infoTitle": "Stay in Touch",
+    "infoDesc": "Have questions about our solutions or need personalized assistance?",
+    "supportEmailTitle": "Support & Sales",
+    "supportPhoneTitle": "Direct Line",
+    "supportLocationTitle": "African HQ",
+    "supportLocationDesc": "Douala, Cameroon",
     "name": "Your name",
     "email": "Your email address",
     "subject": "Subject",

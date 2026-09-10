@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
+import { motion } from 'framer-motion';
 import ImgHero from '@/assets/illustrations/Img_Hero.png';
 
 export default function Hero() {
@@ -20,7 +21,7 @@ export default function Hero() {
             {t('landing:hero.titleLine2')}
             <br />
             {t('landing:hero.titleLine3')}{' '}
-            <span className="text-brand-green inline-block drop-shadow-md">
+            <span className="text-brand-green font-black inline-block drop-shadow-[0_4px_12px_rgba(46,175,125,0.5)] underline decoration-brand-green/60 decoration-wavy underline-offset-8">
               {t('landing:hero.titleHighlight')}
             </span>
           </h1>
@@ -28,10 +29,11 @@ export default function Hero() {
           <p className="mt-4 lg:mt-6 max-w-[620px] text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed text-white/90 font-normal">
             {t('landing:hero.subtitle')}
           </p>
+
           <div className="mt-6 lg:mt-8 flex flex-wrap items-center gap-4 sm:gap-5">
             <a
               href="#download"
-              className="flex h-12 lg:h-14 xl:h-[56px] items-center gap-3 rounded-2xl bg-brand-green px-6 lg:px-8 text-sm lg:text-base xl:text-lg font-bold text-white no-underline transition-all duration-300 hover:bg-brand-green/90 shadow-xl hover:shadow-brand-green/30 hover:-translate-y-0.5"
+              className="flex h-12 lg:h-14 xl:h-[56px] items-center gap-3 rounded-2xl bg-brand-green px-6 lg:px-8 text-sm lg:text-base xl:text-lg font-bold text-white no-underline transition-all duration-300 hover:bg-brand-green/90 shadow-xl hover:-translate-y-0.5"
             >
               <Icon icon="basil:download-solid" className="text-xl lg:text-2xl shrink-0" />
               <span>{t('landing:hero.ctaApp')}</span>
@@ -39,7 +41,7 @@ export default function Hero() {
 
             <a
               href="#pricing"
-              className="flex h-12 lg:h-14 xl:h-[56px] items-center gap-3 rounded-2xl bg-brand-orange pl-6 pr-3 lg:pl-8 lg:pr-4 text-sm lg:text-base xl:text-lg font-bold text-white no-underline transition-all duration-300 hover:bg-brand-orange/90 shadow-xl hover:shadow-brand-orange/30 hover:-translate-y-0.5"
+              className="flex h-12 lg:h-14 xl:h-[56px] items-center gap-3 rounded-2xl bg-brand-orange pl-6 pr-3 lg:pl-8 lg:pr-4 text-sm lg:text-base xl:text-lg font-bold text-white no-underline transition-all duration-300 hover:bg-brand-orange/90 shadow-xl hover:-translate-y-0.5"
             >
               <span>{t('landing:hero.ctaPartner')}</span>
               <div className="flex h-7 w-7 lg:h-8 lg:w-8 items-center justify-center text-white rounded-full bg-white/20">
@@ -48,7 +50,6 @@ export default function Hero() {
             </a>
           </div>
 
-          {/* Carte de Statistiques adaptative */}
           <div className="mt-7 lg:mt-9 flex items-center rounded-2xl lg:rounded-3xl border border-white/20 bg-white/10 p-3.5 lg:p-5 xl:p-6 backdrop-blur-md shadow-2xl">
             <div className="flex flex-col px-3 sm:px-6 py-0.5">
               <span className="font-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black leading-none text-white">
@@ -83,9 +84,97 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="relative flex h-full items-center justify-center lg:justify-end overflow-hidden">
+        <div className="relative flex h-full items-center justify-center lg:justify-end overflow-visible">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] lg:w-[480px] lg:h-[480px] pointer-events-none z-0">
+            {[0, 1].map((idx) => (
+              <motion.div
+                key={idx}
+                animate={{
+                  scale: [0.85, 1.45],
+                  opacity: [0.6, 0],
+                }}
+                transition={{
+                  duration: 3.2,
+                  repeat: Infinity,
+                  delay: idx * 1.6,
+                  ease: 'easeInOut',
+                }}
+                className="absolute inset-0 rounded-full border border-brand-green/40 bg-brand-green/10"
+              />
+            ))}
+          </div>
+
           <div className="relative z-10 w-full max-w-[520px] lg:max-w-[620px] xl:max-w-[700px]">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] lg:w-[460px] lg:h-[460px] rounded-full bg-brand-green/25 blur-3xl pointer-events-none animate-pulse" />
+            <div className="absolute top-2 -left-2 sm:left-2 z-20 flex items-center gap-3 rounded-2xl border border-white/20 bg-brand-navy/90 p-2.5 sm:p-3 text-xs sm:text-sm font-bold text-white shadow-2xl backdrop-blur-md">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-green/20 text-brand-green border border-brand-green/30">
+                <Icon icon="solar:shield-star-bold-duotone" className="text-xl" />
+              </div>
+              <div className="flex flex-col items-start pr-1">
+                <span className="font-bold text-xs sm:text-sm text-white leading-snug">
+                  {t('landing:hero.badges.protected.title')}
+                </span>
+                <span className="text-[10px] sm:text-xs text-white/75 font-normal">
+                  {t('landing:hero.badges.protected.desc')}
+                </span>
+              </div>
+            </div>
+
+            <div className="absolute top-8 right-1 sm:right-4 z-20 flex items-center gap-3 rounded-2xl border border-white/20 bg-brand-navy/90 p-2.5 sm:p-3 text-xs sm:text-sm font-bold text-white shadow-2xl backdrop-blur-md">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-orange/20 text-brand-orange border border-brand-orange/30">
+                <Icon icon="solar:bell-bing-bold-duotone" className="text-xl" />
+              </div>
+              <div className="flex flex-col items-start pr-1">
+                <span className="font-bold text-xs sm:text-sm text-white leading-snug">
+                  {t('landing:hero.badges.alert.title')}
+                </span>
+                <span className="text-[10px] sm:text-xs text-white/75 font-normal">
+                  {t('landing:hero.badges.alert.desc')}
+                </span>
+              </div>
+            </div>
+
+            <div className="absolute top-1/2 -left-4 sm:-left-6 -translate-y-1/2 z-20 flex items-center gap-3 rounded-2xl border border-white/20 bg-brand-navy/90 p-2.5 sm:p-3 text-xs sm:text-sm font-bold text-white shadow-2xl backdrop-blur-md">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-green/20 text-brand-green border border-brand-green/30">
+                <Icon icon="solar:cpu-bold-duotone" className="text-xl" />
+              </div>
+              <div className="flex flex-col items-start pr-1">
+                <span className="font-bold text-xs sm:text-sm text-white leading-snug">
+                  {t('landing:hero.badges.offline.title')}
+                </span>
+                <span className="text-[10px] sm:text-xs text-white/75 font-normal">
+                  {t('landing:hero.badges.offline.desc')}
+                </span>
+              </div>
+            </div>
+
+            <div className="absolute top-1/2 -right-2 sm:-right-4 -translate-y-1/2 z-20 flex items-center gap-3 rounded-2xl border border-white/20 bg-brand-navy/90 p-2.5 sm:p-3 text-xs sm:text-sm font-bold text-white shadow-2xl backdrop-blur-md">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-orange/20 text-brand-orange border border-brand-orange/30">
+                <Icon icon="solar:check-circle-bold-duotone" className="text-xl" />
+              </div>
+              <div className="flex flex-col items-start pr-1">
+                <span className="font-bold text-xs sm:text-sm text-white leading-snug">
+                  {t('landing:hero.badges.verified.title')}
+                </span>
+                <span className="text-[10px] sm:text-xs text-white/75 font-normal">
+                  {t('landing:hero.badges.verified.desc')}
+                </span>
+              </div>
+            </div>
+
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3 rounded-2xl border border-white/20 bg-brand-navy/90 p-2.5 sm:p-3 text-xs sm:text-sm font-bold text-white shadow-2xl backdrop-blur-md whitespace-nowrap">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-green/20 text-brand-green border border-brand-green/30">
+                <Icon icon="solar:users-group-two-rounded-bold-duotone" className="text-xl" />
+              </div>
+              <div className="flex flex-col items-start pr-1">
+                <span className="font-bold text-xs sm:text-sm text-white leading-snug">
+                  {t('landing:hero.badges.operators.title')}
+                </span>
+                <span className="text-[10px] sm:text-xs text-white/75 font-normal">
+                  {t('landing:hero.badges.operators.desc')}
+                </span>
+              </div>
+            </div>
+
             <img
               src={ImgHero}
               alt="KWISMO Anti-Fraude Mobile Money"

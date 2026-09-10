@@ -4,7 +4,7 @@ import { Icon } from '@iconify/react';
 export default function WhatKwismoBrings() {
   const { t } = useTranslation('landing');
 
-  const points = t('whatKwismoBrings.points', { returnObjects: true }) as string[];
+  const points = t('landing:whatKwismoBrings.points', { returnObjects: true }) as string[];
 
   return (
     <section className="w-full bg-white dark:bg-brand-navy px-6 py-16 transition-colors font-body">
@@ -19,19 +19,20 @@ export default function WhatKwismoBrings() {
         </div>
 
         <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {Array.isArray(points) && points.map((text: string, idx: number) => (
-            <div
-              key={idx}
-              className="flex items-start gap-3.5 p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-darkBg shadow-sm transition"
-            >
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-green/10 text-brand-green mt-0.5">
-                <Icon icon="solar:check-circle-bold" className="text-base text-brand-green" />
+          {Array.isArray(points) &&
+            points.map((text: string, idx: number) => (
+              <div
+                key={idx}
+                className="flex items-start gap-3.5 p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-darkBg shadow-sm hover:shadow-md transition-all duration-200"
+              >
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-green/10 text-brand-green mt-0.5">
+                  <Icon icon="solar:check-circle-bold" className="text-base text-brand-green" />
+                </div>
+                <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 leading-snug">
+                  {text}
+                </p>
               </div>
-              <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 leading-snug">
-                {text}
-              </p>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </section>
