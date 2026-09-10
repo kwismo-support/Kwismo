@@ -26,8 +26,15 @@ jobs:
           cache: 'npm'
           cache-dependency-path: kwismo-web/package-lock.json
 
+      - name: Install & Build Web Application
+        working-directory: kwismo-web
+        run: |
+          npm ci
+          npm run build
+
       - name: Deploy to Dev Environment (kwismo-dev.vercel.app)
         if: github.ref == 'refs/heads/dev'
+        working-directory: kwismo-web
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -43,6 +50,7 @@ jobs:
 
       - name: Deploy to Staging Environment (kwismo-preview.vercel.app)
         if: github.ref == 'refs/heads/staging'
+        working-directory: kwismo-web
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -58,6 +66,7 @@ jobs:
 
       - name: Deploy to Production Environment (kwismo.com)
         if: github.ref == 'refs/heads/main'
+        working-directory: kwismo-web
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
