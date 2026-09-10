@@ -33,10 +33,9 @@ export default function AfricanTeam() {
 
   return (
     <section id="about" className="py-20 lg:py-24 bg-brand-green font-body transition-colors duration-200">
-      <div className="mx-auto max-w-[90%] grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12 lg:gap-16">
-        <div className="flex flex-col justify-between items-start">
+      <div className="mx-auto max-w-[90%] grid grid-cols-1 lg:grid-cols-2 items-center gap-12 lg:gap-16">
+        <div className="flex flex-col justify-between items-start h-full">
           <div>
-            {/* Typographie d'origine remise à la taille exacte initiale */}
             <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-tight text-white">
               {t('africanTeam.title')}
             </h2>
@@ -46,7 +45,7 @@ export default function AfricanTeam() {
             </p>
           </div>
 
-          <div className="mt-8 overflow-hidden rounded-3xl border-2 border-white/20 shadow-2xl w-full flex-1 min-h-[300px] relative group">
+          <div className="mt-8 overflow-hidden rounded-3xl border-2 border-white/20 shadow-2xl w-full flex-1 min-h-[280px] relative group">
             <div className="absolute inset-0 bg-brand-navy/10 group-hover:bg-transparent transition-colors z-10 pointer-events-none" />
             <img
               src={ImgEquipe}
@@ -56,7 +55,8 @@ export default function AfricanTeam() {
           </div>
         </div>
 
-        <div className="flex flex-col justify-between gap-5 h-full">
+        {/* Colonne des cartes compactes et fluides */}
+        <div className="flex flex-col justify-center gap-4">
           {cards.map((card, idx) => {
             const isOpen = activeCard === idx;
 
@@ -65,35 +65,33 @@ export default function AfricanTeam() {
                 key={idx}
                 onMouseEnter={() => setActiveCard(idx)}
                 onClick={() => setActiveCard(isOpen ? null : idx)}
-                className={`cursor-pointer relative overflow-hidden p-6 sm:p-7 rounded-3xl bg-white text-slate-900 shadow-xl border transition-all duration-500 ease-out flex flex-col sm:flex-row items-start sm:items-center justify-between flex-1 ${
+                className={`cursor-pointer relative overflow-hidden p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-white text-slate-900 border transition-all duration-500 ease-in-out flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-lg ${
                   isOpen
                     ? 'border-brand-green/50 shadow-2xl bg-gradient-to-br ' + card.accentBg
-                    : 'border-white/40 shadow-md hover:border-brand-green/30'
+                    : 'border-white/40 shadow-sm hover:border-brand-green/30'
                 }`}
               >
                 {/* Icône expressive et Titre à gauche */}
                 <div className="flex items-center gap-4 shrink-0 z-10">
-                  <div className="p-3 rounded-2xl bg-slate-100/90 shadow-inner shrink-0">
-                    <Icon icon={card.icon} className={`text-4xl sm:text-5xl ${card.iconColor}`} />
+                  <div className="p-2.5 rounded-2xl bg-slate-100/90 shadow-inner shrink-0">
+                    <Icon icon={card.icon} className={`text-3xl sm:text-4xl ${card.iconColor}`} />
                   </div>
-                  <h3 className="font-title text-lg sm:text-xl font-extrabold text-slate-900">
+                  <h3 className="font-title text-base sm:text-lg font-extrabold text-slate-900">
                     {card.title}
                   </h3>
                 </div>
 
-                {/* Animation de Révélation latérale (droite vers la gauche) */}
+                {/* Animation de Révélation latérale fluide de droite vers la gauche */}
                 <div
-                  className={`grid transition-[grid-template-columns,opacity,margin,padding] duration-500 ease-out ${
+                  className={`transition-all duration-500 ease-in-out overflow-hidden ${
                     isOpen
-                      ? 'grid-cols-[1fr] opacity-100 mt-4 sm:mt-0 sm:ml-6 sm:pl-6 sm:border-l border-slate-200'
-                      : 'grid-cols-[0fr] opacity-0 mt-0 sm:mt-0 sm:ml-0 sm:pl-0 sm:border-l-0'
+                      ? 'max-w-[400px] opacity-100 mt-3 sm:mt-0 sm:ml-5 sm:pl-5 sm:border-l border-slate-200'
+                      : 'max-w-0 opacity-0 mt-0 sm:mt-0 sm:ml-0 sm:pl-0 sm:border-l-0'
                   }`}
                 >
-                  <div className="overflow-hidden">
-                    <p className="font-body text-sm text-slate-600 leading-relaxed font-normal max-w-[340px]">
-                      {card.desc}
-                    </p>
-                  </div>
+                  <p className="font-body text-xs sm:text-sm text-slate-600 leading-relaxed font-normal whitespace-normal w-full sm:w-[300px]">
+                    {card.desc}
+                  </p>
                 </div>
               </div>
             );
