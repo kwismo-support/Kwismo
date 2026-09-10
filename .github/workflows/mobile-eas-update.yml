@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - staging
       - dev
     paths:
       - 'kwismo-mobile/**'
@@ -38,8 +39,8 @@ jobs:
         working-directory: kwismo-mobile
         run: npm run optimize
 
-      - name: Publish Update to Kwismo-Test (preview channel on dev branch)
-        if: github.ref == 'refs/heads/dev'
+      - name: Publish Update to Kwismo-Test (preview channel on dev & staging branches)
+        if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/staging'
         working-directory: kwismo-mobile
         env:
           APP_ENV: preview
