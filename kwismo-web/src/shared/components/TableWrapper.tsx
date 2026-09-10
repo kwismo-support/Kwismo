@@ -131,7 +131,7 @@ export function TablePagination({
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="h-8 px-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy text-slate-800 dark:text-slate-200 font-semibold focus:outline-none cursor-pointer"
+              className="h-6 px-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy text-slate-800 dark:text-slate-200 font-semibold focus:outline-none cursor-pointer"
             >
               {[5, 10, 20, 50, 100].map((s) => (
                 <option key={s} value={s}>

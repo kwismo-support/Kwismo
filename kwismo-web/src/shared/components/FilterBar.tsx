@@ -75,7 +75,7 @@ export function FilterBar({
               placeholder={searchPlaceholder}
               className={cn(
                 'w-full h-10 pl-10 pr-9 rounded-xl border text-xs sm:text-sm transition',
-                'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-darkBg/60',
+                'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-darkBg',
                 'text-slate-900 dark:text-white placeholder:text-slate-400',
                 'focus:outline-none focus:ring-2 focus:ring-brand-green/30 focus:border-brand-green'
               )}
@@ -114,7 +114,7 @@ export function FilterBar({
               className={cn(
                 'w-full h-10 rounded-xl border text-xs sm:text-sm appearance-none transition pr-8 cursor-pointer',
                 select.icon ? 'pl-9' : 'pl-3',
-                'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-darkBg/60',
+                'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-darkBg',
                 'text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-green/30'
               )}
             >
@@ -149,7 +149,7 @@ export function FilterBar({
           <button
             onClick={onRefresh}
             title="Rafraîchir"
-            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-darkBg/60 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-darkBg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition"
           >
             <Icon icon="solar:refresh-bold" className="text-base" />
           </button>
@@ -158,7 +158,7 @@ export function FilterBar({
         {onExport && (
           <button
             onClick={onExport}
-            className="flex items-center gap-1.5 px-3.5 h-10 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/10 transition shadow-sm"
+            className="flex items-center gap-1.5 px-3.5 h-10 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-darkBg text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/10 transition shadow-sm"
           >
             <Icon icon="solar:export-bold" className="text-sm text-brand-green" />
             <span>Exporter</span>
@@ -166,7 +166,7 @@ export function FilterBar({
         )}
 
         {onViewModeChange && viewMode && (
-          <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-brand-darkBg/80 border border-slate-200 dark:border-white/10">
+          <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-brand-darkBg border border-slate-200 dark:border-white/10">
             <button
               onClick={() => onViewModeChange('table')}
               className={cn(

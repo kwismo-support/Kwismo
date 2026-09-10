@@ -221,9 +221,9 @@ export default function NumbersTable({
     <div className="flex flex-col gap-6 w-full font-body">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard title="Total Numéraux" value={stats.total} isLoading={isLoading} />
-        <KpiCard title="Numéraux Sécurisés" value={stats.active} badgeText="Sécurisé" badgeVariant="mint" isLoading={isLoading} />
-        <KpiCard title="Numéraux Frauduleux" value={stats.highRisk} badgeText="Alerte" badgeVariant="danger" isLoading={isLoading} />
-        <KpiCard title="Numéraux à Signaler" value={stats.reported} badgeText="Revue" badgeVariant="warning" isLoading={isLoading} />
+        <KpiCard title="Numéraux Sécurisés" value={stats.active} badgeVariant="mint" isLoading={isLoading} />
+        <KpiCard title="Numéraux Frauduleux" value={stats.highRisk} badgeVariant="danger" isLoading={isLoading} />
+        <KpiCard title="Numéraux à Signaler" value={stats.reported} badgeVariant="warning" isLoading={isLoading} />
       </div>
 
       <FilterBar
@@ -364,7 +364,7 @@ export default function NumbersTable({
           </div>
 
           {/* Grid View Pagination */}
-          <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33]">
+          <div className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-darkBg">
             <TablePagination
               currentPage={page}
               totalPages={totalPages}

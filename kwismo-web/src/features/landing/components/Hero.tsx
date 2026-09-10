@@ -14,7 +14,7 @@ export default function Hero() {
 
       <div className="relative mx-auto grid max-w-[90%] grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-14 w-full py-8 lg:py-12">
         <div className="relative z-10 flex flex-col items-start pt-2 lg:pt-0">
-          <h1 className="font-title max-w-[620px] text-3xl sm:text-4xl lg:text-[48px] xl:text-[54px] 2xl:text-[60px] font-extrabold leading-[1.16] tracking-tight text-white">
+          <h1 className="font-title max-w-[660px] text-3xl sm:text-4xl lg:text-[50px] xl:text-[58px] 2xl:text-[64px] font-extrabold leading-[1.14] tracking-tight text-white">
             {t('landing:hero.titleLine1')}
             <br />
             {t('landing:hero.titleLine2')}
@@ -25,7 +25,7 @@ export default function Hero() {
             </span>
           </h1>
 
-          <p className="mt-5 max-w-[540px] text-sm sm:text-base lg:text-lg font-normal leading-relaxed text-white/85">
+          <p className="mt-6 max-w-[580px] text-base sm:text-lg lg:text-xl font-normal leading-relaxed text-white/90">
             {t('landing:hero.subtitle')}
           </p>
 

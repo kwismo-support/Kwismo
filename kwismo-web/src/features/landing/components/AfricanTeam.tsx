@@ -8,21 +8,21 @@ export default function AfricanTeam() {
   const cards = [
     {
       title: t('africanTeam.cards.mission.title'),
-      desc: t('africanTeam.cards.mission.desc'),
+      desc: t('africanTeam.cards.mission.desc') + ' Nous analysons des milliers d’appels et numéros signalés quotidiennement en Afrique subsaharienne pour bloquer la fraude Mobile Money à la source.',
       tag: 'Engagement Anti-Fraude',
       icon: 'solar:target-bold-duotone',
       iconBg: 'bg-brand-orange/15 text-brand-orange border border-brand-orange/20',
     },
     {
       title: t('africanTeam.cards.community.title'),
-      desc: t('africanTeam.cards.community.desc'),
+      desc: t('africanTeam.cards.community.desc') + ' Grâce aux données partagées par notre communauté et les opérateurs partenaires, chaque arnaque signalée protège instantanément des milliers d’utilisateurs.',
       tag: 'Intelligence Collective',
       icon: 'solar:users-group-two-rounded-bold-duotone',
       iconBg: 'bg-brand-green/15 text-brand-green border border-brand-green/20',
     },
     {
       title: t('africanTeam.cards.approach.title'),
-      desc: t('africanTeam.cards.approach.desc'),
+      desc: t('africanTeam.cards.approach.desc') + ' Notre moteur IA combiné au protocole USSD natif calcule un score de risque instantané en moins d’une seconde, même sans connexion internet haut débit.',
       tag: 'Réponse Instantanée',
       icon: 'solar:bolt-bold-duotone',
       iconBg: 'bg-brand-orange/15 text-brand-orange border border-brand-orange/20',
