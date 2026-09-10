@@ -1,4 +1,4 @@
-name: Mobile EAS Update CI/CD
+name: KWISMO Mobile — Automated EAS OTA Updates
 
 on:
   push:
@@ -9,10 +9,11 @@ on:
     paths:
       - 'kwismo-mobile/**'
       - '.github/workflows/mobile-eas-update.yml'
+  workflow_dispatch:
 
 jobs:
-  update:
-    name: Publish OTA Update to Expo EAS
+  publish-ota:
+    name: Publish Mobile OTA Update (EAS)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -35,20 +36,21 @@ jobs:
         working-directory: kwismo-mobile
         run: npm ci
 
-      - name: Auto Optimize Mobile Assets
+      - name: Auto-Optimize Mobile Assets
         working-directory: kwismo-mobile
         run: npm run optimize
 
-      - name: Publish Update to Kwismo-Test (preview channel on dev & staging branches)
+      - name: Publish Preview Update (Kwismo-Test / Preview Channel)
         if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/staging'
         working-directory: kwismo-mobile
         env:
           APP_ENV: preview
         run: eas update --auto --branch preview --non-interactive
 
-      - name: Publish Update to Kwismo (production channel on main branch)
+      - name: Publish Production Update (Kwismo / Production Channel)
         if: github.ref == 'refs/heads/main'
         working-directory: kwismo-mobile
         env:
           APP_ENV: production
         run: eas update --auto --branch production --non-interactive
+
