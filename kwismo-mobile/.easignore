@@ -1,8 +1,26 @@
+# Ignore non-mobile monorepo directories
+../kwismo-web
+../kwismo-backend
+../kwismo-ai
+../maquettes
+../marketing
+../plan economique
+../plan strategique
+../cahiers des charges
+../cadrage
+../diagrammes
+../reunions
+../branding
+../docs
+../*.pdf
+../*.zip
+../*.rar
+../*.tar.gz
+
+# Local build artifacts
 node_modules/
 .expo/
 dist/
 web-build/
 *.log
 .git/
-
-
