@@ -9,9 +9,9 @@ interface OnboardingBackgroundProps {
 }
 
 const DEFAULT_SLIDE_IMAGES: (ImageSourcePropType | string)[] = [
-  require('../../../assets/slide1.png'),
-  require('../../../assets/slide2.png'),
-  require('../../../assets/slide3.png'),
+  require('../../../assets/slide1.jpg'),
+  require('../../../assets/slide2.jpg'),
+  require('../../../assets/slide3.jpg'),
 ];
 
 export const OnboardingBackground: React.FC<OnboardingBackgroundProps> = ({
