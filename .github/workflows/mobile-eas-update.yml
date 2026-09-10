@@ -34,6 +34,10 @@ jobs:
         working-directory: kwismo-mobile
         run: npm ci
 
+      - name: Auto Optimize Mobile Assets
+        working-directory: kwismo-mobile
+        run: npm run optimize
+
       - name: Publish Update to Kwismo-Test (preview channel on dev branch)
         if: github.ref == 'refs/heads/dev'
         working-directory: kwismo-mobile

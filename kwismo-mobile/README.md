@@ -121,207 +121,133 @@ Puis :
 kwismo-mobile/
 │
 ├─ app.config.js                    # ★ Configuration Expo dynamique (Kwismo vs Kwismo-Test)
+├─ app.json                         # Configuration de base Expo
 ├─ eas.json                         # ★ Profils de build EAS (APK Android & IPA iOS)
-├─ package.json
+├─ .easignore                       # ★ Exclusion des fichiers hors-mobile pour EAS Build
+├─ package.json                     # Scripts & dépendances (inclut sharp, expo-updates, eas-cli)
+├─ babel.config.js                  # Configuration Babel & NativeWind
+├─ metro.config.js                  # Configuration du bundler Metro
+├─ tailwind.config.js               # Configuration TailwindCSS mobile
+├─ tsconfig.json                    # Configuration TypeScript
+│
+├─ scripts/
+│  └─ optimize-assets.js            # ★ Auto-optimisation dynamique des ressources lourdes
+│
 ├─ app/                             # ★ Routes (Expo Router, file-based)
 │  ├─ _layout.tsx                   # Layout racine : providers globaux & OTA Updates silencieux
 │  ├─ index.tsx                     # Redirection initiale (splash → auth/app)
-│  ├─ onboarding.tsx
+│  ├─ onboarding.tsx                # Écran d'onboarding animé
 │  │
-│  ├─ (auth)/                       # Groupe NON authentifié
+│  ├─ (auth)/                       # Groupe d'écrans NON authentifié
 │  │  ├─ _layout.tsx
-│  │  ├─ login.tsx
-│  │  ├─ otp.tsx
-│  │  ├─ forgot-password.tsx
-│  │  └─ reset-password.tsx
+│  │  ├─ login.tsx                  # Connexion numéro & mot de passe
+│  │  ├─ register.tsx               # Création de compte
+│  │  ├─ otp.tsx                    # Saisie et vérification du code OTP
+│  │  ├─ otp-success.tsx            # Écran de succès validation OTP
+│  │  ├─ welcome.tsx                # Écran d'accueil Auth
+│  │  ├─ forgot-password.tsx        # Oubli de mot de passe
+│  │  └─ reset-password.tsx         # Réinitialisation de mot de passe
 │  │
-│  └─ (app)/                        # Groupe authentifié (protégé)
+│  └─ (app)/                        # Groupe d'écrans authentifié (protégé)
 │     ├─ _layout.tsx
-│     ├─ index.tsx
-│     ├─ verify.tsx
-│     ├─ transfer.tsx
-│     ├─ contacts.tsx
-│     ├─ alert-whatsapp.tsx
-│     ├─ report.tsx
-│     ├─ survey.tsx
-│     └─ profile.tsx
+│     ├─ index.tsx                  # Dashboard principal (KPI & Actions rapides)
+│     ├─ verify.tsx                 # Vérification instantanée de numéro suspect
+│     ├─ transfer.tsx               # Transfert USSD & Mobile Money sécurisé
+│     ├─ contacts.tsx               # Liste des contacts & badges de risque
+│     ├─ alert-whatsapp.tsx         # Alerte WhatsApp (compte piraté)
+│     ├─ report.tsx                 # Formulaire de signalement de fraude
+│     ├─ survey.tsx                 # Enquête utilisateur post-signalement
+│     ├─ profile.tsx                # Profil utilisateur & récapitulatif
+│     ├─ edit-profile.tsx           # Édition des informations personnelles
+│     ├─ security.tsx               # Paramètres de sécurité (PIN, Biométrie, 2FA)
+│     ├─ pin-setup.tsx              # Configuration du code PIN
+│     ├─ two-factor.tsx             # Configuration Double Authentification
+│     ├─ notifications.tsx          # Centre de notifications & alertes
+│     └─ management.tsx             # Gestion de compte & paramètres avancés
 │
-├─ src/
-│  ├─ features/                     # Logique métier par fonctionnalité
-│  │  │
-│  │  ├─ auth/
-│  │  │  ├─ components/
-│  │  │  │  ├─ CountrySelector.tsx
-│  │  │  │  ├─ PhoneInput.tsx
-│  │  │  │  └─ OtpInput.tsx
-│  │  │  ├─ hooks/
-│  │  │  │  ├─ useLogin.ts
-│  │  │  │  └─ useOtp.ts
-│  │  │  ├─ services/
-│  │  │  │  └─ auth.api.ts
-│  │  │  └─ schemas/
-│  │  │     └─ auth.schema.ts
-│  │  │
-│  │  ├─ dashboard/
-│  │  │  ├─ components/
-│  │  │  │  ├─ KpiCard.tsx
-│  │  │  │  ├─ QuickActions.tsx
-│  │  │  │  └─ RecentActivity.tsx
-│  │  │  ├─ hooks/
-│  │  │  │  └─ useDashboard.ts
-│  │  │  └─ services/
-│  │  │     └─ dashboard.api.ts
-│  │  │
-│  │  ├─ verify/
-│  │  │  ├─ components/
-│  │  │  │  ├─ VerifyInput.tsx
-│  │  │  │  └─ RiskResultCard.tsx
-│  │  │  ├─ hooks/
-│  │  │  │  └─ useVerify.ts
-│  │  │  └─ services/
-│  │  │     └─ verify.api.ts
-│  │  │
-│  │  ├─ transfer/
-│  │  │  ├─ components/
-│  │  │  │  ├─ TransferStepper.tsx
-│  │  │  │  ├─ AmountInput.tsx
-│  │  │  │  └─ UssdConfirm.tsx
-│  │  │  ├─ hooks/
-│  │  │  │  └─ useTransfer.ts
-│  │  │  ├─ services/
-│  │  │  │  └─ transfer.api.ts
-│  │  │  └─ lib/
-│  │  │     └─ ussd.ts
-│  │  │
-│  │  ├─ contacts/
-│  │  │  ├─ components/
-│  │  │  │  ├─ ContactItem.tsx
-│  │  │  │  └─ StatusBadge.tsx
-│  │  │  ├─ hooks/
-│  │  │  │  └─ useContacts.ts
-│  │  │  └─ services/
-│  │  │     └─ contacts.api.ts
-│  │  │
-│  │  ├─ whatsapp-alert/
-│  │  │  ├─ components/
-│  │  │  │  ├─ ContactPicker.tsx
-│  │  │  │  └─ AlertMessageForm.tsx
-│  │  │  ├─ hooks/
-│  │  │  │  └─ useWhatsappAlert.ts
-│  │  │  └─ services/
-│  │  │     └─ whatsapp.api.ts
-│  │  │
-│  │  ├─ call-detection/
-│  │  │  ├─ components/
-│  │  │  │  ├─ CallOverlay.tsx
-│  │  │  │  └─ DetectionSettings.tsx
-│  │  │  ├─ hooks/
-│  │  │  │  └─ useCallDetection.ts
-│  │  │  └─ services/
-│  │  │     └─ call.api.ts
-│  │  │
-│  │  ├─ report/
-│  │  │  ├─ components/
-│  │  │  │  └─ ReportForm.tsx
-│  │  │  ├─ hooks/
-│  │  │  │  └─ useReport.ts
-│  │  │  └─ services/
-│  │  │     └─ report.api.ts
-│  │  │
-│  │  ├─ survey/
-│  │  │  ├─ components/
-│  │  │  │  └─ SurveySheet.tsx
-│  │  │  ├─ hooks/
-│  │  │  │  └─ useSurvey.ts
-│  │  │  └─ services/
-│  │  │     └─ survey.api.ts
-│  │  │
-│  │  └─ profile/
-│  │     ├─ components/
-│  │     │  ├─ ProfileForm.tsx
-│  │     │  ├─ SecuritySettings.tsx
-│  │     │  └─ PreferencesSettings.tsx
-│  │     ├─ hooks/
-│  │     │  └─ useProfile.ts
-│  │     └─ services/
-│  │        └─ profile.api.ts
-│  │
-│  ├─ shared/
-│  │  ├─ ui/                        # Composants de base
-│  │  │  ├─ Button.tsx
-│  │  │  ├─ Input.tsx
-│  │  │  ├─ Badge.tsx
-│  │  │  ├─ Card.tsx
-│  │  │  ├─ BottomSheet.tsx
-│  │  │  ├─ Modal.tsx
-│  │  │  └─ Toast.tsx
-│  │  ├─ components/
-│  │  │  ├─ AppHeader.tsx
-│  │  │  ├─ TabBar.tsx
-│  │  │  ├─ ScreenState.tsx
-│  │  │  ├─ ThemeToggle.tsx
-│  │  │  └─ LanguageSwitcher.tsx
-│  │  ├─ hooks/
-│  │  │  ├─ useTheme.ts
-│  │  │  ├─ useDebounce.ts
-│  │  │  └─ useNetworkStatus.ts
-│  │  ├─ lib/
-│  │  │  ├─ axios.ts
-│  │  │  ├─ queryClient.ts
-│  │  │  ├─ phone.ts
-│  │  │  ├─ secureStore.ts
-│  │  │  └─ utils.ts
-│  │  ├─ services/
-│  │  │  ├─ apiClient.ts
-│  │  │  ├─ database.ts
-│  │  │  ├─ device.ts
-│  │  │  └─ syncEngine.ts
-│  │  ├─ store/
-│  │  │  ├─ authStore.ts
-│  │  │  ├─ themeStore.ts
-│  │  │  └─ languageStore.ts
-│  │  ├─ types/
-│  │  │  ├─ user.ts
-│  │  │  ├─ number.ts
-│  │  │  └─ api.ts
-│  │  └─ constants/
-│  │     └─ config.ts
-│  │
-│  ├─ styles/
-│  │  └─ tokens.ts                  # Design tokens (couleurs clair/sombre)
-│  │
-│  └─ locales/
-│     ├─ fr/
-│     │  ├─ common.json
-│     │  ├─ auth.json
-│     │  └─ app.json
-│     └─ en/
-│        ├─ common.json
-│        ├─ auth.json
-│        └─ app.json
-│
-├─ assets/                          # Ressources natives
-│  ├─ icon.png                      # Icône de l'app
+├─ assets/                          # Ressources visuelles optimisées (< 150 KB)
 │  ├─ adaptive-icon.png             # Icône adaptative Android
-│  ├─ splash.png                    # Écran de démarrage
-│  ├─ notification-icon.png
-│  └─ fonts/
-│     ├─ Aptos-Regular.ttf
-│     ├─ Aptos-Medium.ttf
-│     ├─ Aptos-SemiBold.ttf
-│     └─ Aptos-Bold.ttf
+│  ├─ icon.png                      # Icône principale de l'application
+│  ├─ logo-icon.png                 # Picto logo Kwismo
+│  ├─ logo-white.png                # Logo Kwismo version blanche
+│  ├─ logo.png                      # Logo Kwismo version couleur
+│  ├─ splash.png                    # Écran de démarrage (Splash screen)
+│  ├─ slide1.jpg                    # Visuel onboarding 1 (Protection)
+│  ├─ slide2.jpg                    # Visuel onboarding 2 (Transfert)
+│  └─ slide3.jpg                    # Visuel onboarding 3 (Vérification)
 │
-├─ .env                             # Variables réelles (NON versionné)
-├─ .env.example
-├─ .gitignore
-├─ app.json                         # Config Expo (nom, icône, splash, permissions)
-├─ babel.config.js                  # Preset Expo + NativeWind
-├─ metro.config.js                  # Bundler Metro (+ NativeWind)
-├─ tailwind.config.js               # Tokens → NativeWind
-├─ tsconfig.json                    # Alias @/ vers src/
-├─ eas.json                         # Configuration des builds EAS
-├─ package.json
-└─ README.md                         # Ce fichier
+└─ src/                            # Code source modulaire
+   ├─ features/                     # Logique métier découpée par domaine
+   │  ├─ auth/
+   │  │  ├─ components/ (CountrySelector.tsx, OtpInput.tsx, PhoneInput.tsx)
+   │  │  ├─ hooks/ (useLogin.ts, useOtp.ts, useRegister.ts, useForgotPassword.ts)
+   │  │  ├─ schemas/ (auth.schema.ts)
+   │  │  └─ services/ (auth.api.ts)
+   │  ├─ call-detection/
+   │  │  ├─ components/ (CallOverlay.tsx, CallWarningModal.tsx, DetectionSettings.tsx)
+   │  │  ├─ hooks/ (useCallDetection.ts)
+   │  │  └─ services/ (call.api.ts, callDetection.api.ts)
+   │  ├─ contacts/
+   │  │  ├─ components/ (ContactItem.tsx, StatusBadge.tsx)
+   │  │  ├─ hooks/ (useContacts.ts)
+   │  │  └─ services/ (contacts.api.ts)
+   │  ├─ dashboard/
+   │  │  ├─ components/ (KpiCard.tsx, QuickActions.tsx, RecentActivity.tsx)
+   │  │  ├─ hooks/ (useDashboard.ts)
+   │  │  └─ services/ (dashboard.api.ts)
+   │  ├─ notifications/
+   │  │  ├─ hooks/ (useNotifications.ts)
+   │  │  └─ services/ (notifications.api.ts)
+   │  ├─ numbers/
+   │  │  ├─ hooks/ (useNumbers.ts, useUserPhones.ts)
+   │  │  └─ services/ (numbers.api.ts)
+   │  ├─ profile/
+   │  │  ├─ components/ (PreferencesSettings.tsx, ProfileForm.tsx, SecuritySettings.tsx)
+   │  │  ├─ hooks/ (useProfile.ts)
+   │  │  └─ services/ (profile.api.ts)
+   │  ├─ report/
+   │  │  ├─ components/ (ReportForm.tsx)
+   │  │  ├─ hooks/ (useReport.ts)
+   │  │  └─ services/ (report.api.ts)
+   │  ├─ survey/
+   │  │  ├─ components/ (SurveySheet.tsx)
+   │  │  ├─ hooks/ (useSurvey.ts)
+   │  │  └─ services/ (survey.api.ts)
+   │  ├─ transfer/
+   │  │  ├─ components/ (AmountInput.tsx, TransferStepper.tsx, UssdConfirm.tsx)
+   │  │  ├─ hooks/ (useTransfer.ts)
+   │  │  ├─ lib/ (ussd.ts)
+   │  │  └─ services/ (transfer.api.ts)
+   │  ├─ verify/
+   │  │  ├─ components/ (RiskResultCard.tsx, VerifyInput.tsx)
+   │  │  ├─ hooks/ (useVerify.ts, useVerifyNumber.ts)
+   │  │  └─ services/ (verify.api.ts)
+   │  └─ whatsapp-alert/
+   │     ├─ components/ (AlertMessageForm.tsx, ContactPicker.tsx)
+   │     ├─ hooks/ (useWhatsappAlert.ts)
+   │     └─ services/ (whatsapp.api.ts)
+   │
+   ├─ locales/                      # Internationalisation i18n
+   │  ├─ en/ (app.json, auth.json, common.json)
+   │  ├─ fr/ (app.json, auth.json, common.json)
+   │  ├─ en.json, fr.json
+   │  └─ i18n.ts                    # Initialisation d'i18next
+   │
+   ├─ shared/                       # Éléments partagés dans toute l'application
+   │  ├─ components/                # Modales, Barres d'en-tête, Arrière-plans, Pickers
+   │  ├─ config/ (env.ts)
+   │  ├─ constants/ (config.ts)
+   │  ├─ hooks/ (useTheme.ts, useAppTheme.ts, useBiometricLock.ts, useNetworkStatus.ts, useDebounce.ts)
+   │  ├─ lib/ (axios.ts, contactsService.ts, phone.ts, queryClient.ts, responsive.ts, secureStore.ts)
+   │  ├─ mock/ (notificationsMock.ts, simNumbersMock.ts, transactionsMock.ts)
+   │  ├─ services/ (apiClient.ts, database.ts, device.ts, simService.ts, storage.ts, syncEngine.ts)
+   │  ├─ store/ (authStore.ts, languageStore.ts, themeStore.ts, toastStore.ts)
+   │  ├─ types/ (api.ts, number.ts, user.ts)
+   │  ├─ ui/ (Badge.tsx, BottomSheet.tsx, Button.tsx, Card.tsx, DataTable.tsx, Icon.tsx, Input.tsx, Modal.tsx, Toast.tsx)
+   │  └─ utils/ (useOTAUpdates.ts)  # ★ Hook de mise à jour automatique et silencieuse
+   │
+   └─ styles/
+      └─ tokens.ts                  # Définition des couleurs, polices et espacements
 ```
 
 ---
