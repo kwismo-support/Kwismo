@@ -8,13 +8,10 @@ interface OnboardingBackgroundProps {
   imageSource?: ImageSourcePropType | string;
 }
 
-// 🖼️ EMPLACEMENT POUR VOS IMAGES LOCALES :
-// Pour utiliser vos propres images du dossier "assets", remplacez par :
-// require('../../../assets/slide1.png'), require('../../../assets/slide2.png'), etc.
 const DEFAULT_SLIDE_IMAGES: (ImageSourcePropType | string)[] = [
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80',
-  'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=1000&q=80',
-  'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=1000&q=80',
+  require('../../../assets/slide1.png'),
+  require('../../../assets/slide2.png'),
+  require('../../../assets/slide3.png'),
 ];
 
 export const OnboardingBackground: React.FC<OnboardingBackgroundProps> = ({
