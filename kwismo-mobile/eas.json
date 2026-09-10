@@ -27,6 +27,20 @@
         "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
       }
     },
+    "staging": {
+      "distribution": "internal",
+      "channel": "staging",
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": false
+      },
+      "env": {
+        "APP_ENV": "staging",
+        "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
+      }
+    },
     "production": {
       "channel": "production",
       "android": {
