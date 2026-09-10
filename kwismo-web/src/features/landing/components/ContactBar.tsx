@@ -1,44 +1,55 @@
-import { Facebook, Instagram, Mail, Phone, Twitter } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@iconify/react';
+import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher';
+import { ThemeToggle } from '@/shared/components/ThemeToggle';
 
 export default function ContactBar() {
+  const { t } = useTranslation('landing');
+
+  const email = t('contactBar.email');
+  const phone = t('contactBar.phone');
+
   return (
-    <div className="w-full bg-[#151D34] text-white">
-      <div className="mx-auto flex h-[30px] w-full items-center justify-between px-[7%]">
-
-        {/* Contact */}
-        <div className="flex items-center gap-8">
+    <div className="w-full bg-slate-100 dark:bg-brand-darkBg text-slate-800 dark:text-white text-xs py-2 px-4 sm:px-8 border-b border-slate-200 dark:border-white/10 transition-colors">
+      <div className="mx-auto flex max-w-[90%] flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-5 font-semibold text-brand-green">
           <a
-            href="mailto:kwismosupport@gmail.com"
-            className="flex items-center gap-2 font-body text-[9px] font-medium text-white no-underline"
+            href={`mailto:${email}`}
+            className="flex items-center gap-1.5 dark:text-white/80 hover:text-brand-green dark:hover:text-brand-green transition"
           >
-            <Mail size={10} strokeWidth={2} />
-            <span>kwismosupport@gmail.com</span>
+            <Icon icon="solar:letter-bold" className="text-sm text-brand-green" />
+            <span>{email}</span>
           </a>
 
           <a
-            href="tel:+237698444388"
-            className="flex items-center gap-2 font-body text-[9px] font-medium text-white no-underline"
+            href={`tel:${phone.replace(/\s+/g, '')}`}
+            className="flex items-center gap-1.5 dark:text-white/80 hover:text-brand-green dark:hover:text-brand-green transition"
           >
-            <Phone size={10} strokeWidth={2} />
-            <span>+237 698 44 43 88</span>
+            <Icon icon="solar:phone-calling-bold" className="text-sm text-brand-green" />
+            <span>{phone}</span>
           </a>
         </div>
 
-        {/* Réseaux sociaux */}
-        <div className="flex items-center gap-5">
-          <a href="#" aria-label="Facebook" className="text-white">
-            <Facebook size={10} strokeWidth={2} />
-          </a>
+        <div className="flex items-center justify-between sm:justify-end gap-4">
+          <div className="flex items-center gap-3 text-slate-600 dark:text-white/80">
+            <a href="#" aria-label="Facebook" className="dark:text-white/80 hover:text-brand-green dark:hover:text-brand-green transition">
+              <Icon icon="bxl:facebook" className="text-base" />
+            </a>
+            <a href="#" aria-label="X" className="dark:text-white/80 hover:text-brand-green dark:hover:text-brand-green transition">
+              <Icon icon="ri:twitter-x-fill" className="text-sm" />
+            </a>
+            <a href="#" aria-label="YouTube" className="dark:text-white/80 hover:text-brand-green dark:hover:text-brand-green transition">
+              <Icon icon="bxl:youtube" className="text-base" />
+            </a>
+          </div>
 
-          <a href="#" aria-label="Twitter" className="text-white">
-            <Twitter size={10} strokeWidth={2} />
-          </a>
+          <div className="h-4 w-px bg-slate-300 dark:bg-white/20 hidden sm:block" />
 
-          <a href="#" aria-label="Instagram" className="text-white">
-            <Instagram size={10} strokeWidth={2} />
-          </a>
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher className="border-slate-300 dark:border-white/20 text-slate-800 dark:text-white bg-white dark:bg-white/10" />
+            <ThemeToggle className="text-slate-700 dark:text-white/80 hover:bg-slate-200 dark:hover:bg-white/10" />
+          </div>
         </div>
-
       </div>
     </div>
   );

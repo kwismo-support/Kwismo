@@ -1,151 +1,109 @@
-import { Apple, Facebook, Instagram, Play, Twitter } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@iconify/react';
+import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher';
+import { ThemeToggle } from '@/shared/components/ThemeToggle';
+import LogoNavBar from '@/assets/logo/Logo_Footer.png';
 
 export default function Footer() {
+  const { t } = useTranslation('landing');
+
   return (
-    <footer className="w-full bg-[#151D34] px-6 py-[38px] text-white">
-      <div className="mx-auto max-w-[1200px]">
+    <footer className="w-full bg-slate-100 dark:bg-brand-darkBg text-slate-800 dark:text-white pt-16 pb-8 border-t border-slate-200 dark:border-white/10 transition-colors font-body">
+      <div className="mx-auto max-w-[90%] px-6">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-10 pb-12 border-b border-slate-200 dark:border-white/10">
+          <div className="md:col-span-2 flex flex-col items-start">
+            <img src={LogoNavBar} alt="KWISMO Logo" className="h-12 w-auto object-contain" />
 
-        {/* Contenu principal */}
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-
-          {/* Présentation */}
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-[20px] w-[20px] items-center justify-center rounded-full bg-white">
-                <span className="font-title text-[9px] font-bold text-[#31B58A]">
-                  K
-                </span>
-              </div>
-
-              <span className="font-title text-[16px] font-bold">
-                KWISMO
-              </span>
-            </div>
-
-            <p className="font-body mt-3 max-w-[190px] text-[10px] font-normal leading-[16px] text-white/70">
-              Protection anti-fraude Mobile Money pour les marchés africains.
+            <p className="mt-0 text-xs text-slate-600 dark:text-white/70 max-w-sm leading-relaxed">
+              {t('landing:footer.desc')}
             </p>
 
-            {/* Stores */}
-            <div className="mt-3 flex gap-2">
+            <div className="mt-6 flex items-center gap-3">
               <a
                 href="#"
-                aria-label="App Store"
-                className="flex h-[25px] w-[25px] items-center justify-center rounded-[6px] border border-white/50"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-white/10 border border-slate-300 dark:border-white/15 hover:bg-slate-200 dark:hover:bg-white/20 transition text-xs font-semibold"
               >
-                <Apple size={13} />
+                <Icon icon="bxl:apple" className="text-xl text-slate-800 dark:text-white" />
+                <span className="font-mono text-[11px] dark:text-white">App Store</span>
               </a>
 
               <a
                 href="#"
-                aria-label="Google Play"
-                className="flex h-[25px] w-[25px] items-center justify-center rounded-[6px] border border-white/50"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-white/10 border border-slate-300 dark:border-white/15 hover:bg-slate-200 dark:hover:bg-white/20 transition text-xs font-semibold"
               >
-                <Play size={11} />
+                <Icon icon="bxl:play-store" className="text-xl text-brand-green" />
+                <span className="font-mono text-[11px] dark:text-white">Google Play</span>
               </a>
             </div>
           </div>
 
-          {/* Téléchargement */}
-          <div>
-            <h3 className="font-body text-[11px] font-semibold">
-              Téléchargement
-            </h3>
-
-            <div className="mt-3 flex flex-col gap-2">
-              <a href="#" className="font-body text-[10px] text-white/70">
-                Fonctionnalités
-              </a>
-
-              <a href="#" className="font-body text-[10px] text-white/70">
-                Tarifs
-              </a>
-
-              <a href="#" className="font-body text-[10px] text-white/70">
-                API
-              </a>
-            </div>
+          <div className="flex flex-col gap-3 text-xs">
+            <h4 className="font-title text-sm font-bold text-slate-900 dark:text-white mb-1">
+              {t('landing:footer.colDownload')}
+            </h4>
+            <a href="#services" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:nav.features')}
+            </a>
+            <a href="#pricing" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:footer.navTarifs')}
+            </a>
+            <a href="#pricing" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:footer.navApi')}
+            </a>
           </div>
 
-          {/* À propos */}
-          <div>
-            <h3 className="font-body text-[11px] font-semibold">
-              À propos
-            </h3>
-
-            <div className="mt-3 flex flex-col gap-2">
-              <a href="#" className="font-body text-[10px] text-white/70">
-                À propos
-              </a>
-
-              <a href="#" className="font-body text-[10px] text-white/70">
-                Partenaires
-              </a>
-
-              <a href="#" className="font-body text-[10px] text-white/70">
-                Actualités
-              </a>
-
-              <a href="#" className="font-body text-[10px] text-white/70">
-                Contact
-              </a>
-            </div>
+          <div className="flex flex-col gap-3 text-xs">
+            <h4 className="font-title text-sm font-bold text-slate-900 dark:text-white mb-1">
+              {t('landing:footer.colAbout')}
+            </h4>
+            <a href="#about" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:nav.about')}
+            </a>
+            <a href="/auth/register" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:footer.navPartners')}
+            </a>
+            <a href="#contact" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:footer.navNews')}
+            </a>
+            <a href="#contact" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:nav.contact')}
+            </a>
           </div>
 
-          {/* Légal */}
-          <div>
-            <h3 className="font-body text-[11px] font-semibold">
-              Légal
-            </h3>
-
-            <div className="mt-3 flex flex-col gap-2">
-              <a href="#" className="font-body text-[10px] text-white/70">
-                Confidentialité
-              </a>
-
-              <a href="#" className="font-body text-[10px] text-white/70">
-                CGU
-              </a>
-
-              <a href="#" className="font-body text-[10px] text-white/70">
-                Cookies
-              </a>
-
-              <a href="#" className="font-body text-[10px] text-white/70">
-                Sécurité
-              </a>
-            </div>
+          <div className="flex flex-col gap-3 text-xs">
+            <h4 className="font-title text-sm font-bold text-slate-900 dark:text-white mb-1">
+              {t('landing:footer.colLegal')}
+            </h4>
+            <a href="#" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:footer.legalPrivacy')}
+            </a>
+            <a href="#" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:footer.legalTerms')}
+            </a>
+            <a href="#" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:footer.legalCookies')}
+            </a>
+            <a href="#" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+              {t('landing:footer.legalSecurity')}
+            </a>
           </div>
-
         </div>
 
-        {/* Bas du footer */}
-        <div className="mt-8 flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-5 sm:flex-row sm:items-center">
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600 dark:text-white/60">
+          <p>© 2026 KWISMO. {t('landing:footer.rights')}</p>
 
-          <p className="font-body text-[9px] text-white/60">
-            © 2026 KWISMO. Tous droits réservés.
-          </p>
+          <div className="flex items-center gap-4">
+            <ThemeToggle className="text-slate-700 dark:text-white/80 hover:bg-slate-200 dark:hover:bg-white/10" />
+            <LanguageSwitcher className="border-slate-300 dark:border-white/20 text-slate-800 dark:text-white bg-white dark:bg-white/10" />
 
-          <div className="flex items-center gap-2">
-
-            <div className="flex h-[22px] items-center gap-1 rounded-full border border-white/30 px-2">
-              <Facebook size={9} />
-              <span className="font-body text-[8px]">
-                FR
-              </span>
-            </div>
-
-            <button
-              type="button"
-              className="font-body h-[22px] rounded-full bg-[#31B58A] px-3 text-[8px] font-semibold text-white"
+            <a
+              href="/auth/login"
+              className="flex h-8 items-center px-4 rounded-full bg-brand-green text-white font-semibold text-xs hover:bg-brand-green/90 transition"
             >
-              Se connecter
-            </button>
-
+              {t('landing:footer.login')}
+            </a>
           </div>
-
         </div>
-
       </div>
     </footer>
   );

@@ -1,0 +1,59 @@
+{
+  "title": "Espace Utilisateur",
+  "subtitle": "Protection personnelle contre les fraudes Mobile Money",
+  "nav": {
+    "home": "Accueil",
+    "compromised": "Numéro compromis",
+    "numbers": "Mes numéros",
+    "verify": "Vérifier un numéro",
+    "report": "Signaler une fraude",
+    "profile": "Mon profil"
+  },
+  "compromisedModal": {
+    "title": "Déclarer un numéro compromis",
+    "subtitle": "Téléphone volé, SIM détournée, WhatsApp piraté",
+    "phoneLabel": "Numéro de téléphone concerné",
+    "reasonLabel": "Type d'incident",
+    "reasons": {
+      "stolen": "Téléphone volé",
+      "sim_swap": "SIM détournée / Swappée",
+      "whatsapp_hack": "Compte WhatsApp piraté",
+      "other": "Autre compromission"
+    },
+    "submit": "Déclarer en urgence",
+    "cancel": "Annuler"
+  },
+  "quickVerify": {
+    "title": "Vérification instantanée de numéro",
+    "subtitle": "Vérifiez si un numéro est signalé avant de lui envoyer de l'argent",
+    "placeholder": "Ex: +237 690 00 00 00",
+    "verify": "Vérifier",
+    "riskScore": "Score de risque"
+  },
+  "emergency": {
+    "title": "Urgence Téléphone Volé ?",
+    "subtitle": "Bloquez instantanément vos numéros rattachés et prévenez la communauté si votre SIM a été volée ou swappée.",
+    "button": "Bloquer mes lignes"
+  },
+  "compromisedSuccess": {
+    "title": "Signalement de compromission envoyé !",
+    "subtitle": "Vos lignes sont en cours de mise sous surveillance prioritaire."
+  },
+  "verifyView": {
+    "title": "Vérifier un numéro",
+    "subtitle": "Analysez la réputation d'un numéro avant d'effectuer un transfert",
+    "placeholder": "Entrez un numéro (ex: +237 6XX XX XX XX)",
+    "button": "Analyser",
+    "safe": "Numéro Vérifié - Sûr",
+    "warning": "Attention - Risque Modéré",
+    "danger": "Alerte - Numéro Frauduleux"
+  },
+  "reportView": {
+    "title": "Signaler une tentative de fraude",
+    "subtitle": "Contribuez à la protection communautaire en signalant des arnaques",
+    "targetPhone": "Numéro de l'arnaqueur",
+    "fraudType": "Type de fraude",
+    "details": "Détails du signalement",
+    "submit": "Envoyer le signalement"
+  }
+}

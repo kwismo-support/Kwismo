@@ -1,5 +1,7 @@
 {
-  "title": "Partner portal",
+  "title": "Partner Portal",
+  "pageTitle": "API Partners Management",
+  "pageSubtitle": "Tracking company API access, quotas, and prefix routing rules.",
   "welcome": "Welcome to your partner portal",
   "overview": {
     "title": "Overview",
@@ -9,22 +11,36 @@
     "fraudRate": "Fraud rate"
   },
   "partners": {
-    "title": "Partners",
+    "title": "API Partners",
     "create": "New partner",
     "edit": "Edit",
     "delete": "Delete",
-    "name": "Name",
+    "name": "Company name",
     "email": "Email",
     "country": "Country",
-    "apiKey": "API key",
+    "apiKey": "API Key",
     "status": "Status",
     "prefixes": "Prefixes",
     "affiliation": "Affiliation rules",
-    "active": "Active",
-    "inactive": "Inactive",
-    "created": "Partner created",
-    "updated": "Partner updated",
-    "deleted": "Partner deleted"
+    "type": "Company type",
+    "typeTelco": "Telco Operator",
+    "typeBank": "Bank & Institution",
+    "typeFintech": "Fintech / Aggregator",
+    "statusActive": "Active",
+    "statusPending": "Pending",
+    "statusSuspended": "Suspended",
+    "created": "Partner created successfully",
+    "updated": "Partner updated successfully",
+    "deleted": "Partner deleted successfully",
+    "supervise": "Supervise"
+  },
+  "affiliation": {
+    "title": "Affiliation Rules by Phone Prefix",
+    "subtitle": "Automatic assignment of phone numbers to partners based on prefix ranges",
+    "addRule": "Add rule",
+    "prefixLabel": "Prefix or Range (e.g. 69, 651-654)",
+    "partnerLabel": "Assigned Partner",
+    "saved": "Affiliation rules saved"
   },
   "reports": {
     "title": "Reports",

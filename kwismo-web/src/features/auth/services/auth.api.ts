@@ -1,0 +1,117 @@
+import { env } from '@/config/env';
+import { apiClient } from '@/shared/lib/axios';
+import { toast } from '@/shared/store/toastStore';
+import { MOCK_USERS } from '@/shared/mock/mockUsers';
+import type { LoginInput, ForgotPasswordInput, ResetPasswordInput, PartnerRegisterInput } from '../schemas/auth.schema';
+import { useAuthStore } from '@/shared/store/authStore';
+
+const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export const authApi = {
+  login: async (data: LoginInput) => {
+    if (env.useMock) {
+      await delay();
+      if (data.email.includes('fail')) {
+        toast.error('auth:errors.invalidCredentials');
+        throw new Error('Invalid credentials');
+      }
+
+      const foundUser = MOCK_USERS.find((u) => u.email.toLowerCase() === data.email.toLowerCase());
+      const role = foundUser ? foundUser.role.nomRole : 'admin';
+      const userObj = {
+        id: foundUser ? foundUser.id : 'usr-001',
+        nom: foundUser ? foundUser.nom : 'Mbarga',
+        prenom: foundUser ? foundUser.prenom : 'Jean-Baptiste',
+        email: data.email,
+        role,
+        partnerId: foundUser?.partnerId,
+        partnerName: foundUser?.partner?.nomEntreprise,
+      };
+
+      try {
+        localStorage.setItem('kwismo_user', JSON.stringify(userObj));
+        useAuthStore.getState().setTokens('mock-jwt-token-kwismo-2026', 'mock-refresh-token');
+      } catch {
+      }
+
+      toast.success('auth:loginSuccess');
+      return {
+        token: 'mock-jwt-token-kwismo-2026',
+        user: userObj,
+      };
+    }
+    return apiClient.post('/auth/login', {
+      email: data.email,
+      mot_de_passe: data.password,
+      device_id: 'web-browser-device',
+      device_name: 'Kwismo Web App',
+    }).then((r) => {
+      if (r.data.access_token) {
+        useAuthStore.getState().setTokens(r.data.access_token, r.data.refresh_token);
+      }
+      toast.success('auth:loginSuccess');
+      return r.data;
+    }).catch((err) => {
+      toast.error(err.response?.data?.message ?? 'auth:errors.invalidCredentials');
+      throw err;
+    });
+  },
+
+  registerPartner: async (data: PartnerRegisterInput) => {
+    if (env.useMock) {
+      await delay(500);
+      toast.success('auth:partnerRegisterSuccess');
+      return { success: true };
+    }
+    return apiClient.post('/auth/register', {
+      nom: data.nomContact,
+      prenom: data.prenomContact,
+      email: data.email,
+      mot_de_passe: 'DefaultPartnerPass123!',
+      nomEntreprise: data.nomEntreprise,
+      typePartenariat: data.typePartenariat,
+      telephone: data.telephone,
+      message: data.message,
+    }).then((r) => {
+      toast.success('auth:partnerRegisterSuccess');
+      return r.data;
+    }).catch((err) => {
+      toast.error(err.response?.data?.message ?? 'errors:http.serverError');
+      throw err;
+    });
+  },
+
+  forgotPassword: async (data: ForgotPasswordInput) => {
+    if (env.useMock) {
+      await delay();
+      toast.success('auth:emailSent');
+      return { success: true };
+    }
+    return apiClient.post('/auth/password/forgot', data).then((r) => {
+      toast.success('auth:emailSent');
+      return r.data;
+    }).catch((err) => {
+      toast.error(err.response?.data?.message ?? 'errors:http.serverError');
+      throw err;
+    });
+  },
+
+  resetPassword: async (data: ResetPasswordInput) => {
+    if (env.useMock) {
+      await delay();
+      toast.success('auth:passwordChanged');
+      return { success: true };
+    }
+    return apiClient.post('/auth/password/reset', {
+      token: 'reset-token',
+      new_password: data.newPassword,
+    }).then((r) => {
+      toast.success('auth:passwordChanged');
+      return r.data;
+    }).catch((err) => {
+      toast.error(err.response?.data?.message ?? 'errors:http.serverError');
+      throw err;
+    });
+  },
+};
+

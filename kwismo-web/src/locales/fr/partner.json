@@ -1,5 +1,7 @@
 {
-  "title": "Espace partenaire",
+  "title": "Espace Partenaire",
+  "pageTitle": "Gestion des Partenaires API",
+  "pageSubtitle": "Suivi des accès API entreprise, quotas et règles de routage par préfixe.",
   "welcome": "Bienvenue dans votre espace partenaire",
   "overview": {
     "title": "Vue d'ensemble",
@@ -9,22 +11,36 @@
     "fraudRate": "Taux de fraude"
   },
   "partners": {
-    "title": "Partenaires",
+    "title": "Partenaires API",
     "create": "Nouveau partenaire",
     "edit": "Modifier",
     "delete": "Supprimer",
-    "name": "Nom",
+    "name": "Nom de l'entreprise",
     "email": "Email",
     "country": "Pays",
     "apiKey": "Clé API",
     "status": "Statut",
     "prefixes": "Préfixes",
     "affiliation": "Règles d'affiliation",
-    "active": "Actif",
-    "inactive": "Inactif",
-    "created": "Partenaire créé",
-    "updated": "Partenaire mis à jour",
-    "deleted": "Partenaire supprimé"
+    "type": "Type d'entreprise",
+    "typeTelco": "Opérateur Telco",
+    "typeBank": "Banque & Institution",
+    "typeFintech": "Fintech / Agrégateur",
+    "statusActive": "Actif",
+    "statusPending": "En attente",
+    "statusSuspended": "Suspendu",
+    "created": "Partenaire créé avec succès",
+    "updated": "Partenaire mis à jour avec succès",
+    "deleted": "Partenaire supprimé avec succès",
+    "supervise": "Superviser"
+  },
+  "affiliation": {
+    "title": "Règles d'Affiliation par Préfixe Téléphonique",
+    "subtitle": "Rattachement automatique des numéros aux partenaires selon les plages de préfixes",
+    "addRule": "Ajouter une règle",
+    "prefixLabel": "Préfixe ou Plage (ex: 69, 651-654)",
+    "partnerLabel": "Partenaire attribué",
+    "saved": "Règles d'affiliation enregistrées"
   },
   "reports": {
     "title": "Rapports",

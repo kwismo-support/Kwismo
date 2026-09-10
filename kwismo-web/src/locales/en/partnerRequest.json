@@ -1,0 +1,32 @@
+{
+  "badge": "PARTNERSHIP",
+  "title": "Become a KWISMO Partner",
+  "subtitle": "Join the KWISMO ecosystem and protect your clients against Mobile Money fraud. Our team will contact you within 48 hours.",
+  "companyNameLabel": "Company Name",
+  "companyNamePlaceholder": "MTN Cameroon",
+  "contactNameLabel": "Contact Name",
+  "contactNamePlaceholder": "Full Name",
+  "emailLabel": "Work Email Address",
+  "emailPlaceholder": "contact@co.com",
+  "phoneLabel": "Phone Number",
+  "phonePlaceholder": "+237 6XX XXX XXX",
+  "partnershipTypeLabel": "Partnership Type",
+  "partnershipTypeSelect": "Choose...",
+  "partnershipTypes": {
+    "mno": "Telecom Operator (MNO)",
+    "bank": "Bank & Credit Institution",
+    "fintech": "Fintech & Aggregator",
+    "microfinance": "Microfinance",
+    "merchant": "Merchant & Enterprise"
+  },
+  "countryLabel": "Country",
+  "countrySelect": "Choose...",
+  "messageLabel": "Message (Optional)",
+  "messagePlaceholder": "Describe your requirements...",
+  "submit": "Submit Request",
+  "submitting": "Processing...",
+  "successTitle": "Partnership Request Submitted!",
+  "successDesc": "Thank you! Your request for {{company}} has been recorded and submitted for Super Admin review. Our team will get back to you within 48 hours.",
+  "backToHome": "Back to Home",
+  "requiredField": "Field required"
+}

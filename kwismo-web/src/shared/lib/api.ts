@@ -1,0 +1,110 @@
+import { env } from '@/config/env';
+import { apiClient } from './axios';
+import { ENDPOINTS } from '@/config/endpoints';
+import {
+  MOCK_USERS, MOCK_PARTNERS, MOCK_NUMBERS,
+  MOCK_COUNTRIES, MOCK_OPERATORS, MOCK_USSD_ACTIONS,
+  MOCK_ROLES, MOCK_PERMISSIONS, MOCK_KPIS, MOCK_REPORTS,
+} from '@/shared/mock';
+
+const delay = (ms = 150) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export const api = {
+  getUsers: async () => {
+    if (env.useMock) { await delay(); return MOCK_USERS; }
+    return apiClient.get(ENDPOINTS.users.list).then((r) => r.data);
+  },
+
+  getPartners: async () => {
+    if (env.useMock) { await delay(); return MOCK_PARTNERS; }
+    return apiClient.get(ENDPOINTS.partners.list).then((r) => r.data);
+  },
+
+  getNumbers: async () => {
+    if (env.useMock) { await delay(); return MOCK_NUMBERS; }
+    return apiClient.get(ENDPOINTS.numbers.list).then((r) => r.data);
+  },
+
+  getCountries: async () => {
+    if (env.useMock) { await delay(); return MOCK_COUNTRIES; }
+    return apiClient.get(ENDPOINTS.ussd.countries).then((r) => r.data);
+  },
+
+  getOperators: async () => {
+    if (env.useMock) { await delay(); return MOCK_OPERATORS; }
+    return apiClient.get(ENDPOINTS.ussd.operators).then((r) => r.data);
+  },
+
+  getUssdActions: async () => {
+    if (env.useMock) { await delay(); return MOCK_USSD_ACTIONS; }
+    return apiClient.get(ENDPOINTS.ussd.actions).then((r) => r.data);
+  },
+
+  getRoles: async () => {
+    if (env.useMock) { await delay(); return MOCK_ROLES; }
+    return apiClient.get(ENDPOINTS.access.roles).then((r) => r.data);
+  },
+
+  getPermissions: async () => {
+    if (env.useMock) { await delay(); return MOCK_PERMISSIONS; }
+    return apiClient.get(ENDPOINTS.access.permissions).then((r) => r.data);
+  },
+
+  getKpiSummary: async () => {
+    if (env.useMock) { await delay(); return MOCK_KPIS; }
+    return apiClient.get('/kpi/global').then((r) => {
+      // Adapter: map KpiOut[] to KpiSummaryDTO expected by frontend
+      const kpis = r.data;
+      const getValue = (name: string) => kpis.find((k: any) => k.name === name)?.value ?? 0;
+      return {
+        verifiedNumbers: getValue('verified_numbers'),
+        verifiedChange: '+0%',
+        blockedFrauds: getValue('blocked_frauds'),
+        blockedChange: '+0%',
+        apiCalls24h: getValue('api_calls_24h'),
+        apiCallsChange: '+0%',
+        aiAccuracy: getValue('ai_accuracy'),
+        aiAccuracyChange: '+0%',
+      };
+    });
+  },
+
+  getReports: async () => {
+    if (env.useMock) { await delay(); return MOCK_REPORTS; }
+    return apiClient.get(ENDPOINTS.reports.list).then((r) => r.data);
+  },
+
+  verifyNumber: async (valeur: string) => {
+    if (env.useMock) {
+      await delay();
+      const num = MOCK_NUMBERS.find((n) => n.valeur === valeur);
+      if (num) return num;
+      return {
+        id: `num-${Date.now()}`,
+        valeur,
+        scoreRisque: 5,
+        statut: 'securise' as const,
+        operatorName: 'Réseau Mobile',
+        countryCode: '+237',
+        reportsCount: 0,
+        dateDerniereVerification: new Date().toISOString(),
+      };
+    }
+    return apiClient.post(ENDPOINTS.numbers.verify, { valeur }).then((r) => r.data);
+  },
+
+  get: <T>(url: string, params?: Record<string, unknown>) =>
+    apiClient.get<T>(url, { params }).then((r) => r.data),
+
+  post: <T>(url: string, data?: unknown) =>
+    apiClient.post<T>(url, data).then((r) => r.data),
+
+  patch: <T>(url: string, data?: unknown) =>
+    apiClient.patch<T>(url, data).then((r) => r.data),
+
+  put: <T>(url: string, data?: unknown) =>
+    apiClient.put<T>(url, data).then((r) => r.data),
+
+  delete: <T>(url: string) =>
+    apiClient.delete<T>(url).then((r) => r.data),
+};

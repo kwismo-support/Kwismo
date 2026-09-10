@@ -1,14 +1,11 @@
-/* ============================================================
-   KWISMO — Global styles
-   ============================================================ */
 @import './tokens.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ── Polices auto-hébergées ───────────────────────────────────*/
-/* Montserrat Alternates — Titres */
+
+
 @font-face {
   font-family: "Montserrat Alternates";
   src: url("/fonts/MontserratAlternates-Regular.woff2") format("woff2");
@@ -33,13 +30,14 @@
   font-display: swap;
 }
 
-/* Ageo Trial — Corps, boutons, footer */
+
 @font-face {
   font-family: "Ageo";
   src: url("/fonts/AgeoTrial-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0030-0039, U+0041-005A, U+0061-007A;
 }
 
 @font-face {
@@ -48,6 +46,7 @@
   font-weight: 500;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0030-0039, U+0041-005A, U+0061-007A;
 }
 
 @font-face {
@@ -56,6 +55,7 @@
   font-weight: 600;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0030-0039, U+0041-005A, U+0061-007A;
 }
 
 @font-face {
@@ -64,16 +64,17 @@
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0030-0039, U+0041-005A, U+0061-007A;
 }
 
-/* ── Reset & base ───────────────────────────────────────────── */
+
 @layer base {
   *, *::before, *::after {
     box-sizing: border-box;
   }
 
   html {
-    font-family: var(--font-sans);
+    font-family: var(--font-body);
     color: var(--color-text);
     background-color: var(--color-bg);
     scroll-behavior: smooth;
@@ -84,10 +85,59 @@
   body {
     margin: 0;
     min-height: 100vh;
-    line-height: 1.6;
+    font-family: var(--font-body);
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-body-lg);
+    font-weight: 500;
   }
 
-  /* Liens accessibles */
+  h1, .text-h1 {
+    font-family: var(--font-title);
+    font-size: var(--text-h1);
+    line-height: var(--leading-h1);
+    font-weight: 700;
+  }
+
+  h2, .text-h2 {
+    font-family: var(--font-title);
+    font-size: var(--text-h2);
+    line-height: var(--leading-h2);
+    font-weight: 700;
+  }
+
+  h3, .text-h3 {
+    font-family: var(--font-title);
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+    font-weight: 500;
+  }
+
+  h4, .text-h4 {
+    font-family: var(--font-title);
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+    font-weight: 400;
+  }
+
+  h5, .text-h5 {
+    font-family: var(--font-title);
+    font-size: var(--text-h5);
+    line-height: var(--leading-h5);
+    font-weight: 400;
+  }
+
+  h6, .text-h6 {
+    font-family: var(--font-title);
+    font-size: var(--text-h6);
+    line-height: var(--leading-h6);
+    font-weight: 400;
+  }
+
+  button, input, select, textarea {
+    font-family: var(--font-body);
+  }
+
+  
   a {
     color: var(--color-primary-500);
     text-decoration: none;
@@ -96,13 +146,13 @@
     text-decoration: none;
   }
 
-  /* Focus visible accessible */
+  
   :focus-visible {
     outline: 2px solid var(--color-primary-500);
     outline-offset: 2px;
   }
 
-  /* Scrollbar personnalisée */
+  
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -119,7 +169,7 @@
   }
 }
 
-/* ── Utilitaires applicatifs ────────────────────────────────── */
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

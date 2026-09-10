@@ -61,19 +61,17 @@ export default function SecurityScreen() {
     setConfirmPasswordError('');
 
     if (!currentPassword.trim()) {
-      setCurrentPasswordError(t('validation.required', 'Veuillez saisir votre mot de passe actuel.'));
+      setCurrentPasswordError(t('validation.required'));
       valid = false;
     }
 
     if (!isPasswordStrong) {
-      setNewPasswordError(
-        t('validation.passwordCriteria', 'Le nouveau mot de passe doit respecter tous les critères de sécurité.')
-      );
+      setNewPasswordError(t('validation.passwordCriteria'));
       valid = false;
     }
 
     if (newPassword !== confirmPassword) {
-      setConfirmPasswordError(t('validation.passwordsDoNotMatch', 'Les mots de passe ne correspondent pas.'));
+      setConfirmPasswordError(t('validation.passwordsDoNotMatch'));
       valid = false;
     }
 
@@ -82,30 +80,18 @@ export default function SecurityScreen() {
     setIsUpdating(true);
     setTimeout(() => {
       setIsUpdating(false);
-      toast.success(t('toasts.passwordResetSuccess', 'Mot de passe mis à jour avec succès !'));
+      toast.success(t('toasts.passwordResetSuccess'));
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     }, 600);
   };
 
-  const handleToggleBiometrics = (value: boolean) => {
-    if (!value) {
-      // Pour désactiver la biométrie, exige la saisie du code PIN à 6 chiffres
-      toast.info(t('common.securityCheck', 'Code PIN à 6 chiffres requis pour désactiver la biométrie.'));
-      router.push('/(app)/pin-setup');
-    } else {
-      setBiometricsEnabled(true);
-      toast.success('Déverrouillage par biométrie activé avec succès.');
-    }
-  };
-
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <StatusBar style="light" />
 
-      {/* Header unifié de page secondaire sans cloche */}
-      <HeaderBar title={t('profile.security', 'Sécurité & mot de passe')} showBack={true} />
+      <HeaderBar title={t('profile.security')} showBack={true} />
 
       <ScrollView
         contentContainerStyle={[
@@ -114,14 +100,9 @@ export default function SecurityScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
-          Modifier mon mot de passe
-        </Text>
-
-        {/* Input Standardisé : Mot de passe actuel */}
         <View style={{ marginTop: 12 }}>
           <Input
-            label={t('common.currentPassword', 'Mot de passe actuel')}
+            label={t('common.currentPassword')}
             value={currentPassword}
             onChangeText={(val) => {
               setCurrentPassword(val);
@@ -134,10 +115,9 @@ export default function SecurityScreen() {
           />
         </View>
 
-        {/* Input Standardisé : Nouveau mot de passe */}
         <View style={{ marginTop: 12 }}>
           <Input
-            label={t('common.newPassword', 'Nouveau mot de passe')}
+            label={t('common.newPassword')}
             value={newPassword}
             onChangeText={(val) => {
               setNewPassword(val);
@@ -150,18 +130,17 @@ export default function SecurityScreen() {
           />
         </View>
 
-        {/* Indicateurs de robustesse du mot de passe (Maquette d'inscription) */}
         <View style={styles.criteriaContainer}>
           <Text style={[styles.criteriaTitle, { color: themeColors.textSecondary }]}>
             Critères de robustesse du mot de passe :
           </Text>
           <View style={styles.criteriaGrid}>
             {[
-              { key: 'minLength', label: t('validation.criteriaMinLength', 'Au moins 8 caractères'), valid: passwordCriteria.minLength },
-              { key: 'hasUppercase', label: t('validation.criteriaUppercase', '1 lettre majuscule'), valid: passwordCriteria.hasUppercase },
-              { key: 'hasLowercase', label: t('validation.criteriaLowercase', '1 lettre minuscule'), valid: passwordCriteria.hasLowercase },
-              { key: 'hasNumber', label: t('validation.criteriaNumber', '1 chiffre'), valid: passwordCriteria.hasNumber },
-              { key: 'hasSymbol', label: t('validation.criteriaSymbol', '1 symbole spécial (!@#$)'), valid: passwordCriteria.hasSymbol },
+              { key: 'minLength', label: t('validation.criteriaMinLength'), valid: passwordCriteria.minLength },
+              { key: 'hasUppercase', label: t('validation.criteriaUppercase'), valid: passwordCriteria.hasUppercase },
+              { key: 'hasLowercase', label: t('validation.criteriaLowercase'), valid: passwordCriteria.hasLowercase },
+              { key: 'hasNumber', label: t('validation.criteriaNumber'), valid: passwordCriteria.hasNumber },
+              { key: 'hasSymbol', label: t('validation.criteriaSymbol'), valid: passwordCriteria.hasSymbol },
             ].map((crit) => (
               <View key={crit.key} style={styles.criteriaRow}>
                 <Icon
@@ -186,10 +165,9 @@ export default function SecurityScreen() {
           </View>
         </View>
 
-        {/* Input Standardisé : Confirmation mot de passe */}
         <View style={{ marginTop: 12 }}>
           <Input
-            label={t('common.confirmPassword', 'Confirmer le nouveau mot de passe')}
+            label={t('common.confirmPassword')}
             value={confirmPassword}
             onChangeText={(val) => {
               setConfirmPassword(val);
@@ -212,74 +190,10 @@ export default function SecurityScreen() {
             <ActivityIndicator color={colors.white} />
           ) : (
             <Text style={styles.saveBtnText}>
-              {t('common.saveChanges', 'Mettre à jour le mot de passe')}
+              {t('common.saveChanges')}
             </Text>
           )}
         </TouchableOpacity>
-
-        {/* Protection par Biométrie & Code PIN (Secours obligatoire à 6 chiffres) */}
-        <Text style={[styles.sectionTitle, { color: themeColors.textPrimary, marginTop: 32 }]}>
-          Déverrouillage de l'application & PIN
-        </Text>
-
-        <View style={[styles.optionsCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
-          {/* Configuration du Code PIN de secours à 6 chiffres */}
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => router.push('/(app)/pin-setup')}
-            style={styles.optionRow}
-          >
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              <Text style={[styles.optionTitle, { color: themeColors.textPrimary }]}>
-                Code PIN à 6 chiffres (Secours)
-              </Text>
-              <Text style={[styles.optionSub, { color: themeColors.textSecondary }]}>
-                Définir ou modifier le code PIN exigé en cas d'échec biométrique
-              </Text>
-            </View>
-            <Icon name="solar:alt-arrow-right-linear" color={colors.green} size={20} />
-          </TouchableOpacity>
-
-          <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
-
-          {/* Switch Biométrie */}
-          <View style={styles.optionRow}>
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              <Text style={[styles.optionTitle, { color: themeColors.textPrimary }]}>
-                Verrouillage Face ID / Empreinte
-              </Text>
-              <Text style={[styles.optionSub, { color: themeColors.textSecondary }]}>
-                Exige un code PIN pour la désactivation
-              </Text>
-            </View>
-            <Switch
-              value={biometricsEnabled}
-              onValueChange={handleToggleBiometrics}
-              trackColor={{ false: '#CBD5E1', true: colors.green }}
-              thumbColor={colors.white}
-            />
-          </View>
-
-          <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
-
-          {/* Switch Se souvenir de moi */}
-          <View style={styles.optionRow}>
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              <Text style={[styles.optionTitle, { color: themeColors.textPrimary }]}>
-                {t('common.rememberMe', 'Se souvenir de moi')}
-              </Text>
-              <Text style={[styles.optionSub, { color: themeColors.textSecondary }]}>
-                Rester connecté automatiquement sur cet appareil
-              </Text>
-            </View>
-            <Switch
-              value={rememberMe}
-              onValueChange={setRememberMe}
-              trackColor={{ false: '#CBD5E1', true: colors.green }}
-              thumbColor={colors.white}
-            />
-          </View>
-        </View>
       </ScrollView>
     </View>
   );

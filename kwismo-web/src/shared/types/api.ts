@@ -1,7 +1,3 @@
-/**
- * Types génériques pour les échanges avec l'API.
- */
-
 export interface ApiError {
   message:  string;
   status:   number;

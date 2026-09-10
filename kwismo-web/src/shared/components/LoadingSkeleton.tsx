@@ -16,9 +16,7 @@ function Skeleton({ className }: SkeletonProps) {
   );
 }
 
-/**
- * Skeleton de chargement générique pour les pages.
- */
+
 export function LoadingSkeleton() {
   return (
     <div className="space-y-4 p-6" aria-busy="true" aria-label="Chargement…">

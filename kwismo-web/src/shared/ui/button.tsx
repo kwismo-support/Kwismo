@@ -1,53 +1,93 @@
-import { forwardRef, type ButtonHTMLAttributes } from 'react';
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { cn } from '@/shared/lib/utils';
+import { Icon } from '@iconify/react';
 
-type Variant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-type Size    = 'sm' | 'md' | 'lg';
+export type ButtonVariant = 'primary' | 'secondary' | 'darkGreen' | 'outline' | 'ghost' | 'danger' | 'success';
+export type ButtonSize    = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?:  Variant;
-  size?:     Size;
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?:   ButtonVariant;
+  size?:      ButtonSize;
   isLoading?: boolean;
+  leftIcon?:  string | ReactNode;
+  rightIcon?: string | ReactNode;
+  circlePillIcon?: string;
+  fullWidth?: boolean;
 }
 
-const variants: Record<Variant, string> = {
-  primary:   'bg-primary-500 text-white hover:bg-primary-600 focus-visible:ring-primary-500',
-  secondary: 'bg-secondary-500 text-white hover:bg-secondary-600 focus-visible:ring-secondary-500',
-  outline:   'border border-primary-500 text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900 focus-visible:ring-primary-500',
-  ghost:     'text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900 focus-visible:ring-primary-500',
-  danger:    'bg-danger text-white hover:opacity-90 focus-visible:ring-red-500',
+const variants: Record<ButtonVariant, string> = {
+  primary:   'bg-brand-green text-white hover:bg-[#2aa072] focus-visible:ring-brand-green shadow-sm',
+  secondary: 'bg-brand-orange text-white hover:bg-[#e08700] focus-visible:ring-brand-orange shadow-sm',
+  darkGreen: 'bg-[#104E37] text-white hover:bg-[#0d3f2c] focus-visible:ring-[#104E37] shadow-sm',
+  success:   'bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:ring-emerald-600 shadow-sm',
+  danger:    'bg-rose-600 text-white hover:bg-rose-700 focus-visible:ring-rose-600 shadow-sm',
+  outline:   'border border-slate-300 dark:border-white/20 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10 focus-visible:ring-slate-400',
+  ghost:     'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 focus-visible:ring-slate-400',
 };
 
-const sizes: Record<Size, string> = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-sm',
-  lg: 'px-6 py-3 text-base',
+const sizes: Record<ButtonSize, string> = {
+  xs: 'h-8 px-2.5 text-xs rounded-lg gap-1.5',
+  sm: 'h-9 px-3.5 text-xs rounded-xl gap-2 font-medium',
+  md: 'h-11 px-5 text-sm rounded-xl gap-2 font-semibold',
+  lg: 'h-12 px-6 text-base rounded-2xl gap-2.5 font-semibold',
+  xl: 'h-14 px-8 text-lg rounded-2xl gap-3 font-bold',
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'primary', size = 'md', isLoading, disabled, children, ...props }, ref) => (
+  (
+    {
+      className,
+      variant = 'primary',
+      size = 'md',
+      isLoading = false,
+      disabled = false,
+      leftIcon,
+      rightIcon,
+      circlePillIcon,
+      fullWidth = false,
+      children,
+      ...props
+    },
+    ref,
+  ) => (
     <button
       ref={ref}
       disabled={disabled || isLoading}
       aria-busy={isLoading}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded font-medium transition-colors',
+        'inline-flex items-center justify-center font-body transition-all duration-150 active:scale-[0.98]',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
         'disabled:pointer-events-none disabled:opacity-50',
+        fullWidth && 'w-full',
         variants[variant],
         sizes[size],
         className,
       )}
       {...props}
     >
-      {isLoading && (
-        <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-        </svg>
+      {isLoading ? (
+        <Icon icon="solar:spinner-bold-duotone" className="animate-spin text-lg" />
+      ) : (
+        <>
+          {leftIcon && (
+            typeof leftIcon === 'string' ? <Icon icon={leftIcon} className="text-lg shrink-0" /> : leftIcon
+          )}
+
+          {children && <span>{children}</span>}
+
+          {rightIcon && (
+            typeof rightIcon === 'string' ? <Icon icon={rightIcon} className="text-lg shrink-0" /> : rightIcon
+          )}
+
+          {circlePillIcon && (
+            <span className="ml-1.5 w-6 h-6 rounded-full bg-white text-slate-900 flex items-center justify-center shrink-0 shadow-sm">
+              <Icon icon={circlePillIcon} className="text-sm font-bold" />
+            </span>
+          )}
+        </>
       )}
-      {children}
     </button>
   ),
 );
+
 Button.displayName = 'Button';

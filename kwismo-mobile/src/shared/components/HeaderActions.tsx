@@ -1,19 +1,9 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Modal,
-  StyleSheet,
-  Pressable,
-} from 'react-native';
-import { useTranslation } from 'react-i18next';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Icon } from '../ui/Icon';
-import { useAppTheme } from '../hooks/useAppTheme';
-import { useThemeStore, ThemePreference } from '../store/themeStore';
 import { colors, fonts } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
+import { HeaderSearchModal } from './HeaderSearchModal';
 
 interface HeaderActionsProps {
   unreadNotificationsCount?: number;
@@ -29,28 +19,30 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
   showBell = true,
 }) => {
   const router = useRouter();
-  const { t, i18n } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
-  const { userThemePreference, setTheme } = useThemeStore();
-  const [modalVisible, setModalVisible] = useState(false);
+  const [searchModalVisible, setSearchModalVisible] = useState(false);
 
   const hasUnread = unreadNotificationsCount > 0;
-
-  const handleLanguageChange = (lang: string) => {
-    i18n.changeLanguage(lang);
-  };
 
   const handleNotificationsPress = () => {
     if (onPressNotifications) {
       onPressNotifications();
     } else {
-      router.push('/(app)/profile');
+      router.push('/(app)/notifications');
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* Cloche de notifications (visible seulement sur les pages principales) */}
+      {/* Icône de Recherche (Loupe) positionnée à GAUCHE de la cloche de notifications */}
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() => setSearchModalVisible(true)}
+        style={styles.iconButton}
+      >
+        <Icon name="solar:magnifer-linear" size={24} color={iconColor} />
+      </TouchableOpacity>
+
+      {/* Cloche de notifications (visible sur les pages principales) */}
       {showBell && (
         <TouchableOpacity
           activeOpacity={0.7}
@@ -72,174 +64,11 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
         </TouchableOpacity>
       )}
 
-      {/* 3 points verticaux pour le menu d'options */}
-      <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={() => setModalVisible(true)}
-        style={styles.iconButton}
-      >
-        <Icon
-          name="solar:menu-dots-bold"
-          size={24}
-          color={iconColor}
-        />
-      </TouchableOpacity>
-
-      {/* Modal / Menu d'options (Langue & Thème) */}
-      <Modal
-        visible={modalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
-          <Pressable
-            onPress={(e) => e.stopPropagation()}
-            style={[
-              styles.modalContent,
-              {
-                backgroundColor: themeColors.cardBg,
-                borderColor: themeColors.inputBorder,
-              },
-            ]}
-          >
-            {/* Header de la modal */}
-            <View style={styles.modalHeader}>
-              <Text
-                style={[
-                  styles.modalTitle,
-                  { color: themeColors.textPrimary },
-                ]}
-              >
-                {t('profile.preferences')}
-              </Text>
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <Icon
-                  name="solar:close-circle-linear"
-                  size={20}
-                  color={themeColors.inputPlaceholder}
-                />
-              </TouchableOpacity>
-            </View>
-
-            {/* Section Langue */}
-            <Text
-              style={[
-                styles.sectionLabel,
-                { color: themeColors.inputPlaceholder },
-              ]}
-            >
-              {t('profile.language')}
-            </Text>
-            <View style={styles.optionsRow}>
-              <TouchableOpacity
-                onPress={() => handleLanguageChange('fr')}
-                style={[
-                  styles.optionChip,
-                  {
-                    backgroundColor:
-                      i18n.language.startsWith('fr')
-                        ? colors.green
-                        : isDark
-                        ? 'rgba(255,255,255,0.08)'
-                        : '#F3F4F6',
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.chipText,
-                    {
-                      color: i18n.language.startsWith('fr')
-                        ? colors.white
-                        : themeColors.textPrimary,
-                    },
-                  ]}
-                >
-                  {t('common.french')}
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={() => handleLanguageChange('en')}
-                style={[
-                  styles.optionChip,
-                  {
-                    backgroundColor:
-                      i18n.language.startsWith('en')
-                        ? colors.green
-                        : isDark
-                        ? 'rgba(255,255,255,0.08)'
-                        : '#F3F4F6',
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.chipText,
-                    {
-                      color: i18n.language.startsWith('en')
-                        ? colors.white
-                        : themeColors.textPrimary,
-                    },
-                  ]}
-                >
-                  {t('common.english')}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Section Thème : 3 icônes sur une seule ligne réparties équitablement */}
-            <Text
-              style={[
-                styles.sectionLabel,
-                { color: themeColors.inputPlaceholder, marginTop: 16 },
-              ]}
-            >
-              {t('profile.darkMode')}
-            </Text>
-            <View style={styles.themeOptionsRow}>
-              {(['light', 'dark', 'system'] as ThemePreference[]).map((mode) => {
-                const isSelected = userThemePreference === mode;
-                return (
-                  <TouchableOpacity
-                    key={mode}
-                    activeOpacity={0.7}
-                    onPress={() => setTheme(mode)}
-                    style={[
-                      styles.themeIconChip,
-                      {
-                        backgroundColor: isSelected
-                          ? colors.green
-                          : isDark
-                          ? 'rgba(255,255,255,0.08)'
-                          : '#F3F4F6',
-                      },
-                    ]}
-                  >
-                    <Icon
-                      name={
-                        mode === 'light'
-                          ? 'solar:sun-2-linear'
-                          : mode === 'dark'
-                          ? 'solar:moon-linear'
-                          : 'solar:laptop-minimalistic-linear'
-                      }
-                      size={22}
-                      color={
-                        isSelected ? colors.white : themeColors.textPrimary
-                      }
-                    />
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
+      {/* Modal de recherche animée avec espace blanc de résultats */}
+      <HeaderSearchModal
+        visible={searchModalVisible}
+        onClose={() => setSearchModalVisible(false)}
+      />
     </View>
   );
 };
@@ -276,71 +105,5 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: colors.white,
     fontWeight: '700',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.45)',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
-    paddingTop: 70,
-    paddingRight: 16,
-  },
-  modalContent: {
-    width: 270,
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  modalTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(15),
-    fontWeight: '700',
-  },
-  sectionLabel: {
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(12),
-    marginBottom: 8,
-  },
-  optionsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  themeOptionsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 10,
-    width: '100%',
-  },
-  themeIconChip: {
-    flex: 1,
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 12,
-  },
-  optionChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 10,
-  },
-  chipText: {
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(12),
   },
 });

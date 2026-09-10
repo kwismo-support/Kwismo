@@ -1,121 +1,98 @@
-import { ArrowRight, Download } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Icon } from '@iconify/react';
 import ImgHero from '@/assets/illustrations/Img_Hero.png';
 
 export default function Hero() {
+  const { t } = useTranslation('landing');
+
   return (
     <section
       id="accueil"
-      className="w-full overflow-hidden bg-[#151D34]"
+      className="relative min-h-[540px] overflow-hidden bg-brand-navy py-12 lg:py-16 text-white font-body"
     >
-      <div className="grid min-h-[438px] w-full grid-cols-1 lg:grid-cols-2">
+      <div className="absolute inset-0 bg-gradient-to-br from-brand-navy via-brand-darkBg to-brand-darkBg opacity-95 pointer-events-none" />
 
-        {/* =====================================================
-            COLONNE GAUCHE 
-        ====================================================== */}
-        <div className="flex items-center justify-center px-[8%] py-12 lg:justify-end lg:py-0 lg:pr-[7%]">
+      <div className="relative mx-auto grid max-w-[90%] grid-cols-1 items-center gap-10 px-6 lg:grid-cols-2 lg:gap-12">
+        <div className="relative z-10 flex flex-col items-start pt-4 lg:pt-0">
+          <h1 className="font-title max-w-[540px] text-3xl sm:text-4xl lg:text-[44px] font-bold leading-[1.18] tracking-tight text-white">
+            {t('landing:hero.titleLine1')}
+            <br />
+            {t('landing:hero.titleLine2')}
+            <br />
+            {t('landing:hero.titleLine3')}{' '}
+            <span className="text-brand-green inline-block">
+              {t('landing:hero.titleHighlight')}
+            </span>
+          </h1>
 
-          <div className="w-full max-w-[500px]">
+          <p className="mt-4 max-w-[460px] text-xs sm:text-sm font-normal leading-relaxed text-white/80">
+            {t('landing:hero.subtitle')}
+          </p>
 
-            {/* Titre */}
-            <h1 className="font-title m-0 text-[56px] font-bold leading-[72px] tracking-[-1px] text-white">
-              Sécurisez vos
-              <br />
-              transactions en
-              <br />
-              toute{' '}
-              <span className="text-[#31B58A]">
-                simplicité
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <a
+              href="#download"
+              className="flex h-[44px] items-center gap-2.5 rounded-xl bg-brand-green px-5 text-xs sm:text-sm font-semibold text-white no-underline transition hover:bg-brand-green/90 shadow-md"
+            >
+              <Icon icon="basil:download-solid" className="text-xl shrink-0" />
+              <span>{t('landing:hero.ctaApp')}</span>
+            </a>
+
+            <a
+              href="#pricing"
+              className="flex h-[44px] items-center gap-3 rounded-xl bg-brand-orange pl-5 pr-2.5 text-xs sm:text-sm font-semibold text-white no-underline transition hover:bg-brand-orange/90 shadow-md"
+            >
+              <span>{t('landing:hero.ctaPartner')}</span>
+              <div className="flex h-7 w-7 items-center justify-center text-white">
+                <Icon icon="solar:arrow-right-linear" className="text-2xl stroke-[2.5]" />
+              </div>
+            </a>
+          </div>
+
+          <div className="mt-8 flex items-center rounded-2xl border border-white/15 bg-white/10 p-3.5 backdrop-blur-md shadow-xl">
+            <div className="flex flex-col px-4 py-1">
+              <span className="font-title text-xl sm:text-2xl font-bold leading-none text-white">
+                2.4M+
               </span>
-            </h1>
-
-            {/* Description */}
-            <p className="font-body mt-4 max-w-[430px] text-[16px] font-medium leading-[27px] text-white">
-              KWISMO protège vos transferts Orange Money et MTN
-              MoMo contre les arnaques et les erreurs de saisie.
-              Envoyez et recevez votre argent l'esprit tranquille.
-            </p>
-
-            {/* Boutons */}
-            <div className="mt-7 flex flex-wrap items-center gap-4">
-
-              <a
-                href="#download"
-                className="font-body flex h-[42px] items-center gap-2 rounded-lg bg-[#31B58A] px-5 text-[14px] font-semibold text-white no-underline transition-opacity hover:opacity-90"
-              >
-                <Download size={15} strokeWidth={2.2} />
-                <span>Télécharger l'application</span>
-              </a>
-
-              <a
-                href="#partner"
-                className="font-body flex h-[42px] items-center gap-2 rounded-lg bg-[#FF9900] px-5 text-[14px] font-semibold text-white no-underline transition-opacity hover:opacity-90"
-              >
-                <span>Devenir partenaire</span>
-                <ArrowRight size={15} strokeWidth={2.2} />
-              </a>
-
+              <span className="mt-1 text-[10px] sm:text-xs text-white/70">
+                {t('landing:hero.stats.verifiedNumbers')}
+              </span>
             </div>
 
-            {/* =================================================
-                STATISTIQUES
-            ================================================== */}
-            <div className="mt-8 inline-flex h-[64px] items-center rounded-xl border border-white/10 bg-white/10 px-2 backdrop-blur-sm">
+            <div className="h-9 w-px bg-white/20" />
 
-              {/* 2.4M+ */}
-              <div className="flex min-w-[110px] flex-col items-center px-3">
-                <span className="font-title text-[20px] font-bold leading-[24px] text-white">
-                  2.4M+
-                </span>
-
-                <span className="font-body mt-1 text-[12px] font-normal leading-[16px] text-white/60">
-                  numéros vérifiés
-                </span>
-              </div>
-
-              <div className="h-[38px] w-px bg-white/20" />
-
-              {/* 98% */}
-              <div className="flex min-w-[90px] flex-col items-center px-3">
-                <span className="font-title text-[20px] font-bold leading-[24px] text-white">
-                  98 %
-                </span>
-
-                <span className="font-body mt-1 text-[12px] font-normal leading-[16px] text-white/60">
-                  Précision
-                </span>
-              </div>
-
-              <div className="h-[38px] w-px bg-white/20" />
-
-              {/* 50+ */}
-              <div className="flex min-w-[80px] flex-col items-center px-3">
-                <span className="font-title text-[20px] font-bold leading-[24px] text-white">
-                  50+
-                </span>
-
-                <span className="font-body mt-1 text-[12px] font-normal leading-[16px] text-white/60">
-                  Opérateurs
-                </span>
-              </div>
-
+            <div className="flex flex-col px-4 py-1">
+              <span className="font-title text-xl sm:text-2xl font-bold leading-none text-white">
+                98 %
+              </span>
+              <span className="mt-1 text-[10px] sm:text-xs text-white/70">
+                {t('landing:hero.stats.accuracy')}
+              </span>
             </div>
 
+            <div className="h-9 w-px bg-white/20" />
+
+            <div className="flex flex-col px-4 py-1">
+              <span className="font-title text-xl sm:text-2xl font-bold leading-none text-white">
+                50+
+              </span>
+              <span className="mt-1 text-[10px] sm:text-xs text-white/70">
+                {t('landing:hero.stats.operators')}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* =====================================================
-            COLONNE DROITE 
-        ====================================================== */}
-        <div className="relative flex min-h-[438px] items-end justify-center lg:justify-start">
-
-          <img
-            src={ImgHero}
-            alt="KWISMO - Sécurisation des transactions"
-            className="h-auto w-full max-w-[620px] object-contain object-bottom"
-          />
-
+        <div className="relative flex h-full items-center justify-center lg:justify-end">
+          <div className="relative z-10 w-full max-w-[540px]">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] rounded-full bg-brand-green/25 blur-2xl pointer-events-none" />
+            <img
+              src={ImgHero}
+              alt="KWISMO"
+              className="relative z-10 w-full object-contain drop-shadow-2xl"
+            />
+          </div>
         </div>
-
       </div>
     </section>
   );
