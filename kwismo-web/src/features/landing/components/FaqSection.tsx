@@ -18,8 +18,8 @@ export default function FaqSection() {
           </h2>
         </div>
 
-        <div className="rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-darkBg overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[440px]">
-          <div className="lg:col-span-6 border-r border-slate-200 dark:border-white/10 flex flex-col divide-y divide-slate-200 dark:divide-white/10 bg-slate-50/50 dark:bg-brand-navy/20">
+        <div className="rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-darkBg overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+          <div className="lg:col-span-6 border-r border-slate-200 dark:border-white/10 flex flex-col divide-y divide-slate-200 dark:divide-white/10 bg-slate-50/50 dark:bg-slate-600">
             {Array.isArray(faqItems) &&
               faqItems.map((item, idx) => {
                 const isSelected = selectedIndex === idx;
