@@ -18,11 +18,6 @@ module.exports = ({ config }) => {
     icon: './assets/icon.png',
     userInterfaceStyle: 'automatic',
     scheme: scheme,
-    splash: {
-      image: './assets/splash.png',
-      resizeMode: 'contain',
-      backgroundColor: '#161E33',
-    },
     assetBundlePatterns: ['**/*'],
     ios: {
       supportsTablet: true,
@@ -40,7 +35,17 @@ module.exports = ({ config }) => {
       favicon: './assets/icon.png',
       bundler: 'metro',
     },
-    plugins: ['expo-router'],
+    plugins: [
+      'expo-router',
+      [
+        'expo-splash-screen',
+        {
+          image: './assets/splash.png',
+          resizeMode: 'contain',
+          backgroundColor: '#161E33',
+        },
+      ],
+    ],
     updates: {
       enabled: true,
       checkAutomatically: 'ON_LOAD',

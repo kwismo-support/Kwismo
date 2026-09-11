@@ -103,11 +103,11 @@ export default function OtpScreen() {
   };
 
 
-  const headerGradientColors = isDark
+  const headerGradientColors: readonly [string, string, ...string[]] = isDark
     ? ['#2BB673', '#249460', '#1B2E3D', '#162035', '#0F1626', '#0F1626']
     : ['#2BB673', '#28A86B', '#249460', '#213E35', '#23303B', '#3C4A56', '#60707F', '#98A8B8', '#D8E2EC', '#FFFFFF', '#FFFFFF'];
 
-  const headerGradientLocations = isDark
+  const headerGradientLocations: readonly [number, number, ...number[]] = isDark
     ? [0, 0.25, 0.5, 0.7, 0.85, 1.0]
     : [0, 0.10, 0.20, 0.30, 0.38, 0.46, 0.53, 0.60, 0.66, 0.72, 0.76, 1.0];
 
@@ -194,7 +194,7 @@ export default function OtpScreen() {
                     ]}
                   >
                     <TextInput
-                      ref={(el) => (inputRefs.current[index] = el)}
+                      ref={(el) => { inputRefs.current[index] = el; }}
                       style={[
                         styles.otpInput,
                         {
