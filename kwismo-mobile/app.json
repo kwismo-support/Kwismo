@@ -22,7 +22,8 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#161E33"
+        "backgroundColor": "#161E33",
+        "monochromeImage": "./assets/adaptive-icon-monochrome.png"
       },
       "package": "com.kwismo.mobile"
     },
