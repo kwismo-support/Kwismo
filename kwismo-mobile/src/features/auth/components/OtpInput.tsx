@@ -27,7 +27,7 @@ export const OtpInput: React.FC<OtpInputProps> = ({ length = 6, value, onChange 
       {Array.from({ length }).map((_, i) => (
         <TextInput
           key={i}
-          ref={(ref) => (inputs.current[i] = ref)}
+          ref={(ref) => { inputs.current[i] = ref; }}
           style={styles.box}
           keyboardType="number-pad"
           maxLength={1}

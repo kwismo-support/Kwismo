@@ -12,11 +12,11 @@ export const AuthDomeBackground: React.FC<AuthDomeBackgroundProps> = ({ children
   const { isDark } = useAppTheme();
   const screenWidth = Dimensions.get('window').width;
 
-  const headerGradientColors = isDark
+  const headerGradientColors: readonly [string, string, ...string[]] = isDark
     ? ['#0F766E', '#1E293B', '#0F172A']
     : ['#15A362', '#3D5A50', '#FFFFFF'];
 
-  const locations = isDark ? [0, 0.5, 0.85] : [0, 0.45, 0.75];
+  const locations: readonly [number, number, ...number[]] = isDark ? [0, 0.5, 0.85] : [0, 0.45, 0.75];
 
   return (
     <View style={styles.wrapper}>
