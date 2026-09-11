@@ -54,6 +54,11 @@
     "typescript": "~6.0.3"
   },
   "overrides": {
+    "metro": "0.84.6",
+    "metro-config": "0.84.6",
+    "metro-core": "0.84.6",
+    "metro-resolver": "0.84.6",
+    "metro-transform-worker": "0.84.6",
     "semver": "7.6.3",
     "fast-xml-parser": "5.7.0",
     "image-size": "1.1.1",
