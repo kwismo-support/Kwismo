@@ -1,0 +1,10 @@
+{
+  "common": {
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "allow": "Autoriser",
+    "save": "Enregistrer",
+    "error": "Une erreur est survenue",
+    "networkError": "Connexion serveur impossible"
+  }
+}

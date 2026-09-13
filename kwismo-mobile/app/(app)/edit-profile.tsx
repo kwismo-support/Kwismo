@@ -17,6 +17,8 @@ import { HeaderBar } from '../../src/shared/components/HeaderBar';
 import { CountrySelectInput } from '../../src/shared/components/CountrySelectInput';
 import { ProfilePhotoPickerModal } from '../../src/shared/components/ProfilePhotoPickerModal';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
+import { useAuthStore } from '../../src/shared/store/authStore';
+import { useProfile } from '../../src/features/profile/hooks/useProfile';
 import { toast } from '../../src/shared/store/toastStore';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
@@ -27,49 +29,35 @@ export default function EditProfileScreen() {
   const { t } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
 
-  const initialEmail = 'ismael.cesar@kwismo.com';
-  const [fullName, setFullName] = useState('Ismaël Cesar');
-  const [email, setEmail] = useState(initialEmail);
+  const { user } = useAuthStore();
+  const { updateProfile, loading: isSaving } = useProfile();
+
+  const [lastName, setLastName] = useState(user?.lastName || '');
+  const [firstName, setFirstName] = useState(user?.firstName || '');
+  const [email] = useState(user?.email || '');
   const [countryName, setCountryName] = useState('Cameroun');
   const [countryCode, setCountryCode] = useState('CM');
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
-
-  const [fullNameError, setFullNameError] = useState('');
-  const [emailError, setEmailError] = useState('');
   const [isPhotoPickerOpen, setIsPhotoPickerOpen] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
 
-  const handleSave = () => {
-    let valid = true;
-    setFullNameError('');
-    setEmailError('');
+  const [nameError, setNameError] = useState('');
 
-    if (!fullName.trim()) {
-      setFullNameError(t('validation.required', 'Le nom complet est obligatoire.'));
-      valid = false;
+  const handleSave = async () => {
+    if (!firstName.trim() && !lastName.trim()) {
+      setNameError(t('validation.required', 'Le nom ou prénom est obligatoire.'));
+      return;
     }
 
-    if (!email.trim() || !email.includes('@')) {
-      setEmailError(t('validation.emailInvalid', 'Veuillez saisir une adresse email valide.'));
-      valid = false;
+    const res = await updateProfile({
+      nom: lastName.trim(),
+      prenom: firstName.trim(),
+    });
+
+    if (res.success) {
+      router.back();
     }
-
-    if (!valid) return;
-
-    const hasEmailChanged = email.trim().toLowerCase() !== initialEmail.toLowerCase();
-
-    setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
-      if (hasEmailChanged) {
-        toast.info(t('toasts.otpSent', 'Un code OTP a été envoyé pour valider votre nouvel e-mail.'));
-        router.push('/(auth)/otp');
-      } else {
-        toast.success(t('toasts.generalSuccess', 'Profil mis à jour avec succès !'));
-        router.back();
-      }
-    }, 600);
   };
+
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
@@ -89,7 +77,7 @@ export default function EditProfileScreen() {
         <View style={styles.avatarSection}>
           <View style={[styles.avatarBigCircle, { backgroundColor: isDark ? '#334155' : '#CBD5E1' }]}>
             <Text style={styles.avatarInitial}>
-              {fullName.charAt(0).toUpperCase()}
+              {(firstName || lastName || 'K').charAt(0).toUpperCase()}
             </Text>
           </View>
 
@@ -102,31 +90,41 @@ export default function EditProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Input Standardisé : Nom Complet (avec focus et gestion d'erreur comme sur l'auth) */}
+        {/* Input Prénom */}
         <Input
-          label={t('common.fullName', 'Nom Complet')}
-          value={fullName}
+          label={t('common.firstName', 'Prénom')}
+          value={firstName}
           onChangeText={(val) => {
-            setFullName(val);
-            if (fullNameError) setFullNameError('');
+            setFirstName(val);
+            if (nameError) setNameError('');
           }}
-          placeholder="Ismaël Cesar"
-          error={fullNameError}
+          placeholder="Ismaël"
+          error={nameError}
           iconLeft="solar:user-linear"
         />
 
-        {/* Input Standardisé : Email (avec focus et validation) */}
+        {/* Input Nom */}
+        <View style={{ marginTop: 12 }}>
+          <Input
+            label={t('common.lastName', 'Nom')}
+            value={lastName}
+            onChangeText={(val) => {
+              setLastName(val);
+              if (nameError) setNameError('');
+            }}
+            placeholder="Cesar"
+            iconLeft="solar:user-linear"
+          />
+        </View>
+
+        {/* Input Email (Lecture seule ou info) */}
         <View style={{ marginTop: 12 }}>
           <Input
             label={t('common.email', 'Adresse email')}
             value={email}
-            onChangeText={(val) => {
-              setEmail(val);
-              if (emailError) setEmailError('');
-            }}
+            editable={false}
             keyboardType="email-address"
-            placeholder="ismael.cesar@kwismo.com"
-            error={emailError}
+            placeholder="votre.email@kwismo.com"
             iconLeft="solar:letter-linear"
           />
         </View>

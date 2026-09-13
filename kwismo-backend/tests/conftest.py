@@ -16,5 +16,5 @@ from app.main import app
 
 @pytest.fixture
 def client() -> TestClient:
-    with TestClient(app) as test_client:
+    with TestClient(app, base_url="http://testserver/api/v1") as test_client:
         yield test_client

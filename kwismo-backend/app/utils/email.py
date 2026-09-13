@@ -23,7 +23,7 @@ async def send_email(to: str, subject: str, body_html: str, dev_tag: str = "EMAI
         try:
             import resend
             resend.api_key = settings.resend_api_key
-            resend.Emails.send({
+            await asyncio.to_thread(resend.Emails.send, {
                 "from": settings.email_from,
                 "to": [to],
                 "subject": subject,

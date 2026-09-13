@@ -1,53 +1,121 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Icon } from '@iconify/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import ImgEtape from '@/assets/illustrations/Img_Etape.png';
 
 export default function HowItWorks() {
   const { t } = useTranslation('landing');
+  const [activeStep, setActiveStep] = useState<number>(0);
 
-  const steps = t('howItWorks.steps', { returnObjects: true }) as { num: string; title: string; desc: string }[];
+  const steps = t('landing:howItWorks.steps', { returnObjects: true }) as { num: string; title: string; desc: string }[];
 
   return (
-    <section id="howItWorks" className="w-full bg-white dark:bg-brand-darkBg px-6 py-16 transition-colors font-body">
+    <section id="howItWorks" className="w-full bg-white dark:bg-brand-darkBg px-6 py-20 lg:py-24 transition-colors font-body overflow-hidden">
       <div className="mx-auto max-w-[90%]">
-        <div className="text-center max-w-2xl mx-auto">
-          <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto"
+        >
+          <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-brand-navy dark:text-white">
             {t('landing:howItWorks.title')}
           </h2>
-        </div>
+        </motion.div>
 
-        <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12">
-          <div className="flex flex-col justify-between gap-5 h-full">
-            {Array.isArray(steps) && steps.map((step, idx) => (
-              <div
-                key={idx}
-                className="flex items-start gap-4 p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-navy shadow-sm hover:border-brand-green/50 transition flex-1 justify-center flex-col"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-300 dark:border-white/20 bg-white dark:bg-brand-darkBg font-title text-lg font-bold text-brand-green">
-                    {step.num || (idx + 1).toString()}
-                  </div>
+        <div className="mt-16 grid grid-cols-1 lg:grid-cols-2 items-stretch gap-12 lg:gap-16">
+          <div className="flex flex-col justify-between gap-4 h-full">
+            {Array.isArray(steps) &&
+              steps.map((step, idx) => {
+                const isActive = activeStep === idx;
+                const isLast = idx === steps.length - 1;
 
-                  <h3 className="font-title text-base font-bold text-slate-900 dark:text-white">
-                    {step.title}
-                  </h3>
-                </div>
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: -25 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: idx * 0.12 }}
+                    className="flex flex-col w-full flex-1 justify-center"
+                  >
+                    <div
+                      onMouseEnter={() => setActiveStep(idx)}
+                      onClick={() => setActiveStep(idx)}
+                      className={`cursor-pointer rounded-3xl p-6 sm:p-7 border transition-all duration-300 ${
+                        isActive
+                          ? 'bg-brand-green/10 dark:bg-brand-green/15 border-brand-green shadow-lg'
+                          : 'bg-slate-50 dark:bg-brand-navy border-slate-200 dark:border-white/10 hover:border-brand-green/40 shadow-sm'
+                      }`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div
+                          className={`flex shrink-0 items-center justify-center rounded-2xl font-title font-extrabold transition-all duration-300 ${
+                            isActive
+                              ? 'h-12 w-12 text-lg bg-brand-green text-white shadow-md'
+                              : 'h-12 w-12 text-lg bg-slate-200 dark:bg-white/15 text-slate-700 dark:text-white'
+                          }`}
+                        >
+                          {step.num}
+                        </div>
 
-                <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed pl-13">
-                  {step.desc}
-                </p>
-              </div>
-            ))}
+                        <h3
+                          className={`font-title font-extrabold transition-colors duration-300 ${
+                            isActive
+                              ? 'text-xl sm:text-2xl text-brand-green'
+                              : 'text-lg sm:text-xl text-brand-navy dark:text-white'
+                          }`}
+                        >
+                          {step.title}
+                        </h3>
+                      </div>
+
+                      <AnimatePresence>
+                        {isActive && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                            animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
+                            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="overflow-hidden border-t border-brand-green/20 pt-3"
+                          >
+                            <p className="font-body text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+                              {step.desc}
+                            </p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {!isLast && (
+                      <div className="flex items-center justify-start pl-10 py-2 text-brand-green/60">
+                        <Icon icon="solar:alt-arrow-down-bold" className="text-xl" />
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
           </div>
 
-          <div className="flex justify-center items-center h-full">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="flex justify-center items-center h-full w-full"
+          >
             <img
               src={ImgEtape}
-              alt="KWISMO"
-              className="w-full max-w-[480px] h-full max-h-[400px] object-contain drop-shadow-xl rounded-3xl"
+              alt="KWISMO Processus 3 étapes"
+              className="w-full max-h-[560px] object-contain drop-shadow-xl"
             />
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
   );
 }
+
+

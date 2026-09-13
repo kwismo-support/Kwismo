@@ -14,12 +14,19 @@ const AuthPage             = lazy(() => import('@/features/auth'));
 const PartnerRequestPage   = lazy(() => import('@/features/partner-request'));
 const DashboardPage        = lazy(() => import('@/features/dashboard'));
 const UsersPage            = lazy(() => import('@/features/users'));
+const UserDetailPage       = lazy(() => import('@/features/users/components/UserDetailPage'));
 const NumbersPage          = lazy(() => import('@/features/numbers'));
+const NumberDetailPage     = lazy(() => import('@/features/numbers/components/NumberDetailPage'));
 const PartnersPage         = lazy(() => import('@/features/partners'));
+const PartnerDetailPage    = lazy(() => import('@/features/partners/components/PartnerDetailPage'));
 const UssdPage             = lazy(() => import('@/features/ussd'));
+const UssdDetailPage       = lazy(() => import('@/features/ussd/components/UssdDetailPage'));
 const AccessControlPage    = lazy(() => import('@/features/access-control'));
 const ReportsPage          = lazy(() => import('@/features/reports'));
 const UserPortalPage       = lazy(() => import('@/features/user'));
+const ProfilePage          = lazy(() => import('@/features/profile'));
+const SettingsPage         = lazy(() => import('@/features/settings'));
+const NotificationsPage    = lazy(() => import('@/features/notifications'));
 
 const PageRouteLoader = () => (
   <div className="w-full h-1 bg-slate-100 dark:bg-white/5 overflow-hidden">
@@ -50,14 +57,21 @@ export function AppRouter() {
               <Route path="/app" element={<Navigate to="/app/dashboard" replace />} />
               <Route path="/app/dashboard" element={<DashboardPage />} />
               <Route path="/app/numbers"   element={<NumbersPage />} />
+              <Route path="/app/numbers/:id" element={<NumberDetailPage />} />
               <Route path="/app/reports"   element={<ReportsPage />} />
+              <Route path="/app/profile"   element={<ProfilePage />} />
+              <Route path="/app/settings"  element={<SettingsPage />} />
+              <Route path="/app/notifications" element={<NotificationsPage />} />
               <Route path="/app/user"      element={<UserPortalPage />} />
 
               <Route element={<RoleGuard roles={['admin']} />}>
-                <Route path="/app/users"   element={<UsersPage />} />
-                <Route path="/app/partners" element={<PartnersPage />} />
-                <Route path="/app/ussd"    element={<UssdPage />} />
-                <Route path="/app/access"  element={<AccessControlPage />} />
+                <Route path="/app/users"        element={<UsersPage />} />
+                <Route path="/app/users/:id"    element={<UserDetailPage />} />
+                <Route path="/app/partners"     element={<PartnersPage />} />
+                <Route path="/app/partners/:id" element={<PartnerDetailPage />} />
+                <Route path="/app/ussd"         element={<UssdPage />} />
+                <Route path="/app/ussd/:id"     element={<UssdDetailPage />} />
+                <Route path="/app/access"       element={<AccessControlPage />} />
               </Route>
 
               <Route path="/app/403" element={<ForbiddenPage />} />

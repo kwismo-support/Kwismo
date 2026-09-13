@@ -1,25 +1,19 @@
 import axios from 'axios';
 import { env } from '@/config/env';
 
-
-import { useAuthStore } from '@/shared/store/authStore';
-
 export const apiClient = axios.create({
   baseURL: env.apiUrl,
   withCredentials: true,
   headers: { 'Content-Type': 'application/json' },
 });
 
-apiClient.interceptors.request.use(
-  (config) => {
-    const token = useAuthStore.getState().token;
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error),
-);
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('kwismo_auth_token');
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 apiClient.interceptors.response.use(
   (response) => response,
@@ -30,41 +24,40 @@ apiClient.interceptors.response.use(
 
     if (status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      const authStore = useAuthStore.getState();
-      const refreshToken = authStore.refreshToken;
-      
+      const refreshToken = localStorage.getItem('kwismo_refresh_token');
+
       if (refreshToken) {
         try {
-          // Attempt to refresh
           const res = await axios.post(`${env.apiUrl}/auth/refresh`, {
-            refresh_token: refreshToken
+            refresh_token: refreshToken,
           });
           const newToken = res.data.access_token;
           const newRefresh = res.data.refresh_token;
-          
-          authStore.setTokens(newToken, newRefresh);
-          
+          localStorage.setItem('kwismo_auth_token', newToken);
+          if (newRefresh) localStorage.setItem('kwismo_refresh_token', newRefresh);
           if (originalRequest.headers) {
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
           }
           return apiClient(originalRequest);
-        } catch (refreshError) {
-          // Refresh failed, logout
-          authStore.logout();
+        } catch {
+          localStorage.removeItem('kwismo_auth_token');
+          localStorage.removeItem('kwismo_refresh_token');
+          localStorage.removeItem('kwismo_user');
           window.location.href = '/auth/login';
           return Promise.reject(new Error('Session expirée'));
         }
       } else {
-        // No refresh token, logout
-        authStore.logout();
-        window.location.href = '/auth/login';
+        localStorage.removeItem('kwismo_auth_token');
+        localStorage.removeItem('kwismo_user');
+        if (window.location.pathname.startsWith('/app')) {
+          window.location.href = '/auth/login';
+        }
       }
     }
 
     return Promise.reject(new Error(message));
   },
 );
-
 
 export const api = {
   get: <T>(url: string, params?: Record<string, unknown>) =>

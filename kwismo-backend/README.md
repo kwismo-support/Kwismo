@@ -203,9 +203,15 @@ kwismo-backend/
 │  │  │
 │  │  ├─ numbers/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # ★ 5 routes /numbers/verify, /batch-verify, /numbers…
-│  │  │  ├─ schemas.py               # NumberVerifyIn, NumberOut, NumberDetailOut, NumberStatusIn…
-│  │  │  └─ service.py               # Appelle ai_gateway pour le score
+│  │  │  ├─ router.py                # ★ 6 routes /numbers/verify, /numbers/sync, /batch-verify, /numbers…
+│  │  │  ├─ schemas.py               # NumberVerifyIn, NumberSyncOut, NumberOut, NumberDetailOut, NumberStatusIn…
+│  │  │  └─ service.py               # Appelle ai_gateway pour le score + delta sync
+│  │  │
+│  │  ├─ settings/               # ★ Nouveau module : Gestion dynamique des seuils de risque (SuperAdmin)
+│  │  │  ├─ __init__.py
+│  │  │  ├─ router.py                # ★ 2 routes GET/PUT /settings/thresholds (validation continue [0.0, 1.0])
+│  │  │  ├─ schemas.py               # RiskThresholdRule, SettingsThresholdsOut
+│  │  │  └─ service.py               # Sauvegarde des règles de risque en base avec validation d'intervalles
 │  │  │
 │  │  ├─ reports/
 │  │  │  ├─ __init__.py
@@ -297,16 +303,18 @@ kwismo-backend/
 │
 ├─ tests/
 │  ├─ __init__.py
-│  ├─ conftest.py                    # Fixtures pytest (client de test FastAPI)
+│  ├─ conftest.py                    # Fixtures pytest (client de test FastAPI avec base_url /api/v1)
 │  ├─ test_access_control.py         # Tests du module access_control (rôles et droits)
 │  ├─ test_ai_gateway.py             # Tests du module ai_gateway (schémas et contrats)
 │  ├─ test_auth.py                   # Tests d'authentification et inscription
 │  ├─ test_devices.py                # Tests du module devices
 │  ├─ test_kpi.py                    # Tests du module kpi (indicateurs globaux et partenaires)
 │  ├─ test_numbers.py                # Tests de vérification de numéros
+│  ├─ test_numbers_sync.py           # Tests de synchronisation delta /numbers/sync
 │  ├─ test_otp.py                    # Tests de génération et envoi OTP
 │  ├─ test_partners.py               # Tests du module partenaires
 │  ├─ test_reports.py                # Tests de création et gestion des signalements
+│  ├─ test_settings.py               # Tests de la configuration dynamique des seuils /settings/thresholds
 │  ├─ test_surveys.py                # Tests du module surveys (sondages)
 │  ├─ test_transactions.py           # Tests du module transactions
 │  ├─ test_user_phones.py            # Tests de raccordement des numéros de téléphone
@@ -413,10 +421,11 @@ docker compose exec backend python scripts/seed.py
 
 ## 9. Modules & routes API
 
-Toutes les routes sont documentées dans Swagger (`/docs`). Retrouvez le **catalogue exhaustif des réponses, messages FR/EN et schémas JSON de toutes les routes** dans :
+Toutes les routes API exposées par le backend utilisent désormais le préfixe global **/api/v1** (ex: `http://localhost:7001/api/v1/auth/login`).
+Toutes les routes sont documentées en temps réel dans Swagger (`/docs` et `/api/v1/health`). Retrouvez le **catalogue exhaustif des réponses, messages FR/EN et schémas JSON de toutes les routes** dans :
 👉 **[`docs/API_RESPONSES_CATALOG.md`](./docs/API_RESPONSES_CATALOG.md)**
 
-Aperçu des modules :
+Aperçu des modules (accessibles sous `/api/v1/*`) :
 
 | Module             | Routes principales                                                                                                                              | Rôle                         |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |

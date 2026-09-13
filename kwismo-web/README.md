@@ -46,7 +46,7 @@ Caractéristiques : **thème clair/sombre**, **français/anglais**, **responsive
 | Langage          | TypeScript                       |
 | Styles           | TailwindCSS                      |
 | Composants       | shadcn/ui + Radix UI             |
-| Icônes          | lucide-react*(aucune emoji)*   |
+| Icônes          | lucide-react*(aucune emoji)*     |
 | Routing          | React Router v6                  |
 | Données serveur | TanStack Query                   |
 | État client     | Zustand                          |
@@ -124,19 +124,19 @@ kwismo-web/
 │     └─ Poppins-Bold.woff2
 │
 ├─ src/
-│  ├─ main.tsx                       # Point d'entrée React (montage <App/>)
-│  ├─ App.tsx                        # Composition des providers + router
-│  ├─ index.css                      # Import globals.css
+│  ├─ main.tsx
+│  ├─ App.tsx
+│  ├─ index.css
 │  ├─ vite-env.d.ts
 │  │
 │  ├─ app/                           # Cœur applicatif
-│  │  ├─ router.tsx                  # Définition des routes + lazy loading
-│  │  ├─ providers.tsx               # Query, Theme, i18n, Auth (composés)
+│  │  ├─ router.tsx
+│  │  ├─ providers.tsx
 │  │  └─ guards/
-│  │     ├─ AuthGuard.tsx            # Vérifie la session au montage
-│  │     ├─ GuestGuard.tsx           # Redirige si déjà connecté
-│  │     ├─ ProtectedRoute.tsx       # Bloque l'accès si non authentifié
-│  │     └─ RoleGuard.tsx            # Bloque selon le rôle (admin/partner)
+│  │     ├─ AuthGuard.tsx
+│  │     ├─ GuestGuard.tsx
+│  │     ├─ ProtectedRoute.tsx
+│  │     └─ RoleGuard.tsx
 │  │
 │  ├─ assets/
 │  │  ├─ logo/
@@ -147,24 +147,24 @@ kwismo-web/
 │  │     └─ empty-state.svg
 │  │
 │  ├─ config/
-│  │  ├─ env.ts                      # Lecture typée des variables VITE_*
-│  │  ├─ constants.ts                # Constantes globales
-│  │  └─ endpoints.ts                # Chemins des routes API
+│  │  ├─ env.ts
+│  │  ├─ constants.ts
+│  │  └─ endpoints.ts
 │  │
 │  ├─ features/
 │  │  │
 │  │  ├─ landing/
-│  │  │  ├─ index.tsx                # Page d'assemblage landing page
+│  │  │  ├─ index.tsx
 │  │  │  ├─ components/
 │  │  │  │  ├─ Navbar.tsx
 │  │  │  │  ├─ Hero.tsx
 │  │  │  │  ├─ FraudProblem.tsx
-│  │  │  │  ├─ Comparison.tsx        # Tableau comparatif
-│  │  │  │  ├─ Features.tsx
+│  │  │  │  ├─ Comparison.tsx
 │  │  │  │  ├─ HowItWorks.tsx
+│  │  │  │  ├─ FaqSection.tsx
 │  │  │  │  ├─ Partners.tsx
-│  │  │  │  ├─ Pricing.tsx           # Tarification transparente
-│  │  │  │  ├─ ContactBar.tsx        # Barre de contact rapide
+│  │  │  │  ├─ Pricing.tsx
+│  │  │  │  ├─ ContactBar.tsx
 │  │  │  │  ├─ DownloadCTA.tsx
 │  │  │  │  └─ Footer.tsx
 │  │  │  └─ sections/
@@ -219,7 +219,7 @@ kwismo-web/
 │  │  │  ├─ dialog.tsx
 │  │  │  ├─ dropdown-menu.tsx
 │  │  │  ├─ input.tsx
-│  │  │  ├─ phone-input.tsx          # Champ téléphone international avec libphonenumber-js
+│  │  │  ├─ phone-input.tsx
 │  │  │  ├─ table.tsx
 │  │  │  └─ toast.tsx
 │  │  ├─ components/                 # Composants applicatifs (Layout, Navigation)
@@ -227,9 +227,10 @@ kwismo-web/
 │  │  │  │  ├─ AppLayout.tsx
 │  │  │  │  ├─ Sidebar.tsx
 │  │  │  │  └─ Topbar.tsx
-│  │  │  ├─ DataTable.tsx            # Table paginée universelle avec skeletons & i18n
+│  │  │  ├─ DataTable.tsx
 │  │  │  ├─ ThemeToggle.tsx
 │  │  │  ├─ LanguageSwitcher.tsx
+│  │  │  ├─ ScrollToTopButton.tsx
 │  │  │  ├─ EmptyState.tsx
 │  │  │  ├─ ErrorState.tsx
 │  │  │  └─ LoadingSkeleton.tsx
@@ -239,7 +240,7 @@ kwismo-web/
 │  │  │  ├─ axios.ts
 │  │  │  ├─ formatters.ts
 │  │  │  ├─ i18n.ts
-│  │  │  ├─ phone.ts                 # Validation & formatage E.164 + i18n-iso-countries
+│  │  │  ├─ phone.ts
 │  │  │  ├─ queryClient.ts
 │  │  │  └─ utils.ts
 │  │  ├─ mock/
@@ -248,8 +249,8 @@ kwismo-web/
 │  │  └─ constants/
 │  │
 │  ├─ styles/
-│  │  ├─ globals.css                 # Configuration typographique base, reset, utilitaires
-│  │  └─ tokens.css                  # Source unique design tokens (couleurs, polices, tailles)
+│  │  ├─ globals.css
+│  │  └─ tokens.css
 │  │
 │  └─ locales/                       # Fichiers de traduction i18n (100% sans fallback)
 │     ├─ fr/
@@ -269,7 +270,8 @@ kwismo-web/
 ├─ .env.example
 ├─ index.html
 ├─ package.json
-├─ tailwind.config.ts                # Mappage des design tokens & typographies
+├─ vercel.json
+├─ tailwind.config.ts
 ├─ tsconfig.json
 ├─ vite.config.ts
 └─ README.md

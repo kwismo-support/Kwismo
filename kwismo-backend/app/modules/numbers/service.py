@@ -64,12 +64,9 @@ def _to_detail_out(n, nombre_signalements: int) -> NumberDetailOut:
     )
 
 
-def _statut_from_score(score: float) -> str:
-    if score >= 0.7:
-        return "frauduleux"
-    elif score >= 0.3:
-        return "suspect"
-    return "securise"
+async def _statut_from_score(score: float) -> str:
+    from app.modules.settings.service import evaluate_risk_status
+    return await evaluate_risk_status(score)
 
 
 async def _score_and_upsert(valeur: str, country_id: str | None = None) -> NumberOut:
@@ -135,7 +132,7 @@ async def _score_and_upsert(valeur: str, country_id: str | None = None) -> Numbe
             coherence_ok = False
 
     prediction = score_number_fallback(nombre_signalements, coherence_ok)
-    statut = _statut_from_score(prediction.score_risque)
+    statut = await _statut_from_score(prediction.score_risque)
     now = utcnow()
 
     # Upsert dans le registre Numero.
@@ -276,3 +273,30 @@ async def set_number_status(number_id: str, payload: NumberStatusIn, lang: str =
     )
     nombre_signalements = await db.report.count(where={"numeroId": number_id})
     return _to_detail_out(numero, nombre_signalements)
+
+
+async def sync_numbers(since: str | None = None):
+    from datetime import datetime
+    from app.modules.numbers.schemas import NumberSyncOut
+    from app.modules.settings.service import get_threshold_rules
+
+    where: dict = {}
+    if since:
+        try:
+            clean_since = since.strip()
+            if clean_since.endswith("Z"):
+                clean_since = clean_since[:-1] + "+00:00"
+            since_dt = datetime.fromisoformat(clean_since)
+            where["updatedAt"] = {"gte": since_dt}
+        except Exception as exc:
+            logger.warning("Invalid since timestamp format '%s': %s", since, exc)
+
+    numeros = await db.numero.find_many(where=where, take=500, order={"updatedAt": "desc"})
+    rules = await get_threshold_rules()
+
+    return NumberSyncOut(
+        items=[_to_out(n) for n in numeros],
+        threshold_rules=[r.model_dump() for r in rules],
+        synced_at=utcnow(),
+    )
+

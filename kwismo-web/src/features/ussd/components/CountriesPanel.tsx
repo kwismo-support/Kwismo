@@ -45,11 +45,11 @@ export default function CountriesPanel({ countries, isLoading = false, onAddCoun
           <div key={c.id} className="p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-green/10 text-brand-green font-title font-bold text-sm">
-                <Icon icon={`circle-flags:${c.codePays.toLowerCase()}`} className="text-2xl shrink-0" />
+                <Icon icon={`circle-flags:${(c.code || c.codePays || 'cm').toLowerCase().replace('+', '')}`} className="text-2xl shrink-0" />
               </div>
               <div>
-                <h4 className="font-title text-sm font-bold text-slate-900 dark:text-white">{c.nom}</h4>
-                <p className="font-mono text-xs text-slate-500">{c.codePays}</p>
+                <h4 className="font-title text-sm font-bold text-slate-900 dark:text-white">{c.nom || c.pays}</h4>
+                <p className="font-mono text-xs text-slate-500">{c.indicatif || c.codePays}</p>
               </div>
             </div>
             {c.estParDefaut && (

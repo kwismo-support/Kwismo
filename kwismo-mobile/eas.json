@@ -1,0 +1,66 @@
+{
+  "cli": {
+    "version": ">= 7.0.0",
+    "appVersionSource": "remote",
+    "requireCommit": false
+  },
+  "build": {
+    "development": {
+      "node": "20.19.4",
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "preview",
+      "env": {
+        "APP_ENV": "preview",
+        "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
+      }
+    },
+    "preview": {
+      "node": "20.19.4",
+      "distribution": "internal",
+      "channel": "preview",
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": false
+      },
+      "env": {
+        "APP_ENV": "preview",
+        "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
+      }
+    },
+    "staging": {
+      "node": "20.19.4",
+      "distribution": "internal",
+      "channel": "staging",
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": false
+      },
+      "env": {
+        "APP_ENV": "staging",
+        "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
+      }
+    },
+    "production": {
+      "node": "20.19.4",
+      "channel": "production",
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": false
+      },
+      "env": {
+        "APP_ENV": "production",
+        "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

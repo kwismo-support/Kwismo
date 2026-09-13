@@ -20,8 +20,14 @@ ModelT = TypeVar("ModelT")
 
 class BaseRepository(Generic[ModelT]):
     def __init__(self, delegate: Any) -> None:
-        """`delegate` = accesseur de modele Prisma, ex. `db.user`. / `delegate` = a Prisma model accessor, e.g. `db.user`."""
-        self.delegate = delegate
+        """`delegate` = accesseur de modele Prisma, ex. `db.user`."""
+        self._raw_delegate = delegate
+
+    @property
+    def delegate(self) -> Any:
+        if callable(self._raw_delegate):
+            return self._raw_delegate()
+        return self._raw_delegate
 
     async def get(self, id: str, include: dict | None = None) -> ModelT | None:
         return await self.delegate.find_unique(where={"id": id}, include=include)

@@ -10,6 +10,7 @@ export interface User {
   isBanned:  boolean;
   createdAt: string;
   updatedAt: string;
+  partnerId?: string;
 }
 
 export interface UserSummary {

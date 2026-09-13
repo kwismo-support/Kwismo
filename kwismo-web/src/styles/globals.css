@@ -4,8 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 @font-face {
   font-family: "Montserrat Alternates";
   src: url("/fonts/MontserratAlternates-Regular.woff2") format("woff2");
@@ -29,7 +27,6 @@
   font-style: normal;
   font-display: swap;
 }
-
 
 @font-face {
   font-family: "Ageo";
@@ -66,7 +63,6 @@
   font-display: swap;
   unicode-range: U+0030-0039, U+0041-005A, U+0061-007A;
 }
-
 
 @layer base {
   *, *::before, *::after {
@@ -137,38 +133,38 @@
     font-family: var(--font-body);
   }
 
-  
   a {
     color: var(--color-primary-500);
     text-decoration: none;
   }
+
   a:hover {
     text-decoration: none;
   }
 
-  
   :focus-visible {
     outline: 2px solid var(--color-primary-500);
     outline-offset: 2px;
   }
 
-  
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
+
   ::-webkit-scrollbar-track {
     background: var(--color-bg-subtle);
   }
+
   ::-webkit-scrollbar-thumb {
     background: var(--color-border);
     border-radius: var(--radius-full);
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-text-muted);
   }
 }
-
 
 @layer utilities {
   .text-balance {
@@ -181,6 +177,40 @@
 
   .animate-slide-up {
     animation: slideUp var(--transition-base) ease-out;
+  }
+
+  .btn-brand-green {
+    @apply relative inline-flex items-center justify-center overflow-hidden rounded-2xl bg-brand-green font-body font-bold text-white shadow-lg transition-all duration-300 active:scale-95;
+    background-image: linear-gradient(135deg, var(--color-brand-green) 0%, #299368 100%);
+  }
+
+  .btn-brand-green:hover {
+    @apply shadow-xl -translate-y-0.5;
+    opacity: 0.92;
+  }
+
+  .btn-brand-orange {
+    @apply relative inline-flex items-center justify-center overflow-hidden rounded-2xl bg-brand-orange font-body font-bold text-white shadow-lg transition-all duration-300 active:scale-95;
+    background-image: linear-gradient(135deg, var(--color-brand-orange) 0%, #e08700 100%);
+  }
+
+  .btn-brand-orange:hover {
+    @apply shadow-xl -translate-y-0.5;
+    opacity: 0.92;
+  }
+
+  .btn-brand-navy {
+    @apply relative inline-flex items-center justify-center overflow-hidden rounded-2xl bg-brand-navy font-body font-bold text-white shadow-lg transition-all duration-300 active:scale-95;
+    background-image: linear-gradient(135deg, var(--color-brand-navy) 0%, #0F1626 100%);
+  }
+
+  .btn-brand-navy:hover {
+    @apply shadow-xl -translate-y-0.5;
+    opacity: 0.92;
+  }
+
+  .btn-glow {
+    @apply relative transition-all duration-300;
   }
 }
 

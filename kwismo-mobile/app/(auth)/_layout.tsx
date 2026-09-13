@@ -1,7 +1,14 @@
 import React from 'react';
-import { Stack } from 'expo-router';
+import { Stack, Redirect } from 'expo-router';
+import { useAuthStore } from '../../src/shared/store/authStore';
 
 export default function AuthLayout() {
+  const { isAuthenticated, isInitialized } = useAuthStore();
+
+  if (isInitialized && isAuthenticated) {
+    return <Redirect href="/(app)" />;
+  }
+
   return (
     <Stack
       screenOptions={{
@@ -19,3 +26,4 @@ export default function AuthLayout() {
     </Stack>
   );
 }
+

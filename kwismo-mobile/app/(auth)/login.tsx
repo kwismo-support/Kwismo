@@ -16,10 +16,9 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
 import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
-import { useAuthStore } from '../../src/shared/store/authStore';
+import { useLogin } from '../../src/features/auth/hooks/useLogin';
 import { Input } from '../../src/shared/ui/Input';
 import { Button } from '../../src/shared/ui/Button';
-import { toast } from '../../src/shared/store/toastStore';
 import { validateEmail } from '../../src/shared/lib/validation';
 import { colors, fonts } from '../../src/styles/tokens';
 
@@ -28,7 +27,7 @@ export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
-  const loginStoreAction = useAuthStore((state) => state.login);
+  const { handleLogin: loginApiCall, loading: apiLoading } = useLogin();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -62,22 +61,23 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     if (!validateForm()) return false;
 
-    // Simulate authentication with guaranteed minimum loading on success
-    loginStoreAction(
-      { id: '1', email: email.trim() },
-      'sample-jwt-token'
-    );
-
-    toast.success(t('toasts.loginSuccess'));
-    router.replace('/(auth)/otp-success?mode=login');
-    return true;
+    const res = await loginApiCall(email, password);
+    if (res.success) {
+      router.replace('/(app)');
+      return true;
+    } else if (res.requiresDeviceVerification) {
+      router.push({ pathname: '/(auth)/otp', params: { email: email.trim() } });
+      return false;
+    }
+    return false;
   };
 
-  const headerGradientColors = isDark
+
+  const headerGradientColors: readonly [string, string, ...string[]] = isDark
     ? ['#2BB673', '#249460', '#1B2E3D', '#162035', '#0F1626', '#0F1626']
     : ['#2BB673', '#28A86B', '#249460', '#213E35', '#23303B', '#3C4A56', '#60707F', '#98A8B8', '#D8E2EC', '#FFFFFF', '#FFFFFF'];
 
-  const headerGradientLocations = isDark
+  const headerGradientLocations: readonly [number, number, ...number[]] = isDark
     ? [0, 0.25, 0.5, 0.7, 0.85, 1.0]
     : [0, 0.10, 0.20, 0.30, 0.38, 0.46, 0.53, 0.60, 0.66, 0.72, 0.76, 1.0];
 

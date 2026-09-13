@@ -20,6 +20,7 @@ import { Skeleton, SkeletonCircle, SkeletonLoader } from '../../src/shared/ui/Sk
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { useThemeStore, ThemePreference } from '../../src/shared/store/themeStore';
 import { useAuthStore } from '../../src/shared/store/authStore';
+import { useProfile } from '../../src/features/profile/hooks/useProfile';
 import { toast } from '../../src/shared/store/toastStore';
 import { colors, fonts } from '../../src/styles/tokens';
 import { scaleFont } from '../../src/shared/lib/responsive';
@@ -30,28 +31,32 @@ export default function ProfileScreen() {
   const { t, i18n } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
   const { userThemePreference, setTheme } = useThemeStore();
+  const { user } = useAuthStore();
+  const { profile, loading } = useProfile();
   const logout = useAuthStore((state) => state.logout);
 
-  const [loading, setLoading] = useState(true);
   const [callDetectionEnabled, setCallDetectionEnabled] = useState(true);
 
   // Bottom Sheet Modals
   const [themeModalVisible, setThemeModalVisible] = useState(false);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
 
-  // Informations utilisateur (Email sous le nom)
-  const userName = 'Ismaël Cesar';
-  const userEmail = 'ismael.cesar@kwismo.com';
+  // Informations utilisateur réelles
+  const userName = user?.firstName
+    ? `${user.firstName} ${user.lastName || ''}`.trim()
+    : profile?.prenom
+    ? `${profile.prenom} ${profile.nom || ''}`.trim()
+    : user?.email
+    ? user.email.split('@')[0]
+    : 'Utilisateur KWISMO';
 
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 300);
-    return () => clearTimeout(timer);
-  }, []);
+  const userEmail = user?.email || profile?.email || '';
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     router.replace('/(auth)/login');
   };
+
 
   const getThemeLabel = (pref: ThemePreference) => {
     if (pref === 'light') return t('theme.light');

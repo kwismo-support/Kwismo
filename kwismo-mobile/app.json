@@ -7,11 +7,6 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "scheme": "kwismo",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#161E33"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -22,7 +17,8 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#161E33"
+        "backgroundColor": "#000000",
+        "monochromeImage": "./assets/adaptive-icon-monochrome.png"
       },
       "package": "com.kwismo.mobile"
     },
@@ -31,7 +27,25 @@
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router"
-    ]
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#161E33"
+        }
+      ]
+    ],
+    "extra": {
+      "appEnv": "preview",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "5dfc0edb-3e81-4bed-b9c2-448832f4b5ec"
+      }
+    },
+    "owner": "kwismo"
   }
 }

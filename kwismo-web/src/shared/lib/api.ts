@@ -12,48 +12,47 @@ const delay = (ms = 150) => new Promise((resolve) => setTimeout(resolve, ms));
 export const api = {
   getUsers: async () => {
     if (env.useMock) { await delay(); return MOCK_USERS; }
-    return apiClient.get(ENDPOINTS.users.list).then((r) => r.data);
+    return apiClient.get('/users').then((r) => r.data?.items || r.data);
   },
 
   getPartners: async () => {
     if (env.useMock) { await delay(); return MOCK_PARTNERS; }
-    return apiClient.get(ENDPOINTS.partners.list).then((r) => r.data);
+    return apiClient.get('/partners').then((r) => r.data?.items || r.data);
   },
 
   getNumbers: async () => {
     if (env.useMock) { await delay(); return MOCK_NUMBERS; }
-    return apiClient.get(ENDPOINTS.numbers.list).then((r) => r.data);
+    return apiClient.get('/numbers').then((r) => r.data?.items || r.data);
   },
 
   getCountries: async () => {
     if (env.useMock) { await delay(); return MOCK_COUNTRIES; }
-    return apiClient.get(ENDPOINTS.ussd.countries).then((r) => r.data);
+    return apiClient.get('/ussd/countries').then((r) => r.data);
   },
 
   getOperators: async () => {
     if (env.useMock) { await delay(); return MOCK_OPERATORS; }
-    return apiClient.get(ENDPOINTS.ussd.operators).then((r) => r.data);
+    return apiClient.get('/ussd/operators').then((r) => r.data);
   },
 
   getUssdActions: async () => {
     if (env.useMock) { await delay(); return MOCK_USSD_ACTIONS; }
-    return apiClient.get(ENDPOINTS.ussd.actions).then((r) => r.data);
+    return apiClient.get('/ussd/actions').then((r) => r.data);
   },
 
   getRoles: async () => {
     if (env.useMock) { await delay(); return MOCK_ROLES; }
-    return apiClient.get(ENDPOINTS.access.roles).then((r) => r.data);
+    return apiClient.get('/access-control/roles').then((r) => r.data);
   },
 
   getPermissions: async () => {
     if (env.useMock) { await delay(); return MOCK_PERMISSIONS; }
-    return apiClient.get(ENDPOINTS.access.permissions).then((r) => r.data);
+    return apiClient.get('/access-control/permissions').then((r) => r.data);
   },
 
   getKpiSummary: async () => {
     if (env.useMock) { await delay(); return MOCK_KPIS; }
     return apiClient.get('/kpi/global').then((r) => {
-      // Adapter: map KpiOut[] to KpiSummaryDTO expected by frontend
       const kpis = r.data;
       const getValue = (name: string) => kpis.find((k: any) => k.name === name)?.value ?? 0;
       return {
@@ -71,7 +70,7 @@ export const api = {
 
   getReports: async () => {
     if (env.useMock) { await delay(); return MOCK_REPORTS; }
-    return apiClient.get(ENDPOINTS.reports.list).then((r) => r.data);
+    return apiClient.get('/reports').then((r) => r.data?.items || r.data);
   },
 
   verifyNumber: async (valeur: string) => {
@@ -90,7 +89,7 @@ export const api = {
         dateDerniereVerification: new Date().toISOString(),
       };
     }
-    return apiClient.post(ENDPOINTS.numbers.verify, { valeur }).then((r) => r.data);
+    return apiClient.post('/numbers/verify', { valeur }).then((r) => r.data);
   },
 
   get: <T>(url: string, params?: Record<string, unknown>) =>

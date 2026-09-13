@@ -39,6 +39,7 @@ from app.modules.notifications.router import router as notifications_router
 from app.modules.numbers.router import router as numbers_router
 from app.modules.partners.router import router as partners_router
 from app.modules.reports.router import router as reports_router
+from app.modules.settings.router import router as settings_router
 from app.modules.surveys.router import router as surveys_router
 from app.modules.transactions.router import router as transactions_router
 from app.modules.user_phones.router import router as user_phones_router
@@ -74,6 +75,7 @@ TAGS_METADATA = [
     {"name": "Access Control", "description": "FR — Rôles et droits d'accès (RBAC). / EN — Roles and access rights (RBAC)."},
     {"name": "Notifications", "description": "FR — Notifications utilisateur FR/EN. / EN — User notifications, FR/EN."},
     {"name": "Devices", "description": "FR — Appareils connectés. / EN — Connected devices."},
+    {"name": "Settings", "description": "FR — Configuration système et seuils de risque (SuperAdmin). / EN — System settings and risk thresholds (SuperAdmin)."},
     {"name": "System", "description": "FR — Supervision (santé). / EN — Supervision (health)."},
 ]
 
@@ -208,9 +210,10 @@ for router in (
     access_control_router,
     notifications_router,
     devices_router,
+    settings_router,
     ai_gateway_router,
 ):
-    app.include_router(router)
+    app.include_router(router, prefix="/api/v1")
 
 
 @app.get("/health",
@@ -219,6 +222,7 @@ for router in (
     summary="Health check / Vérification de santé",
     description="**FR** — Point de contrôle pour la supervision.\n\n**EN** — Health check for supervision/orchestration.",
 )
+@app.get("/api/v1/health", response_model=HealthOut, include_in_schema=False)
 async def health() -> HealthOut:
     from app.db.prisma_client import db
     try:

@@ -46,6 +46,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
         {
           backgroundColor,
           paddingTop: Math.max(insets.top + 8, 18),
+          paddingBottom: isHome ? 75 : 16,
         },
       ]}
     >

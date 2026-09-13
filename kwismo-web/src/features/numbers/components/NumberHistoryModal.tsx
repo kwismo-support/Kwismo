@@ -1,7 +1,7 @@
-import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
-import { Button } from '@/shared/ui/button';
-import NumberStatusBadge from './NumberStatusBadge';
+import { DetailDrawer } from '@/shared/components/DetailDrawer';
+import { StatusBadge } from '@/shared/components/StatusBadge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
 import type { NumeroDTO } from '@/shared/mock';
 
 interface NumberHistoryModalProps {
@@ -11,77 +11,127 @@ interface NumberHistoryModalProps {
 }
 
 export default function NumberHistoryModal({ numero, isOpen, onClose }: NumberHistoryModalProps) {
-  const { t } = useTranslation(['admin', 'common']);
-
-  if (!isOpen || !numero) return null;
+  if (!numero) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 font-body animate-in fade-in duration-150">
-      <div className="w-full max-w-lg bg-white dark:bg-[#161E33] rounded-3xl p-6 border border-slate-200 dark:border-white/10 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-4">
+    <DetailDrawer
+      isOpen={isOpen}
+      onClose={onClose}
+      title={`Numéro ${numero.valeur}`}
+      subtitle={`Détails, réputation IA et historique du numéro (${numero.operatorName} - ${numero.countryCode})`}
+      icon="solar:phone-calling-bold-duotone"
+      width="lg"
+      footerActions={
+        <div className="flex items-center justify-between w-full font-body">
+          <span className="text-xs text-slate-500">Dernière vérification: {new Date(numero.dateDerniereVerification).toLocaleDateString('fr-FR')}</span>
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 text-xs font-semibold hover:bg-slate-200 transition"
+          >
+            Fermer
+          </button>
+        </div>
+      }
+    >
+      <div className="space-y-6 font-body">
+        {}
+        <div className="p-4 rounded-2xl bg-slate-50 dark:bg-brand-darkBg/80 border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-brand-green/10 flex items-center justify-center text-brand-green">
-              <Icon icon="solar:phone-bold-duotone" className="text-xl" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-navy/10 dark:bg-white/10 text-brand-orange text-2xl font-mono">
+              <Icon icon="solar:phone-bold" />
             </div>
             <div>
-              <h3 className="font-title text-base font-bold text-slate-900 dark:text-white font-mono">
-                {numero.valeur}
-              </h3>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-lg font-bold text-slate-900 dark:text-white">
+                  {numero.valeur}
+                </span>
+                <StatusBadge status={numero.statut} size="xs" />
+              </div>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                {numero.operatorName} ({numero.countryCode})
+                Opérateur: <strong className="text-slate-800 dark:text-slate-200">{numero.operatorName}</strong> ({numero.countryCode})
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white">
-            <Icon icon="solar:close-circle-linear" className="text-2xl" />
-          </button>
-        </div>
 
-        <div className="mt-6 flex flex-col gap-5">
-          <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-[#0F1626] border border-slate-200 dark:border-white/5">
-            <div>
-              <span className="text-xs text-slate-500 block mb-1">{t('admin:numbers.riskScore')}</span>
-              <div className="flex items-center gap-3">
-                <div className="w-24 h-2.5 rounded-full bg-slate-200 dark:bg-white/10 overflow-hidden">
-                  <div
-                    className={`h-full rounded-full ${
-                      numero.scoreRisque >= 80 ? 'bg-rose-500' : numero.scoreRisque >= 40 ? 'bg-amber-500' : 'bg-emerald-500'
-                    }`}
-                    style={{ width: `${numero.scoreRisque}%` }}
-                  />
-                </div>
-                <span className="font-bold text-sm text-slate-900 dark:text-white font-mono">
-                  {numero.scoreRisque} / 100
-                </span>
-              </div>
-            </div>
-            <NumberStatusBadge status={numero.statut} />
-          </div>
-
-          <div>
-            <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3">
-              {t('admin:numbers.reportCount')} ({numero.reportsCount})
-            </h4>
-            <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
-              <div className="p-3 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02] flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <Icon icon="solar:danger-triangle-bold" className="text-amber-500 text-sm" />
-                  <span>Tentative d'usurpation d'identité (Vishing)</span>
-                </div>
-                <span className="text-[11px] text-slate-400 font-mono">
-                  {new Date(numero.dateDerniereVerification).toLocaleDateString()}
-                </span>
-              </div>
+          <div className="flex flex-col items-end shrink-0 w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-200 dark:border-white/10">
+            <span className="text-[11px] text-slate-500 uppercase tracking-wider mb-1 font-semibold">
+              Score de risque IA
+            </span>
+            <div className="flex items-center gap-2">
+              <span className={`text-lg font-bold font-mono ${numero.scoreRisque >= 80 ? 'text-rose-500' : 'text-brand-green'}`}>
+                {numero.scoreRisque} / 100
+              </span>
             </div>
           </div>
         </div>
 
-        <div className="mt-6 pt-4 border-t border-slate-200 dark:border-white/10 flex justify-end">
-          <Button variant="outline" size="sm" onClick={onClose}>
-            {t('common:close')}
-          </Button>
-        </div>
+        {}
+        <Tabs defaultValue="overview" variant="segmented">
+          <TabsList>
+            <TabsTrigger value="overview" icon="solar:info-circle-bold">Vue Générale</TabsTrigger>
+            <TabsTrigger value="history" icon="solar:history-bold" badge={numero.reportsCount}>
+              Signalements
+            </TabsTrigger>
+            <TabsTrigger value="logs" icon="solar:code-square-bold">Logs OTP</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-brand-darkBg/60 border border-slate-100 dark:border-white/5">
+                <span className="text-xs text-slate-500 block mb-1">Nombre de signalements</span>
+                <span className="font-bold text-base text-slate-900 dark:text-white font-mono">
+                  {numero.reportsCount} signalement(s)
+                </span>
+              </div>
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-brand-darkBg/60 border border-slate-100 dark:border-white/5">
+                <span className="text-xs text-slate-500 block mb-1">Statut du Numéro</span>
+                <StatusBadge status={numero.statut} size="sm" />
+              </div>
+            </div>
+
+            <div className="p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy space-y-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                Analyse de risque IA Kwismo
+              </h4>
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                Ce numéro a été vérifié par l'algorithme Kwismo AI. Le score de risque est calculé en analysant la fréquence des SMS recus, la réputation de la plage d'IP de l'opérateur et les signalements d'usurpation d'identité (Vishing / SIM Swapping).
+              </p>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="history" className="space-y-3">
+            {numero.reportsCount === 0 ? (
+              <div className="p-8 text-center text-xs text-slate-400">
+                <Icon icon="solar:shield-check-bold-duotone" className="text-4xl text-brand-green mx-auto mb-2" />
+                <p>Aucun signalement suspect enregistré sur ce numéro.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="p-3.5 rounded-xl border border-rose-500/20 bg-rose-500/5 flex items-start justify-between text-xs gap-3">
+                  <div className="flex items-start gap-2.5">
+                    <Icon icon="solar:danger-triangle-bold" className="text-rose-500 text-lg shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold text-slate-900 dark:text-white">Tentative d'usurpation d'identité (Vishing)</p>
+                      <p className="text-slate-500 mt-0.5">Signalé par le partenaire Orange CI Bank</p>
+                    </div>
+                  </div>
+                  <span className="font-mono text-[11px] text-slate-400 shrink-0">
+                    {new Date(numero.dateDerniereVerification).toLocaleDateString('fr-FR')}
+                  </span>
+                </div>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="logs">
+            <div className="p-4 rounded-xl bg-slate-950 text-slate-200 font-mono text-xs space-y-2 overflow-x-auto">
+              <p className="text-emerald-400">[SYSTEM] 2026-09-07 14:22:01 - OTP Request received for {numero.valeur}</p>
+              <p className="text-slate-400">[INFO] Verification code sent via {numero.operatorName} Gateway</p>
+              <p className="text-amber-400 font-bold">[AI_SHIELD] Fraud score calculated: {numero.scoreRisque}/100</p>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
-    </div>
+    </DetailDrawer>
   );
 }
