@@ -3,12 +3,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Modal,
   Animated,
   Pressable,
   useWindowDimensions,
+  StyleSheet,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { StatusBar } from 'expo-status-bar';
 import { KwismoLogo } from '../src/shared/components/KwismoLogo';
 import { Icon } from '../src/shared/ui/Icon';
-import { colors, fonts } from '../src/styles/tokens';
+import { colors } from '../src/styles/tokens';
 
 interface LanguageOption {
   code: string;
@@ -28,7 +28,7 @@ interface LanguageOption {
 
 const LANGUAGES: LanguageOption[] = [
   { code: 'fr', label: 'Français', nativeName: 'Français', flag: '🇫🇷' },
-  { code: 'en', label: 'English', nativeName: 'English', flag: '🇬🇧' },
+  { code: 'en', label: 'English', nativeName: 'English', flag: '🇺🇸' },
 ];
 
 export default function LanguageSelectionScreen() {
@@ -69,11 +69,10 @@ export default function LanguageSelectionScreen() {
   };
 
   const currentOption = LANGUAGES.find((l) => l.code === selectedLang);
-
   const responsiveLogoSize = Math.min(Math.max(screenWidth * 0.46, 150), 220);
 
   return (
-    <View className="flex-1 w-full h-full bg-brand-green relative" style={styles.container}>
+    <View className="flex-1 w-full h-full bg-brand-green relative">
       <StatusBar style="light" />
 
       <LinearGradient
@@ -95,38 +94,31 @@ export default function LanguageSelectionScreen() {
       />
 
       <Animated.View
-        className="flex-1 w-full h-full justify-between items-center"
-        style={[
-          styles.contentContainer,
-          {
-            paddingHorizontal: '6%',
-            paddingTop: `${Math.round((insets.top / screenHeight) * 100 + 8)}%`,
-            paddingBottom: `${Math.round((insets.bottom / screenHeight) * 100 + 4)}%`,
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-          },
-        ]}
+        className="flex-1 w-full h-full justify-between items-center px-[6%]"
+        style={{
+          paddingTop: `${Math.round((insets.top / screenHeight) * 100 + 8)}%`,
+          paddingBottom: `${Math.round((insets.bottom / screenHeight) * 100 + 4)}%`,
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+        }}
       >
-        <View className="w-full items-center justify-center" style={styles.logoUpperSection}>
+        <View className="w-full items-center justify-center mt-[12%]">
           <KwismoLogo size={responsiveLogoSize} variant="white" />
         </View>
 
-        <View className="w-full items-center" style={styles.lowerInputSection}>
-          <View className="w-full" style={styles.cardWrapper}>
+        <View className="w-full items-center mb-[22%]">
+          <View className="w-full">
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => setModalVisible(true)}
-              className="w-full bg-white rounded-[14px] flex-row items-center justify-between"
-              style={styles.selectorCard}
+              className="w-full h-[52px] bg-white rounded-[14px] flex-row items-center justify-between px-[5%] shadow-md shadow-black/15 elevation-4"
             >
               <Text
-                className="text-[15px]"
-                style={[
-                  styles.selectorText,
-                  !currentOption && styles.selectorPlaceholder,
-                ]}
+                className={`font-medium text-[15px] ${
+                  currentOption ? 'text-slate-600' : 'text-[#A3B1CC]'
+                }`}
               >
-                {currentOption ? currentOption.label : t('common.selectLanguage', 'Sélectionner la langue')}
+                {currentOption ? currentOption.label : t('common.selectLanguage')}
               </Text>
 
               <Icon
@@ -137,15 +129,14 @@ export default function LanguageSelectionScreen() {
             </TouchableOpacity>
 
             {selectedLang && (
-              <Animated.View className="w-full" style={styles.continueButtonWrapper}>
+              <Animated.View className="w-full mt-[4%]">
                 <TouchableOpacity
                   activeOpacity={0.88}
                   onPress={handleContinue}
-                  className="w-full bg-brand-green rounded-[26px] flex-row items-center justify-center"
-                  style={styles.continueButton}
+                  className="w-full h-[52px] bg-brand-green rounded-[26px] flex-row items-center justify-center shadow-md shadow-brand-green/30 elevation-4"
                 >
-                  <Text className="font-bold text-[16px] text-white" style={styles.continueButtonText}>
-                    {t('common.continue', 'Continuer')}
+                  <Text className="font-headline text-[16px] text-white">
+                    {t('common.continue')}
                   </Text>
                   <Icon
                     name="solar:arrow-right-linear"
@@ -167,14 +158,13 @@ export default function LanguageSelectionScreen() {
         onRequestClose={() => setModalVisible(false)}
       >
         <Pressable
-          className="flex-1 bg-black/45 justify-end"
-          style={styles.modalOverlay}
+          className="flex-1 w-full h-full bg-black/45 justify-end"
           onPress={() => setModalVisible(false)}
         >
-          <View className="bg-white rounded-t-[24px]" style={styles.modalContent}>
-            <View className="flex-row items-center justify-between" style={styles.modalHeader}>
-              <Text className="text-[18px] font-bold text-gray-900" style={styles.modalTitle}>
-                {t('common.selectLanguage', 'Sélectionner la langue')}
+          <View className="bg-white rounded-t-[24px] p-[6%] pb-[10%]">
+            <View className="flex-row items-center justify-between mb-[5%]">
+              <Text className="font-h3 text-[18px] text-gray-900">
+                {t('common.selectLanguage')}
               </Text>
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}
@@ -191,22 +181,16 @@ export default function LanguageSelectionScreen() {
                   key={item.code}
                   activeOpacity={0.7}
                   onPress={() => handleSelectLanguage(item.code)}
-                  className={`flex-row items-center justify-between rounded-[14px] ${
+                  className={`flex-row items-center justify-between py-[3.5%] px-[4%] rounded-[14px] mb-[2.5%] ${
                     isSelected ? 'bg-brand-green/10 border border-brand-green' : 'bg-gray-100'
                   }`}
-                  style={[
-                    styles.languageItem,
-                    isSelected && styles.languageItemSelected,
-                  ]}
                 >
-                  <View className="flex-row items-center" style={styles.languageItemLeft}>
-                    <Text className="text-[24px]" style={styles.itemFlag}>{item.flag}</Text>
+                  <View className="flex-row items-center">
+                    <Text className="text-[24px] mr-[3.5%]">{item.flag}</Text>
                     <Text
-                      className={`text-[16px] ${isSelected ? 'font-bold text-brand-green' : 'text-gray-700'}`}
-                      style={[
-                        styles.itemLabel,
-                        isSelected && styles.itemLabelSelected,
-                      ]}
+                      className={`text-[16px] ${
+                        isSelected ? 'font-headline text-brand-green' : 'font-medium text-gray-700'
+                      }`}
                     >
                       {item.nativeName}
                     </Text>
@@ -228,95 +212,3 @@ export default function LanguageSelectionScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    backgroundColor: colors.green,
-    position: 'relative',
-  },
-  contentContainer: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    justifyContent: 'space-between',
-  },
-  logoUpperSection: {
-    width: '100%',
-    marginTop: '12%',
-  },
-  lowerInputSection: {
-    width: '100%',
-    marginBottom: '22%',
-  },
-  cardWrapper: {
-    width: '100%',
-  },
-  selectorCard: {
-    width: '100%',
-    height: 52,
-    paddingHorizontal: '5%',
-    shadowColor: 'rgba(0, 0, 0, 0.15)',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    elevation: 4,
-  },
-  selectorText: {
-    fontFamily: fonts.medium,
-    color: '#64748B',
-  },
-  selectorPlaceholder: {
-    color: '#A3B1CC',
-  },
-  continueButtonWrapper: {
-    width: '100%',
-    marginTop: '4%',
-  },
-  continueButton: {
-    width: '100%',
-    height: 52,
-    shadowColor: colors.green,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  continueButtonText: {
-    fontFamily: fonts.headlineBold,
-    color: colors.white,
-  },
-  modalOverlay: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
-  modalContent: {
-    padding: '6%',
-    paddingBottom: '10%',
-  },
-  modalHeader: {
-    marginBottom: '5%',
-  },
-  modalTitle: {
-    fontFamily: fonts.h3,
-  },
-  languageItem: {
-    paddingVertical: '3.5%',
-    paddingHorizontal: '4%',
-    marginBottom: '2.5%',
-  },
-  languageItemSelected: {},
-  languageItemLeft: {},
-  itemFlag: {
-    marginRight: '3.5%',
-  },
-  itemLabel: {
-    fontFamily: fonts.medium,
-  },
-  itemLabelSelected: {
-    fontFamily: fonts.headlineBold,
-  },
-});
