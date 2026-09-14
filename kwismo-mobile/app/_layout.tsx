@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { Platform, View, Text } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -15,6 +15,52 @@ import '../src/locales/i18n';
 import { ToastContainer } from '../src/shared/ui/Toast';
 import { useAuthStore } from '../src/shared/store/authStore';
 import { useOTAUpdates } from '../src/shared/utils/useOTAUpdates';
+
+if (typeof globalThis !== 'undefined' && (globalThis as any).ErrorUtils) {
+  const previousHandler = (globalThis as any).ErrorUtils.getGlobalHandler();
+  (globalThis as any).ErrorUtils.setGlobalHandler((error: any, isFatal?: boolean) => {
+    console.error('[APP GLOBAL ERROR]:', error?.message || error);
+    if (error?.stack) {
+      console.error(error.stack);
+    }
+    if (previousHandler) {
+      previousHandler(error, isFatal);
+    }
+  });
+}
+
+class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: any }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error('[REACT ERROR BOUNDARY]:', error?.message || error);
+    if (errorInfo?.componentStack) {
+      console.error(errorInfo.componentStack);
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <SafeAreaProvider>
+          <StatusBar style="light" />
+          <View style={{ flex: 1, backgroundColor: '#161E33', justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+            <Text style={{ color: '#FF9900', fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Une erreur s'est produite</Text>
+            <Text style={{ color: '#FFFFFF', fontSize: 14, textAlign: 'center' }}>{String(this.state.error?.message || this.state.error)}</Text>
+          </View>
+        </SafeAreaProvider>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 if (Platform.OS === 'web' && typeof document !== 'undefined') {
   const fontLinkId = 'kwismo-google-fonts-montserrat';
@@ -116,22 +162,24 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <StatusBar style="light" />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          animation: 'fade',
-          contentStyle: { backgroundColor: '#161E33' },
-        }}
-      >
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(app)" options={{ headerShown: false }} />
-      </Stack>
-      <ToastContainer />
-    </SafeAreaProvider>
+    <AppErrorBoundary>
+      <SafeAreaProvider>
+        <StatusBar style="light" />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            animation: 'fade',
+            contentStyle: { backgroundColor: '#161E33' },
+          }}
+        >
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(app)" options={{ headerShown: false }} />
+        </Stack>
+        <ToastContainer />
+      </SafeAreaProvider>
+    </AppErrorBoundary>
   );
 }
 
