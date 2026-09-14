@@ -35,14 +35,13 @@ export const OnboardingBackground: React.FC<OnboardingBackgroundProps> = ({
       <LinearGradient
         colors={[
           'rgba(15, 43, 36, 0)',
-          'rgba(15, 43, 36, 0.15)',
-          'rgba(18, 71, 61, 0.65)',
-          'rgba(23, 116, 87, 0.85)',
-          'rgba(23, 116, 87, 0.55)',
-          'rgba(15, 43, 36, 0.25)',
-          'rgba(0, 0, 0, 0.1)',
+          'rgba(15, 43, 36, 0.08)',
+          'rgba(15, 43, 36, 0.35)',
+          'rgba(15, 43, 36, 0.65)',
+          'rgba(15, 43, 36, 0.85)',
+          'rgba(10, 28, 23, 0.96)',
         ]}
-        locations={[0, 0.3, 0.52, 0.72, 0.86, 0.94, 1.0]}
+        locations={[0, 0.35, 0.55, 0.75, 0.90, 1.0]}
         style={styles.gradientOverlay}
         pointerEvents="none"
       />
