@@ -1,14 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Platform } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { useFonts } from 'expo-font';
+import {
+  useFonts,
+  MontserratAlternates_400Regular,
+  MontserratAlternates_500Medium,
+  MontserratAlternates_600SemiBold,
+  MontserratAlternates_700Bold,
+} from '@expo-google-fonts/montserrat-alternates';
 import * as SplashScreen from 'expo-splash-screen';
-import '../src/locales/i18n'; // Initialize i18n support
+import '../src/locales/i18n';
 import { ToastContainer } from '../src/shared/ui/Toast';
+import { useAuthStore } from '../src/shared/store/authStore';
+import { useOTAUpdates } from '../src/shared/utils/useOTAUpdates';
 
-// Inject web Google Fonts link dynamically on Web
 if (Platform.OS === 'web' && typeof document !== 'undefined') {
   const fontLinkId = 'kwismo-google-fonts-montserrat';
   if (!document.getElementById(fontLinkId)) {
@@ -19,7 +26,6 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
     document.head.appendChild(link);
   }
 
-  // Inject web global CSS for smooth touch-action and user-select disable on slides
   const styleId = 'kwismo-web-global-styles';
   if (!document.getElementById(styleId)) {
     const style = document.createElement('style');
@@ -79,27 +85,35 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
   }
 }
 
-import { useAuthStore } from '../src/shared/store/authStore';
-import { useOTAUpdates } from '../src/shared/utils/useOTAUpdates';
-
-// Keep native splash screen visible while loading resources
-SplashScreen.preventAutoHideAsync().catch(() => {
-  /* ignore */
-});
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
-  const [fontsLoaded] = useState(true);
+  const [fontsLoaded] = useFonts({
+    'MontserratAlternates-Regular': MontserratAlternates_400Regular,
+    'MontserratAlternates-Medium': MontserratAlternates_500Medium,
+    'MontserratAlternates-SemiBold': MontserratAlternates_600SemiBold,
+    'MontserratAlternates-Bold': MontserratAlternates_700Bold,
+    'Ageo-Regular': MontserratAlternates_400Regular,
+    'Ageo-Medium': MontserratAlternates_500Medium,
+    'Ageo-SemiBold': MontserratAlternates_600SemiBold,
+    'Ageo-Bold': MontserratAlternates_700Bold,
+  });
+
   const initializeAuth = useAuthStore((state) => state.initializeAuth);
 
   useOTAUpdates();
 
   useEffect(() => {
-    initializeAuth().finally(() => {
-      SplashScreen.hideAsync().catch(() => {
-        /* ignore */
+    if (fontsLoaded) {
+      initializeAuth().finally(() => {
+        SplashScreen.hideAsync().catch(() => {});
       });
-    });
-  }, [initializeAuth]);
+    }
+  }, [fontsLoaded, initializeAuth]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <SafeAreaProvider>
