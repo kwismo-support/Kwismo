@@ -1,3 +1,4 @@
+import '../src/shared/utils/styleSanitizer';
 import React, { useEffect } from 'react';
 import { Platform, View, Text } from 'react-native';
 import { Stack } from 'expo-router';
@@ -16,17 +17,30 @@ import { ToastContainer } from '../src/shared/ui/Toast';
 import { useAuthStore } from '../src/shared/store/authStore';
 import { useOTAUpdates } from '../src/shared/utils/useOTAUpdates';
 
-if (typeof globalThis !== 'undefined' && (globalThis as any).ErrorUtils) {
-  const previousHandler = (globalThis as any).ErrorUtils.getGlobalHandler();
-  (globalThis as any).ErrorUtils.setGlobalHandler((error: any, isFatal?: boolean) => {
-    console.error('[APP GLOBAL ERROR]:', error?.message || error);
-    if (error?.stack) {
-      console.error(error.stack);
-    }
-    if (previousHandler) {
-      previousHandler(error, isFatal);
-    }
-  });
+if (typeof globalThis !== 'undefined') {
+  const origError = console.error;
+  const origWarn = console.warn;
+
+  console.error = (...args: any[]) => {
+    origError('\x1b[31m[KWISMO CONSOLE ERROR]:\x1b[0m', ...args);
+  };
+
+  console.warn = (...args: any[]) => {
+    origWarn('\x1b[33m[KWISMO CONSOLE WARN]:\x1b[0m', ...args);
+  };
+
+  if ((globalThis as any).ErrorUtils) {
+    const previousHandler = (globalThis as any).ErrorUtils.getGlobalHandler();
+    (globalThis as any).ErrorUtils.setGlobalHandler((error: any, isFatal?: boolean) => {
+      console.error('[FATAL EXCEPTION]:', error?.message || error);
+      if (error?.stack) {
+        console.error(error.stack);
+      }
+      if (previousHandler) {
+        previousHandler(error, isFatal);
+      }
+    });
+  }
 }
 
 class AppErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean; error: any }> {
