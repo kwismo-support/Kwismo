@@ -57,6 +57,19 @@ export function sanitizeStyleObject(style: any): any {
         cleaned[key] = val;
       }
     }
+    if (cleaned.fontFamily && typeof cleaned.fontFamily === 'string') {
+      const family = cleaned.fontFamily;
+      if (
+        family.includes('Montserrat') ||
+        family.includes('Ageo') ||
+        family.includes('-Bold') ||
+        family.includes('-Medium') ||
+        family.includes('-SemiBold') ||
+        family.includes('-Regular')
+      ) {
+        delete cleaned.fontWeight;
+      }
+    }
     return cleaned;
   }
   return style;
