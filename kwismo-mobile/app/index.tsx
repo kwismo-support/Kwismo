@@ -78,26 +78,24 @@ export default function LanguageSelectionScreen() {
 
       <LinearGradient
         colors={[
-          colors.green,
-          colors.green,
-          '#246E53',
-          '#1A4638',
-          '#284F41',
-          '#4D6E62',
-          '#86A298',
-          '#C6D7D1',
-          '#F2F6F5',
-          colors.white,
-          colors.white,
+          '#32B07F',
+          '#104E37',
+          '#161E33',
+          '#2A3A5E',
+          '#52668F',
+          '#8CA0C6',
+          '#E4ECF8',
+          '#FFFFFF',
+          '#FFFFFF',
         ]}
-        locations={[0, 0.22, 0.34, 0.44, 0.50, 0.56, 0.61, 0.66, 0.70, 0.74, 1.0]}
+        locations={[0, 0.20, 0.38, 0.52, 0.65, 0.76, 0.86, 0.94, 1.0]}
         style={StyleSheet.absoluteFill}
       />
 
       <Animated.View
         className="flex-1 w-full h-full justify-between items-center px-6"
         style={{
-          paddingTop: `${Math.round((insets.top / screenHeight) * 100 + 4)}%`,
+          paddingTop: `${Math.round((insets.top / screenHeight) * 100 + 50)}%`,
           paddingBottom: `${Math.round((insets.bottom / screenHeight) * 100 + 4)}%`,
           opacity: fadeAnim,
           transform: [{ translateY: slideAnim }],
