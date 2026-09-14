@@ -25,8 +25,8 @@ interface LanguageOption {
 }
 
 const LANGUAGES: LanguageOption[] = [
-  { code: 'fr', label: 'Français', nativeName: 'Français (FR)', flag: '🇫🇷' },
-  { code: 'en', label: 'English', nativeName: 'English (US)', flag: '🇬🇧' },
+  { code: 'fr', label: 'Français', nativeName: 'Français', flag: '🇫🇷' },
+  { code: 'en', label: 'English', nativeName: 'English', flag: '🇬🇧' },
 ];
 
 export default function LanguageSelectionScreen() {
@@ -103,7 +103,7 @@ export default function LanguageSelectionScreen() {
       >
         {/* Upper Logo Section (Elevated higher up at the end of green dome) */}
         <View style={styles.logoUpperSection}>
-          <KwismoLogo size={165} variant="white" />
+          <KwismoLogo size={200} variant="white" />
         </View>
 
         {/* Lower Selector & Action Section (On the white prolonging background) */}
