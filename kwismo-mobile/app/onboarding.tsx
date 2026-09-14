@@ -186,11 +186,11 @@ export default function OnboardingScreen() {
             key={slide.id}
             style={[
               styles.slideFrame,
-              { width: screenWidth, height: screenHeight },
+              { width: screenWidth, height: '100%' },
             ]}
           >
             <OnboardingBackground slideIndex={index} />
-
+            
             <View
               style={[
                 styles.slideContentContainer,
@@ -296,7 +296,7 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0F2B24',
+    backgroundColor: colors.green,
     position: 'relative',
     overflow: 'hidden',
     ...(Platform.OS === 'web'
@@ -313,6 +313,7 @@ const styles = StyleSheet.create({
   },
   slideFrame: {
     position: 'relative',
+    height: '100%',
     overflow: 'hidden',
   },
   slideContentContainer: {
@@ -403,7 +404,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.85)',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
   },
   commencerText: {
     fontFamily: fonts.semiBold,
