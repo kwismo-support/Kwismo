@@ -102,7 +102,7 @@ export default function LanguageSelectionScreen() {
           transform: [{ translateY: slideAnim }],
         }}
       >
-        <View className="w-full items-center justify-center mt-12">
+        <View className="w-full h-50 items-center justify-end mt-12">
           <KwismoLogo size={responsiveLogoSize} variant="white" />
         </View>
 
@@ -111,7 +111,7 @@ export default function LanguageSelectionScreen() {
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => setModalVisible(true)}
-              className="w-full h-13 bg-white rounded-md flex-row items-center justify-between px-5 shadow-md shadow-black/15 elevation-4"
+              className="w-full h-13 bg-white rounded-md flex-row items-center justify-between px-5 border border-brand-green shadow-md shadow-black/15 elevation-4"
               style={{ height: 52 }}
             >
               <Text

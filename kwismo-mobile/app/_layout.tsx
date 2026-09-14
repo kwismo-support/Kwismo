@@ -22,6 +22,10 @@ if (typeof globalThis !== 'undefined') {
   const origWarn = console.warn;
 
   console.error = (...args: any[]) => {
+    const msg = typeof args[0] === 'string' ? args[0] : '';
+    if (msg.includes("Can't perform a React state update on a component that hasn't mounted yet")) {
+      return;
+    }
     origError('\x1b[31m[KWISMO CONSOLE ERROR]:\x1b[0m', ...args);
   };
 
