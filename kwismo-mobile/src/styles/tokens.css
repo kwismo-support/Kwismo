@@ -4,40 +4,40 @@
   --font-sans: var(--font-body);
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-  --text-h1: 3.5rem;
-  --leading-h1: 4.5rem;
-  --text-h2: 2.5rem;
-  --leading-h2: 3.5rem;
-  --text-h3: 1.75rem;
-  --leading-h3: 2.5rem;
-  --text-h4: 1.625rem;
-  --leading-h4: 2rem;
-  --text-h5: 1.375rem;
-  --leading-h5: 2rem;
-  --text-h6: 1.25rem;
-  --leading-h6: 1.75rem;
+  --text-h1: 56px;
+  --leading-h1: 72px;
+  --text-h2: 40px;
+  --leading-h2: 56px;
+  --text-h3: 28px;
+  --leading-h3: 40px;
+  --text-h4: 26px;
+  --leading-h4: 32px;
+  --text-h5: 22px;
+  --leading-h5: 32px;
+  --text-h6: 20px;
+  --leading-h6: 28px;
 
-  --text-body-lg: 1rem;
-  --leading-body-lg: 1.6875rem;
-  --text-body-md: 0.875rem;
-  --leading-body-md: 1.25rem;
-  --text-body-sm: 0.75rem;
-  --leading-body-sm: 1rem;
-  --text-caption: 0.875rem;
-  --leading-caption: 1.3125rem;
-  --text-footnote: 0.75rem;
-  --leading-footnote: 1rem;
+  --text-body-lg: 16px;
+  --leading-body-lg: 27px;
+  --text-body-md: 14px;
+  --leading-body-md: 20px;
+  --text-body-sm: 12px;
+  --leading-body-sm: 16px;
+  --text-caption: 14px;
+  --leading-caption: 21px;
+  --text-footnote: 12px;
+  --leading-footnote: 16px;
 
-  --text-2xs: 0.6875rem;
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem;
-  --text-4xl: 2.25rem;
-  --text-5xl: 2.625rem;
+  --text-2xs: 11px;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 36px;
+  --text-5xl: 42px;
 
   --leading-none: 1;
   --leading-tight: 1.15;
@@ -87,10 +87,10 @@
   --color-text: var(--color-brand-navy);
   --color-text-muted: #64748b;
 
-  --radius-sm: 0.25rem;
-  --radius: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
+  --radius-sm: 4px;
+  --radius: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
   --radius-full: 9999px;
 
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
