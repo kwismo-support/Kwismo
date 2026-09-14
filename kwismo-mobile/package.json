@@ -54,6 +54,9 @@
     "typescript": "~6.0.3"
   },
   "overrides": {
+    "lucide-react-native": {
+      "react": "$react"
+    },
     "metro": "0.84.6",
     "metro-config": "0.84.6",
     "metro-core": "0.84.6",
