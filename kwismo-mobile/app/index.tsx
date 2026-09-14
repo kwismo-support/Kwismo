@@ -88,7 +88,7 @@ export default function LanguageSelectionScreen() {
           '#FFFFFF',
           '#FFFFFF',
         ]}
-        locations={[0, 0.20, 0.38, 0.52, 0.65, 0.76, 0.86, 0.94, 1.0]}
+        locations={[0, 0.30, 0.37, 0.45, 0.50, 0.58, 0.65, 0.71, 1.0]}
         style={StyleSheet.absoluteFill}
       />
 

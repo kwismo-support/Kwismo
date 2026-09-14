@@ -313,8 +313,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: '7%',
   },
   slideTitle: {
-    fontFamily: fonts.h3,
-    fontWeight: '700',
+    fontFamily: fonts.headlineBold,
     color: colors.white,
     textAlign: 'center',
     textShadowColor: 'rgba(0, 0, 0, 0.4)',
