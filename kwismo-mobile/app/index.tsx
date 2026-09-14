@@ -94,7 +94,7 @@ export default function LanguageSelectionScreen() {
       />
 
       <Animated.View
-        className="flex-1 w-full h-full justify-between items-center px-[6%]"
+        className="flex-1 w-full h-full justify-between items-center px-6"
         style={{
           paddingTop: `${Math.round((insets.top / screenHeight) * 100 + 8)}%`,
           paddingBottom: `${Math.round((insets.bottom / screenHeight) * 100 + 4)}%`,
@@ -102,16 +102,16 @@ export default function LanguageSelectionScreen() {
           transform: [{ translateY: slideAnim }],
         }}
       >
-        <View className="w-full items-center justify-center mt-[12%]">
+        <View className="w-full items-center justify-center mt-12">
           <KwismoLogo size={responsiveLogoSize} variant="white" />
         </View>
 
-        <View className="w-full items-center mb-[22%]">
+        <View className="w-full items-center mb-20">
           <View className="w-full">
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => setModalVisible(true)}
-              className="w-full h-13 bg-white rounded-md flex-row items-center justify-between px-[5%] shadow-md shadow-black/15 elevation-4"
+              className="w-full h-13 bg-white rounded-md flex-row items-center justify-between px-5 shadow-md shadow-black/15 elevation-4"
               style={{ height: 52 }}
             >
               <Text
@@ -130,7 +130,7 @@ export default function LanguageSelectionScreen() {
             </TouchableOpacity>
 
             {selectedLang && (
-              <Animated.View className="w-full mt-[4%]">
+              <Animated.View className="w-full mt-4">
                 <TouchableOpacity
                   activeOpacity={0.88}
                   onPress={handleContinue}
@@ -144,7 +144,7 @@ export default function LanguageSelectionScreen() {
                     name="solar:arrow-right-linear"
                     size={20}
                     color={colors.white}
-                    style={{ marginLeft: '2%' }}
+                    style={{ marginLeft: 8 }}
                   />
                 </TouchableOpacity>
               </Animated.View>
@@ -163,8 +163,8 @@ export default function LanguageSelectionScreen() {
           className="flex-1 w-full h-full bg-black/45 justify-end"
           onPress={() => setModalVisible(false)}
         >
-          <View className="bg-white rounded-t-lg p-[6%] pb-[10%]">
-            <View className="flex-row items-center justify-between mb-[5%]">
+          <View className="bg-white rounded-t-lg p-6 pb-10">
+            <View className="flex-row items-center justify-between mb-5">
               <Text className="font-h3 text-h6 text-gray-900">
                 {t('common.selectLanguage')}
               </Text>
@@ -183,12 +183,12 @@ export default function LanguageSelectionScreen() {
                   key={item.code}
                   activeOpacity={0.7}
                   onPress={() => handleSelectLanguage(item.code)}
-                  className={`flex-row items-center justify-between py-[3.5%] px-[4%] rounded-md mb-[2.5%] ${
+                  className={`flex-row items-center justify-between py-3.5 px-4 rounded-md mb-3 ${
                     isSelected ? 'bg-brand-green/10 border border-brand-green' : 'bg-gray-100'
                   }`}
                 >
                   <View className="flex-row items-center">
-                    <Text className="text-2xl mr-[3.5%]">{item.flag}</Text>
+                    <Text className="text-2xl mr-3.5">{item.flag}</Text>
                     <Text
                       className={`text-body-lg ${
                         isSelected ? 'font-headline text-brand-green' : 'font-medium text-gray-700'
