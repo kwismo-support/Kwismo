@@ -34,12 +34,12 @@ export const OnboardingBackground: React.FC<OnboardingBackgroundProps> = ({
 
       <LinearGradient
         colors={[
-          'rgba(15, 43, 36, 0)',
-          'rgba(15, 43, 36, 0.08)',
-          'rgba(15, 43, 36, 0.35)',
-          'rgba(15, 43, 36, 0.65)',
-          'rgba(15, 43, 36, 0.85)',
-          'rgba(10, 28, 23, 0.96)',
+          'rgba(50, 176, 127, 0)',
+          'rgba(50, 176, 127, 0.06)',
+          'rgba(50, 176, 127, 0.30)',
+          'rgba(50, 176, 127, 0.60)',
+          'rgba(40, 150, 107, 0.82)',
+          'rgba(30, 125, 88, 0.95)',
         ]}
         locations={[0, 0.35, 0.55, 0.75, 0.90, 1.0]}
         style={styles.gradientOverlay}
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#0F2B24',
+    backgroundColor: '#32B07F',
   },
   backgroundImage: {
     position: 'absolute',
