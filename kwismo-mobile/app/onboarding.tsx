@@ -338,18 +338,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     zIndex: 20,
+    backgroundColor: 'transparent',
   },
   indicatorRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 28,
+    backgroundColor: 'transparent',
   },
   actionsFixedContainer: {
     width: '100%',
     height: 52,
     position: 'relative',
     marginBottom: 12,
+    backgroundColor: 'transparent',
   },
   absoluteActionWrapper: {
     position: 'absolute',
@@ -358,6 +361,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
   navRow: {
     width: '100%',
@@ -366,10 +370,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 8,
+    backgroundColor: 'transparent',
   },
   skipButton: {
     paddingVertical: 10,
     paddingHorizontal: 16,
+    backgroundColor: 'transparent',
   },
   skipText: {
     fontFamily: fonts.medium,
@@ -382,6 +388,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 16,
+    backgroundColor: 'transparent',
   },
   nextText: {
     fontFamily: fonts.medium,
@@ -396,7 +403,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.85)',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: 'transparent',
   },
   commencerText: {
     fontFamily: fonts.semiBold,
