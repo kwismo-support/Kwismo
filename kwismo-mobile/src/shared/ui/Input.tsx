@@ -208,6 +208,7 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     height: '100%',
+    fontFamily: fonts.medium,
     paddingVertical: 0,
     textAlignVertical: 'center',
   },
