@@ -1,13 +1,31 @@
+import React from 'react';
 import { StyleSheet, Text, TextInput } from 'react-native';
 import { NativeWindStyleSheet } from 'nativewind';
 
 function cleanValue(val: any): any {
   if (typeof val === 'string') {
     const trimmed = val.trim();
-    if (/^-?\d+(\.\d+)?(px)?$/.test(trimmed)) {
+    if (trimmed.endsWith('rem')) {
       const num = parseFloat(trimmed);
-      if (!isNaN(num)) return num;
+      return !isNaN(num) ? Math.round(num * 16) : 16;
     }
+    if (trimmed.endsWith('px')) {
+      const num = parseFloat(trimmed);
+      return !isNaN(num) ? num : 16;
+    }
+    if (trimmed.endsWith('em')) {
+      const num = parseFloat(trimmed);
+      return !isNaN(num) ? Math.round(num * 16) : 16;
+    }
+    if (trimmed.endsWith('pt')) {
+      const num = parseFloat(trimmed);
+      return !isNaN(num) ? Math.round(num * 1.33) : 16;
+    }
+    const parsed = parseFloat(trimmed);
+    if (!isNaN(parsed)) {
+      return parsed;
+    }
+    return 16;
   }
   return val;
 }
@@ -43,6 +61,17 @@ export function sanitizeStyleObject(style: any): any {
   }
   return style;
 }
+
+const originalCreateElement = React.createElement;
+(React as any).createElement = function (type: any, props: any, ...children: any[]) {
+  if (props && props.style) {
+    props = {
+      ...props,
+      style: sanitizeStyleObject(props.style),
+    };
+  }
+  return originalCreateElement.call(React, type, props, ...children);
+};
 
 const originalCreate = StyleSheet.create;
 (StyleSheet as any).create = function (obj: any) {
