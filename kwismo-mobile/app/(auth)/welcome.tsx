@@ -5,7 +5,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { KwismoLogo } from '../../src/shared/components/KwismoLogo';
-import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
 import { AuthDomeBackground } from '../../src/shared/components/AuthDomeBackground';
 import { colors, fonts } from '../../src/styles/tokens';
 
@@ -18,11 +17,6 @@ export default function AuthWelcomeScreen() {
     <AuthDomeBackground>
       <View style={styles.container}>
         <StatusBar style="light" />
-
-        {/* Sélecteur de langue en haut à droite */}
-        <View style={[styles.langWrapper, { top: Math.max(insets.top + 16, 20) }]}>
-          <LanguageSwitcher darkTheme={true} />
-        </View>
 
         {/* Logo Kwismo centré sur le dôme */}
         <View style={styles.centerContainer}>

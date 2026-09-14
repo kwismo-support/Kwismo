@@ -14,7 +14,6 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
-import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { useLogin } from '../../src/features/auth/hooks/useLogin';
 import { Input } from '../../src/shared/ui/Input';
@@ -97,9 +96,7 @@ export default function LoginScreen() {
           />
         </View>
 
-        <View style={[styles.langWrapper, { top: Math.max(insets.top + 16, 20) }]}>
-          <LanguageSwitcher darkTheme={true} />
-        </View>
+
 
         <ScrollView
           contentContainerStyle={[
