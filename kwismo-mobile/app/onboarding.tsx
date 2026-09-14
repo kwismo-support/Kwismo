@@ -17,7 +17,6 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '../src/shared/ui/Icon';
 import { OnboardingBackground } from '../src/shared/components/OnboardingBackground';
 import { AnimatedIndicatorDot } from '../src/shared/components/AnimatedIndicatorDot';
-import { LanguageSwitcher } from '../src/shared/components/LanguageSwitcher';
 import { colors, fonts } from '../src/styles/tokens';
 
 export default function OnboardingScreen() {
@@ -167,9 +166,7 @@ export default function OnboardingScreen() {
           }
         : {})}
     >
-      <View style={[styles.langOverlay, { top: Math.max(insets.top + 16, 20) }]}>
-        <LanguageSwitcher darkTheme={true} />
-      </View>
+
 
       <ScrollView
         ref={scrollViewRef}

@@ -15,7 +15,6 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../../src/shared/ui/Icon';
-import { LanguageSwitcher } from '../../src/shared/components/LanguageSwitcher';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { Input } from '../../src/shared/ui/Input';
 import { Button } from '../../src/shared/ui/Button';
@@ -127,9 +126,7 @@ export default function OtpScreen() {
           />
         </View>
 
-        <View style={[styles.langWrapper, { top: Math.max(insets.top + 16, 20) }]}>
-          <LanguageSwitcher darkTheme={true} />
-        </View>
+
 
         <ScrollView
           contentContainerStyle={[
