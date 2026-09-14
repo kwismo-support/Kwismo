@@ -111,11 +111,12 @@ export default function LanguageSelectionScreen() {
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => setModalVisible(true)}
-              className="w-full h-[52px] bg-white rounded-[14px] flex-row items-center justify-between px-[5%] shadow-md shadow-black/15 elevation-4"
+              className="w-full h-13 bg-white rounded-md flex-row items-center justify-between px-[5%] shadow-md shadow-black/15 elevation-4"
+              style={{ height: 52 }}
             >
               <Text
-                className={`font-medium text-[15px] ${
-                  currentOption ? 'text-slate-600' : 'text-[#A3B1CC]'
+                className={`font-medium text-body-md ${
+                  currentOption ? 'text-slate-600' : 'text-slate-400'
                 }`}
               >
                 {currentOption ? currentOption.label : t('common.selectLanguage')}
@@ -133,9 +134,10 @@ export default function LanguageSelectionScreen() {
                 <TouchableOpacity
                   activeOpacity={0.88}
                   onPress={handleContinue}
-                  className="w-full h-[52px] bg-brand-green rounded-[26px] flex-row items-center justify-center shadow-md shadow-brand-green/30 elevation-4"
+                  className="w-full h-13 bg-brand-green rounded-full flex-row items-center justify-center shadow-md shadow-brand-green/30 elevation-4"
+                  style={{ height: 52 }}
                 >
-                  <Text className="font-headline text-[16px] text-white">
+                  <Text className="font-headline text-body-lg text-white">
                     {t('common.continue')}
                   </Text>
                   <Icon
@@ -161,9 +163,9 @@ export default function LanguageSelectionScreen() {
           className="flex-1 w-full h-full bg-black/45 justify-end"
           onPress={() => setModalVisible(false)}
         >
-          <View className="bg-white rounded-t-[24px] p-[6%] pb-[10%]">
+          <View className="bg-white rounded-t-lg p-[6%] pb-[10%]">
             <View className="flex-row items-center justify-between mb-[5%]">
-              <Text className="font-h3 text-[18px] text-gray-900">
+              <Text className="font-h3 text-h6 text-gray-900">
                 {t('common.selectLanguage')}
               </Text>
               <TouchableOpacity
@@ -181,14 +183,14 @@ export default function LanguageSelectionScreen() {
                   key={item.code}
                   activeOpacity={0.7}
                   onPress={() => handleSelectLanguage(item.code)}
-                  className={`flex-row items-center justify-between py-[3.5%] px-[4%] rounded-[14px] mb-[2.5%] ${
+                  className={`flex-row items-center justify-between py-[3.5%] px-[4%] rounded-md mb-[2.5%] ${
                     isSelected ? 'bg-brand-green/10 border border-brand-green' : 'bg-gray-100'
                   }`}
                 >
                   <View className="flex-row items-center">
-                    <Text className="text-[24px] mr-[3.5%]">{item.flag}</Text>
+                    <Text className="text-2xl mr-[3.5%]">{item.flag}</Text>
                     <Text
-                      className={`text-[16px] ${
+                      className={`text-body-lg ${
                         isSelected ? 'font-headline text-brand-green' : 'font-medium text-gray-700'
                       }`}
                     >
