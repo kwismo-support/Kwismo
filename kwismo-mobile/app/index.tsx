@@ -71,45 +71,44 @@ export default function LanguageSelectionScreen() {
     <View style={styles.container}>
       <StatusBar style="light" />
 
-      {/* Multi-stop oval vignette gradient background matching mockup */}
+      {/* Main Prairie Green to Cloud Dome to Solid White Gradient */}
       <LinearGradient
         colors={[
-          '#32B07F', // Vibrant emerald green at top
-          '#237055', // Deep green transition
-          '#16332A', // Dark teal oval shadow behind logo
-          '#1B2733', // Dark slate teal middle
-          '#435561', // Soft grey-teal transition
-          '#869C9B', // Light greyish green fade
-          '#D7E1E3', // Soft white glow transition
-          '#FFFFFF', // Pure white at bottom
+          '#32B07F', // Top: Primary Prairie Green (like onboarding)
+          '#32B07F', // 0.22: Primary Green
+          '#246E53', // 0.34: Green cloud dome top
+          '#1A4638', // 0.44: Green cloud dome center under logo
+          '#284F41', // 0.50: Cloud dome base
+          '#4D6E62', // 0.56: Soft cloud fog fading (no hard edge)
+          '#86A298', // 0.61: Dissolving cloud fog
+          '#C6D7D1', // 0.66: Faint green mist
+          '#F2F6F5', // 0.70: Soft transition to white
+          '#FFFFFF', // 0.74: Pure solid white prolonging to the end
           '#FFFFFF',
         ]}
-        locations={[0, 0.22, 0.38, 0.50, 0.64, 0.76, 0.86, 0.95, 1.0]}
+        locations={[0, 0.22, 0.34, 0.44, 0.50, 0.56, 0.61, 0.66, 0.70, 0.74, 1.0]}
         style={StyleSheet.absoluteFill}
       />
-
-      {/* Subtle central oval ambient spotlight overlay */}
-      <View style={styles.ovalSpotlight} pointerEvents="none" />
 
       <Animated.View
         style={[
           styles.contentContainer,
           {
-            paddingTop: insets.top + 20,
+            paddingTop: insets.top + 36,
             paddingBottom: Math.max(insets.bottom + 24, 36),
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }],
           },
         ]}
       >
-        {/* Upper Middle Section: Logo + Input Card aligned in center-middle */}
-        <View style={styles.centerSection}>
-          {/* Centered Kwismo Logo */}
-          <View style={styles.logoWrapper}>
-            <KwismoLogo size={160} variant="white" />
-          </View>
+        {/* Upper Logo Section (Elevated higher up at the end of green dome) */}
+        <View style={styles.logoUpperSection}>
+          <KwismoLogo size={165} variant="white" />
+        </View>
 
-          {/* White Card Selector Input in middle of screen (NO LABEL above) */}
+        {/* Lower Selector & Action Section (On the white prolonging background) */}
+        <View style={styles.lowerInputSection}>
+          {/* White Card Selector Input (NO LABEL above) */}
           <View style={styles.cardWrapper}>
             <TouchableOpacity
               activeOpacity={0.9}
@@ -124,7 +123,7 @@ export default function LanguageSelectionScreen() {
               >
                 {currentOption ? currentOption.label : t('common.selectLanguage', 'Sélectionner la langue')}
               </Text>
-              
+
               <Icon
                 name="eva:arrow-down-fill"
                 size={18}
@@ -132,7 +131,7 @@ export default function LanguageSelectionScreen() {
               />
             </TouchableOpacity>
 
-            {/* Continuer / Continue Button directly under the input */}
+            {/* Continuer / Continue Button directly under input */}
             {selectedLang && (
               <Animated.View style={styles.continueButtonWrapper}>
                 <TouchableOpacity
@@ -227,30 +226,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#32B07F',
     position: 'relative',
   },
-  ovalSpotlight: {
-    position: 'absolute',
-    top: '25%',
-    left: '-20%',
-    width: '140%',
-    height: '45%',
-    borderRadius: 300,
-    backgroundColor: 'rgba(20, 50, 40, 0.25)',
-    transform: [{ scaleX: 1.2 }],
-  },
   contentContainer: {
     flex: 1,
     paddingHorizontal: 24,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
-  centerSection: {
+  logoUpperSection: {
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 40,
   },
-  logoWrapper: {
+  lowerInputSection: {
+    width: '100%',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 44,
+    marginBottom: 40,
   },
   cardWrapper: {
     width: '100%',
@@ -265,9 +255,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 18,
-    shadowColor: 'rgba(0, 0, 0, 0.18)',
+    shadowColor: 'rgba(0, 0, 0, 0.15)',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.14,
+    shadowOpacity: 0.12,
     shadowRadius: 10,
     elevation: 4,
   },
