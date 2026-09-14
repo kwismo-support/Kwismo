@@ -137,7 +137,6 @@ export default function OnboardingScreen() {
     }
   };
 
-  // Continuous Smooth Cross-Fade Interpolations for Zero Flickering
   const navRowOpacity = scrollX.interpolate({
     inputRange: [0, screenWidth, screenWidth * 1.5, screenWidth * 2],
     outputRange: [1, 1, 0.2, 0],
@@ -166,8 +165,6 @@ export default function OnboardingScreen() {
           }
         : {})}
     >
-
-
       <ScrollView
         ref={scrollViewRef}
         horizontal
@@ -217,8 +214,8 @@ export default function OnboardingScreen() {
           styles.bottomOverlay,
           {
             paddingBottom: Math.max(insets.bottom, 24),
-            paddingLeft: 24,
-            paddingRight: 24,
+            paddingLeft: '6%',
+            paddingRight: '6%',
           },
         ]}
         pointerEvents="box-none"
@@ -236,9 +233,7 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
-        {/* Fixed 52px Action Container with Continuous Smooth Cross-Fade */}
         <View style={styles.actionsFixedContainer}>
-          {/* Passer / Suivant Row (Fades out smoothly towards slide 3) */}
           <Animated.View
             style={[
               styles.absoluteActionWrapper,
@@ -268,7 +263,6 @@ export default function OnboardingScreen() {
             </View>
           </Animated.View>
 
-          {/* Commencer Button (Fades in smoothly on slide 3) */}
           <Animated.View
             style={[
               styles.absoluteActionWrapper,
@@ -293,6 +287,8 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
+    height: '100%',
     backgroundColor: colors.green,
     position: 'relative',
     overflow: 'hidden',
@@ -303,21 +299,18 @@ const styles = StyleSheet.create({
         } as any)
       : {}),
   },
-  langOverlay: {
-    position: 'absolute',
-    right: 20,
-    zIndex: 30,
-  },
   slideFrame: {
     position: 'relative',
+    width: '100%',
     height: '100%',
     overflow: 'hidden',
   },
   slideContentContainer: {
     flex: 1,
+    width: '100%',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    paddingHorizontal: 28,
+    paddingHorizontal: '7%',
   },
   slideTitle: {
     fontFamily: fonts.h3,
@@ -333,6 +326,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'flex-end',
     zIndex: 20,
@@ -358,6 +352,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    width: '100%',
     justifyContent: 'center',
     backgroundColor: 'transparent',
   },
@@ -367,7 +362,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 8,
+    paddingHorizontal: '2%',
     backgroundColor: 'transparent',
   },
   skipButton: {

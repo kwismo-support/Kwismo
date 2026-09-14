@@ -8,6 +8,7 @@ import {
   Modal,
   Animated,
   Pressable,
+  useWindowDimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -34,6 +35,7 @@ export default function LanguageSelectionScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
   const [selectedLang, setSelectedLang] = useState<string>(i18n.language || 'fr');
   const [modalVisible, setModalVisible] = useState(false);
@@ -68,54 +70,53 @@ export default function LanguageSelectionScreen() {
 
   const currentOption = LANGUAGES.find((l) => l.code === selectedLang);
 
+  const responsiveLogoSize = Math.min(Math.max(screenWidth * 0.46, 150), 220);
+
   return (
-    <View className="flex-1 bg-[#32B07F] relative" style={styles.container}>
+    <View className="flex-1 w-full h-full bg-brand-green relative" style={styles.container}>
       <StatusBar style="light" />
 
-      {/* Main Prairie Green to Cloud Dome to Solid White Gradient (Restored as requested) */}
       <LinearGradient
         colors={[
-          '#32B07F', // Top: Primary Prairie Green (like onboarding)
-          '#32B07F', // 0.22: Primary Green
-          '#246E53', // 0.34: Green cloud dome top
-          '#1A4638', // 0.44: Green cloud dome center under logo
-          '#284F41', // 0.50: Cloud dome base
-          '#4D6E62', // 0.56: Soft cloud fog fading (no hard edge)
-          '#86A298', // 0.61: Dissolving cloud fog
-          '#C6D7D1', // 0.66: Faint green mist
-          '#F2F6F5', // 0.70: Soft transition to white
-          '#FFFFFF', // 0.74: Pure solid white prolonging to the end
-          '#FFFFFF',
+          colors.green,
+          colors.green,
+          '#246E53',
+          '#1A4638',
+          '#284F41',
+          '#4D6E62',
+          '#86A298',
+          '#C6D7D1',
+          '#F2F6F5',
+          colors.white,
+          colors.white,
         ]}
         locations={[0, 0.22, 0.34, 0.44, 0.50, 0.56, 0.61, 0.66, 0.70, 0.74, 1.0]}
         style={StyleSheet.absoluteFill}
       />
 
       <Animated.View
-        className="flex-1 px-6 justify-between items-center"
+        className="flex-1 w-full h-full justify-between items-center"
         style={[
           styles.contentContainer,
           {
-            paddingTop: insets.top + 60, // Lower logo position slightly as requested
-            paddingBottom: Math.max(insets.bottom + 24, 36),
+            paddingHorizontal: '6%',
+            paddingTop: `${Math.round((insets.top / screenHeight) * 100 + 8)}%`,
+            paddingBottom: `${Math.round((insets.bottom / screenHeight) * 100 + 4)}%`,
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }],
           },
         ]}
       >
-        {/* Upper Logo Section (Lowered slightly down towards middle) */}
-        <View className="w-full items-center justify-center mt-6" style={styles.logoUpperSection}>
-          <KwismoLogo size={200} variant="white" />
+        <View className="w-full items-center justify-center" style={styles.logoUpperSection}>
+          <KwismoLogo size={responsiveLogoSize} variant="white" />
         </View>
 
-        {/* Lower Selector & Action Section (Raised higher up towards logo) */}
-        <View className="w-full items-center mb-28" style={styles.lowerInputSection}>
-          {/* White Card Selector Input (NO LABEL above) */}
-          <View className="w-full px-1" style={styles.cardWrapper}>
+        <View className="w-full items-center" style={styles.lowerInputSection}>
+          <View className="w-full" style={styles.cardWrapper}>
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => setModalVisible(true)}
-              className="w-full h-[52px] bg-white rounded-[14px] flex-row items-center justify-between px-4"
+              className="w-full bg-white rounded-[14px] flex-row items-center justify-between"
               style={styles.selectorCard}
             >
               <Text
@@ -135,13 +136,12 @@ export default function LanguageSelectionScreen() {
               />
             </TouchableOpacity>
 
-            {/* Continuer / Continue Button directly under input */}
             {selectedLang && (
-              <Animated.View className="w-full mt-4" style={styles.continueButtonWrapper}>
+              <Animated.View className="w-full" style={styles.continueButtonWrapper}>
                 <TouchableOpacity
                   activeOpacity={0.88}
                   onPress={handleContinue}
-                  className="w-full h-[52px] bg-[#32B07F] rounded-[26px] flex-row items-center justify-center"
+                  className="w-full bg-brand-green rounded-[26px] flex-row items-center justify-center"
                   style={styles.continueButton}
                 >
                   <Text className="font-bold text-[16px] text-white" style={styles.continueButtonText}>
@@ -151,7 +151,7 @@ export default function LanguageSelectionScreen() {
                     name="solar:arrow-right-linear"
                     size={20}
                     color={colors.white}
-                    style={{ marginLeft: 8 }}
+                    style={{ marginLeft: '2%' }}
                   />
                 </TouchableOpacity>
               </Animated.View>
@@ -160,7 +160,6 @@ export default function LanguageSelectionScreen() {
         </View>
       </Animated.View>
 
-      {/* Language Picker Bottom Modal */}
       <Modal
         visible={modalVisible}
         transparent
@@ -172,8 +171,8 @@ export default function LanguageSelectionScreen() {
           style={styles.modalOverlay}
           onPress={() => setModalVisible(false)}
         >
-          <View className="bg-white rounded-t-[24px] p-6 pb-10" style={styles.modalContent}>
-            <View className="flex-row items-center justify-between mb-5" style={styles.modalHeader}>
+          <View className="bg-white rounded-t-[24px]" style={styles.modalContent}>
+            <View className="flex-row items-center justify-between" style={styles.modalHeader}>
               <Text className="text-[18px] font-bold text-gray-900" style={styles.modalTitle}>
                 {t('common.selectLanguage', 'Sélectionner la langue')}
               </Text>
@@ -192,8 +191,8 @@ export default function LanguageSelectionScreen() {
                   key={item.code}
                   activeOpacity={0.7}
                   onPress={() => handleSelectLanguage(item.code)}
-                  className={`flex-row items-center justify-between py-3.5 px-4 rounded-[14px] mb-2 ${
-                    isSelected ? 'bg-[#32B07F]/10 border border-[#32B07F]' : 'bg-gray-100'
+                  className={`flex-row items-center justify-between rounded-[14px] ${
+                    isSelected ? 'bg-brand-green/10 border border-brand-green' : 'bg-gray-100'
                   }`}
                   style={[
                     styles.languageItem,
@@ -201,9 +200,9 @@ export default function LanguageSelectionScreen() {
                   ]}
                 >
                   <View className="flex-row items-center" style={styles.languageItemLeft}>
-                    <Text className="text-[24px] mr-3.5" style={styles.itemFlag}>{item.flag}</Text>
+                    <Text className="text-[24px]" style={styles.itemFlag}>{item.flag}</Text>
                     <Text
-                      className={`text-[16px] ${isSelected ? 'font-bold text-[#32B07F]' : 'text-gray-700'}`}
+                      className={`text-[16px] ${isSelected ? 'font-bold text-brand-green' : 'text-gray-700'}`}
                       style={[
                         styles.itemLabel,
                         isSelected && styles.itemLabelSelected,
@@ -233,27 +232,32 @@ export default function LanguageSelectionScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#32B07F',
+    width: '100%',
+    height: '100%',
+    backgroundColor: colors.green,
     position: 'relative',
   },
   contentContainer: {
     flex: 1,
-    paddingHorizontal: 24,
+    width: '100%',
+    height: '100%',
     justifyContent: 'space-between',
   },
   logoUpperSection: {
     width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: '12%',
   },
   lowerInputSection: {
     width: '100%',
-    alignItems: 'center',
+    marginBottom: '22%',
   },
   cardWrapper: {
     width: '100%',
   },
   selectorCard: {
+    width: '100%',
+    height: 52,
+    paddingHorizontal: '5%',
     shadowColor: 'rgba(0, 0, 0, 0.15)',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.12,
@@ -269,8 +273,11 @@ const styles = StyleSheet.create({
   },
   continueButtonWrapper: {
     width: '100%',
+    marginTop: '4%',
   },
   continueButton: {
+    width: '100%',
+    height: 52,
     shadowColor: colors.green,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -283,16 +290,29 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
+    width: '100%',
+    height: '100%',
   },
-  modalContent: {},
-  modalHeader: {},
+  modalContent: {
+    padding: '6%',
+    paddingBottom: '10%',
+  },
+  modalHeader: {
+    marginBottom: '5%',
+  },
   modalTitle: {
     fontFamily: fonts.h3,
   },
-  languageItem: {},
+  languageItem: {
+    paddingVertical: '3.5%',
+    paddingHorizontal: '4%',
+    marginBottom: '2.5%',
+  },
   languageItemSelected: {},
   languageItemLeft: {},
-  itemFlag: {},
+  itemFlag: {
+    marginRight: '3.5%',
+  },
   itemLabel: {
     fontFamily: fonts.medium,
   },
