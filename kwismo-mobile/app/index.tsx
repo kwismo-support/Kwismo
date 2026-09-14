@@ -38,18 +38,18 @@ export default function LanguageSelectionScreen() {
   const [modalVisible, setModalVisible] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(20)).current;
+  const slideAnim = useRef(new Animated.Value(15)).current;
 
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 700,
+        duration: 600,
         useNativeDriver: true,
       }),
       Animated.timing(slideAnim, {
         toValue: 0,
-        duration: 700,
+        duration: 600,
         useNativeDriver: true,
       }),
     ]).start();
@@ -65,85 +65,94 @@ export default function LanguageSelectionScreen() {
     router.replace('/onboarding');
   };
 
-  const currentOption = LANGUAGES.find((l) => l.code === selectedLang) || LANGUAGES[0];
+  const currentOption = LANGUAGES.find((l) => l.code === selectedLang);
 
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
 
-      {/* Full screen gradient background matching mockup */}
+      {/* Multi-stop oval vignette gradient background matching mockup */}
       <LinearGradient
         colors={[
-          '#32B07F', // Emerald / Prairie Green at top
-          '#1C4035', // Dark green transition
-          '#162822', // Dark teal center under logo
-          '#3B4E47', // Muted slate transition
-          '#91A49E', // Light soft fading greyish green
-          '#FFFFFF', // Pure white bottom
+          '#32B07F', // Vibrant emerald green at top
+          '#237055', // Deep green transition
+          '#16332A', // Dark teal oval shadow behind logo
+          '#1B2733', // Dark slate teal middle
+          '#435561', // Soft grey-teal transition
+          '#869C9B', // Light greyish green fade
+          '#D7E1E3', // Soft white glow transition
+          '#FFFFFF', // Pure white at bottom
+          '#FFFFFF',
         ]}
-        locations={[0, 0.28, 0.48, 0.68, 0.86, 1.0]}
+        locations={[0, 0.22, 0.38, 0.50, 0.64, 0.76, 0.86, 0.95, 1.0]}
         style={StyleSheet.absoluteFill}
       />
+
+      {/* Subtle central oval ambient spotlight overlay */}
+      <View style={styles.ovalSpotlight} pointerEvents="none" />
 
       <Animated.View
         style={[
           styles.contentContainer,
           {
-            paddingTop: insets.top + 40,
-            paddingBottom: Math.max(insets.bottom + 32, 48),
+            paddingTop: insets.top + 20,
+            paddingBottom: Math.max(insets.bottom + 24, 36),
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }],
           },
         ]}
       >
-        {/* Centered Kwismo Logo */}
-        <View style={styles.logoSection}>
-          <KwismoLogo size={180} variant="white" />
-        </View>
+        {/* Upper Middle Section: Logo + Input Card aligned in center-middle */}
+        <View style={styles.centerSection}>
+          {/* Centered Kwismo Logo */}
+          <View style={styles.logoWrapper}>
+            <KwismoLogo size={160} variant="white" />
+          </View>
 
-        {/* Lower Selector & Continue Action Section */}
-        <View style={styles.bottomSection}>
-          <Text style={styles.selectorHintText}>
-            {t('common.selectLanguage', 'Sélectionner la langue')}
-          </Text>
-
-          {/* White Card Selector Input */}
-          <TouchableOpacity
-            activeOpacity={0.88}
-            onPress={() => setModalVisible(true)}
-            style={styles.selectorCard}
-          >
-            <View style={styles.selectorLeft}>
-              <Text style={styles.flagIcon}>{currentOption.flag}</Text>
-              <Text style={styles.selectorText}>{currentOption.label}</Text>
-            </View>
-            <Icon
-              name="solar:alt-arrow-down-linear"
-              size={20}
-              color="#94A3B8"
-            />
-          </TouchableOpacity>
-
-          {/* Continuer / Continue Button */}
-          {selectedLang && (
-            <Animated.View style={styles.continueButtonWrapper}>
-              <TouchableOpacity
-                activeOpacity={0.88}
-                onPress={handleContinue}
-                style={styles.continueButton}
+          {/* White Card Selector Input in middle of screen (NO LABEL above) */}
+          <View style={styles.cardWrapper}>
+            <TouchableOpacity
+              activeOpacity={0.9}
+              onPress={() => setModalVisible(true)}
+              style={styles.selectorCard}
+            >
+              <Text
+                style={[
+                  styles.selectorText,
+                  !currentOption && styles.selectorPlaceholder,
+                ]}
               >
-                <Text style={styles.continueButtonText}>
-                  {t('common.continue', 'Continuer')}
-                </Text>
-                <Icon
-                  name="solar:arrow-right-linear"
-                  size={20}
-                  color={colors.white}
-                  style={{ marginLeft: 8 }}
-                />
-              </TouchableOpacity>
-            </Animated.View>
-          )}
+                {currentOption ? currentOption.label : t('common.selectLanguage', 'Sélectionner la langue')}
+              </Text>
+              
+              <Icon
+                name="eva:arrow-down-fill"
+                size={18}
+                color="#B4C4DD"
+              />
+            </TouchableOpacity>
+
+            {/* Continuer / Continue Button directly under the input */}
+            {selectedLang && (
+              <Animated.View style={styles.continueButtonWrapper}>
+                <TouchableOpacity
+                  activeOpacity={0.88}
+                  onPress={handleContinue}
+                  style={styles.continueButton}
+                >
+                  <Text style={styles.continueButtonText}>
+                    {t('common.continue', 'Continuer')}
+                  </Text>
+                  <Icon
+                    name="solar:arrow-right-linear"
+                    size={20}
+                    color={colors.white}
+                    style={{ marginLeft: 8 }}
+                  />
+                </TouchableOpacity>
+              </Animated.View>
+            )}
+          </View>
         </View>
       </Animated.View>
 
@@ -216,55 +225,59 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#32B07F',
+    position: 'relative',
+  },
+  ovalSpotlight: {
+    position: 'absolute',
+    top: '25%',
+    left: '-20%',
+    width: '140%',
+    height: '45%',
+    borderRadius: 300,
+    backgroundColor: 'rgba(20, 50, 40, 0.25)',
+    transform: [{ scaleX: 1.2 }],
   },
   contentContainer: {
     flex: 1,
-    justifyContent: 'space-between',
-    paddingHorizontal: 28,
+    paddingHorizontal: 24,
+    justifyContent: 'center',
   },
-  logoSection: {
-    flex: 1,
+  centerSection: {
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  bottomSection: {
-    width: '100%',
-    marginBottom: 20,
+  logoWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 44,
   },
-  selectorHintText: {
-    fontFamily: fonts.medium,
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.85)',
-    marginBottom: 8,
-    marginLeft: 4,
+  cardWrapper: {
+    width: '100%',
+    paddingHorizontal: 4,
   },
   selectorCard: {
     width: '100%',
-    height: 56,
+    height: 52,
     backgroundColor: colors.white,
-    borderRadius: 16,
+    borderRadius: 14,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    shadowColor: 'rgba(0, 0, 0, 0.15)',
+    paddingHorizontal: 18,
+    shadowColor: 'rgba(0, 0, 0, 0.18)',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.14,
     shadowRadius: 10,
     elevation: 4,
   },
-  selectorLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  flagIcon: {
-    fontSize: 22,
-    marginRight: 12,
-  },
   selectorText: {
     fontFamily: fonts.medium,
-    fontSize: 16,
-    color: colors.gray900,
+    fontSize: 15,
+    color: '#64748B',
+  },
+  selectorPlaceholder: {
+    color: '#A3B1CC',
   },
   continueButtonWrapper: {
     width: '100%',
@@ -272,9 +285,9 @@ const styles = StyleSheet.create({
   },
   continueButton: {
     width: '100%',
-    height: 54,
+    height: 52,
     backgroundColor: colors.green,
-    borderRadius: 27,
+    borderRadius: 26,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -286,7 +299,7 @@ const styles = StyleSheet.create({
   },
   continueButtonText: {
     fontFamily: fonts.headlineBold,
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '700',
     color: colors.white,
   },

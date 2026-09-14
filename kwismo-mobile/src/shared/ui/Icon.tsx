@@ -10,8 +10,8 @@ export interface IconProps {
   strokeWidth?: number;
   style?: any;
 }
-
 const ionicNameMap: Record<string, keyof typeof Ionicons.glyphMap> = {
+  'eva:arrow-down-fill': 'caret-down',
   'solar:arrow-right-linear': 'arrow-forward',
   'solar:arrow-left-linear': 'arrow-back',
   'solar:alt-arrow-right-linear': 'chevron-forward',
