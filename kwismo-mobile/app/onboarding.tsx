@@ -296,7 +296,7 @@ export default function OnboardingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#177457',
+    backgroundColor: '#0F2B24',
     position: 'relative',
     overflow: 'hidden',
     ...(Platform.OS === 'web'
