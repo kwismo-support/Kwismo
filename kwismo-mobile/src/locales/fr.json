@@ -26,6 +26,8 @@
     "alreadySent": "Déjà envoyé ?",
     "minCharRequirement": "Au moins 8 caractères",
     "language": "Langue",
+    "selectLanguage": "Sélectionner la langue",
+    "continue": "Continuer",
     "french": "Français",
     "english": "English",
     "welcome": "Bienvenue",

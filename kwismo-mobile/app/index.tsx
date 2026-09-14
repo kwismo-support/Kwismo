@@ -9,6 +9,7 @@ import {
   Pressable,
   useWindowDimensions,
   StyleSheet,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -96,13 +97,16 @@ export default function LanguageSelectionScreen() {
       <Animated.View
         className="flex-1 w-full h-full justify-between items-center px-6"
         style={{
-          paddingTop: `${Math.round((insets.top / screenHeight) * 100 + 8)}%`,
+          paddingTop: `${Math.round((insets.top / screenHeight) * 100 + 4)}%`,
           paddingBottom: `${Math.round((insets.bottom / screenHeight) * 100 + 4)}%`,
           opacity: fadeAnim,
           transform: [{ translateY: slideAnim }],
         }}
       >
-        <View className="w-full h-50 items-center justify-end mt-12">
+        <View
+          className="w-full items-center justify-center"
+          style={{ marginTop: Math.round(screenHeight * 0.16) }}
+        >
           <KwismoLogo size={responsiveLogoSize} variant="white" />
         </View>
 
@@ -114,13 +118,23 @@ export default function LanguageSelectionScreen() {
               className="w-full h-13 bg-white rounded-md flex-row items-center justify-between px-5 border border-brand-green shadow-md shadow-black/15 elevation-4"
               style={{ height: 52 }}
             >
-              <Text
-                className={`font-medium text-body-md ${
-                  currentOption ? 'text-slate-600' : 'text-slate-400'
-                }`}
-              >
-                {currentOption ? currentOption.label : t('common.selectLanguage')}
-              </Text>
+              <View className="flex-row items-center">
+                {currentOption && (
+                  <Text
+                    style={{ fontFamily: Platform.OS === 'android' ? 'sans-serif' : undefined }}
+                    className="text-xl mr-3"
+                  >
+                    {currentOption.flag}
+                  </Text>
+                )}
+                <Text
+                  className={`font-medium text-body-md ${
+                    currentOption ? 'text-slate-800' : 'text-slate-400'
+                  }`}
+                >
+                  {currentOption ? currentOption.label : t('common.selectLanguage')}
+                </Text>
+              </View>
 
               <Icon
                 name="eva:arrow-down-fill"
@@ -188,7 +202,12 @@ export default function LanguageSelectionScreen() {
                   }`}
                 >
                   <View className="flex-row items-center">
-                    <Text className="text-2xl mr-3.5">{item.flag}</Text>
+                    <Text
+                      style={{ fontFamily: Platform.OS === 'android' ? 'sans-serif' : undefined }}
+                      className="text-2xl mr-3.5"
+                    >
+                      {item.flag}
+                    </Text>
                     <Text
                       className={`text-body-lg ${
                         isSelected ? 'font-headline text-brand-green' : 'font-medium text-gray-700'
