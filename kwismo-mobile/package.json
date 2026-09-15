@@ -15,7 +15,10 @@
   },
   "dependencies": {
     "@expo-google-fonts/montserrat-alternates": "^0.2.3",
+    "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
     "@expo/vector-icons": "^15.1.1",
+    "@iconify/json": "^2.2.528",
+    "@iconify/react": "^6.0.2",
     "expo": "~57.0.21",
     "expo-constants": "~57.0.17",
     "expo-contacts": "~57.0.4",

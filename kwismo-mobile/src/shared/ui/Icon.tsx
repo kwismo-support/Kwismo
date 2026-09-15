@@ -1,7 +1,46 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { Icon as IconifyWeb } from '@iconify/react';
+import { SvgXml } from 'react-native-svg';
+import { addCollection, Icon as IconifyWeb } from '@iconify/react';
+import { getIconData, iconToSVG } from '@iconify/utils';
 import { Ionicons } from '@expo/vector-icons';
+
+// Import key Iconify collections from @iconify/json
+import solarCollection from '@iconify/json/json/solar.json';
+import evaCollection from '@iconify/json/json/eva.json';
+import mdiCollection from '@iconify/json/json/mdi.json';
+import lucideCollection from '@iconify/json/json/lucide.json';
+import heroiconsCollection from '@iconify/json/json/heroicons.json';
+import phCollection from '@iconify/json/json/ph.json';
+import biCollection from '@iconify/json/json/bi.json';
+import tablerCollection from '@iconify/json/json/tabler.json';
+import icCollection from '@iconify/json/json/ic.json';
+import ggCollection from '@iconify/json/json/gg.json';
+
+// Map of collections
+const collectionsMap: Record<string, any> = {
+  solar: solarCollection,
+  eva: evaCollection,
+  mdi: mdiCollection,
+  lucide: lucideCollection,
+  heroicons: heroiconsCollection,
+  ph: phCollection,
+  bi: biCollection,
+  tabler: tablerCollection,
+  ic: icCollection,
+  gg: ggCollection,
+};
+
+// Register collections on Web for instant offline rendering
+if (Platform.OS === 'web') {
+  Object.values(collectionsMap).forEach((col) => {
+    try {
+      addCollection(col as any);
+    } catch (e) {
+      // ignore if already added
+    }
+  });
+}
 
 export interface IconProps {
   name: string;
@@ -10,6 +49,8 @@ export interface IconProps {
   strokeWidth?: number;
   style?: any;
 }
+
+// Ionicons fallback dictionary
 const ionicNameMap: Record<string, keyof typeof Ionicons.glyphMap> = {
   'eva:arrow-down-fill': 'caret-down',
   'solar:arrow-right-linear': 'arrow-forward',
@@ -56,12 +97,36 @@ const ionicNameMap: Record<string, keyof typeof Ionicons.glyphMap> = {
   'gg:spinner': 'sync',
 };
 
+function renderSvgIcon(prefix: string, iconName: string, size: number, color: string, style?: any) {
+  const collection = collectionsMap[prefix];
+  if (!collection) return null;
+
+  try {
+    const iconData = getIconData(collection, iconName);
+    if (!iconData) return null;
+
+    const renderData = iconToSVG(iconData, { height: size, width: size });
+    const viewBox = renderData.attributes.viewBox || '0 0 24 24';
+
+    let body = renderData.body || '';
+    if (color) {
+      body = body.replace(/currentColor/g, color);
+    }
+
+    const xml = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${viewBox}" fill="${color}">${body}</svg>`;
+    return <SvgXml xml={xml} width={size} height={size} style={style} />;
+  } catch (err) {
+    return null;
+  }
+}
+
 export const Icon: React.FC<IconProps> = ({
   name,
   size = 24,
   color = '#000000',
   style,
 }) => {
+  // Web rendering
   if (Platform.OS === 'web') {
     return (
       <IconifyWeb
@@ -73,6 +138,19 @@ export const Icon: React.FC<IconProps> = ({
     );
   }
 
+  // Mobile rendering (Native iOS / Android)
+  if (name && name.includes(':')) {
+    const parts = name.split(':');
+    const prefix = parts[0];
+    const iconName = parts.slice(1).join(':');
+
+    const svgResult = renderSvgIcon(prefix, iconName, size, color, style);
+    if (svgResult) {
+      return svgResult;
+    }
+  }
+
+  // Fallback to Ionicons
   const mappedName = ionicNameMap[name] || (name.includes(':') ? 'help-circle-outline' : (name as any));
 
   return (
@@ -86,5 +164,3 @@ export const Icon: React.FC<IconProps> = ({
 };
 
 export default Icon;
-
-

@@ -88,13 +88,17 @@ export const Button: React.FC<ButtonProps> = ({
         return {
           backgroundColor: 'transparent',
           borderWidth: 1.5,
-          borderColor: isDark ? themeColors.inputBorder : '#3B4E7A',
+          borderColor: isDark ? themeColors.inputBorder : '#1E293B',
+          elevation: 0,
+          shadowOpacity: 0,
         };
       case 'outline':
         return {
           backgroundColor: 'transparent',
           borderWidth: 1.5,
           borderColor: colors.green,
+          elevation: 0,
+          shadowOpacity: 0,
         };
       case 'danger':
         return {
@@ -118,7 +122,7 @@ export const Button: React.FC<ButtonProps> = ({
         };
       case 'secondary':
         return {
-          color: isDark ? themeColors.textPrimary : '#3B4E7A',
+          color: isDark ? themeColors.textPrimary : '#1E293B',
         };
       case 'outline':
         return {
@@ -135,12 +139,12 @@ export const Button: React.FC<ButtonProps> = ({
   const getSizeStyle = (): ViewStyle => {
     switch (size) {
       case 'sm':
-        return { height: 42, paddingHorizontal: 16, borderRadius: 21 };
+        return { height: 42, paddingHorizontal: 16, borderRadius: 10 };
       case 'lg':
-        return { height: 56, paddingHorizontal: 28, borderRadius: 28 };
+        return { height: 56, paddingHorizontal: 28, borderRadius: 14 };
       case 'md':
       default:
-        return { height: 52, paddingHorizontal: 24, borderRadius: 26 };
+        return { height: 52, paddingHorizontal: 24, borderRadius: 12 };
     }
   };
 
@@ -171,7 +175,9 @@ export const Button: React.FC<ButtonProps> = ({
             style={[
               styles.baseText,
               getVariantTextStyle(),
-              { fontSize: scaleFont(size === 'sm' ? 14 : size === 'lg' ? 17 : 16) },
+              size === 'sm'
+                ? { fontSize: 14, lineHeight: 21, fontFamily: fonts.caption }
+                : { fontSize: 16, lineHeight: 27, fontFamily: fonts.semiBold },
               textStyle,
             ]}
           >
@@ -198,7 +204,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   baseText: {
-    fontFamily: fonts.medium,
+    fontFamily: fonts.semiBold,
     fontWeight: '600',
     textAlign: 'center',
   },
