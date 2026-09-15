@@ -40,9 +40,9 @@ export default function AuthWelcomeScreen() {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => router.push('/(auth)/register')}
-            className="w-full h-13 bg-white/20 dark:bg-slate-800/50 rounded-xl border-2 border-white/60 items-center justify-center"
+            className="w-full h-13 bg-transparent dark:bg-transparent rounded-xl border-2 border-brand-navy dark:border-white/80 items-center justify-center"
           >
-            <Text className="font-font-bold text-base font-bold text-white">
+            <Text className="font-font-bold text-base font-bold text-brand-navy dark:text-white">
               {t('common.register')}
             </Text>
           </TouchableOpacity>
