@@ -5,7 +5,7 @@ import { addCollection, Icon as IconifyWeb } from '@iconify/react';
 import { getIconData, iconToSVG } from '@iconify/utils';
 import { Ionicons } from '@expo/vector-icons';
 
-// Import key Iconify collections from @iconify/json
+import bitcoinIconsCollection from '@iconify/json/json/bitcoin-icons.json';
 import solarCollection from '@iconify/json/json/solar.json';
 import evaCollection from '@iconify/json/json/eva.json';
 import mdiCollection from '@iconify/json/json/mdi.json';
@@ -17,8 +17,8 @@ import tablerCollection from '@iconify/json/json/tabler.json';
 import icCollection from '@iconify/json/json/ic.json';
 import ggCollection from '@iconify/json/json/gg.json';
 
-// Map of collections
 const collectionsMap: Record<string, any> = {
+  'bitcoin-icons': bitcoinIconsCollection,
   solar: solarCollection,
   eva: evaCollection,
   mdi: mdiCollection,
@@ -31,16 +31,28 @@ const collectionsMap: Record<string, any> = {
   gg: ggCollection,
 };
 
-// Register collections on Web for instant offline rendering
+function getCollectionData(prefix: string) {
+  if (collectionsMap[prefix]) return collectionsMap[prefix];
+  try {
+    const loaded = require(`@iconify/json/json/${prefix}.json`);
+    collectionsMap[prefix] = loaded;
+    if (Platform.OS === 'web') {
+      try { addCollection(loaded); } catch {}
+    }
+    return loaded;
+  } catch (err) {
+    return null;
+  }
+}
+
 if (Platform.OS === 'web') {
   Object.values(collectionsMap).forEach((col) => {
     try {
       addCollection(col as any);
-    } catch (e) {
-      // ignore if already added
-    }
+    } catch (e) {}
   });
 }
+
 
 export interface IconProps {
   name: string;
@@ -98,8 +110,9 @@ const ionicNameMap: Record<string, keyof typeof Ionicons.glyphMap> = {
 };
 
 function renderSvgIcon(prefix: string, iconName: string, size: number, color: string, style?: any) {
-  const collection = collectionsMap[prefix];
+  const collection = getCollectionData(prefix);
   if (!collection) return null;
+
 
   try {
     const iconData = getIconData(collection, iconName);
