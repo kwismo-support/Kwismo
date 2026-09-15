@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Switch, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Switch, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useCallDetection } from '@/features/call-detection/hooks/useCallDetection';
@@ -17,7 +17,7 @@ export default function CallDetectionScreen() {
     loading,
   } = useCallDetection();
 
-  const [simNumber, setSimNumber] = useState('+237690000999');
+  const [simNumber] = useState('+237690000999');
 
   const handleReportFromModal = (phone: string) => {
     router.push({
@@ -27,21 +27,19 @@ export default function CallDetectionScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+    <ScrollView className="flex-1 bg-white dark:bg-slate-900" contentContainerStyle={{ padding: 20, paddingTop: 48 }}>
+      <View className="flex-row items-center mb-6">
+        <TouchableOpacity className="p-2 mr-3" onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} className="text-slate-900 dark:text-white" color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Détection d'Appels Suspects</Text>
+        <Text className="text-xl font-extrabold text-slate-900 dark:text-white">Détection d'Appels Suspects</Text>
       </View>
 
-      {/* Switch Protection */}
-      <View style={styles.card}>
-        <View style={styles.cardRow}>
-          <View style={styles.cardTextCol}>
-            <Text style={styles.cardTitle}>Protection Temps Réel</Text>
-            <Text style={styles.cardSubtitle}>
+      <View className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-5 mb-5 border border-slate-200 dark:border-slate-700/60">
+        <View className="flex-row justify-between items-center">
+          <View className="flex-1 mr-3">
+            <Text className="text-base font-bold text-slate-900 dark:text-white mb-1">Protection Temps Réel</Text>
+            <Text className="text-xs text-slate-500 dark:text-slate-400 leading-4">
               Analyse automatique des appels entrants contre la base de données KWISMO.
             </Text>
           </View>
@@ -54,58 +52,46 @@ export default function CallDetectionScreen() {
         </View>
       </View>
 
-      {/* Simulator Section */}
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Simulateur d'Appel Entrant Suspect</Text>
-        <Text style={styles.sectionDesc}>
+      <View className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-5 mb-5 border border-slate-200 dark:border-slate-700/60">
+        <Text className="text-base font-bold text-slate-900 dark:text-white mb-1.5">Simulateur d'Appel Entrant Suspect</Text>
+        <Text className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-4">
           Testez l'apparition de la modale d'alerte en direct en simulant un appel entrant.
         </Text>
 
         <TouchableOpacity
-          style={[styles.simBtn, loading && styles.disabledBtn]}
+          className={`bg-red-600 rounded-xl py-3.5 px-4 flex-row justify-center items-center gap-2 ${loading ? 'opacity-60' : ''}`}
           onPress={() => simulateIncomingCall(simNumber)}
           disabled={loading}
         >
           <Ionicons name="call" size={20} color="#FFFFFF" />
-          <Text style={styles.simBtnText}>
+          <Text className="text-white font-bold text-2xs">
             {loading ? 'Analyse en cours...' : 'Simuler un Appel Arnaqueur (+237 690 000 999)'}
           </Text>
         </TouchableOpacity>
       </View>
 
-      {/* Call History */}
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Historique des Appels Analysés</Text>
+      <View className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-5 mb-5 border border-slate-200 dark:border-slate-700/60">
+        <Text className="text-base font-bold text-slate-900 dark:text-white mb-1.5">Historique des Appels Analysés</Text>
         {callHistory.length === 0 ? (
-          <Text style={styles.emptyText}>Aucun appel analysé pour le moment.</Text>
+          <Text className="text-slate-400 dark:text-slate-500 text-2xs italic">Aucun appel analysé pour le moment.</Text>
         ) : (
           callHistory.map((item) => (
-            <View key={item.id} style={styles.historyRow}>
-              <View style={styles.historyInfo}>
+            <View key={item.id} className="flex-row justify-between items-center py-3 border-b border-slate-200 dark:border-slate-700/40">
+              <View className="flex-row items-center gap-3 flex-1">
                 <Ionicons
                   name={item.is_scam ? 'warning' : 'checkmark-circle'}
                   size={24}
                   color={item.is_scam ? '#EF4444' : '#10B981'}
                 />
                 <View>
-                  <Text style={styles.historyNumber}>{item.phone_number}</Text>
-                  <Text style={styles.historyDate}>
+                  <Text className="text-sm font-bold text-slate-900 dark:text-white">{item.phone_number}</Text>
+                  <Text className="text-2xs text-slate-500 dark:text-slate-400 mt-0.5">
                     {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {item.caller_name}
                   </Text>
                 </View>
               </View>
-              <View
-                style={[
-                  styles.statusBadge,
-                  { backgroundColor: item.is_scam ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)' },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.statusBadgeText,
-                    { color: item.is_scam ? '#F87171' : '#34D399' },
-                  ]}
-                >
+              <View className={`px-2.5 py-1 rounded-md ${item.is_scam ? 'bg-red-100 dark:bg-red-950/50' : 'bg-emerald-100 dark:bg-emerald-950/50'}`}>
+                <Text className={`text-2xs font-bold ${item.is_scam ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
                   {Math.round(item.risk_score * 100)}% ({item.statut.toUpperCase()})
                 </Text>
               </View>
@@ -114,7 +100,6 @@ export default function CallDetectionScreen() {
         )}
       </View>
 
-      {/* Warning Overlay Modal */}
       <CallWarningModal
         visible={activeIncomingCall !== null}
         callData={activeIncomingCall}
@@ -125,123 +110,3 @@ export default function CallDetectionScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0F172A',
-  },
-  content: {
-    padding: 20,
-    paddingTop: 50,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  backBtn: {
-    padding: 8,
-    marginRight: 12,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
-  card: {
-    backgroundColor: '#1E293B',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  cardRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  cardTextCol: {
-    flex: 1,
-    marginRight: 12,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: 4,
-  },
-  cardSubtitle: {
-    fontSize: 12,
-    color: '#94A3B8',
-    lineHeight: 16,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: 6,
-  },
-  sectionDesc: {
-    fontSize: 12,
-    color: '#94A3B8',
-    marginBottom: 16,
-    lineHeight: 16,
-  },
-  simBtn: {
-    backgroundColor: '#DC2626',
-    borderRadius: 14,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 8,
-  },
-  disabledBtn: {
-    opacity: 0.6,
-  },
-  simBtnText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 13,
-  },
-  emptyText: {
-    color: '#64748B',
-    fontSize: 13,
-    fontStyle: 'italic',
-  },
-  historyRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  historyInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    flex: 1,
-  },
-  historyNumber: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  historyDate: {
-    fontSize: 11,
-    color: '#64748B',
-    marginTop: 2,
-  },
-  statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  statusBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-  },
-});

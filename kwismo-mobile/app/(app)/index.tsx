@@ -134,16 +134,13 @@ export default function HomeScreen() {
   ];
 
   return (
-    <View className="flex-1" style={{ backgroundColor: themeColors.background }}>
+    <View className="flex-1 bg-white dark:bg-brand-darkBg">
       <StatusBar style="light" />
 
       <HeaderBar isHome={true} />
 
       <View className="px-4 -mt-14 z-10">
-        <View
-          className="rounded-xl p-4 mb-4 shadow-md shadow-black/10 elevation-4"
-          style={{ backgroundColor: isDark ? themeColors.cardBg : '#FFFFFF' }}
-        >
+        <View className="rounded-xl p-4 mb-4 shadow-md shadow-black/10 elevation-4 bg-white dark:bg-[#162035]">
           <View className="flex-row items-center mb-4">
             <View className="mr-3">
               {user?.avatarUrl ? (
@@ -158,18 +155,12 @@ export default function HomeScreen() {
             </View>
             <View className="flex-1">
               <View className="flex-row items-center">
-                <Text
-                  className="text-2xs font-bold"
-                  style={{ color: isDark ? themeColors.textSecondary : '#475569' }}
-                >
+                <Text className="text-2xs font-bold text-slate-600 dark:text-slate-400">
                   {t('common.welcome')}
                 </Text>
                 <Icon name="solar:verified-check-bold" color={colors.green} size={16} style={{ marginLeft: 4 }} />
               </View>
-              <Text
-                className="text-lg font-bold mt-0.5"
-                style={{ color: isDark ? themeColors.textPrimary : '#0F172A' }}
-              >
+              <Text className="text-lg font-bold mt-0.5 text-slate-900 dark:text-white">
                 {userName}
               </Text>
             </View>
@@ -177,61 +168,37 @@ export default function HomeScreen() {
 
           <View className="flex-row justify-between pt-1">
             <View className="flex-1 items-start">
-              <Text
-                className="text-base font-bold text-left"
-                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
-              >
+              <Text className="text-base font-bold text-left text-black dark:text-white">
                 {user?.kpi?.numeros_verifies ?? summary?.numeros_verifies ?? 127}
               </Text>
-              <Text
-                className="text-2xs font-medium text-left mt-0.5"
-                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
-              >
+              <Text className="text-2xs font-medium text-left mt-0.5 text-black dark:text-white">
                 {t('common.kpiVerified')}
               </Text>
             </View>
 
             <View className="flex-1 items-start">
-              <Text
-                className="text-base font-bold text-left"
-                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
-              >
+              <Text className="text-base font-bold text-left text-black dark:text-white">
                 25
               </Text>
-              <Text
-                className="text-2xs font-medium text-left mt-0.5"
-                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
-              >
+              <Text className="text-2xs font-medium text-left mt-0.5 text-black dark:text-white">
                 {t('common.kpiThreats')}
               </Text>
             </View>
 
             <View className="flex-1 items-start">
-              <Text
-                className="text-base font-bold text-left"
-                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
-              >
+              <Text className="text-base font-bold text-left text-black dark:text-white">
                 {user?.kpi?.signalements_effectues ?? summary?.signalements_effectues ?? 10}
               </Text>
-              <Text
-                className="text-2xs font-medium text-left mt-0.5"
-                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
-              >
+              <Text className="text-2xs font-medium text-left mt-0.5 text-black dark:text-white">
                 {t('common.kpiReports')}
               </Text>
             </View>
 
             <View className="flex-1 items-start">
-              <Text
-                className="text-base font-bold text-left"
-                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
-              >
+              <Text className="text-base font-bold text-left text-black dark:text-white">
                 {user?.kpi?.transferts_proteges ?? summary?.transferts_proteges ?? 50}
               </Text>
-              <Text
-                className="text-2xs font-medium text-left mt-0.5"
-                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
-              >
+              <Text className="text-2xs font-medium text-left mt-0.5 text-black dark:text-white">
                 {t('common.kpiTransfers')}
               </Text>
             </View>
@@ -244,13 +211,10 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/verify')}
             className="flex-1 items-center"
           >
-            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50" style={{ width: 52, height: 52 }}>
+            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800" style={{ width: 52, height: 52 }}>
               <Icon name="solar:shield-user-bold" color="#161E33" size={24} />
             </View>
-            <Text
-              className="text-2xs font-medium text-center"
-              style={{ color: isDark ? themeColors.textPrimary : '#161E33' }}
-            >
+            <Text className="text-2xs font-medium text-center text-brand-navy dark:text-white">
               {t('common.actionVerify')}
             </Text>
           </TouchableOpacity>
@@ -260,13 +224,10 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/transfer')}
             className="flex-1 items-center"
           >
-            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50" style={{ width: 52, height: 52 }}>
+            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800" style={{ width: 52, height: 52 }}>
               <Icon name="solar:transfer-horizontal-bold" color="#161E33" size={24} />
             </View>
-            <Text
-              className="text-2xs font-medium text-center"
-              style={{ color: isDark ? themeColors.textPrimary : '#161E33' }}
-            >
+            <Text className="text-2xs font-medium text-center text-brand-navy dark:text-white">
               {t('common.actionTransfer')}
             </Text>
           </TouchableOpacity>
@@ -276,13 +237,10 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/alert-whatsapp')}
             className="flex-1 items-center"
           >
-            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50" style={{ width: 52, height: 52 }}>
+            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800" style={{ width: 52, height: 52 }}>
               <Icon name="solar:chat-round-dots-bold" color="#161E33" size={24} />
             </View>
-            <Text
-              className="text-2xs font-medium text-center"
-              style={{ color: isDark ? themeColors.textPrimary : '#161E33' }}
-            >
+            <Text className="text-2xs font-medium text-center text-brand-navy dark:text-white">
               {t('common.actionWhatsapp')}
             </Text>
           </TouchableOpacity>
@@ -292,20 +250,17 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/report')}
             className="flex-1 items-center"
           >
-            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-red-50" style={{ width: 52, height: 52 }}>
+            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-red-50 dark:bg-red-950/40" style={{ width: 52, height: 52 }}>
               <Icon name="heroicons:signal-16-solid" color="#D93025" size={24} />
             </View>
-            <Text className="text-2xs font-medium text-center text-red-600">
+            <Text className="text-2xs font-medium text-center text-red-600 dark:text-red-400">
               {t('common.report')}
             </Text>
           </TouchableOpacity>
         </View>
 
         <View className="flex-row justify-between items-center mb-1.5 pt-1">
-          <Text
-            className="text-lg font-bold"
-            style={{ color: themeColors.textPrimary }}
-          >
+          <Text className="text-lg font-bold text-slate-900 dark:text-white">
             {t('common.recentActivity')}
           </Text>
           <TouchableOpacity
@@ -343,19 +298,15 @@ export default function HomeScreen() {
                   onPress={() => setActiveFilter(opt.key)}
                   className={`px-3 py-1.5 rounded-full border ${
                     isSelected
-                      ? 'bg-emerald-50 border-brand-green'
-                      : isDark
-                      ? 'bg-white/5 border-slate-700'
-                      : 'bg-white border-slate-200'
+                      ? 'bg-emerald-50 dark:bg-emerald-950/50 border-brand-green'
+                      : 'bg-white dark:bg-white/5 border-slate-200 dark:border-slate-700'
                   }`}
                 >
                   <Text
                     className={`text-2xs font-medium ${
                       isSelected
                         ? 'text-brand-green'
-                        : isDark
-                        ? 'text-slate-400'
-                        : 'text-slate-600'
+                        : 'text-slate-600 dark:text-slate-400'
                     }`}
                   >
                     {t(opt.labelKey)}
@@ -374,11 +325,10 @@ export default function HomeScreen() {
                 key={item.id}
                 activeOpacity={0.75}
                 onPress={() => router.push({ pathname: '/(app)/verify', params: { phone: item.phone } })}
-                className="flex-row items-center py-2 px-3 rounded-lg border-0"
-                style={{ backgroundColor: themeColors.cardBg }}
+                className="flex-row items-center py-2 px-3 rounded-lg border-0 bg-white dark:bg-[#162035]"
               >
                 <View
-                  className="w-10 h-10 rounded-full bg-slate-100 justify-center items-center mr-2.5"
+                  className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 justify-center items-center mr-2.5"
                   style={item.initialBg ? { backgroundColor: item.initialBg } : item.initials ? { backgroundColor: colors.green } : {}}
                 >
                   {item.initials ? (
@@ -389,10 +339,10 @@ export default function HomeScreen() {
                 </View>
 
                 <View style={{ flex: 1.2 }}>
-                  <Text numberOfLines={1} className="text-2xs font-bold" style={{ color: themeColors.textPrimary }}>
+                  <Text numberOfLines={1} className="text-2xs font-bold text-slate-900 dark:text-white">
                     {item.phone}
                   </Text>
-                  <Text numberOfLines={1} className="text-2xs text-slate-400 mt-0.5" style={{ color: themeColors.textSecondary }}>
+                  <Text numberOfLines={1} className="text-2xs text-slate-400 dark:text-slate-400 mt-0.5">
                     {item.type}
                   </Text>
                 </View>

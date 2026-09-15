@@ -1,20 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, fonts } from '@/styles/tokens';
 
 export default function SurveyScreen() {
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.title}>Enquête</Text>
+    <SafeAreaView className="flex-1 bg-brand-navy dark:bg-brand-darkBg">
+      <View className="flex-1 items-center justify-center p-6">
+        <Text className="font-bold text-2xl text-white">Enquête</Text>
       </View>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.navy },
-  content: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
-  title: { fontFamily: fonts.bold, fontSize: 24, color: colors.white },
-});
