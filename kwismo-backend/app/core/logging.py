@@ -11,22 +11,36 @@ import logging
 import sys
 
 
-class JsonFormatter(logging.Formatter):
+class DevFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
-        payload = {
-            "level": record.levelname,
-            "logger": record.name,
-            "message": record.getMessage(),
-            "time": self.formatTime(record, "%Y-%m-%dT%H:%M:%S%z"),
+        level_colors = {
+            "DEBUG": "\x1b[36m",
+            "INFO": "\x1b[32m",
+            "WARNING": "\x1b[33m",
+            "ERROR": "\x1b[31m",
+            "CRITICAL": "\x1b[41m\x1b[37m",
         }
+        reset = "\x1b[0m"
+        color = level_colors.get(record.levelname, reset)
+        time_str = self.formatTime(record, "%H:%M:%S")
+        msg = f"{color}[{record.levelname}]{reset} {time_str} ({record.name}): {record.getMessage()}"
         if record.exc_info:
-            payload["exc_info"] = self.formatException(record.exc_info)
-        return json.dumps(payload, ensure_ascii=False)
+            msg += f"\n{self.formatException(record.exc_info)}"
+        return msg
 
 
 def configure_logging(level: int = logging.INFO) -> None:
+    from app.core.config import get_settings
+    settings = get_settings()
+
     handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(JsonFormatter())
+    if settings.is_dev:
+        handler.setFormatter(DevFormatter())
+        log_level = logging.DEBUG
+    else:
+        handler.setFormatter(JsonFormatter())
+        log_level = level
+
     root = logging.getLogger()
     root.handlers = [handler]
-    root.setLevel(level)
+    root.setLevel(log_level)
