@@ -6,8 +6,7 @@ import {
   TouchableOpacity,
   Animated,
   useWindowDimensions,
-  StyleSheet,
-  Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,6 +15,8 @@ import { StatusBar } from 'expo-status-bar';
 import { KwismoLogo } from '@/shared/components/KwismoLogo';
 import { BrandGradientBackground } from '@/shared/components/BrandGradientBackground';
 import { Icon } from '@/shared/ui/Icon';
+import { useAuthStore } from '@/shared/store/authStore';
+import { storage } from '@/shared/services/storage';
 import { colors } from '@/styles/tokens';
 
 interface LanguageOption {
@@ -34,28 +35,51 @@ export default function LanguageSelectionScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
-  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+  const { width: screenWidth } = useWindowDimensions();
 
+  const { isAuthenticated, isInitialized } = useAuthStore();
   const [selectedLang, setSelectedLang] = useState<string>(i18n.language || 'fr');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(true);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(15)).current;
 
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
+    if (!isInitialized) return;
+
+    if (isAuthenticated) {
+      router.replace('/(app)');
+      return;
+    }
+
+    storage.getItem('kwismo_onboarding_done').then((done) => {
+      if (done === 'true') {
+        router.replace('/(auth)/login');
+      } else {
+        setCheckingStatus(false);
+      }
+    }).catch(() => {
+      setCheckingStatus(false);
+    });
+  }, [isInitialized, isAuthenticated, router]);
+
+  useEffect(() => {
+    if (!checkingStatus) {
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [checkingStatus]);
 
   const handleSelectLanguage = (code: string) => {
     setSelectedLang(code);
@@ -66,6 +90,17 @@ export default function LanguageSelectionScreen() {
   const handleContinue = () => {
     router.replace('/onboarding');
   };
+
+  if (!isInitialized || checkingStatus) {
+    return (
+      <BrandGradientBackground>
+        <StatusBar style="light" />
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator size="large" color={colors.green} />
+        </View>
+      </BrandGradientBackground>
+    );
+  }
 
   const currentOption = LANGUAGES.find((l) => l.code === selectedLang);
   const responsiveLogoSize = Math.min(Math.max(screenWidth * 0.46, 150), 220);
@@ -185,3 +220,4 @@ export default function LanguageSelectionScreen() {
     </BrandGradientBackground>
   );
 }
+

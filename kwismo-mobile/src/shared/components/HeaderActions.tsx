@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Icon } from '../ui/Icon';
-import { colors, fonts } from '../../styles/tokens';
+import { colors } from '../../styles/tokens';
 import { HeaderSearchModal } from './HeaderSearchModal';
 
 interface HeaderActionsProps {
@@ -32,13 +32,12 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      {/* Cloche de notifications (positionnée à GAUCHE de la loupe de recherche) */}
+    <View className="flex-row items-center space-x-2">
       {showBell && (
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={handleNotificationsPress}
-          style={styles.iconButton}
+          className="w-9 h-9 items-center justify-center relative"
         >
           <Icon
             name={hasUnread ? 'solar:bell-bold' : 'f7:bell'}
@@ -46,8 +45,8 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
             color={iconColor}
           />
           {hasUnread && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>
+            <View className="absolute top-0.5 right-0.5 min-w-[16px] h-[16px] rounded-full bg-red-500 items-center justify-center px-1">
+              <Text className="font-montserrat-bold text-[9px] text-white font-bold">
                 {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
               </Text>
             </View>
@@ -55,16 +54,14 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
         </TouchableOpacity>
       )}
 
-      {/* Icône de Recherche (Loupe) positionnée à DROITE */}
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => setSearchModalVisible(true)}
-        style={styles.iconButton}
+        className="w-9 h-9 items-center justify-center relative"
       >
         <Icon name="bitcoin-icons:search-filled" size={24} color={iconColor} />
       </TouchableOpacity>
 
-      {/* Modal de recherche animée */}
       <HeaderSearchModal
         visible={searchModalVisible}
         onClose={() => setSearchModalVisible(false)}
@@ -75,35 +72,3 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
 
 export default HeaderActions;
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  iconButton: {
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  badge: {
-    position: 'absolute',
-    top: 2,
-    right: 2,
-    minWidth: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: '#EF4444',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 3,
-  },
-  badgeText: {
-    fontFamily: fonts.semiBold,
-    fontSize: 9,
-    color: colors.white,
-    fontWeight: '700',
-  },
-});

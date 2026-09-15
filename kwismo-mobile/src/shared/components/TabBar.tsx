@@ -1,12 +1,11 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../ui/Icon';
 import { useAppTheme } from '../hooks/useAppTheme';
 import { colors, fonts } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
 
 export type TabRoute = 'home' | 'management' | 'transfer' | 'profile';
 
@@ -31,19 +30,17 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
 
   return (
     <View
-      style={[
-        styles.tabBar,
-        {
-          backgroundColor: themeColors.cardBg,
-          borderTopColor: themeColors.inputBorder,
-          paddingBottom: Math.max(insets.bottom, 10),
-        },
-      ]}
+      className="absolute bottom-0 left-0 right-0 z-[1000] flex-row items-center justify-around pt-2.5 border-t shadow-md elevation-5"
+      style={{
+        backgroundColor: themeColors.cardBg,
+        borderTopColor: themeColors.inputBorder,
+        paddingBottom: Math.max(insets.bottom, 10),
+      }}
     >
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => router.replace('/(app)')}
-        style={styles.tabItem}
+        className="items-center justify-center flex-1 space-y-1"
       >
         <Icon
           name={currentTab === 'home' ? 'solar:home-2-bold' : 'solar:home-2-linear'}
@@ -51,11 +48,12 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
           color={currentTab === 'home' ? activeColor : themeColors.inputPlaceholder}
         />
         <Text
-          style={[
-            styles.tabLabel,
-            { color: currentTab === 'home' ? activeColor : themeColors.inputPlaceholder },
-            currentTab === 'home' && styles.tabLabelActive,
-          ]}
+          style={{
+            fontFamily: currentTab === 'home' ? fonts.semiBold : fonts.medium,
+            fontWeight: currentTab === 'home' ? '700' : '500',
+            fontSize: 11,
+            color: currentTab === 'home' ? activeColor : themeColors.inputPlaceholder,
+          }}
         >
           {t('common.home')}
         </Text>
@@ -64,7 +62,7 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => router.replace('/(app)/management')}
-        style={styles.tabItem}
+        className="items-center justify-center flex-1 space-y-1"
       >
         <Icon
           name={currentTab === 'management' ? 'solar:user-id-bold' : 'solar:user-id-linear'}
@@ -72,11 +70,12 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
           color={currentTab === 'management' ? activeColor : themeColors.inputPlaceholder}
         />
         <Text
-          style={[
-            styles.tabLabel,
-            { color: currentTab === 'management' ? activeColor : themeColors.inputPlaceholder },
-            currentTab === 'management' && styles.tabLabelActive,
-          ]}
+          style={{
+            fontFamily: currentTab === 'management' ? fonts.semiBold : fonts.medium,
+            fontWeight: currentTab === 'management' ? '700' : '500',
+            fontSize: 11,
+            color: currentTab === 'management' ? activeColor : themeColors.inputPlaceholder,
+          }}
         >
           {t('common.management')}
         </Text>
@@ -85,7 +84,7 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => router.replace('/(app)/transfer')}
-        style={styles.tabItem}
+        className="items-center justify-center flex-1 space-y-1"
       >
         <Icon
           name={currentTab === 'transfer' ? 'solar:card-transfer-bold' : 'solar:card-transfer-linear'}
@@ -93,11 +92,12 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
           color={currentTab === 'transfer' ? activeColor : themeColors.inputPlaceholder}
         />
         <Text
-          style={[
-            styles.tabLabel,
-            { color: currentTab === 'transfer' ? activeColor : themeColors.inputPlaceholder },
-            currentTab === 'transfer' && styles.tabLabelActive,
-          ]}
+          style={{
+            fontFamily: currentTab === 'transfer' ? fonts.semiBold : fonts.medium,
+            fontWeight: currentTab === 'transfer' ? '700' : '500',
+            fontSize: 11,
+            color: currentTab === 'transfer' ? activeColor : themeColors.inputPlaceholder,
+          }}
         >
           {t('common.transfer')}
         </Text>
@@ -106,7 +106,7 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => router.replace('/(app)/profile')}
-        style={styles.tabItem}
+        className="items-center justify-center flex-1 space-y-1"
       >
         <Icon
           name={currentTab === 'profile' ? 'solar:user-bold' : 'solar:user-linear'}
@@ -114,11 +114,12 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
           color={currentTab === 'profile' ? activeColor : themeColors.inputPlaceholder}
         />
         <Text
-          style={[
-            styles.tabLabel,
-            { color: currentTab === 'profile' ? activeColor : themeColors.inputPlaceholder },
-            currentTab === 'profile' && styles.tabLabelActive,
-          ]}
+          style={{
+            fontFamily: currentTab === 'profile' ? fonts.semiBold : fonts.medium,
+            fontWeight: currentTab === 'profile' ? '700' : '500',
+            fontSize: 11,
+            color: currentTab === 'profile' ? activeColor : themeColors.inputPlaceholder,
+          }}
         >
           {t('common.profile')}
         </Text>
@@ -129,36 +130,3 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
 
 export default TabBar;
 
-const styles = StyleSheet.create({
-  tabBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-    elevation: 25,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    paddingTop: 10,
-    borderTopWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-  },
-  tabItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    gap: 4,
-  },
-  tabLabel: {
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(11),
-  },
-  tabLabelActive: {
-    fontFamily: fonts.semiBold,
-    fontWeight: '700',
-  },
-});

@@ -16,6 +16,8 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { OnboardingBackground } from '@/shared/components/OnboardingBackground';
 import { AnimatedIndicatorDot } from '@/shared/components/AnimatedIndicatorDot';
+import { useAuthStore } from '@/shared/store/authStore';
+import { storage } from '@/shared/services/storage';
 
 export default function OnboardingScreen() {
   const router = useRouter();
@@ -73,7 +75,20 @@ export default function OnboardingScreen() {
     handleFinish();
   };
 
-  const handleFinish = () => {
+  const { isAuthenticated, isInitialized } = useAuthStore();
+
+  useEffect(() => {
+    if (isInitialized && isAuthenticated) {
+      router.replace('/(app)');
+    }
+  }, [isInitialized, isAuthenticated, router]);
+
+  const handleFinish = async () => {
+    try {
+      await storage.setItem('kwismo_onboarding_done', 'true');
+    } catch {
+      // Storage save fallback
+    }
     router.replace('/(auth)/welcome');
   };
 
