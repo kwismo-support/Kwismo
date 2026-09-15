@@ -8,6 +8,7 @@ class RegisterIn(BaseModel):
     prenom: str = Field(..., examples=["Aicha"])
     email: EmailStr
     mot_de_passe: str = Field(..., min_length=8, examples=["MotDePasse!123"])
+    lang: str = Field(default="fr", description="Language preference: fr or en")
 
 
 class EmailVerifyIn(BaseModel):
@@ -17,6 +18,7 @@ class EmailVerifyIn(BaseModel):
 
 class EmailResendIn(BaseModel):
     email: EmailStr
+    lang: str = Field(default="fr", description="Language preference: fr or en")
 
 
 class LoginIn(BaseModel):
@@ -24,6 +26,7 @@ class LoginIn(BaseModel):
     mot_de_passe: str
     device_id: str = Field(..., description="Identifiant stable de l'appareil / Stable device identifier.")
     device_name: str = Field(..., examples=["iPhone 13 de Aicha"])
+    lang: str = Field(default="fr", description="Language preference: fr or en")
 
 
 class DeviceVerifyIn(BaseModel):
@@ -38,6 +41,7 @@ class RefreshIn(BaseModel):
 
 class PasswordForgotIn(BaseModel):
     email: EmailStr
+    lang: str = Field(default="fr", description="Language preference: fr or en")
 
 
 class PasswordResetIn(BaseModel):
