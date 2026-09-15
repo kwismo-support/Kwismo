@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   Image,
@@ -17,7 +16,7 @@ import { TabBar } from '../../src/shared/components/TabBar';
 import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
 import { useAuthStore } from '../../src/shared/store/authStore';
 import { useDashboard } from '../../src/features/dashboard/hooks/useDashboard';
-import { colors, fonts } from '../../src/styles/tokens';
+import { colors } from '../../src/styles/tokens';
 
 type FilterCategory = 'all' | 'verified' | 'threats' | 'reports' | 'transfers';
 
@@ -135,87 +134,123 @@ export default function HomeScreen() {
   ];
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <View className="flex-1" style={{ backgroundColor: themeColors.background }}>
       <StatusBar style="light" />
 
       <HeaderBar isHome={true} />
 
-      <View style={styles.fixedTopContent}>
-        <View style={[styles.heroCard, { backgroundColor: isDark ? themeColors.cardBg : '#FFFFFF' }]}>
-          <View style={styles.userRow}>
-            <View style={styles.avatarContainer}>
+      <View className="px-4 -mt-[55px] z-10">
+        <View
+          className="rounded-[20px] p-4 mb-4 shadow-md shadow-black/10 elevation-4"
+          style={{ backgroundColor: isDark ? themeColors.cardBg : '#FFFFFF' }}
+        >
+          <View className="flex-row items-center mb-4">
+            <View className="mr-3">
               {user?.avatarUrl ? (
-                <Image source={{ uri: user.avatarUrl }} style={styles.avatarImage} />
+                <Image source={{ uri: user.avatarUrl }} className="w-12 h-12 rounded-full" />
               ) : (
-                <View style={styles.avatarFallback}>
-                  <Text style={styles.avatarInitial}>
+                <View className="w-12 h-12 rounded-full bg-brand-green justify-center items-center">
+                  <Text className="text-white text-xl font-bold">
                     {userName.charAt(0).toUpperCase()}
                   </Text>
                 </View>
               )}
             </View>
-            <View style={styles.userInfo}>
-              <View style={styles.welcomeRow}>
-                <Text style={[styles.welcomeText, { color: isDark ? themeColors.textSecondary : '#475569' }]}>
+            <View className="flex-1">
+              <View className="flex-row items-center">
+                <Text
+                  className="text-[13px] leading-[18px] font-bold"
+                  style={{ color: isDark ? themeColors.textSecondary : '#475569' }}
+                >
                   {t('common.welcome')}
                 </Text>
                 <Icon name="solar:verified-check-bold" color={colors.green} size={16} style={{ marginLeft: 4 }} />
               </View>
-              <Text style={[styles.userNameText, { color: isDark ? themeColors.textPrimary : '#0F172A' }]}>
+              <Text
+                className="text-lg leading-6 font-bold mt-0.5"
+                style={{ color: isDark ? themeColors.textPrimary : '#0F172A' }}
+              >
                 {userName}
               </Text>
             </View>
           </View>
 
-          <View style={styles.kpiRowClean}>
-            <View style={styles.kpiItemStart}>
-              <Text style={[styles.kpiValueBold, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
+          <View className="flex-row justify-between pt-1">
+            <View className="flex-1 items-start">
+              <Text
+                className="text-base leading-[22px] font-bold text-left"
+                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
+              >
                 {user?.kpi?.numeros_verifies ?? summary?.numeros_verifies ?? 127}
               </Text>
-              <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
+              <Text
+                className="text-[10px] leading-[14px] font-medium text-left mt-0.5"
+                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
+              >
                 {t('common.kpiVerified')}
               </Text>
             </View>
 
-            <View style={styles.kpiItemStart}>
-              <Text style={[styles.kpiValueBold, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
+            <View className="flex-1 items-start">
+              <Text
+                className="text-base leading-[22px] font-bold text-left"
+                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
+              >
                 25
               </Text>
-              <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
+              <Text
+                className="text-[10px] leading-[14px] font-medium text-left mt-0.5"
+                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
+              >
                 {t('common.kpiThreats')}
               </Text>
             </View>
 
-            <View style={styles.kpiItemStart}>
-              <Text style={[styles.kpiValueBold, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
+            <View className="flex-1 items-start">
+              <Text
+                className="text-base leading-[22px] font-bold text-left"
+                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
+              >
                 {user?.kpi?.signalements_effectues ?? summary?.signalements_effectues ?? 10}
               </Text>
-              <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
+              <Text
+                className="text-[10px] leading-[14px] font-medium text-left mt-0.5"
+                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
+              >
                 {t('common.kpiReports')}
               </Text>
             </View>
 
-            <View style={styles.kpiItemStart}>
-              <Text style={[styles.kpiValueBold, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
+            <View className="flex-1 items-start">
+              <Text
+                className="text-base leading-[22px] font-bold text-left"
+                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
+              >
                 {user?.kpi?.transferts_proteges ?? summary?.transferts_proteges ?? 50}
               </Text>
-              <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
+              <Text
+                className="text-[10px] leading-[14px] font-medium text-left mt-0.5"
+                style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
+              >
                 {t('common.kpiTransfers')}
               </Text>
             </View>
           </View>
         </View>
 
-        <View style={styles.quickActionsRow}>
+        <View className="flex-row justify-between mb-3">
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/verify')}
-            style={styles.actionBtnWrapper}
+            className="flex-1 items-center"
           >
-            <View style={[styles.actionCircle, { backgroundColor: '#E8F0FE' }]}>
+            <View className="w-[52px] h-[52px] rounded-full justify-center items-center mb-1.5 bg-[#E8F0FE]">
               <Icon name="solar:shield-user-bold" color="#161E33" size={24} />
             </View>
-            <Text style={[styles.actionText, { color: isDark ? themeColors.textPrimary : '#161E33' }]}>
+            <Text
+              className="text-[11px] leading-[14px] font-medium text-center"
+              style={{ color: isDark ? themeColors.textPrimary : '#161E33' }}
+            >
               {t('common.actionVerify')}
             </Text>
           </TouchableOpacity>
@@ -223,12 +258,15 @@ export default function HomeScreen() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/transfer')}
-            style={styles.actionBtnWrapper}
+            className="flex-1 items-center"
           >
-            <View style={[styles.actionCircle, { backgroundColor: '#E8F0FE' }]}>
+            <View className="w-[52px] h-[52px] rounded-full justify-center items-center mb-1.5 bg-[#E8F0FE]">
               <Icon name="solar:transfer-horizontal-bold" color="#161E33" size={24} />
             </View>
-            <Text style={[styles.actionText, { color: isDark ? themeColors.textPrimary : '#161E33' }]}>
+            <Text
+              className="text-[11px] leading-[14px] font-medium text-center"
+              style={{ color: isDark ? themeColors.textPrimary : '#161E33' }}
+            >
               {t('common.actionTransfer')}
             </Text>
           </TouchableOpacity>
@@ -236,12 +274,15 @@ export default function HomeScreen() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/alert-whatsapp')}
-            style={styles.actionBtnWrapper}
+            className="flex-1 items-center"
           >
-            <View style={[styles.actionCircle, { backgroundColor: '#E8F0FE' }]}>
+            <View className="w-[52px] h-[52px] rounded-full justify-center items-center mb-1.5 bg-[#E8F0FE]">
               <Icon name="solar:chat-round-dots-bold" color="#161E33" size={24} />
             </View>
-            <Text style={[styles.actionText, { color: isDark ? themeColors.textPrimary : '#161E33' }]}>
+            <Text
+              className="text-[11px] leading-[14px] font-medium text-center"
+              style={{ color: isDark ? themeColors.textPrimary : '#161E33' }}
+            >
               {t('common.actionWhatsapp')}
             </Text>
           </TouchableOpacity>
@@ -249,25 +290,28 @@ export default function HomeScreen() {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/report')}
-            style={styles.actionBtnWrapper}
+            className="flex-1 items-center"
           >
-            <View style={[styles.actionCircle, { backgroundColor: '#FCE8E6' }]}>
+            <View className="w-[52px] h-[52px] rounded-full justify-center items-center mb-1.5 bg-[#FCE8E6]">
               <Icon name="heroicons:signal-16-solid" color="#D93025" size={24} />
             </View>
-            <Text style={[styles.actionText, { color: '#D93025' }]}>
+            <Text className="text-[11px] leading-[14px] font-medium text-center text-[#D93025]">
               {t('common.report')}
             </Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.activityHeaderRow}>
-          <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
+        <View className="flex-row justify-between items-center mb-1.5 pt-1">
+          <Text
+            className="text-lg leading-6 font-bold"
+            style={{ color: themeColors.textPrimary }}
+          >
             {t('common.recentActivity')}
           </Text>
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setShowFilters(!showFilters)}
-            style={styles.filterIconButton}
+            className="p-1.5"
           >
             <Icon name="solar:tuning-3-linear" color="#161E33" size={22} />
           </TouchableOpacity>
@@ -275,19 +319,20 @@ export default function HomeScreen() {
       </View>
 
       <ScrollView
-        style={styles.activityScrollArea}
-        contentContainerStyle={[
-          styles.scrollBodyContent,
-          { paddingBottom: insets.bottom + 100 },
-        ]}
+        className="flex-1"
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingTop: 0,
+          paddingBottom: insets.bottom + 100,
+        }}
         showsVerticalScrollIndicator={false}
       >
         {showFilters && (
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.filterScrollRow}
-            contentContainerStyle={styles.filterScrollContainer}
+            className="mb-2"
+            contentContainerStyle={{ gap: 8 }}
           >
             {filterOptions.map((opt) => {
               const isSelected = activeFilter === opt.key;
@@ -296,23 +341,21 @@ export default function HomeScreen() {
                   key={opt.key}
                   activeOpacity={0.8}
                   onPress={() => setActiveFilter(opt.key)}
-                  style={[
-                    styles.filterPill,
-                    {
-                      backgroundColor: isSelected
-                        ? '#E6F4EA'
-                        : isDark
-                        ? 'rgba(255, 255, 255, 0.06)'
-                        : '#FFFFFF',
-                      borderColor: isSelected ? colors.green : '#E2E8F0',
-                    },
-                  ]}
+                  className="px-[14px] py-[6px] rounded-full border"
+                  style={{
+                    backgroundColor: isSelected
+                      ? '#E6F4EA'
+                      : isDark
+                      ? 'rgba(255, 255, 255, 0.06)'
+                      : '#FFFFFF',
+                    borderColor: isSelected ? colors.green : '#E2E8F0',
+                  }}
                 >
                   <Text
-                    style={[
-                      styles.filterPillText,
-                      { color: isSelected ? colors.green : isDark ? themeColors.textSecondary : '#64748B' },
-                    ]}
+                    className="text-[11px] leading-[15px] font-medium"
+                    style={{
+                      color: isSelected ? colors.green : isDark ? themeColors.textSecondary : '#64748B',
+                    }}
                   >
                     {t(opt.labelKey)}
                   </Text>
@@ -322,7 +365,7 @@ export default function HomeScreen() {
           </ScrollView>
         )}
 
-        <View style={styles.activityList}>
+        <View className="gap-1">
           {filteredActivities.map((item: any) => {
             const badgeStyle = getBadgeStyle(item.badgeType, item.status);
             return (
@@ -330,40 +373,41 @@ export default function HomeScreen() {
                 key={item.id}
                 activeOpacity={0.75}
                 onPress={() => router.push({ pathname: '/(app)/verify', params: { phone: item.phone } })}
-                style={[styles.activityCard, { backgroundColor: themeColors.cardBg }]}
+                className="flex-row items-center py-2 px-3 rounded-[14px] border-0"
+                style={{ backgroundColor: themeColors.cardBg }}
               >
                 <View
-                  style={[
-                    styles.activityAvatar,
-                    item.initialBg ? { backgroundColor: item.initialBg } : item.initials ? { backgroundColor: colors.green } : {},
-                  ]}
+                  className="w-[38px] h-[38px] rounded-full bg-[#F1F5F9] justify-center items-center mr-[10px]"
+                  style={item.initialBg ? { backgroundColor: item.initialBg } : item.initials ? { backgroundColor: colors.green } : {}}
                 >
                   {item.initials ? (
-                    <Text style={styles.avatarInitialsText}>{item.initials}</Text>
+                    <Text className="text-white font-bold text-[13px]">{item.initials}</Text>
                   ) : (
                     <Icon name="solar:user-bold" color="#94A3B8" size={20} />
                   )}
                 </View>
 
-                <View style={styles.activityInfo}>
-                  <Text numberOfLines={1} style={[styles.activityPhone, { color: themeColors.textPrimary }]}>
+                <View style={{ flex: 1.2 }}>
+                  <Text numberOfLines={1} className="text-[13px] leading-[18px] font-bold" style={{ color: themeColors.textPrimary }}>
                     {item.phone}
                   </Text>
-                  <Text numberOfLines={1} style={[styles.activityType, { color: themeColors.textSecondary }]}>
+                  <Text numberOfLines={1} className="text-[11px] leading-[15px] text-[#94A3B8] mt-0.5" style={{ color: themeColors.textSecondary }}>
                     {item.type}
                   </Text>
                 </View>
 
-                <View style={styles.activityBadgeCol}>
-                  <View style={[styles.statusPill, { backgroundColor: badgeStyle.bg }]}>
-                    <Text style={[styles.statusPillText, { color: badgeStyle.text }]}>
+                <View className="mx-1">
+                  <View className="px-2 py-[3px] rounded-[10px]" style={{ backgroundColor: badgeStyle.bg }}>
+                    <Text className="text-[10px] leading-[14px] font-semibold" style={{ color: badgeStyle.text }}>
                       {item.status}
                     </Text>
                   </View>
                 </View>
 
-                <View style={styles.activityRightCol}>
-                  <Text numberOfLines={1} style={styles.activityDate}>{item.date}</Text>
+                <View className="flex-row items-center justify-end ml-1.5">
+                  <Text numberOfLines={1} className="text-[10px] leading-[14px] text-[#94A3B8]">
+                    {item.date}
+                  </Text>
                   <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={16} style={{ marginLeft: 4 }} />
                 </View>
               </TouchableOpacity>
@@ -377,230 +421,5 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  fixedTopContent: {
-    paddingHorizontal: 16,
-    marginTop: -55,
-    zIndex: 10,
-  },
-  heroCard: {
-    borderRadius: 20,
-    padding: 16,
-    marginTop: 0,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 4,
-    marginBottom: 16,
-  },
-  userRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  avatarContainer: {
-    marginRight: 12,
-  },
-  avatarImage: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-  },
-  avatarFallback: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.green,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarInitial: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontFamily: fonts.bold,
-    fontWeight: '700',
-  },
-  userInfo: {
-    flex: 1,
-  },
-  welcomeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  welcomeText: {
-    fontSize: 13,
-    lineHeight: 18,
-    fontFamily: fonts.bold,
-    fontWeight: '700',
-  },
-  userNameText: {
-    fontSize: 18,
-    lineHeight: 24,
-    fontFamily: fonts.bold,
-    fontWeight: '700',
-    marginTop: 2,
-  },
-  kpiRowClean: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingTop: 4,
-  },
-  kpiItemStart: {
-    alignItems: 'flex-start',
-    flex: 1,
-  },
-  kpiValueBold: {
-    fontSize: 16,
-    lineHeight: 22,
-    fontFamily: fonts.bold,
-    fontWeight: '700',
-    textAlign: 'left',
-  },
-  kpiLabelLeft: {
-    fontSize: 10,
-    lineHeight: 14,
-    fontFamily: fonts.medium,
-    fontWeight: '600',
-    textAlign: 'left',
-    marginTop: 2,
-  },
-  quickActionsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  actionBtnWrapper: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  actionCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  actionText: {
-    fontSize: 11,
-    lineHeight: 14,
-    fontFamily: fonts.medium,
-    textAlign: 'center',
-    fontWeight: '600',
-  },
-  activityHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 6,
-    paddingTop: 4,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    lineHeight: 24,
-    fontFamily: fonts.bold,
-    fontWeight: '700',
-  },
-  filterIconButton: {
-    padding: 6,
-  },
-  activityScrollArea: {
-    flex: 1,
-  },
-  scrollBodyContent: {
-    paddingHorizontal: 16,
-    paddingTop: 0,
-  },
-  filterScrollRow: {
-    marginBottom: 8,
-  },
-  filterScrollContainer: {
-    gap: 8,
-  },
-  filterPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 18,
-    borderWidth: 1,
-  },
-  filterPillText: {
-    fontSize: 11,
-    lineHeight: 15,
-    fontFamily: fonts.footnote,
-    fontWeight: '600',
-  },
-  activityList: {
-    gap: 4,
-  },
-  activityCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 14,
-    borderWidth: 0,
-  },
-  activityAvatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: '#F1F5F9',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  avatarInitialsText: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontSize: 13,
-    fontFamily: fonts.bold,
-  },
-  activityInfo: {
-    flex: 1.2,
-  },
-  activityPhone: {
-    fontSize: 13,
-    lineHeight: 18,
-    fontFamily: fonts.bold,
-    fontWeight: '700',
-  },
-  activityType: {
-    fontSize: 11,
-    lineHeight: 15,
-    fontFamily: fonts.bodySmall,
-    color: '#94A3B8',
-    marginTop: 2,
-  },
-  activityBadgeCol: {
-    marginHorizontal: 4,
-  },
-  statusPill: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 10,
-  },
-  statusPillText: {
-    fontSize: 10,
-    lineHeight: 14,
-    fontFamily: fonts.footnote,
-    fontWeight: '600',
-  },
-  activityRightCol: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginLeft: 6,
-  },
-  activityDate: {
-    fontSize: 10,
-    lineHeight: 14,
-    color: '#94A3B8',
-    fontFamily: fonts.bodySmall,
-  },
-});
 
 
