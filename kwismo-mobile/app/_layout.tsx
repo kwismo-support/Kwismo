@@ -1,4 +1,3 @@
-import '../src/shared/utils/styleSanitizer';
 import React, { useEffect } from 'react';
 import { Platform, View, Text } from 'react-native';
 import { Stack } from 'expo-router';
@@ -18,11 +17,11 @@ import {
   PlusJakartaSans_700Bold,
 } from '@expo-google-fonts/plus-jakarta-sans';
 import * as SplashScreen from 'expo-splash-screen';
-import '../src/locales/i18n';
-import { ToastContainer } from '../src/shared/ui/Toast';
-import { useAuthStore } from '../src/shared/store/authStore';
-import { useOTAUpdates } from '../src/shared/utils/useOTAUpdates';
-import { useAppTheme } from '../src/shared/hooks/useAppTheme';
+import '@/locales/i18n';
+import { ToastContainer } from '@/shared/ui/Toast';
+import { useAuthStore } from '@/shared/store/authStore';
+import { useOTAUpdates } from '@/shared/utils/useOTAUpdates';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
 if (typeof globalThis !== 'undefined') {
   const origError = console.error;

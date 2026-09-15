@@ -123,12 +123,11 @@ export default function LanguageSelectionScreen() {
         </View>
 
         <View className="w-full items-center">
-          <View className="w-full relative" style={{ zIndex: 50 }}>
+          <View className="w-full relative z-50">
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => setDropdownOpen(!dropdownOpen)}
-              className="w-full h-13 bg-white rounded-xl flex-row items-center justify-between px-5 border border-slate-200/60 shadow-md shadow-black/10 elevation-3"
-              style={{ height: 52 }}
+              className="w-full h-13 bg-white dark:bg-brand-cardDark rounded-xl flex-row items-center justify-between px-5 border border-slate-200/60 dark:border-slate-700 shadow-md shadow-black/10 elevation-3"
             >
               <View className="flex-row items-center">
                 {currentOption && (
@@ -138,7 +137,7 @@ export default function LanguageSelectionScreen() {
                 )}
                 <Text
                   className={`font-semibold text-caption ${
-                    currentOption ? 'text-slate-800' : 'text-slate-400'
+                    currentOption ? 'text-slate-800 dark:text-slate-200' : 'text-slate-400 dark:text-slate-500'
                   }`}
                 >
                   {currentOption ? currentOption.label : t('common.selectLanguage')}
@@ -153,10 +152,7 @@ export default function LanguageSelectionScreen() {
             </TouchableOpacity>
 
             {dropdownOpen && (
-              <View
-                className="absolute bottom-[128px] left-0 right-0 bg-white rounded-xl p-1.5 border border-slate-200/60 shadow-xl shadow-black/15 elevation-5"
-                style={{ zIndex: 1000 }}
-              >
+              <View className="absolute bottom-32 left-0 right-0 bg-white dark:bg-brand-cardDark rounded-xl p-1.5 border border-slate-200/60 dark:border-slate-700 shadow-xl shadow-black/15 elevation-5 z-50">
                 {LANGUAGES.map((item) => {
                   const isSelected = item.code === selectedLang;
                   return (
@@ -174,7 +170,7 @@ export default function LanguageSelectionScreen() {
                         </Text>
                         <Text
                           className={`text-body-md ${
-                            isSelected ? 'font-semibold text-brand-green' : 'font-medium text-slate-700'
+                            isSelected ? 'font-semibold text-brand-green' : 'font-medium text-slate-700 dark:text-slate-300'
                           }`}
                         >
                           {item.nativeName}
@@ -200,7 +196,6 @@ export default function LanguageSelectionScreen() {
                   activeOpacity={0.88}
                   onPress={handleContinue}
                   className="w-full h-13 bg-brand-green rounded-xl flex-row items-center justify-center shadow-md shadow-brand-green/30 elevation-4"
-                  style={{ height: 52 }}
                 >
                   <Text className="font-semibold text-body-lg text-white">
                     {t('common.continue')}
