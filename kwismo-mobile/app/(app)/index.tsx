@@ -211,7 +211,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/verify')}
             className="flex-1 items-center"
           >
-            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800" style={{ width: 52, height: 52 }}>
+            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800">
               <Icon name="solar:shield-user-bold" color="#161E33" size={24} />
             </View>
             <Text className="text-2xs font-medium text-center text-brand-navy dark:text-white">
@@ -224,7 +224,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/transfer')}
             className="flex-1 items-center"
           >
-            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800" style={{ width: 52, height: 52 }}>
+            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800">
               <Icon name="solar:transfer-horizontal-bold" color="#161E33" size={24} />
             </View>
             <Text className="text-2xs font-medium text-center text-brand-navy dark:text-white">
@@ -237,7 +237,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/alert-whatsapp')}
             className="flex-1 items-center"
           >
-            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800" style={{ width: 52, height: 52 }}>
+            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800">
               <Icon name="solar:chat-round-dots-bold" color="#161E33" size={24} />
             </View>
             <Text className="text-2xs font-medium text-center text-brand-navy dark:text-white">
@@ -250,7 +250,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/report')}
             className="flex-1 items-center"
           >
-            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-red-50 dark:bg-red-950/40" style={{ width: 52, height: 52 }}>
+            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-red-50 dark:bg-red-950/40">
               <Icon name="heroicons:signal-16-solid" color="#D93025" size={24} />
             </View>
             <Text className="text-2xs font-medium text-center text-red-600 dark:text-red-400">

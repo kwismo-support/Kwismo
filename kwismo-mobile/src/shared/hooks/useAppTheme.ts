@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Platform, useColorScheme as useRNColorScheme } from 'react-native';
-import { useColorScheme as useNativeWindColorScheme } from 'nativewind';
+import { useColorScheme as useNativeWindColorScheme, NativeWindStyleSheet } from 'nativewind';
 import { useAuthStore } from '../store/authStore';
 import { useThemeStore, ThemePreference } from '../store/themeStore';
 import { colors } from '../../styles/tokens';
@@ -40,6 +40,7 @@ export function useAppTheme() {
   }
 
   useEffect(() => {
+    NativeWindStyleSheet.setColorScheme(activeTheme);
     if (setColorScheme && nativeWindScheme !== activeTheme) {
       setColorScheme(activeTheme);
     }
