@@ -130,7 +130,7 @@ async def register(payload: RegisterIn) -> Message:
             "dateExpiration": _otp_expiry(),
         }
     )
-    await send_otp_email(user.email, code)
+    await send_otp_email(user.email, code, lang=payload.lang)
     return Message(
         message_fr="Compte cree. Verifiez votre email pour le code OTP.",
         message_en="Account created. Check your email for the OTP code.",
@@ -165,7 +165,7 @@ async def resend_email_otp(payload: EmailResendIn) -> Message:
             "dateExpiration": _otp_expiry(),
         }
     )
-    await send_otp_email(user.email, code)
+    await send_otp_email(user.email, code, lang=payload.lang)
     return Message(
         message_fr="Code OTP renvoye par email.",
         message_en="OTP code resent by email.",
@@ -213,7 +213,7 @@ async def login(payload: LoginIn) -> TokenOut | DeviceVerificationRequiredOut:
             "dateExpiration": _otp_expiry(),
         }
     )
-    await send_otp_email(user.email, code)
+    await send_otp_email(user.email, code, lang=payload.lang)
     return DeviceVerificationRequiredOut()
 
 
@@ -278,7 +278,7 @@ async def forgot_password(payload: PasswordForgotIn) -> Message:
         settings.jwt_secret,
         algorithm="HS256",
     )
-    await send_password_reset_email(user.email, reset_token)
+    await send_password_reset_email(user.email, reset_token, lang=payload.lang)
     return msg
 
 

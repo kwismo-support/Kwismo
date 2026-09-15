@@ -69,54 +69,180 @@ async def send_email(to: str, subject: str, body_html: str, dev_tag: str = "EMAI
     return True
 
 
-async def send_otp_email(to: str, code: str, lang: str = "fr") -> None:
-    """Envoie un email OTP à l'adresse donnée."""
-    settings = get_settings()
-    if lang == "en":
-        subject = "Your KWISMO verification code"
-        body = (
-            f"<p>Hello,</p>"
-            f"<p>Your verification code is: <strong>{code}</strong></p>"
-            f"<p>This code expires in {settings.otp_expire_min} minutes.</p>"
-            f"<p>If you did not request this code, ignore this email.</p>"
-            f"<p>— The KWISMO Team</p>"
-        )
-    else:
-        subject = "Votre code de vérification KWISMO"
-        body = (
-            f"<p>Bonjour,</p>"
-            f"<p>Votre code de vérification est : <strong>{code}</strong></p>"
-            f"<p>Ce code expire dans {settings.otp_expire_min} minutes.</p>"
-            f"<p>Si vous n'avez pas demandé ce code, ignorez cet email.</p>"
-            f"<p>— L'équipe KWISMO</p>"
-        )
+def _build_email_html(
+    title: str,
+    subtitle: str,
+    content_html: str,
+    footer_text: str = "© 2026 KWISMO — Protection & Sécurité des données.",
+) -> str:
+    """Génère un modèle HTML d'email haut de gamme responsive aux couleurs de KWISMO."""
+    return f"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{title}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #F4F6F8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #F4F6F8; padding: 40px 12px;">
+    <tr>
+      <td align="center">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 520px; background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #E2E8F0;">
+          <!-- HEADER DE MARQUE KWISMO -->
+          <tr>
+            <td style="background-color: #161E33; padding: 32px 24px; text-align: center; border-bottom: 4px solid #25B46E;">
+              <h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 2px; color: #FFFFFF; font-family: Arial, sans-serif;">
+                KWISMO<span style="color: #25B46E;">.</span>
+              </h1>
+              <p style="margin: 6px 0 0 0; font-size: 12px; color: #A0AEC0; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600;">
+                {subtitle}
+              </p>
+            </td>
+          </tr>
+          <!-- CONTENU DU MESSAGE -->
+          <tr>
+            <td style="padding: 36px 28px; color: #2D3748; font-size: 15px; line-height: 1.6;">
+              {content_html}
+            </td>
+          </tr>
+          <!-- PIED DE PAGE -->
+          <tr>
+            <td style="background-color: #F8FAFC; border-top: 1px solid #EDF2F7; padding: 20px 24px; text-align: center; font-size: 12px; color: #94A3B8; line-height: 1.5;">
+              <p style="margin: 0 0 4px 0; font-weight: 600; color: #64748B;">{footer_text}</p>
+              <p style="margin: 0;">Cet email a été envoyé automatiquement par la plateforme KWISMO.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>"""
 
-    await send_email(to, subject, body, dev_tag="EMAIL-OTP-DEV")
+
+async def send_otp_email(to: str, code: str, lang: str = "fr") -> None:
+    """Envoie un email OTP avec design HTML haut de gamme en FR ou EN."""
+    settings = get_settings()
+    is_en = (lang or "").lower().startswith("en")
+
+    if is_en:
+        subject = f"Your KWISMO verification code: {code}"
+        subtitle = "Mobile Identity & Data Security"
+        content_html = f"""
+        <p style="margin-top: 0;">Hello,</p>
+        <p>Use the verification code below to validate your action on <strong>KWISMO</strong>:</p>
+        
+        <div style="background-color: #F0FDF4; border: 1.5px dashed #25B46E; border-radius: 12px; padding: 20px; text-align: center; margin: 28px 0;">
+          <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #166534; display: block; margin-bottom: 8px;">
+            VERIFICATION CODE
+          </span>
+          <div style="font-size: 34px; font-weight: 800; letter-spacing: 10px; color: #15803D; font-family: 'Courier New', monospace; margin: 6px 0;">
+            {code}
+          </div>
+          <span style="font-size: 12px; color: #166534; opacity: 0.95; display: block; margin-top: 6px;">
+            ⏱ Code expires in {settings.otp_expire_min} minutes
+          </span>
+        </div>
+
+        <p style="font-size: 13px; color: #718096; margin-bottom: 24px;">
+          If you did not request this verification code, please ignore this message. Your account remains secure.
+        </p>
+        <p style="margin-bottom: 0;">Best regards,<br><strong style="color: #161E33;">The KWISMO Security Team</strong></p>
+        """
+        footer_text = "© 2026 KWISMO — Security & Privacy Systems."
+    else:
+        subject = f"Votre code de vérification KWISMO : {code}"
+        subtitle = "Sécurisation de l'identité mobile"
+        content_html = f"""
+        <p style="margin-top: 0;">Bonjour,</p>
+        <p>Veuillez utiliser le code de vérification ci-dessous pour valider votre opération sur <strong>KWISMO</strong> :</p>
+        
+        <div style="background-color: #F0FDF4; border: 1.5px dashed #25B46E; border-radius: 12px; padding: 20px; text-align: center; margin: 28px 0;">
+          <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #166534; display: block; margin-bottom: 8px;">
+            CODE DE VÉRIFICATION
+          </span>
+          <div style="font-size: 34px; font-weight: 800; letter-spacing: 10px; color: #15803D; font-family: 'Courier New', monospace; margin: 6px 0;">
+            {code}
+          </div>
+          <span style="font-size: 12px; color: #166534; opacity: 0.95; display: block; margin-top: 6px;">
+            ⏱ Ce code expire dans {settings.otp_expire_min} minutes
+          </span>
+        </div>
+
+        <p style="font-size: 13px; color: #718096; margin-bottom: 24px;">
+          Si vous n'avez pas demandé ce code, ignorez cet email en toute sécurité. Votre compte est protégé.
+        </p>
+        <p style="margin-bottom: 0;">Cordialement,<br><strong style="color: #161E33;">L'équipe de sécurité KWISMO</strong></p>
+        """
+        footer_text = "© 2026 KWISMO — Protection & Sécurité des données."
+
+    body_html = _build_email_html(
+        title=subject,
+        subtitle=subtitle,
+        content_html=content_html,
+        footer_text=footer_text,
+    )
+
+    await send_email(to, subject, body_html, dev_tag="EMAIL-OTP-DEV")
 
 
 async def send_password_reset_email(to: str, reset_token: str, lang: str = "fr") -> None:
-    """Envoie un email de réinitialisation de mot de passe."""
-    from app.core.config import get_settings
+    """Envoie un email de réinitialisation de mot de passe HTML responsive."""
     settings = get_settings()
     reset_url = f"{settings.frontend_url}/reset-password?token={reset_token}"
+    is_en = (lang or "").lower().startswith("en")
 
-    if lang == "en":
+    if is_en:
         subject = "Reset your KWISMO password"
-        body = (
-            f"<p>Hello,</p>"
-            f"<p>Click the link below to reset your password (valid 30 minutes):</p>"
-            f"<p><a href='{reset_url}'>{reset_url}</a></p>"
-            f"<p>If you did not request a reset, ignore this email.</p>"
-            f"<p>— The KWISMO Team</p>"
-        )
+        subtitle = "Password Reset Request"
+        content_html = f"""
+        <p style="margin-top: 0;">Hello,</p>
+        <p>We received a request to reset your password for your <strong>KWISMO</strong> account.</p>
+        
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="{reset_url}" target="_blank" style="background-color: #25B46E; color: #FFFFFF; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 15px; display: inline-block; box-shadow: 0 4px 14px rgba(37, 180, 110, 0.35);">
+            Reset Password
+          </a>
+        </div>
+
+        <p style="font-size: 13px; color: #718096; margin-bottom: 16px;">
+          This link is valid for 30 minutes. If the button above does not work, copy and paste this URL into your browser:
+        </p>
+        <p style="font-size: 12px; word-break: break-all; color: #25B46E; margin-bottom: 24px;">
+          <a href="{reset_url}" style="color: #25B46E;">{reset_url}</a>
+        </p>
+        <p style="margin-bottom: 0;">Best regards,<br><strong style="color: #161E33;">The KWISMO Security Team</strong></p>
+        """
+        footer_text = "© 2026 KWISMO — Security & Privacy Systems."
     else:
         subject = "Réinitialisez votre mot de passe KWISMO"
-        body = (
-            f"<p>Bonjour,</p>"
-            f"<p>Cliquez sur le lien ci-dessous pour réinitialiser votre mot de passe (valable 30 minutes) :</p>"
-            f"<p><a href='{reset_url}'>{reset_url}</a></p>"
-            f"<p>Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>"
-            f"<p>— L'équipe KWISMO</p>"
-        )
+        subtitle = "Réinitialisation de mot de passe"
+        content_html = f"""
+        <p style="margin-top: 0;">Bonjour,</p>
+        <p>Nous avons reçu une demande de réinitialisation du mot de passe de votre compte <strong>KWISMO</strong>.</p>
+        
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="{reset_url}" target="_blank" style="background-color: #25B46E; color: #FFFFFF; padding: 14px 32px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 15px; display: inline-block; box-shadow: 0 4px 14px rgba(37, 180, 110, 0.35);">
+            Réinitialiser mon mot de passe
+          </a>
+        </div>
 
-    await send_email(to, subject, body, dev_tag="EMAIL-RESET-DEV")
+        <p style="font-size: 13px; color: #718096; margin-bottom: 16px;">
+          Ce lien est valable 30 minutes. Si le bouton ci-dessus ne fonctionne pas, copiez ce lien dans votre navigateur :
+        </p>
+        <p style="font-size: 12px; word-break: break-all; color: #25B46E; margin-bottom: 24px;">
+          <a href="{reset_url}" style="color: #25B46E;">{reset_url}</a>
+        </p>
+        <p style="margin-bottom: 0;">Cordialement,<br><strong style="color: #161E33;">L'équipe de sécurité KWISMO</strong></p>
+        """
+        footer_text = "© 2026 KWISMO — Protection & Sécurité des données."
+
+    body_html = _build_email_html(
+        title=subject,
+        subtitle=subtitle,
+        content_html=content_html,
+        footer_text=footer_text,
+    )
+
+    await send_email(to, subject, body_html, dev_tag="EMAIL-RESET-DEV")
+
