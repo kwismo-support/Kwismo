@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   Animated,
@@ -14,19 +13,15 @@ import {
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../src/shared/ui/Icon';
-import { OnboardingBackground } from '../src/shared/components/OnboardingBackground';
-import { AnimatedIndicatorDot } from '../src/shared/components/AnimatedIndicatorDot';
-import { colors, fonts } from '../src/styles/tokens';
+import { Icon } from '@/shared/ui/Icon';
+import { OnboardingBackground } from '@/shared/components/OnboardingBackground';
+import { AnimatedIndicatorDot } from '@/shared/components/AnimatedIndicatorDot';
 
 export default function OnboardingScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
-
-  const dynamicFontSize = Math.min(Math.max(screenWidth * 0.068, 28), 36);
-  const dynamicLineHeight = Math.round(dynamicFontSize * 1.3);
+  const { width: screenWidth } = useWindowDimensions();
 
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -153,7 +148,7 @@ export default function OnboardingScreen() {
 
   return (
     <View
-      style={styles.container}
+      className="flex-1 w-full h-full bg-black relative overflow-hidden"
       {...(Platform.OS === 'web'
         ? {
             onMouseDown: onMouseDownWeb,
@@ -173,35 +168,23 @@ export default function OnboardingScreen() {
         onScroll={handleScroll}
         scrollEventThrottle={16}
         bounces={false}
-        style={StyleSheet.absoluteFill}
+        className="absolute inset-0 w-full h-full"
       >
         {onboardingSlides.map((slide, index) => (
           <View
             key={slide.id}
-            style={[
-              styles.slideFrame,
-              { width: screenWidth, height: '100%' },
-            ]}
+            className="relative h-full overflow-hidden"
+            style={{ width: screenWidth, height: '100%' }}
           >
             <OnboardingBackground slideIndex={index} />
-            
+
             <View
-              style={[
-                styles.slideContentContainer,
-                {
-                  paddingBottom: Math.max(insets.bottom + 180, 210),
-                },
-              ]}
+              className="flex-1 w-full justify-end items-center px-7"
+              style={{
+                paddingBottom: Math.max(insets.bottom + 140, 150),
+              }}
             >
-              <Text
-                style={[
-                  styles.slideTitle,
-                  {
-                    fontSize: dynamicFontSize,
-                    lineHeight: dynamicLineHeight,
-                  },
-                ]}
-              >
+              <Text className="font-headline text-h3 text-white text-center mb-8">
                 {slide.title}
               </Text>
             </View>
@@ -210,17 +193,13 @@ export default function OnboardingScreen() {
       </ScrollView>
 
       <View
-        style={[
-          styles.bottomOverlay,
-          {
-            paddingBottom: Math.max(insets.bottom, 24),
-            paddingLeft: '6%',
-            paddingRight: '6%',
-          },
-        ]}
+        className="absolute inset-x-0 bottom-0 w-full items-center justify-end z-20 px-6"
+        style={{
+          paddingBottom: Math.max(insets.bottom + 24, 40),
+        }}
         pointerEvents="box-none"
       >
-        <View style={styles.indicatorRow}>
+        <View className="flex-row items-center justify-center mb-12">
           {onboardingSlides.map((_, idx) => (
             <AnimatedIndicatorDot
               key={`indicator-${idx}`}
@@ -233,49 +212,51 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
-        <View style={styles.actionsFixedContainer}>
+        <View className="w-full h-14 relative">
           <Animated.View
-            style={[
-              styles.absoluteActionWrapper,
-              { opacity: navRowOpacity },
-            ]}
+            className="absolute inset-0 w-full justify-center"
+            style={{ opacity: navRowOpacity }}
             pointerEvents={isLastSlide ? 'none' : 'auto'}
           >
-            <View style={styles.navRow}>
+            <View className="w-full h-14 flex-row items-center justify-between px-2">
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={handleSkip}
-                style={styles.skipButton}
+                className="py-3 px-4"
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
-                <Text style={styles.skipText}>{t('common.skip')}</Text>
+                <Text className="font-medium text-body-lg text-white/95">
+                  {t('common.skip')}
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={handleNext}
-                style={styles.nextButton}
+                className="flex-row items-center py-3 px-4"
                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
               >
-                <Text style={styles.nextText}>{t('common.next')}</Text>
-                <Icon name="solar:arrow-right-linear" color={colors.white} size={20} style={{ marginLeft: 6 }} />
+                <Text className="font-medium text-body-lg text-white mr-1.5">
+                  {t('common.next')}
+                </Text>
+                <Icon name="solar:arrow-right-linear" color="#FFFFFF" size={20} />
               </TouchableOpacity>
             </View>
           </Animated.View>
 
           <Animated.View
-            style={[
-              styles.absoluteActionWrapper,
-              { opacity: commencerOpacity },
-            ]}
+            className="absolute inset-0 w-full justify-center"
+            style={{ opacity: commencerOpacity }}
             pointerEvents={isLastSlide ? 'auto' : 'none'}
           >
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={handleFinish}
-              style={styles.commencerButton}
+              className="w-full h-14 rounded-xl border-[1.5px] border-white/50 items-center justify-center bg-white/10"
             >
-              <Text style={styles.commencerText}>{t('common.start')}</Text>
+              <Text className="font-semibold text-body-lg text-white">
+                {t('common.start')}
+              </Text>
             </TouchableOpacity>
           </Animated.View>
         </View>
@@ -284,122 +265,4 @@ export default function OnboardingScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    backgroundColor: colors.green,
-    position: 'relative',
-    overflow: 'hidden',
-    ...(Platform.OS === 'web'
-      ? ({
-          userSelect: 'none',
-          cursor: 'grab',
-        } as any)
-      : {}),
-  },
-  slideFrame: {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-    overflow: 'hidden',
-  },
-  slideContentContainer: {
-    flex: 1,
-    width: '100%',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    paddingHorizontal: '7%',
-  },
-  slideTitle: {
-    fontFamily: fonts.headlineBold,
-    color: colors.white,
-    textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.4)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 3,
-  },
-  bottomOverlay: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    zIndex: 20,
-    backgroundColor: 'transparent',
-  },
-  indicatorRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 28,
-    backgroundColor: 'transparent',
-  },
-  actionsFixedContainer: {
-    width: '100%',
-    height: 52,
-    position: 'relative',
-    marginBottom: 12,
-    backgroundColor: 'transparent',
-  },
-  absoluteActionWrapper: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: '100%',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
-  },
-  navRow: {
-    width: '100%',
-    height: 52,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: '2%',
-    backgroundColor: 'transparent',
-  },
-  skipButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    backgroundColor: 'transparent',
-  },
-  skipText: {
-    fontFamily: fonts.medium,
-    fontSize: 16,
-    color: colors.white,
-    opacity: 0.9,
-  },
-  nextButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    backgroundColor: 'transparent',
-  },
-  nextText: {
-    fontFamily: fonts.medium,
-    fontSize: 16,
-    color: colors.white,
-  },
-  commencerButton: {
-    width: '100%',
-    height: 52,
-    borderRadius: 26,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 255, 255, 0.85)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  commencerText: {
-    fontFamily: fonts.semiBold,
-    fontSize: 17,
-    color: colors.white,
-  },
-});
+
