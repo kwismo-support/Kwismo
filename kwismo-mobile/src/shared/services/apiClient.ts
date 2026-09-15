@@ -51,6 +51,10 @@ export class ApiClient {
       const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
       const url = `${env.API_BASE_URL}${cleanEndpoint}`;
 
+      if (env.IS_DEV) {
+        console.log(`\x1b[36m[API REQUEST]\x1b[0m ${method} ${url}`, body || '');
+      }
+
       const response = await fetch(url, {
         method,
         headers,
@@ -66,17 +70,32 @@ export class ApiClient {
           errorMsg = errorMsg.map((e: any) => e.msg || e.detail || JSON.stringify(e)).join(', ');
         }
 
-        if (response.status === 401) {
-          errorMsg = i18next.t('errors.sessionExpired', 'Session expirée. Veuillez vous reconnecter.');
+        const errorCode = json.error_code || json.code || `HTTP_${response.status}`;
+        const isAccountBlocked =
+          errorCode === 'ACCOUNT_BLOCKED' ||
+          errorCode === 'ACCOUNT_DELETED' ||
+          json.status === 'BLOCKED' ||
+          json.user_status === 'BLOCKED';
+
+        if (response.status === 401 || isAccountBlocked) {
+          if (isAccountBlocked) {
+            errorMsg = i18next.t('errors.accountBlocked', 'Votre compte a été suspendu ou bloqué par un administrateur.');
+          } else {
+            errorMsg = i18next.t('errors.sessionExpired', 'Session expirée. Veuillez vous reconnecter.');
+          }
           useAuthStore.getState().logout();
         } else if (response.status === 403) {
-          errorMsg = i18next.t('errors.accessDenied', 'Accès restreint.');
+          errorMsg = errorMsg || i18next.t('errors.accessDenied', 'Accès restreint.');
         } else if (response.status === 404 || errorMsg === 'Not Found') {
           errorMsg = i18next.t('errors.notFound', 'Service ou ressource introuvable.');
         } else if (response.status >= 500) {
           errorMsg = i18next.t('errors.serverError', 'Erreur serveur. Veuillez réessayer.');
         } else if (!errorMsg) {
           errorMsg = i18next.t('errors.generic', 'Une erreur est survenue.');
+        }
+
+        if (env.IS_DEV) {
+          console.warn(`\x1b[31m[API ERROR ${response.status}]\x1b[0m ${url}:`, errorMsg, json);
         }
 
         if (!silent) {
@@ -86,9 +105,13 @@ export class ApiClient {
         return {
           success: false,
           message: errorMsg,
-          errorCode: json.error_code || `HTTP_${response.status}`,
+          errorCode,
           status: response.status,
         };
+      }
+
+      if (env.IS_DEV) {
+        console.log(`\x1b[32m[API SUCCESS ${response.status}]\x1b[0m ${url}`);
       }
 
       return {
@@ -102,6 +125,10 @@ export class ApiClient {
         'errors.networkError',
         'Connexion au serveur impossible. Vérifiez votre réseau.'
       );
+
+      if (env.IS_DEV) {
+        console.error(`\x1b[31m[API NETWORK ERROR]\x1b[0m ${endpoint}:`, err);
+      }
 
       if (!silent) {
         toast.error(fallbackMsg);

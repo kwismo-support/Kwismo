@@ -100,9 +100,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(22, 30, 51, 0.35)',
   },
   text: {
-    fontFamily: fonts.bold,
-    fontSize: 13,
-    fontWeight: '700',
+    fontFamily: fonts.caption,
+    fontSize: 14,
+    lineHeight: 21,
+    fontWeight: '600',
   },
   textDark: {
     color: '#FFFFFF',

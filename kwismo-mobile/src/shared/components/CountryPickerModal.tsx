@@ -209,7 +209,8 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontFamily: fonts.h6,
-    fontSize: scaleFont(18),
+    fontSize: 20,
+    lineHeight: 28,
     fontWeight: '700',
   },
   closeBtn: {
@@ -226,8 +227,9 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(15),
+    fontFamily: fonts.bodyMedium,
+    fontSize: 14,
+    lineHeight: 20,
     height: '100%',
   },
   listContent: {
@@ -255,11 +257,13 @@ const styles = StyleSheet.create({
   },
   countryName: {
     flex: 1,
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(15),
+    fontFamily: fonts.bodyMedium,
+    fontSize: 14,
+    lineHeight: 20,
   },
   callingCode: {
-    fontFamily: fonts.semiBold,
-    fontSize: scaleFont(14),
+    fontFamily: fonts.caption,
+    fontSize: 14,
+    lineHeight: 21,
   },
 });

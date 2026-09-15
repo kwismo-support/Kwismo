@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
 const getApiBaseUrl = (): string => {
-  const configuredUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:7001/api/v1';
+  const configuredUrl = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
   if (Platform.OS === 'web') {
     return configuredUrl;
@@ -14,7 +14,7 @@ const getApiBaseUrl = (): string => {
   if (hostUri) {
     const hostIp = hostUri.split(':')[0];
     if (hostIp) {
-      return `http://${hostIp}:7001/api/v1`;
+      return `http://${hostIp}:8000/api/v1`;
     }
   }
 
@@ -25,6 +25,8 @@ const getApiBaseUrl = (): string => {
 
 export const env = {
   USE_MOCK_DATA: process.env.EXPO_PUBLIC_USE_MOCK_DATA === 'true',
+  APP_ENV: process.env.EXPO_PUBLIC_APP_ENV || 'development',
+  IS_DEV: (process.env.EXPO_PUBLIC_APP_ENV || 'development') === 'development',
   API_BASE_URL: getApiBaseUrl(),
   AUTH_TOKEN_KEY: 'kwismo_jwt_access_token',
 };
