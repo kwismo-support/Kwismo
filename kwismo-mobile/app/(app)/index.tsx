@@ -138,18 +138,9 @@ export default function HomeScreen() {
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <StatusBar style="light" />
 
-      {/* Header Bar avec Logo KWISMO, Cloche (gauche) et Loupe (droite) */}
       <HeaderBar isHome={true} />
 
-      <ScrollView
-        style={{ marginTop: -55, zIndex: 10 }}
-        contentContainerStyle={[
-          styles.scrollBody,
-          { paddingBottom: insets.bottom + 100 },
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* CARTE HERO PROFIL + 4 KPIS */}
+      <View style={styles.fixedTopContent}>
         <View style={[styles.heroCard, { backgroundColor: isDark ? themeColors.cardBg : '#FFFFFF' }]}>
           <View style={styles.userRow}>
             <View style={styles.avatarContainer}>
@@ -176,14 +167,13 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          {/* 4 KPIS Sans trait d'en-tête et alignés au début */}
           <View style={styles.kpiRowClean}>
             <View style={styles.kpiItemStart}>
               <Text style={[styles.kpiValueBold, { color: isDark ? themeColors.textPrimary : '#0F172A' }]}>
                 {user?.kpi?.numeros_verifies ?? summary?.numeros_verifies ?? 127}
               </Text>
               <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textSecondary : '#64748B' }]}>
-                {t('common.verifiedNumber')}{'\n'}
+                {t('common.verifiedNumber')}
               </Text>
             </View>
 
@@ -192,7 +182,7 @@ export default function HomeScreen() {
                 25
               </Text>
               <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textSecondary : '#64748B' }]}>
-                {t('common.avoidedThreats')}{'\n'}
+                {t('common.avoidedThreats')}
               </Text>
             </View>
 
@@ -201,7 +191,7 @@ export default function HomeScreen() {
                 {user?.kpi?.signalements_effectues ?? summary?.signalements_effectues ?? 10}
               </Text>
               <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textSecondary : '#64748B' }]}>
-                {t('common.reportsMade')}{'\n'}
+                {t('common.reportsMade')}
               </Text>
             </View>
 
@@ -210,15 +200,13 @@ export default function HomeScreen() {
                 {user?.kpi?.transferts_proteges ?? summary?.transferts_proteges ?? 50}
               </Text>
               <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textSecondary : '#64748B' }]}>
-                {t('common.transfers')}{'\n'}
+                {t('common.transfers')}
               </Text>
             </View>
           </View>
         </View>
 
-        {/* 4 BOUTONS D'ACTIONS RAPIDES */}
         <View style={styles.quickActionsRow}>
-          {/* Vérifier un numéro */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/verify')}
@@ -232,7 +220,6 @@ export default function HomeScreen() {
             </Text>
           </TouchableOpacity>
 
-          {/* Transfert d'argent */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/transfer')}
@@ -246,7 +233,6 @@ export default function HomeScreen() {
             </Text>
           </TouchableOpacity>
 
-          {/* Alerte Whatsapp */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/alert-whatsapp')}
@@ -260,22 +246,29 @@ export default function HomeScreen() {
             </Text>
           </TouchableOpacity>
 
-          {/* Signaler */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/report')}
             style={styles.actionBtnWrapper}
           >
-            <View style={[styles.actionCircle, { backgroundColor: '#FCE8E6' }]}>
-              <Icon name="heroicons:signal-16-solid" color="#D93025" size={26} />
+            <View style={[styles.actionCircle, { backgroundColor: '#F1F5F9' }]}>
+              <Icon name="solar:danger-triangle-bold" color="#161E33" size={26} />
             </View>
-            <Text style={[styles.actionText, { color: '#D93025' }]}>
+            <Text style={[styles.actionText, { color: isDark ? themeColors.textPrimary : '#161E33' }]}>
               {t('common.report')}
             </Text>
           </TouchableOpacity>
         </View>
+      </View>
 
-        {/* EN-TÊTE ACTIVITÉ RÉCENTE AVEC BOUTON FILTRE (BLEU PRINCIPAL) */}
+      <ScrollView
+        style={styles.activityScrollArea}
+        contentContainerStyle={[
+          styles.scrollBodyContent,
+          { paddingBottom: insets.bottom + 100 },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.activityHeaderRow}>
           <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
             {t('common.recentActivity')}
@@ -285,11 +278,10 @@ export default function HomeScreen() {
             onPress={() => setShowFilters(!showFilters)}
             style={styles.filterIconButton}
           >
-            <Icon name="solar:tuning-3-linear" color={isDark ? themeColors.textPrimary : '#161E33'} size={22} />
+            <Icon name="solar:tuning-3-linear" color="#161E33" size={22} />
           </TouchableOpacity>
         </View>
 
-        {/* LIGNE DE FILTRES DÉROULANTE QUAND ON CLIQUE SUR LE FILTRE */}
         {showFilters && (
           <ScrollView
             horizontal
@@ -330,7 +322,6 @@ export default function HomeScreen() {
           </ScrollView>
         )}
 
-        {/* LISTE DE L'ACTIVITÉ RÉCENTE EXACTE À LA MAQUETTE */}
         <View style={styles.activityList}>
           {filteredActivities.map((item: any) => {
             const badgeStyle = getBadgeStyle(item.badgeType, item.status);
@@ -339,9 +330,8 @@ export default function HomeScreen() {
                 key={item.id}
                 activeOpacity={0.75}
                 onPress={() => router.push({ pathname: '/(app)/verify', params: { phone: item.phone } })}
-                style={[styles.activityCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
+                style={[styles.activityCard, { backgroundColor: themeColors.cardBg }]}
               >
-                {/* Avatar / Initiales */}
                 <View
                   style={[
                     styles.activityAvatar,
@@ -355,7 +345,6 @@ export default function HomeScreen() {
                   )}
                 </View>
 
-                {/* Titre & Sous-titre à gauche */}
                 <View style={styles.activityInfo}>
                   <Text numberOfLines={1} style={[styles.activityPhone, { color: themeColors.textPrimary }]}>
                     {item.phone}
@@ -365,7 +354,6 @@ export default function HomeScreen() {
                   </Text>
                 </View>
 
-                {/* Badge de statut au milieu */}
                 <View style={styles.activityBadgeCol}>
                   <View style={[styles.statusPill, { backgroundColor: badgeStyle.bg }]}>
                     <Text style={[styles.statusPillText, { color: badgeStyle.text }]}>
@@ -374,7 +362,6 @@ export default function HomeScreen() {
                   </View>
                 </View>
 
-                {/* Date + Chevron à droite */}
                 <View style={styles.activityRightCol}>
                   <Text numberOfLines={1} style={styles.activityDate}>{item.date}</Text>
                   <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={16} style={{ marginLeft: 4 }} />
@@ -385,7 +372,6 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
 
-      {/* Navigation TabBar officielle */}
       <TabBar activeTab="home" />
     </View>
   );
@@ -395,45 +381,46 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollBody: {
+  fixedTopContent: {
     paddingHorizontal: 16,
-    paddingTop: 16,
+    marginTop: -55,
+    zIndex: 10,
   },
   heroCard: {
     borderRadius: 20,
-    padding: 20,
+    padding: 16,
     marginTop: 0,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
     shadowRadius: 10,
     elevation: 4,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   userRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   avatarContainer: {
-    marginRight: 14,
+    marginRight: 12,
   },
   avatarImage: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
   },
   avatarFallback: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: colors.green,
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarInitial: {
     color: '#FFFFFF',
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
   },
   userInfo: {
@@ -444,15 +431,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   welcomeText: {
-    fontSize: 14,
-    lineHeight: 20,
-    fontFamily: fonts.bodyMedium,
+    fontSize: 13,
+    lineHeight: 18,
+    fontFamily: fonts.headlineBold,
   },
   userNameText: {
-    fontSize: 20,
-    lineHeight: 28,
+    fontSize: 18,
+    lineHeight: 24,
     fontFamily: fonts.headlineBold,
-    fontWeight: '800',
+    fontWeight: '700',
     marginTop: 2,
   },
   kpiRowClean: {
@@ -465,89 +452,99 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   kpiValueBold: {
-    fontSize: 18,
-    lineHeight: 24,
+    fontSize: 16,
+    lineHeight: 22,
     fontFamily: fonts.headlineBold,
-    fontWeight: '800',
+    fontWeight: '700',
+    textAlign: 'left',
   },
   kpiLabelLeft: {
-    fontSize: 11,
-    lineHeight: 14,
-    fontFamily: fonts.bodySmall,
+    fontSize: 10,
+    lineHeight: 13,
+    fontFamily: fonts.headlineBold,
+    fontWeight: '600',
     textAlign: 'left',
-    marginTop: 4,
+    marginTop: 2,
   },
   quickActionsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 24,
+    marginBottom: 12,
   },
   actionBtnWrapper: {
     alignItems: 'center',
     flex: 1,
   },
   actionCircle: {
-    width: 58,
-    height: 58,
-    borderRadius: 29,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   actionText: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 11,
+    lineHeight: 15,
     fontFamily: fonts.caption,
     textAlign: 'center',
     fontWeight: '600',
+  },
+  activityScrollArea: {
+    flex: 1,
+  },
+  scrollBodyContent: {
+    paddingHorizontal: 16,
+    paddingTop: 4,
   },
   activityHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   sectionTitle: {
-    fontSize: 20,
-    lineHeight: 28,
+    fontSize: 18,
+    lineHeight: 24,
     fontFamily: fonts.headlineBold,
-    fontWeight: '800',
+    fontWeight: '700',
   },
   filterIconButton: {
     padding: 6,
   },
   filterScrollRow: {
-    marginBottom: 14,
+    marginBottom: 10,
   },
   filterScrollContainer: {
     gap: 8,
   },
   filterPill: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 18,
     borderWidth: 1,
   },
   filterPillText: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 11,
+    lineHeight: 15,
     fontFamily: fonts.footnote,
     fontWeight: '600',
   },
   activityList: {
-    gap: 10,
+    gap: 6,
   },
   activityCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 16,
-    borderWidth: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    borderWidth: 0,
   },
   activityAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: '#F1F5F9',
     justifyContent: 'center',
     alignItems: 'center',
@@ -556,21 +553,21 @@ const styles = StyleSheet.create({
   avatarInitialsText: {
     color: '#FFFFFF',
     fontWeight: '700',
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: fonts.headlineBold,
   },
   activityInfo: {
     flex: 1.2,
   },
   activityPhone: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 13,
+    lineHeight: 18,
     fontFamily: fonts.headlineBold,
     fontWeight: '700',
   },
   activityType: {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: 11,
+    lineHeight: 15,
     fontFamily: fonts.bodySmall,
     color: '#94A3B8',
     marginTop: 2,
@@ -579,13 +576,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   statusPill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
   },
   statusPillText: {
-    fontSize: 11,
-    lineHeight: 15,
+    fontSize: 10,
+    lineHeight: 14,
     fontFamily: fonts.footnote,
     fontWeight: '600',
   },
@@ -596,9 +593,10 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
   activityDate: {
-    fontSize: 11,
-    lineHeight: 15,
+    fontSize: 10,
+    lineHeight: 14,
     color: '#94A3B8',
     fontFamily: fonts.bodySmall,
   },
 });
+
