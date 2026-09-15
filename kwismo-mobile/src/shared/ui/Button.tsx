@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { useAppTheme } from '../hooks/useAppTheme';
 import { colors, fonts } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
 
 export interface ButtonProps {
   title: string;
@@ -52,16 +51,13 @@ export const Button: React.FC<ButtonProps> = ({
     setInternalLoading(true);
 
     try {
-      // Execute press handler
       const result = await Promise.resolve(onPress());
 
-      // If handler explicitly returned false (e.g. validation failed), stop loading immediately
       if (result === false) {
         setInternalLoading(false);
         return;
       }
 
-      // If successful, guarantee minimum animation duration (min 1 second)
       const elapsed = Date.now() - startTime;
       if (elapsed < minLoadingDuration) {
         await new Promise((resolve) =>
@@ -69,14 +65,12 @@ export const Button: React.FC<ButtonProps> = ({
         );
       }
     } catch (err) {
-      // If error occurred, stop loading immediately
       console.error('Button press error:', err);
     } finally {
       setInternalLoading(false);
     }
   };
 
-  // Determine button container styles based on variant
   const getVariantContainerStyle = (): ViewStyle => {
     switch (variant) {
       case 'primary':
@@ -112,7 +106,6 @@ export const Button: React.FC<ButtonProps> = ({
     }
   };
 
-  // Determine text styles based on variant
   const getVariantTextStyle = (): TextStyle => {
     switch (variant) {
       case 'primary':
@@ -135,7 +128,6 @@ export const Button: React.FC<ButtonProps> = ({
     }
   };
 
-  // Height and padding based on size
   const getSizeStyle = (): ViewStyle => {
     switch (size) {
       case 'sm':
@@ -228,3 +220,4 @@ const styles = StyleSheet.create({
     opacity: 0.65,
   },
 });
+

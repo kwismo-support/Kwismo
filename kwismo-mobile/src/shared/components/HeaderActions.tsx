@@ -41,7 +41,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
           style={styles.iconButton}
         >
           <Icon
-            name={hasUnread ? 'solar:bell-bold' : 'solar:bell-linear'}
+            name={hasUnread ? 'solar:bell-bold' : 'f7:bell'}
             size={24}
             color={iconColor}
           />
@@ -61,7 +61,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
         onPress={() => setSearchModalVisible(true)}
         style={styles.iconButton}
       >
-        <Icon name="solar:magnifer-linear" size={24} color={iconColor} />
+        <Icon name="bitcoin-icons:search-filled" size={24} color={iconColor} />
       </TouchableOpacity>
 
       {/* Modal de recherche animée */}
