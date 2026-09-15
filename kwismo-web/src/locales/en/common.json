@@ -38,11 +38,22 @@
     "reports": "Reports",
     "users": "Users",
     "partners": "Partners",
-    "ussd": "USSD",
+    "ussd": "Countries & USSD",
     "access": "Access Control",
     "profile": "My Profile",
     "notifications": "Notifications",
-    "userPortal": "User Portal"
+    "userPortal": "User Portal",
+    "myPortal": "User Portal",
+    "settings": "Settings"
+  },
+  "roles": {
+    "admin": "Super Administrator",
+    "partner": "Partner",
+    "user": "User"
+  },
+  "dialogs": {
+    "logoutTitle": "Confirm logout?",
+    "logoutDescription": "Are you sure you want to log out of the KWISMO platform? You will need to re-authenticate to access your files again."
   },
   "pagination": {
     "previous": "Previous",

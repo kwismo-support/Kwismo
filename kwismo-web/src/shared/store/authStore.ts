@@ -2,8 +2,11 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { apiClient } from '@/shared/lib/axios';
 import { AUTH_USER_KEY } from '@/config/constants';
+import type { SupportedLang } from '@/config/constants';
 import { env } from '@/config/env';
 import { MOCK_USERS } from '@/shared/mock/mockUsers';
+import { useLanguageStore } from '@/shared/store/languageStore';
+import { clearAuthTokens } from '@/shared/lib/token';
 import type { User } from '@/shared/types/user';
 
 interface AuthState {
@@ -56,17 +59,22 @@ export const useAuthStore = create<AuthState>()(
             nom: data.nom || '',
             prenom: data.prenom || '',
             email: data.email,
-            role: typeof data.role === 'string' ? data.role : data.role?.nomRole || 'admin',
+            role: typeof data.role === 'string' ? data.role : data.role?.nomRole || 'user',
             langue: data.langue || 'fr',
             isBanned: data.statut === 'suspended',
             createdAt: data.date_inscription || data.createdAt || new Date().toISOString(),
             updatedAt: data.updatedAt || new Date().toISOString(),
             partnerId: data.partner_id || data.partnerId,
           };
+
+          // Synchronisation des préférences de langue depuis le backend si présentes
+          if (userObj.langue) {
+            useLanguageStore.getState().setLang(userObj.langue as SupportedLang);
+          }
+
           set({ user: userObj, isLoading: false });
         } catch (err) {
-          localStorage.removeItem('kwismo_auth_token');
-          localStorage.removeItem('kwismo_user');
+          clearAuthTokens();
           set({ user: null, isLoading: false });
           throw new Error('Session invalide');
         }
@@ -75,11 +83,13 @@ export const useAuthStore = create<AuthState>()(
       logout: async () => {
         try {
           if (!env.useMock) {
-            await apiClient.post('/auth/logout');
+            const refreshToken = localStorage.getItem('kwismo_refresh_token');
+            if (refreshToken) {
+              await apiClient.post('/auth/logout', { refresh_token: refreshToken });
+            }
           }
         } catch {}
-        localStorage.removeItem('kwismo_auth_token');
-        localStorage.removeItem('kwismo_user');
+        clearAuthTokens();
         set({ user: null });
       },
     }),
@@ -89,3 +99,4 @@ export const useAuthStore = create<AuthState>()(
     },
   ),
 );
+

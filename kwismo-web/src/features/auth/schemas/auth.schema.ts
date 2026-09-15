@@ -47,3 +47,10 @@ export const partnerRegisterSchema = z.object({
 
 export type PartnerRegisterInput = z.infer<typeof partnerRegisterSchema>;
 
+export const deviceVerifySchema = z.object({
+  code: z.string().min(4, { message: 'validation.required' }),
+});
+
+export type DeviceVerifyInput = z.infer<typeof deviceVerifySchema>;
+
+

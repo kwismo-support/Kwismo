@@ -38,11 +38,22 @@
     "reports": "Signalements",
     "users": "Utilisateurs",
     "partners": "Partenaires",
-    "ussd": "USSD",
-    "access": "Contrôle d'accès",
+    "ussd": "Pays & USSD",
+    "access": "Droits d'accès",
     "profile": "Mon profil",
     "notifications": "Notifications",
-    "userPortal": "Espace Utilisateur"
+    "userPortal": "Espace Utilisateur",
+    "myPortal": "Portail Utilisateur",
+    "settings": "Paramètres"
+  },
+  "roles": {
+    "admin": "Super Administrateur",
+    "partner": "Partenaire",
+    "user": "Utilisateur"
+  },
+  "dialogs": {
+    "logoutTitle": "Confirmer la déconnexion ?",
+    "logoutDescription": "Êtes-vous sûr de vouloir vous déconnecter de la plateforme KWISMO ? Vous devrez vous réauthentifier pour accéder à nouveau à vos dossiers."
   },
   "pagination": {
     "previous": "Précédent",

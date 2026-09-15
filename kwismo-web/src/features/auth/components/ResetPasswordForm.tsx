@@ -6,7 +6,7 @@ import { Icon } from '@iconify/react';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { resetPasswordSchema, type ResetPasswordInput } from '../schemas/auth.schema';
-import { authApi } from '../services/auth.api';
+import { useResetPassword } from '../hooks/useResetPassword';
 
 interface ResetPasswordFormProps {
   onSuccess?: () => void;
@@ -15,7 +15,10 @@ interface ResetPasswordFormProps {
 export default function ResetPasswordForm({ onSuccess }: ResetPasswordFormProps) {
   const { t } = useTranslation('auth');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { resetPassword, loading, success } = useResetPassword();
+
+  const searchParams = new URLSearchParams(window.location.search);
+  const token = searchParams.get('token') || '';
 
   const {
     register,
@@ -26,18 +29,44 @@ export default function ResetPasswordForm({ onSuccess }: ResetPasswordFormProps)
   });
 
   const onSubmit = async (data: ResetPasswordInput) => {
-    setLoading(true);
     try {
-      await authApi.resetPassword(data);
+      await resetPassword(data, token);
       if (onSuccess) onSuccess();
-    } catch {
-    } finally {
-      setLoading(false);
-    }
+    } catch {}
   };
+
+  if (success) {
+    return (
+      <div className="flex flex-col items-center gap-4 text-center p-6 bg-brand-green/10 border border-brand-green/30 rounded-3xl font-body">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-green text-white shadow-lg">
+          <Icon icon="solar:check-circle-bold" className="text-3xl" />
+        </div>
+        <h3 className="font-title text-xl font-bold text-slate-900 dark:text-white">
+          Mot de passe modifié avec succès !
+        </h3>
+        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-md">
+          Vous pouvez maintenant vous connecter à votre compte avec votre nouveau mot de passe.
+        </p>
+        <a
+          href="/auth/login"
+          className="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-brand-green hover:underline"
+        >
+          <Icon icon="solar:login-bold" className="text-sm" />
+          <span>{t('backToLogin')}</span>
+        </a>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full font-body">
+      {!token && (
+        <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2">
+          <Icon icon="solar:danger-circle-bold" className="text-base flex-shrink-0" />
+          <span>Attention: Jeton de réinitialisation absent dans l'URL.</span>
+        </div>
+      )}
+
       <Input
         type={showPassword ? 'text' : 'password'}
         label={t('password')}
@@ -97,4 +126,5 @@ export default function ResetPasswordForm({ onSuccess }: ResetPasswordFormProps)
     </form>
   );
 }
+
 
