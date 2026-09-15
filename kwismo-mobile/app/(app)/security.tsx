@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Switch,
   ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -15,16 +13,13 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { Input } from '@/shared/ui/Input';
 import { HeaderBar } from '@/shared/components/HeaderBar';
-import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { toast } from '@/shared/store/toastStore';
-import { colors, fonts } from '@/styles/tokens';
-import { scaleFont } from '@/shared/lib/responsive';
+import { colors } from '@/styles/tokens';
 
 export default function SecurityScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -34,11 +29,8 @@ export default function SecurityScreen() {
   const [newPasswordError, setNewPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
-  const [rememberMe, setRememberMe] = useState(true);
-  const [biometricsEnabled, setBiometricsEnabled] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // Critères de robustesse du mot de passe (Maquette Inscription)
   const passwordCriteria = {
     minLength: newPassword.length >= 8,
     hasUppercase: /[A-Z]/.test(newPassword),
@@ -88,19 +80,20 @@ export default function SecurityScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <View className="flex-1 bg-white dark:bg-brand-darkBg">
       <StatusBar style="light" />
 
       <HeaderBar title={t('profile.security')} showBack={true} />
 
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollBody,
-          { paddingBottom: insets.bottom + 40 },
-        ]}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          paddingTop: 20,
+          paddingBottom: insets.bottom + 40,
+        }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={{ marginTop: 12 }}>
+        <View className="mt-3">
           <Input
             label={t('common.currentPassword')}
             value={currentPassword}
@@ -115,7 +108,7 @@ export default function SecurityScreen() {
           />
         </View>
 
-        <View style={{ marginTop: 12 }}>
+        <View className="mt-3">
           <Input
             label={t('common.newPassword')}
             value={newPassword}
@@ -130,11 +123,11 @@ export default function SecurityScreen() {
           />
         </View>
 
-        <View style={styles.criteriaContainer}>
-          <Text style={[styles.criteriaTitle, { color: themeColors.textSecondary }]}>
+        <View className="mt-2.5 p-3 rounded-xl bg-slate-100 dark:bg-white/5">
+          <Text className="font-bold text-2xs mb-1.5 text-slate-600 dark:text-slate-400">
             Critères de robustesse du mot de passe :
           </Text>
-          <View style={styles.criteriaGrid}>
+          <View className="gap-1">
             {[
               { key: 'minLength', label: t('validation.criteriaMinLength'), valid: passwordCriteria.minLength },
               { key: 'hasUppercase', label: t('validation.criteriaUppercase'), valid: passwordCriteria.hasUppercase },
@@ -142,21 +135,17 @@ export default function SecurityScreen() {
               { key: 'hasNumber', label: t('validation.criteriaNumber'), valid: passwordCriteria.hasNumber },
               { key: 'hasSymbol', label: t('validation.criteriaSymbol'), valid: passwordCriteria.hasSymbol },
             ].map((crit) => (
-              <View key={crit.key} style={styles.criteriaRow}>
+              <View key={crit.key} className="flex-row items-center">
                 <Icon
                   name={crit.valid ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
-                  color={crit.valid ? colors.green : themeColors.inputPlaceholder}
+                  color={crit.valid ? colors.green : '#94A3B8'}
                   size={15}
                   style={{ marginRight: 6 }}
                 />
                 <Text
-                  style={[
-                    styles.criteriaText,
-                    {
-                      color: crit.valid ? colors.green : themeColors.textSecondary,
-                      fontWeight: crit.valid ? '700' : '400',
-                    },
-                  ]}
+                  className={`text-2xs ${
+                    crit.valid ? 'text-brand-green font-bold' : 'text-slate-500 dark:text-slate-400 font-normal'
+                  }`}
                 >
                   {crit.label}
                 </Text>
@@ -165,7 +154,7 @@ export default function SecurityScreen() {
           </View>
         </View>
 
-        <View style={{ marginTop: 12 }}>
+        <View className="mt-3">
           <Input
             label={t('common.confirmPassword')}
             value={confirmPassword}
@@ -184,12 +173,13 @@ export default function SecurityScreen() {
           activeOpacity={0.85}
           disabled={isUpdating}
           onPress={handleUpdatePassword}
-          style={[styles.saveBtn, { backgroundColor: colors.green, marginTop: 24 }]}
+          className="h-13 rounded-2xl items-center justify-center bg-brand-green mt-6"
+          style={{ height: 52 }}
         >
           {isUpdating ? (
             <ActivityIndicator color={colors.white} />
           ) : (
-            <Text style={styles.saveBtnText}>
+            <Text className="font-bold text-base text-white">
               {t('common.saveChanges')}
             </Text>
           )}
@@ -199,76 +189,3 @@ export default function SecurityScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollBody: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  sectionTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(16),
-    fontWeight: '800',
-  },
-  criteriaContainer: {
-    marginTop: 10,
-    padding: 12,
-    borderRadius: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.03)',
-  },
-  criteriaTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(12),
-    marginBottom: 6,
-  },
-  criteriaGrid: {
-    gap: 4,
-  },
-  criteriaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  criteriaText: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(11),
-  },
-  saveBtn: {
-    height: 52,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  saveBtnText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(15),
-    fontWeight: '700',
-    color: colors.white,
-  },
-  optionsCard: {
-    borderRadius: 16,
-    borderWidth: 1,
-    paddingHorizontal: 16,
-    marginTop: 12,
-  },
-  optionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 14,
-  },
-  optionTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '700',
-  },
-  optionSub: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-    marginTop: 2,
-  },
-  rowDivider: {
-    height: 1,
-  },
-});

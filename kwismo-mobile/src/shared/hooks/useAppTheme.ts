@@ -1,4 +1,6 @@
-import { useColorScheme } from 'react-native';
+import { useEffect } from 'react';
+import { useColorScheme as useRNColorScheme } from 'react-native';
+import { useColorScheme as useNativeWindColorScheme } from 'nativewind';
 import { useAuthStore } from '../store/authStore';
 import { useThemeStore, ThemePreference } from '../store/themeStore';
 import { colors } from '../../styles/tokens';
@@ -21,7 +23,8 @@ export interface AppThemeColors {
 }
 
 export function useAppTheme() {
-  const systemColorScheme = useColorScheme() || 'light';
+  const systemColorScheme = useRNColorScheme() || 'light';
+  const { colorScheme: nativeWindScheme, setColorScheme } = useNativeWindColorScheme();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const userThemePreference = useThemeStore((state) => state.userThemePreference);
   const setTheme = useThemeStore((state) => state.setTheme);
@@ -35,6 +38,12 @@ export function useAppTheme() {
   } else {
     activeTheme = (systemColorScheme === 'dark' ? 'dark' : 'light');
   }
+
+  useEffect(() => {
+    if (setColorScheme && nativeWindScheme !== activeTheme) {
+      setColorScheme(activeTheme);
+    }
+  }, [activeTheme, nativeWindScheme, setColorScheme]);
 
   const isDark = activeTheme === 'dark';
 
@@ -62,3 +71,4 @@ export function useAppTheme() {
     setTheme,
   };
 }
+

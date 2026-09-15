@@ -23,11 +23,9 @@ import { colors, fonts } from '@/styles/tokens';
 import { scaleFont } from '@/shared/lib/responsive';
 import {
   hasConfiguredPin,
-  getBiometricType,
-  enableBiometrics,
-  disableBiometrics,
   getBiometricPreference,
-} from '@/features/security/services/biometrics';
+  setBiometricPreference,
+} from '@/shared/lib/secureStore';
 
 export default function TwoFactorScreen() {
   const router = useRouter();

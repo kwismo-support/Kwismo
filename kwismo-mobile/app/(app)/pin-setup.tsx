@@ -1,17 +1,14 @@
-// Écran unifié de configuration du code PIN à 6 chiffres
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { HeaderBar } from '@/shared/components/HeaderBar';
 import { PinPad } from '@/shared/components/PinPad';
-import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { toast } from '@/shared/store/toastStore';
 import { saveUserPin, setBiometricPreference } from '@/shared/lib/secureStore';
 
 export default function PinSetupScreen() {
   const router = useRouter();
-  const { colors: themeColors } = useAppTheme();
 
   const handleSuccess = async (pin?: string) => {
     if (pin) {
@@ -23,7 +20,7 @@ export default function PinSetupScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <View className="flex-1 bg-white dark:bg-brand-darkBg">
       <StatusBar style="light" />
       <HeaderBar title="Code PIN (6 chiffres)" showBack={true} />
       <PinPad
@@ -37,8 +34,3 @@ export default function PinSetupScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
