@@ -30,7 +30,7 @@ export default function AuthWelcomeScreen() {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => router.push('/(auth)/login')}
-            className="w-full h-50 bg-orange-500 rounded-xl items-center justify-center shadow-md"
+            className="w-full h-13 bg-orange-500 rounded-xl items-center justify-center shadow-md"
           >
             <Text className="font-font-bold text-base font-bold text-white">
               {t('common.login')}
