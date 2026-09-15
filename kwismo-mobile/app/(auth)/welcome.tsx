@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { KwismoLogo } from '@/shared/components/KwismoLogo';
-import { AuthGradientBackground } from '@/shared/components/AuthGradientBackground';
+import { BrandGradientBackground } from '@/shared/components/BrandGradientBackground';
 
 export default function AuthWelcomeScreen() {
   const router = useRouter();
@@ -13,7 +13,7 @@ export default function AuthWelcomeScreen() {
   const { t } = useTranslation();
 
   return (
-    <AuthGradientBackground variant="mirror">
+    <BrandGradientBackground>
       <View className="flex-1 w-full h-full justify-between">
         <StatusBar style="light" />
 
@@ -39,15 +39,15 @@ export default function AuthWelcomeScreen() {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => router.push('/(auth)/register')}
-            className="w-full bg-transparent rounded-xl border-[1.5px] border-[#1E293B] items-center justify-center"
+            className="w-full bg-transparent rounded-xl border-[1.5px] border-[#3B4E7A] items-center justify-center"
             style={{ height: 52 }}
           >
-            <Text className="font-semibold text-body-lg text-[#1E293B]">
+            <Text className="font-semibold text-body-lg text-[#3B4E7A]">
               {t('common.register')}
             </Text>
           </TouchableOpacity>
         </View>
       </View>
-    </AuthGradientBackground>
+    </BrandGradientBackground>
   );
 }
