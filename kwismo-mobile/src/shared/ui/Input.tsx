@@ -23,6 +23,7 @@ export interface InputProps extends Omit<TextInputProps, 'style'> {
   iconLeft?: string;
   rightIcon?: React.ReactNode;
   containerStyle?: ViewStyle;
+  className?: string;
   inputStyle?: TextStyle;
   hint?: string;
 }

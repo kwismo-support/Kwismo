@@ -1,4 +1,3 @@
-/// <reference types="nativewind/types" />
 import React, { useState, useRef } from 'react';
 import {
   View,
@@ -20,7 +19,6 @@ import { Input } from '@/shared/ui/Input';
 import { Button } from '@/shared/ui/Button';
 import { toast } from '@/shared/store/toastStore';
 import { validateEmail } from '@/shared/lib/validation';
-import { colors } from '@/styles/tokens';
 import { storage } from '@/shared/services/storage';
 import { useOtp } from '@/features/auth/hooks/useOtp';
 
@@ -47,7 +45,7 @@ export default function OtpScreen() {
     }
   }, [initialEmailParam]);
 
-  const { verifyOtp: verifyOtpCall, resendOtp: resendOtpCall, resendTimer, canResend } = useOtp(email);
+  const { verifyOtp: verifyOtpCall, resendOtp: resendOtpCall, resendTimer } = useOtp(email);
   const [emailError, setEmailError] = useState('');
   const [otpError, setOtpError] = useState('');
 
@@ -115,7 +113,7 @@ export default function OtpScreen() {
       <StatusBar style="light" />
 
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
@@ -130,29 +128,30 @@ export default function OtpScreen() {
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustKeyboardInsets={true}
         >
-          <Text className="font-montserrat-bold text-[34px] leading-[44px] text-white mt-5">
+          <Text className="font-montserrat-bold text-3xl text-white mt-5">
             {t('auth.secureAccountTitle')}
           </Text>
 
           {step === 'email' ? (
             <>
-              <Text className="font-medium text-base leading-[22px] text-white/95 mt-3 mb-9">
+              <Text className="font-medium text-base text-white/95 mt-3 mb-9">
                 {t('auth.secureAccountEmailSubtitle')}
               </Text>
 
-              <Input
-                placeholder={t('common.email')}
-                value={email}
-                onChangeText={(val) => {
-                  setEmail(val);
-                  if (emailError) setEmailError('');
-                }}
-                error={emailError}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                leftIcon={<Icon name="solar:letter-linear" color={themeColors.inputPlaceholder} size={20} />}
-                containerStyle={{ marginBottom: 24 }}
-              />
+              <View className="mb-6">
+                <Input
+                  placeholder={t('common.email')}
+                  value={email}
+                  onChangeText={(val) => {
+                    setEmail(val);
+                    if (emailError) setEmailError('');
+                  }}
+                  error={emailError}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  leftIcon={<Icon name="solar:letter-linear" color={themeColors.inputPlaceholder} size={20} />}
+                />
+              </View>
 
               <Button
                 title={t('common.send')}
@@ -163,11 +162,11 @@ export default function OtpScreen() {
             </>
           ) : (
             <>
-              <Text className="font-medium text-base leading-[22px] text-white/95 mt-3 mb-6">
+              <Text className="font-medium text-base text-white/95 mt-3 mb-6">
                 {t('auth.secureAccountOtpSubtitle')}
               </Text>
 
-              <Text className="font-medium text-body-md text-slate-700 mb-6 text-center">
+              <Text className="font-medium text-base text-slate-700 dark:text-slate-300 mb-6 text-center">
                 {email}
               </Text>
 
@@ -175,17 +174,17 @@ export default function OtpScreen() {
                 {otpDigits.map((digit, index) => (
                   <View
                     key={`otp-${index}`}
-                    className={`flex-1 h-14 max-w-[52px] rounded-xl border-[1.5px] items-center justify-center bg-white ${
+                    className={`flex-1 h-14 rounded-xl border-2 items-center justify-center bg-white dark:bg-brand-cardDark ${
                       otpError
                         ? 'border-red-500'
                         : digit
                         ? 'border-emerald-500'
-                        : 'border-slate-300'
+                        : 'border-slate-300 dark:border-slate-700'
                     }`}
                   >
                     <TextInput
                       ref={(el) => { inputRefs.current[index] = el; }}
-                      className="font-bold text-center text-slate-900 w-full h-full text-xl"
+                      className="font-bold text-center text-slate-900 dark:text-white w-full h-full text-xl"
                       style={Platform.OS === 'web' ? ({ outline: 'none', outlineStyle: 'none' } as any) : {}}
                       keyboardType="number-pad"
                       maxLength={1}
@@ -213,14 +212,14 @@ export default function OtpScreen() {
                 >
                   <Text
                     className={`font-semibold text-sm ${
-                      resendTimer > 0 ? 'text-slate-400' : 'text-emerald-700 underline'
+                      resendTimer > 0 ? 'text-slate-400 dark:text-slate-500' : 'text-emerald-700 dark:text-emerald-400 underline'
                     }`}
                   >
                     {t('auth.alreadySentQuestion')} {t('auth.resendCode')}
                   </Text>
                 </TouchableOpacity>
 
-                <Text className="font-bold text-sm text-slate-800">
+                <Text className="font-bold text-sm text-slate-800 dark:text-slate-200">
                   {resendTimer}s
                 </Text>
               </View>

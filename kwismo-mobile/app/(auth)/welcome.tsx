@@ -1,4 +1,4 @@
-/// <reference types="nativewind/types" />
+import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,11 +6,13 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { KwismoLogo } from '@/shared/components/KwismoLogo';
 import { BrandGradientBackground } from '@/shared/components/BrandGradientBackground';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
 export default function AuthWelcomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { isDark } = useAppTheme();
 
   return (
     <BrandGradientBackground>
@@ -28,10 +30,9 @@ export default function AuthWelcomeScreen() {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => router.push('/(auth)/login')}
-            className="w-full bg-brand-orange rounded-xl items-center justify-center shadow-md shadow-black/15 elevation-2"
-            style={{ height: 52 }}
+            className="w-full h-50 bg-orange-500 rounded-xl items-center justify-center shadow-md"
           >
-            <Text className="font-semibold text-body-lg text-white">
+            <Text className="font-font-bold text-base font-bold text-white">
               {t('common.login')}
             </Text>
           </TouchableOpacity>
@@ -39,10 +40,9 @@ export default function AuthWelcomeScreen() {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => router.push('/(auth)/register')}
-            className="w-full bg-transparent rounded-xl border-[1.5px] border-[#3B4E7A] items-center justify-center"
-            style={{ height: 52 }}
+            className="w-full h-13 bg-white/20 dark:bg-slate-800/50 rounded-xl border-2 border-white/60 items-center justify-center"
           >
-            <Text className="font-semibold text-body-lg text-[#3B4E7A]">
+            <Text className="font-font-bold text-base font-bold text-white">
               {t('common.register')}
             </Text>
           </TouchableOpacity>

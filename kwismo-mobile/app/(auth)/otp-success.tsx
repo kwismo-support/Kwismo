@@ -1,4 +1,3 @@
-/// <reference types="nativewind/types" />
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -50,7 +49,7 @@ export default function OtpSuccessScreen() {
             transform: [{ scale: scaleAnim }],
           }}
         >
-          <Text className="font-montserrat-bold text-[42px] leading-[52px] text-brand-orange text-center tracking-tight">
+          <Text className="font-montserrat-bold text-4xl text-brand-orange text-center tracking-tight">
             {welcomeText}
           </Text>
         </Animated.View>
