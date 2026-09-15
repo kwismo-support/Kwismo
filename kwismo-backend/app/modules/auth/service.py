@@ -105,6 +105,32 @@ async def _validate_otp(user_id: str, canal: str, code: str):
 async def register(payload: RegisterIn) -> Message:
     existing = await db.user.find_unique(where={"email": payload.email})
     if existing:
+        if not existing.emailVerifie:
+            # Re-registering with existing unverified account -> update user info & resend OTP code
+            await db.user.update(
+                where={"id": existing.id},
+                data={
+                    "nom": payload.nom,
+                    "prenom": payload.prenom,
+                    "motDePasse": await hash_password(payload.mot_de_passe),
+                },
+            )
+            code = _generate_otp()
+            await _invalidate_otps(existing.id, "email")
+            await db.otpcode.create(
+                data={
+                    "userId": existing.id,
+                    "code": code,
+                    "canal": "email",
+                    "cible": existing.email,
+                    "dateExpiration": _otp_expiry(),
+                }
+            )
+            await send_otp_email(existing.email, code, lang=payload.lang)
+            return Message(
+                message_fr="Compte non vérifié. Un nouveau code OTP a été envoyé par email.",
+                message_en="Unverified account. A new OTP code has been sent to your email.",
+            )
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Email deja utilise / Email already in use.",
@@ -182,9 +208,21 @@ async def login(payload: LoginIn) -> TokenOut | DeviceVerificationRequiredOut:
             detail="Identifiants invalides / Invalid credentials.",
         )
     if not user.emailVerifie:
+        code = _generate_otp()
+        await _invalidate_otps(user.id, "email")
+        await db.otpcode.create(
+            data={
+                "userId": user.id,
+                "code": code,
+                "canal": "email",
+                "cible": user.email,
+                "dateExpiration": _otp_expiry(),
+            }
+        )
+        await send_otp_email(user.email, code, lang=payload.lang)
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Email non verifie / Email not verified.",
+            detail="Email non vérifié : un nouveau code OTP a été envoyé par email. / Email not verified: a new OTP code was sent to your email.",
         )
     if user.statut != "active":
         raise HTTPException(

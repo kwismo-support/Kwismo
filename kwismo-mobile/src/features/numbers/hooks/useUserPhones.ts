@@ -25,7 +25,7 @@ export function useUserPhones() {
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, []);
 
   useEffect(() => {
     fetchPhones();

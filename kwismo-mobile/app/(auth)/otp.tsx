@@ -21,6 +21,7 @@ import { Button } from '@/shared/ui/Button';
 import { toast } from '@/shared/store/toastStore';
 import { validateEmail } from '@/shared/lib/validation';
 import { colors } from '@/styles/tokens';
+import { storage } from '@/shared/services/storage';
 import { useOtp } from '@/features/auth/hooks/useOtp';
 
 export default function OtpScreen() {
@@ -34,6 +35,17 @@ export default function OtpScreen() {
   const [step, setStep] = useState<'email' | 'code'>(initialEmailParam ? 'code' : 'email');
   const [email, setEmail] = useState(initialEmailParam);
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
+
+  React.useEffect(() => {
+    if (!initialEmailParam) {
+      storage.getItem('kwismo_pending_email').then((savedEmail) => {
+        if (savedEmail && savedEmail.trim()) {
+          setEmail(savedEmail.trim());
+          setStep('code');
+        }
+      });
+    }
+  }, [initialEmailParam]);
 
   const { verifyOtp: verifyOtpCall, resendOtp: resendOtpCall, resendTimer, canResend } = useOtp(email);
   const [emailError, setEmailError] = useState('');

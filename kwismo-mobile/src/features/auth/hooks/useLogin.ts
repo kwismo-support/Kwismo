@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { authApi } from '../services/auth.api';
 import { useAuthStore } from '../../../shared/store/authStore';
 import { toast } from '../../../shared/store/toastStore';
+import { storage } from '../../../shared/services/storage';
 
 export function useLogin() {
   const [loading, setLoading] = useState(false);
@@ -54,6 +55,12 @@ export function useLogin() {
           toast.success(t('toasts.loginSuccess', 'Connexion réussie !'));
           return { success: true };
         }
+      }
+
+      if (res.status === 403 || (res.message && res.message.toLowerCase().includes('email non v'))) {
+        await storage.setItem('kwismo_pending_email', email.trim());
+        toast.info(t('toasts.unverifiedEmailOtpSent', 'Email non vérifié : un nouveau code OTP vous a été envoyé par email.'));
+        return { success: false, requiresEmailVerification: true };
       }
 
       const msg = res.message || t('errors.generalMessage', 'Connexion échouée.');
