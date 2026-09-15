@@ -1,4 +1,3 @@
-/// <reference types="nativewind/types" />
 import React, { useState } from 'react';
 import {
   View,
@@ -25,7 +24,7 @@ export default function LoginScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { colors: themeColors } = useAppTheme();
   const { handleLogin: loginApiCall } = useLogin();
 
   const [email, setEmail] = useState('');
@@ -70,13 +69,12 @@ export default function LoginScreen() {
     return false;
   };
 
-
   return (
     <AuthGradientBackground>
       <StatusBar style="light" />
 
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
@@ -91,10 +89,10 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustKeyboardInsets={true}
         >
-          <Text className="font-montserrat-bold text-[32px] leading-[40px] text-white mt-2.5">
+          <Text className="font-montserrat-bold text-3xl text-white mt-2.5">
             {t('auth.loginTitle')}
           </Text>
-          <Text className="font-medium text-body-md text-white/95 mt-3 mb-8">
+          <Text className="font-medium text-base text-white/95 mt-3 mb-8">
             {t('auth.loginSubtitle')}
           </Text>
 
@@ -129,7 +127,7 @@ export default function LoginScreen() {
               onPress={() => router.push('/(auth)/forgot-password')}
               className="self-start -mt-0.5 mb-6"
             >
-              <Text className="font-caption text-caption text-slate-700">
+              <Text className="font-caption text-xs text-slate-700 dark:text-slate-300">
                 {t('auth.forgotPasswordLink')}
               </Text>
             </TouchableOpacity>
@@ -140,8 +138,10 @@ export default function LoginScreen() {
               className="flex-row items-center mb-16"
             >
               <View
-                className={`w-5 h-5 rounded border-[1.5px] items-center justify-center mr-3 ${
-                  rememberMe ? 'bg-slate-900 border-slate-900' : 'border-slate-800'
+                className={`w-5 h-5 rounded border-2 items-center justify-center mr-3 ${
+                  rememberMe
+                    ? 'bg-slate-900 dark:bg-emerald-600 border-slate-900 dark:border-emerald-600'
+                    : 'border-slate-400 dark:border-slate-600'
                 }`}
               >
                 {rememberMe && (
@@ -152,25 +152,26 @@ export default function LoginScreen() {
                   />
                 )}
               </View>
-              <Text className="font-medium text-body-md text-slate-800">
+              <Text className="font-medium text-base text-slate-800 dark:text-slate-200">
                 {t('common.rememberMe')}
               </Text>
             </TouchableOpacity>
 
-            <Button
-              title={t('common.login')}
-              onPress={handleLogin}
-              variant="primary"
-              size="md"
-              style={{ marginBottom: 20 }}
-            />
+            <View className="mb-5">
+              <Button
+                title={t('common.login')}
+                onPress={handleLogin}
+                variant="primary"
+                size="md"
+              />
+            </View>
 
             <View className="flex-row items-center mb-5">
-              <View className="flex-1 h-[1px] bg-slate-300/80" />
-              <Text className="font-medium text-body-md text-slate-600 mx-4">
+              <View className="flex-1 h-[1px] bg-slate-300/80 dark:bg-slate-700" />
+              <Text className="font-medium text-base text-slate-600 dark:text-slate-400 mx-4">
                 {t('common.or')}
               </Text>
-              <View className="flex-1 h-[1px] bg-slate-300/80" />
+              <View className="flex-1 h-[1px] bg-slate-300/80 dark:bg-slate-700" />
             </View>
 
             <Button

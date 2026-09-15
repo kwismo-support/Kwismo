@@ -19,6 +19,7 @@ export interface ButtonProps {
   loading?: boolean;
   disabled?: boolean;
   minLoadingDuration?: number;
+  className?: string;
   style?: ViewStyle;
   textStyle?: TextStyle;
   leftIcon?: React.ReactNode;

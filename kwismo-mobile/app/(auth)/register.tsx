@@ -1,4 +1,3 @@
-/// <reference types="nativewind/types" />
 import React, { useState } from 'react';
 import {
   View,
@@ -131,7 +130,7 @@ export default function RegisterScreen() {
       <StatusBar style="light" />
 
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
@@ -146,10 +145,10 @@ export default function RegisterScreen() {
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustKeyboardInsets={true}
         >
-          <Text className="font-montserrat-bold text-[34px] leading-[44px] text-white mt-5">
+          <Text className="font-montserrat-bold text-3xl text-white mt-5">
             {t('auth.registerTitle')}
           </Text>
-          <Text className="font-medium text-body-md text-white/95 mt-3 mb-8">
+          <Text className="font-medium text-base text-white/95 mt-3 mb-8">
             {t('auth.registerSubtitle')}
           </Text>
 
@@ -218,64 +217,64 @@ export default function RegisterScreen() {
                           ? passwordAnalysis.score === 5
                             ? 'bg-emerald-500'
                             : 'bg-amber-500'
-                          : 'bg-slate-300'
+                          : 'bg-slate-300 dark:bg-slate-700'
                       }`}
                     />
                   ))}
                 </View>
 
                 <View className="flex-row flex-wrap justify-between gap-y-2">
-                  <View className="flex-row items-center w-[48%]">
+                  <View className="flex-row items-center w-1/2 pr-1">
                     <Icon
                       name={passwordAnalysis.criteria.minLength ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                       size={14}
                       color={passwordAnalysis.criteria.minLength ? colors.green : themeColors.inputPlaceholder}
                     />
-                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.minLength ? 'text-emerald-600' : 'text-slate-500'}`}>
+                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.minLength ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
                       {t('validation.criteriaMinLength')}
                     </Text>
                   </View>
 
-                  <View className="flex-row items-center w-[48%]">
+                  <View className="flex-row items-center w-1/2 pl-1">
                     <Icon
                       name={passwordAnalysis.criteria.hasUppercase ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                       size={14}
                       color={passwordAnalysis.criteria.hasUppercase ? colors.green : themeColors.inputPlaceholder}
                     />
-                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasUppercase ? 'text-emerald-600' : 'text-slate-500'}`}>
+                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasUppercase ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
                       {t('validation.criteriaUppercase')}
                     </Text>
                   </View>
 
-                  <View className="flex-row items-center w-[48%]">
+                  <View className="flex-row items-center w-1/2 pr-1">
                     <Icon
                       name={passwordAnalysis.criteria.hasLowercase ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                       size={14}
                       color={passwordAnalysis.criteria.hasLowercase ? colors.green : themeColors.inputPlaceholder}
                     />
-                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasLowercase ? 'text-emerald-600' : 'text-slate-500'}`}>
+                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasLowercase ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
                       {t('validation.criteriaLowercase')}
                     </Text>
                   </View>
 
-                  <View className="flex-row items-center w-[48%]">
+                  <View className="flex-row items-center w-1/2 pl-1">
                     <Icon
                       name={passwordAnalysis.criteria.hasNumber ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                       size={14}
                       color={passwordAnalysis.criteria.hasNumber ? colors.green : themeColors.inputPlaceholder}
                     />
-                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasNumber ? 'text-emerald-600' : 'text-slate-500'}`}>
+                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasNumber ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
                       {t('validation.criteriaNumber')}
                     </Text>
                   </View>
 
-                  <View className="flex-row items-center w-[48%]">
+                  <View className="flex-row items-center w-1/2 pr-1">
                     <Icon
                       name={passwordAnalysis.criteria.hasSymbol ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                       size={14}
                       color={passwordAnalysis.criteria.hasSymbol ? colors.green : themeColors.inputPlaceholder}
                     />
-                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasSymbol ? 'text-emerald-600' : 'text-slate-500'}`}>
+                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasSymbol ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
                       {t('validation.criteriaSymbol')}
                     </Text>
                   </View>
@@ -283,18 +282,19 @@ export default function RegisterScreen() {
               </View>
             )}
 
-            <Input
-              placeholder={t('common.confirmPassword')}
-              value={confirmPassword}
-              onChangeText={(val) => {
-                setConfirmPassword(val);
-                if (confirmPasswordError) setConfirmPasswordError('');
-              }}
-              error={confirmPasswordError}
-              isPassword
-              leftIcon={<Icon name="solar:lock-password-linear" color={themeColors.inputPlaceholder} size={20} />}
-              containerStyle={{ marginBottom: 16 }}
-            />
+            <View className="mb-4">
+              <Input
+                placeholder={t('common.confirmPassword')}
+                value={confirmPassword}
+                onChangeText={(val) => {
+                  setConfirmPassword(val);
+                  if (confirmPasswordError) setConfirmPasswordError('');
+                }}
+                error={confirmPasswordError}
+                isPassword
+                leftIcon={<Icon name="solar:lock-password-linear" color={themeColors.inputPlaceholder} size={20} />}
+              />
+            </View>
 
             <View className="mb-4">
               <View className="flex-row items-start my-1">
@@ -304,15 +304,15 @@ export default function RegisterScreen() {
                     setAcceptPrivacy(!acceptPrivacy);
                     if (privacyError) setPrivacyError('');
                   }}
-                  className={`w-5 h-5 rounded border-[1.5px] items-center justify-center mr-3 mt-0.5 ${
-                    acceptPrivacy ? 'bg-emerald-600 border-emerald-600' : privacyError ? 'border-red-500' : 'border-slate-400'
+                  className={`w-5 h-5 rounded border-2 items-center justify-center mr-3 mt-0.5 ${
+                    acceptPrivacy ? 'bg-emerald-600 border-emerald-600' : privacyError ? 'border-red-500' : 'border-slate-400 dark:border-slate-600'
                   }`}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
                   {acceptPrivacy && <Icon name="solar:check-read-linear" size={13} color={colors.white} />}
                 </TouchableOpacity>
 
-                <Text className="font-body-md text-sm text-slate-800 flex-1 leading-5">
+                <Text className="text-sm text-slate-800 dark:text-slate-200 flex-1 leading-5">
                   {t('auth.acceptPrivacyPrefix')}{' '}
                   <Text
                     onPress={() =>
@@ -321,7 +321,7 @@ export default function RegisterScreen() {
                         title: t('auth.privacyPolicyTitle'),
                       })
                     }
-                    className="font-semibold text-emerald-700 underline"
+                    className="font-semibold text-emerald-700 dark:text-emerald-400 underline"
                   >
                     {t('auth.privacyPolicyLink')}
                   </Text>{' '}
@@ -342,15 +342,15 @@ export default function RegisterScreen() {
                     setAcceptTerms(!acceptTerms);
                     if (termsError) setTermsError('');
                   }}
-                  className={`w-5 h-5 rounded border-[1.5px] items-center justify-center mr-3 mt-0.5 ${
-                    acceptTerms ? 'bg-emerald-600 border-emerald-600' : termsError ? 'border-red-500' : 'border-slate-400'
+                  className={`w-5 h-5 rounded border-2 items-center justify-center mr-3 mt-0.5 ${
+                    acceptTerms ? 'bg-emerald-600 border-emerald-600' : termsError ? 'border-red-500' : 'border-slate-400 dark:border-slate-600'
                   }`}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
                   {acceptTerms && <Icon name="solar:check-read-linear" size={13} color={colors.white} />}
                 </TouchableOpacity>
 
-                <Text className="font-body-md text-sm text-slate-800 flex-1 leading-5">
+                <Text className="text-sm text-slate-800 dark:text-slate-200 flex-1 leading-5">
                   {t('auth.acceptTermsPrefix')}{' '}
                   <Text
                     onPress={() =>
@@ -359,7 +359,7 @@ export default function RegisterScreen() {
                         title: t('auth.termsTitle'),
                       })
                     }
-                    className="font-semibold text-emerald-700 underline"
+                    className="font-semibold text-emerald-700 dark:text-emerald-400 underline"
                   >
                     {t('auth.termsOfServiceLink')}
                   </Text>{' '}
@@ -374,20 +374,21 @@ export default function RegisterScreen() {
               ) : null}
             </View>
 
-            <Button
-              title={t('common.registerButton')}
-              onPress={handleRegister}
-              variant="primary"
-              size="md"
-              style={{ marginTop: 22, marginBottom: 20 }}
-            />
+            <View className="mt-5 mb-5">
+              <Button
+                title={t('common.registerButton')}
+                onPress={handleRegister}
+                variant="primary"
+                size="md"
+              />
+            </View>
 
             <View className="flex-row items-center mb-5">
-              <View className="flex-1 h-[1px] bg-slate-300/80" />
-              <Text className="font-medium text-body-md text-slate-600 mx-4">
+              <View className="flex-1 h-[1px] bg-slate-300/80 dark:bg-slate-700" />
+              <Text className="font-medium text-base text-slate-600 dark:text-slate-400 mx-4">
                 {t('common.or')}
               </Text>
-              <View className="flex-1 h-[1px] bg-slate-300/80" />
+              <View className="flex-1 h-[1px] bg-slate-300/80 dark:bg-slate-700" />
             </View>
 
             <Button

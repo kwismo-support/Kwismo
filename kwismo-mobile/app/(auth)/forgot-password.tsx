@@ -1,4 +1,3 @@
-/// <reference types="nativewind/types" />
 import React, { useState } from 'react';
 import {
   View,
@@ -53,7 +52,7 @@ export default function ForgotPasswordScreen() {
       <StatusBar style="light" />
 
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
@@ -68,26 +67,27 @@ export default function ForgotPasswordScreen() {
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustKeyboardInsets={true}
         >
-          <Text className="font-montserrat-bold text-[34px] leading-[44px] text-white mt-5">
+          <Text className="font-montserrat-bold text-3xl text-white mt-5">
             {t('auth.forgotTitle')}
           </Text>
-          <Text className="font-medium text-base leading-[22px] text-white/95 mt-3 mb-10">
+          <Text className="font-medium text-base text-white/95 mt-3 mb-10">
             {t('auth.forgotSubtitle')}
           </Text>
 
-          <Input
-            placeholder={t('common.email')}
-            value={email}
-            onChangeText={(val) => {
-              setEmail(val);
-              if (emailError) setEmailError('');
-            }}
-            error={emailError}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            leftIcon={<Icon name="solar:letter-linear" color={themeColors.inputPlaceholder} size={20} />}
-            containerStyle={{ marginBottom: 24 }}
-          />
+          <View className="mb-6">
+            <Input
+              placeholder={t('common.email')}
+              value={email}
+              onChangeText={(val) => {
+                setEmail(val);
+                if (emailError) setEmailError('');
+              }}
+              error={emailError}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              leftIcon={<Icon name="solar:letter-linear" color={themeColors.inputPlaceholder} size={20} />}
+            />
+          </View>
 
           <Button
             title={t('common.reset')}
@@ -101,7 +101,7 @@ export default function ForgotPasswordScreen() {
             onPress={() => router.back()}
             className="mt-4 items-center py-2.5"
           >
-            <Text className="font-semibold text-sm text-slate-700">
+            <Text className="font-semibold text-sm text-slate-700 dark:text-slate-300">
               {t('common.back')}
             </Text>
           </TouchableOpacity>

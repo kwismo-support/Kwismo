@@ -1,4 +1,3 @@
-/// <reference types="nativewind/types" />
 import React, { useState } from 'react';
 import {
   View,
@@ -77,7 +76,7 @@ export default function ResetPasswordScreen() {
       <StatusBar style="light" />
 
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
@@ -92,10 +91,10 @@ export default function ResetPasswordScreen() {
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustKeyboardInsets={true}
         >
-          <Text className="font-montserrat-bold text-[34px] leading-[44px] text-white mt-5">
+          <Text className="font-montserrat-bold text-3xl text-white mt-5">
             {t('auth.resetTitle')}
           </Text>
-          <Text className="font-medium text-base leading-[22px] text-white/95 mt-3 mb-8">
+          <Text className="font-medium text-base text-white/95 mt-3 mb-8">
             {t('auth.resetSubtitle')}
           </Text>
 
@@ -122,64 +121,64 @@ export default function ResetPasswordScreen() {
                         ? passwordAnalysis.score === 5
                           ? 'bg-emerald-500'
                           : 'bg-amber-500'
-                        : 'bg-slate-300'
+                        : 'bg-slate-300 dark:bg-slate-700'
                     }`}
                   />
                 ))}
               </View>
 
               <View className="flex-row flex-wrap justify-between gap-y-2">
-                <View className="flex-row items-center w-[48%]">
+                <View className="flex-row items-center w-1/2 pr-1">
                   <Icon
                     name={passwordAnalysis.criteria.minLength ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                     size={14}
                     color={passwordAnalysis.criteria.minLength ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.minLength ? 'text-emerald-600' : 'text-slate-500'}`}>
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.minLength ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
                     {t('validation.criteriaMinLength')}
                   </Text>
                 </View>
 
-                <View className="flex-row items-center w-[48%]">
+                <View className="flex-row items-center w-1/2 pl-1">
                   <Icon
                     name={passwordAnalysis.criteria.hasUppercase ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                     size={14}
                     color={passwordAnalysis.criteria.hasUppercase ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasUppercase ? 'text-emerald-600' : 'text-slate-500'}`}>
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasUppercase ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
                     {t('validation.criteriaUppercase')}
                   </Text>
                 </View>
 
-                <View className="flex-row items-center w-[48%]">
+                <View className="flex-row items-center w-1/2 pr-1">
                   <Icon
                     name={passwordAnalysis.criteria.hasLowercase ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                     size={14}
                     color={passwordAnalysis.criteria.hasLowercase ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasLowercase ? 'text-emerald-600' : 'text-slate-500'}`}>
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasLowercase ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
                     {t('validation.criteriaLowercase')}
                   </Text>
                 </View>
 
-                <View className="flex-row items-center w-[48%]">
+                <View className="flex-row items-center w-1/2 pl-1">
                   <Icon
                     name={passwordAnalysis.criteria.hasNumber ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                     size={14}
                     color={passwordAnalysis.criteria.hasNumber ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasNumber ? 'text-emerald-600' : 'text-slate-500'}`}>
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasNumber ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
                     {t('validation.criteriaNumber')}
                   </Text>
                 </View>
 
-                <View className="flex-row items-center w-[48%]">
+                <View className="flex-row items-center w-1/2 pr-1">
                   <Icon
                     name={passwordAnalysis.criteria.hasSymbol ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                     size={14}
                     color={passwordAnalysis.criteria.hasSymbol ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasSymbol ? 'text-emerald-600' : 'text-slate-500'}`}>
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasSymbol ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
                     {t('validation.criteriaSymbol')}
                   </Text>
                 </View>
@@ -187,18 +186,19 @@ export default function ResetPasswordScreen() {
             </View>
           )}
 
-          <Input
-            placeholder={t('common.confirmPassword')}
-            value={confirmPassword}
-            onChangeText={(val) => {
-              setConfirmPassword(val);
-              if (confirmPasswordError) setConfirmPasswordError('');
-            }}
-            error={confirmPasswordError}
-            isPassword
-            leftIcon={<Icon name="solar:lock-password-linear" color={themeColors.inputPlaceholder} size={20} />}
-            containerStyle={{ marginBottom: 28 }}
-          />
+          <View className="mb-7">
+            <Input
+              placeholder={t('common.confirmPassword')}
+              value={confirmPassword}
+              onChangeText={(val) => {
+                setConfirmPassword(val);
+                if (confirmPasswordError) setConfirmPasswordError('');
+              }}
+              error={confirmPasswordError}
+              isPassword
+              leftIcon={<Icon name="solar:lock-password-linear" color={themeColors.inputPlaceholder} size={20} />}
+            />
+          </View>
 
           <Button
             title={t('common.reset')}
