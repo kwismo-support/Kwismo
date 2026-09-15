@@ -11,13 +11,13 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../../src/shared/ui/Icon';
-import { HeaderBar } from '../../src/shared/components/HeaderBar';
-import { Skeleton, SkeletonCircle, SkeletonLoader } from '../../src/shared/ui/Skeleton';
-import { TabBar } from '../../src/shared/components/TabBar';
-import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
-import { colors, fonts } from '../../src/styles/tokens';
-import { scaleFont } from '../../src/shared/lib/responsive';
+import { Icon } from '@/shared/ui/Icon';
+import { HeaderBar } from '@/shared/components/HeaderBar';
+import { Skeleton, SkeletonCircle, SkeletonLoader } from '@/shared/ui/Skeleton';
+import { TabBar } from '@/shared/components/TabBar';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { colors, fonts } from '@/styles/tokens';
+import { scaleFont } from '@/shared/lib/responsive';
 
 const CONTACTS_DATA = [
   { id: '1', name: 'Alain Dupont', phone: '+237 6 98 44 43 88', status: 'Protégé', trusted: true },

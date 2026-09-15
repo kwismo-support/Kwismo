@@ -3,11 +3,11 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { HeaderBar } from '../../src/shared/components/HeaderBar';
-import { PinPad } from '../../src/shared/components/PinPad';
-import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
-import { toast } from '../../src/shared/store/toastStore';
-import { saveUserPin, setBiometricPreference } from '../../src/shared/lib/secureStore';
+import { HeaderBar } from '@/shared/components/HeaderBar';
+import { PinPad } from '@/shared/components/PinPad';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { toast } from '@/shared/store/toastStore';
+import { saveUserPin, setBiometricPreference } from '@/shared/lib/secureStore';
 
 export default function PinSetupScreen() {
   const router = useRouter();

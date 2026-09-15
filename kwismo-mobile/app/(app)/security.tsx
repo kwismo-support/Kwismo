@@ -12,13 +12,13 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../../src/shared/ui/Icon';
-import { Input } from '../../src/shared/ui/Input';
-import { HeaderBar } from '../../src/shared/components/HeaderBar';
-import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
-import { toast } from '../../src/shared/store/toastStore';
-import { colors, fonts } from '../../src/styles/tokens';
-import { scaleFont } from '../../src/shared/lib/responsive';
+import { Icon } from '@/shared/ui/Icon';
+import { Input } from '@/shared/ui/Input';
+import { HeaderBar } from '@/shared/components/HeaderBar';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { toast } from '@/shared/store/toastStore';
+import { colors, fonts } from '@/styles/tokens';
+import { scaleFont } from '@/shared/lib/responsive';
 
 export default function SecurityScreen() {
   const router = useRouter();
