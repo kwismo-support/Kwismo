@@ -2,12 +2,10 @@ import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   Switch,
   Modal,
-  FlatList,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,22 +13,17 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
-import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { toast } from '@/shared/store/toastStore';
-import { colors, fonts } from '@/styles/tokens';
-import { scaleFont } from '@/shared/lib/responsive';
-
+import { colors } from '@/styles/tokens';
 import { MOCK_NOTIFICATIONS, NotificationItem } from '@/shared/mock/notificationsMock';
 
 export default function NotificationsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
 
   const [activeTab, setActiveTab] = useState<'all' | 'unread' | 'security'>('all');
   const [preferencesModalVisible, setPreferencesModalVisible] = useState(false);
-
   const [notifications, setNotifications] = useState<NotificationItem[]>(MOCK_NOTIFICATIONS);
 
   const [pushEnabled, setPushEnabled] = useState(true);
@@ -59,27 +52,24 @@ export default function NotificationsScreen() {
   const getIconForType = (type: NotificationItem['type']) => {
     switch (type) {
       case 'security':
-        return { name: 'solar:danger-triangle-bold', color: '#EF4444', bg: 'rgba(239, 68, 68, 0.12)' };
+        return { name: 'solar:danger-triangle-bold', color: '#EF4444', bgClass: 'bg-red-100 dark:bg-red-950/50' };
       case 'transfer':
-        return { name: 'solar:card-send-bold', color: colors.green, bg: 'rgba(43, 182, 115, 0.12)' };
+        return { name: 'solar:card-send-bold', color: colors.green, bgClass: 'bg-emerald-100 dark:bg-emerald-950/50' };
       case 'sim':
-        return { name: 'solar:sim-cards-bold', color: colors.orange, bg: 'rgba(245, 158, 11, 0.12)' };
+        return { name: 'solar:sim-cards-bold', color: colors.orange, bgClass: 'bg-amber-100 dark:bg-amber-950/50' };
       default:
-        return { name: 'solar:bell-bold', color: '#3B82F6', bg: 'rgba(59, 130, 246, 0.12)' };
+        return { name: 'solar:bell-bold', color: '#3B82F6', bgClass: 'bg-blue-100 dark:bg-blue-950/50' };
     }
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <View className="flex-1 bg-white dark:bg-brand-darkBg">
       <StatusBar style="light" />
 
-      <HeaderBar
-        title={t('common.notifications')}
-        showBack={true}
-      />
+      <HeaderBar title={t('common.notifications')} showBack={true} />
 
-      <View style={[styles.topActionBar, { borderBottomColor: themeColors.divider }]}>
-        <View style={styles.tabsRow}>
+      <View className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 gap-2.5">
+        <View className="flex-row items-center gap-2">
           {[
             { id: 'all', label: t('notifications.tabAll') },
             { id: 'unread', label: `${t('notifications.tabUnread')} (${unreadCount})` },
@@ -90,22 +80,16 @@ export default function NotificationsScreen() {
               <TouchableOpacity
                 key={tab.id}
                 onPress={() => setActiveTab(tab.id as any)}
-                style={[
-                  styles.tabChip,
-                  {
-                    backgroundColor: isSelected
-                      ? colors.green
-                      : isDark
-                      ? 'rgba(255,255,255,0.06)'
-                      : '#F1F5F9',
-                  },
-                ]}
+                className={`px-3.5 py-2 rounded-full ${
+                  isSelected
+                    ? 'bg-brand-green'
+                    : 'bg-slate-100 dark:bg-white/5'
+                }`}
               >
                 <Text
-                  style={[
-                    styles.tabChipText,
-                    { color: isSelected ? colors.white : themeColors.textSecondary },
-                  ]}
+                  className={`font-semibold text-2xs ${
+                    isSelected ? 'text-white' : 'text-slate-600 dark:text-slate-400'
+                  }`}
                 >
                   {tab.label}
                 </Text>
@@ -114,12 +98,11 @@ export default function NotificationsScreen() {
           })}
         </View>
 
-        {/* Boutons Tout marquer lu + Réglages */}
-        <View style={styles.actionButtonsRow}>
+        <View className="flex-row items-center justify-between">
           {unreadCount > 0 && (
-            <TouchableOpacity onPress={handleMarkAllRead} style={styles.markReadBtn}>
+            <TouchableOpacity onPress={handleMarkAllRead} className="flex-row items-center gap-1.5">
               <Icon name="solar:check-read-linear" size={18} color={colors.green} />
-              <Text style={styles.markReadBtnText}>
+              <Text className="font-medium text-2xs text-brand-green">
                 {t('notifications.markAll', 'Tout lire')}
               </Text>
             </TouchableOpacity>
@@ -127,28 +110,28 @@ export default function NotificationsScreen() {
 
           <TouchableOpacity
             onPress={() => setPreferencesModalVisible(true)}
-            style={[styles.settingsBtn, { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#F1F5F9' }]}
+            className="w-9 h-9 rounded-full items-center justify-center bg-slate-100 dark:bg-white/10"
           >
-            <Icon name="solar:settings-bold" size={18} color={themeColors.textPrimary} />
+            <Icon name="solar:settings-bold" size={18} color="#94A3B8" />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* LISTE DES NOTIFICATIONS */}
       <ScrollView
-        contentContainerStyle={[
-          styles.listContent,
-          { paddingBottom: insets.bottom + 40 },
-        ]}
+        contentContainerStyle={{
+          padding: 16,
+          gap: 12,
+          paddingBottom: insets.bottom + 40,
+        }}
         showsVerticalScrollIndicator={false}
       >
         {filteredNotifications.length === 0 ? (
-          <View style={styles.emptyContainer}>
+          <View className="py-16 items-center justify-center">
             <Icon name="solar:bell-off-linear" size={48} color="#CBD5E1" />
-            <Text style={[styles.emptyTitle, { color: themeColors.textPrimary }]}>
+            <Text className="font-extrabold text-base mt-3 text-slate-900 dark:text-white">
               {t('notifications.emptyTitle', 'Aucune notification')}
             </Text>
-            <Text style={[styles.emptySub, { color: themeColors.textSecondary }]}>
+            <Text className="font-normal text-xs mt-1 text-center text-slate-500 dark:text-slate-400">
               {t('notifications.emptySub', 'Vous êtes à jour ! Aucune alerte en attente.')}
             </Text>
           </View>
@@ -163,34 +146,28 @@ export default function NotificationsScreen() {
                   handleToggleRead(item.id);
                   if (item.actionUrl) router.push(item.actionUrl as any);
                 }}
-                style={[
-                  styles.notificationCard,
-                  {
-                    backgroundColor: item.read
-                      ? themeColors.cardBg
-                      : isDark
-                      ? '#1E293B'
-                      : '#F8FAFC',
-                    borderColor: item.read ? themeColors.inputBorder : colors.green,
-                  },
-                ]}
+                className={`flex-row items-start p-3.5 rounded-2xl border relative ${
+                  item.read
+                    ? 'bg-white dark:bg-brand-cardDark border-slate-200 dark:border-slate-700/60'
+                    : 'bg-emerald-50/60 dark:bg-slate-800 border-brand-green'
+                }`}
               >
-                {!item.read && <View style={styles.unreadDot} />}
+                {!item.read && <View className="absolute top-3.5 right-3.5 w-2 h-2 rounded-full bg-brand-green" />}
 
-                <View style={[styles.iconCircle, { backgroundColor: iconMeta.bg }]}>
+                <View className={`w-11 h-11 rounded-full items-center justify-center ${iconMeta.bgClass}`}>
                   <Icon name={iconMeta.name} size={22} color={iconMeta.color} />
                 </View>
 
-                <View style={{ flex: 1, marginLeft: 12 }}>
-                  <View style={styles.cardHeaderRow}>
-                    <Text style={[styles.cardTitle, { color: themeColors.textPrimary }]}>
+                <View className="flex-1 ml-3">
+                  <View className="flex-row items-center justify-between pr-4">
+                    <Text className="font-bold text-sm flex-1 text-slate-900 dark:text-white">
                       {item.title}
                     </Text>
-                    <Text style={[styles.timestampText, { color: themeColors.textSecondary }]}>
+                    <Text className="font-normal text-2xs text-slate-400">
                       {item.timestamp}
                     </Text>
                   </View>
-                  <Text style={[styles.cardMessage, { color: themeColors.textSecondary }]}>
+                  <Text className="font-normal text-xs mt-1 text-slate-600 dark:text-slate-400 leading-4">
                     {item.message}
                   </Text>
                 </View>
@@ -200,12 +177,11 @@ export default function NotificationsScreen() {
         )}
       </ScrollView>
 
-      {/* MODAL CANAUX DE NOTIFICATION */}
       <Modal visible={preferencesModalVisible} transparent animationType="slide">
-        <View style={styles.modalBackdrop}>
-          <View style={[styles.modalContent, { backgroundColor: themeColors.cardBg }]}>
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalHeaderTitle, { color: themeColors.textPrimary }]}>
+        <View className="flex-1 bg-black/50 justify-end">
+          <View className="rounded-t-3xl p-6 gap-4 bg-white dark:bg-brand-cardDark">
+            <View className="flex-row items-center justify-between">
+              <Text className="font-extrabold text-base text-slate-900 dark:text-white">
                 {t('notifications.preferencesTitle', 'Canaux de notification')}
               </Text>
               <TouchableOpacity onPress={() => setPreferencesModalVisible(false)}>
@@ -213,8 +189,8 @@ export default function NotificationsScreen() {
               </TouchableOpacity>
             </View>
 
-            <View style={styles.prefRow}>
-              <Text style={[styles.prefLabel, { color: themeColors.textPrimary }]}>
+            <View className="flex-row items-center justify-between py-2">
+              <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 Notifications Push
               </Text>
               <Switch
@@ -224,8 +200,8 @@ export default function NotificationsScreen() {
               />
             </View>
 
-            <View style={styles.prefRow}>
-              <Text style={[styles.prefLabel, { color: themeColors.textPrimary }]}>
+            <View className="flex-row items-center justify-between py-2">
+              <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 Alertes de sécurité SMS
               </Text>
               <Switch
@@ -235,8 +211,8 @@ export default function NotificationsScreen() {
               />
             </View>
 
-            <View style={styles.prefRow}>
-              <Text style={[styles.prefLabel, { color: themeColors.textPrimary }]}>
+            <View className="flex-row items-center justify-between py-2">
+              <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 Alertes WhatsApp
               </Text>
               <Switch
@@ -251,9 +227,9 @@ export default function NotificationsScreen() {
                 setPreferencesModalVisible(false);
                 toast.success('Préférences de notification mises à jour !');
               }}
-              style={[styles.saveBtn, { backgroundColor: colors.green, marginTop: 16 }]}
+              className="h-12 rounded-xl items-center justify-center bg-brand-green mt-4"
             >
-              <Text style={styles.saveBtnText}>{t('common.save', 'Enregistrer')}</Text>
+              <Text className="font-bold text-sm text-white">{t('common.save', 'Enregistrer')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -262,159 +238,3 @@ export default function NotificationsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  topActionBar: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    gap: 10,
-  },
-  tabsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  tabChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  tabChipText: {
-    fontFamily: fonts.semiBold,
-    fontSize: scaleFont(12),
-  },
-  actionButtonsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  markReadBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  markReadBtnText: {
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(12),
-    color: colors.green,
-  },
-  settingsBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  listContent: {
-    padding: 16,
-    gap: 12,
-  },
-  notificationCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    padding: 14,
-    borderRadius: 16,
-    borderWidth: 1,
-    position: 'relative',
-  },
-  unreadDot: {
-    position: 'absolute',
-    top: 14,
-    right: 14,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.green,
-  },
-  iconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingRight: 16,
-  },
-  cardTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '700',
-    flex: 1,
-  },
-  timestampText: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(11),
-  },
-  cardMessage: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-    marginTop: 4,
-    lineHeight: 18,
-  },
-  emptyContainer: {
-    paddingVertical: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(16),
-    fontWeight: '800',
-    marginTop: 12,
-  },
-  emptySub: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(13),
-    marginTop: 4,
-    textAlign: 'center',
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 24,
-    gap: 16,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  modalHeaderTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(16),
-    fontWeight: '800',
-  },
-  prefRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 8,
-  },
-  prefLabel: {
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(14),
-  },
-  saveBtn: {
-    height: 48,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  saveBtnText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    color: colors.white,
-  },
-});

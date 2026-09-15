@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
@@ -16,18 +15,14 @@ import { Input } from '@/shared/ui/Input';
 import { HeaderBar } from '@/shared/components/HeaderBar';
 import { CountrySelectInput } from '@/shared/components/CountrySelectInput';
 import { ProfilePhotoPickerModal } from '@/shared/components/ProfilePhotoPickerModal';
-import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { useAuthStore } from '@/shared/store/authStore';
 import { useProfile } from '@/features/profile/hooks/useProfile';
-import { toast } from '@/shared/store/toastStore';
-import { colors, fonts } from '@/styles/tokens';
-import { scaleFont } from '@/shared/lib/responsive';
+import { colors } from '@/styles/tokens';
 
 export default function EditProfileScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
 
   const { user } = useAuthStore();
   const { updateProfile, loading: isSaving } = useProfile();
@@ -37,7 +32,7 @@ export default function EditProfileScreen() {
   const [email] = useState(user?.email || '');
   const [countryName, setCountryName] = useState('Cameroun');
   const [countryCode, setCountryCode] = useState('CM');
-  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [, setProfilePhoto] = useState<string | null>(null);
   const [isPhotoPickerOpen, setIsPhotoPickerOpen] = useState(false);
 
   const [nameError, setNameError] = useState('');
@@ -58,25 +53,23 @@ export default function EditProfileScreen() {
     }
   };
 
-
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <View className="flex-1 bg-white dark:bg-brand-darkBg">
       <StatusBar style="light" />
 
-      {/* Header unifié de page secondaire sans cloche */}
       <HeaderBar title={t('profile.personalInfo', 'Éditer le profil')} showBack={true} />
 
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollBody,
-          { paddingBottom: insets.bottom + 40 },
-        ]}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          paddingTop: 24,
+          paddingBottom: insets.bottom + 40,
+        }}
         showsVerticalScrollIndicator={false}
       >
-        {/* Photo de profil avec icône appareil photo */}
-        <View style={styles.avatarSection}>
-          <View style={[styles.avatarBigCircle, { backgroundColor: isDark ? '#334155' : '#CBD5E1' }]}>
-            <Text style={styles.avatarInitial}>
+        <View className="self-center relative mb-6">
+          <View className="w-24 h-24 rounded-full items-center justify-center bg-slate-200 dark:bg-slate-700">
+            <Text className="font-extrabold text-3xl text-slate-900 dark:text-white">
               {(firstName || lastName || 'K').charAt(0).toUpperCase()}
             </Text>
           </View>
@@ -84,13 +77,12 @@ export default function EditProfileScreen() {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => setIsPhotoPickerOpen(true)}
-            style={styles.cameraBadgeBtn}
+            className="absolute bottom-0.5 right-0.5 w-7 h-7 rounded-full bg-brand-green items-center justify-center border-2 border-white dark:border-slate-800"
           >
             <Icon name="solar:camera-bold" color={colors.white} size={16} />
           </TouchableOpacity>
         </View>
 
-        {/* Input Prénom */}
         <Input
           label={t('common.firstName', 'Prénom')}
           value={firstName}
@@ -103,8 +95,7 @@ export default function EditProfileScreen() {
           iconLeft="solar:user-linear"
         />
 
-        {/* Input Nom */}
-        <View style={{ marginTop: 12 }}>
+        <View className="mt-3">
           <Input
             label={t('common.lastName', 'Nom')}
             value={lastName}
@@ -117,8 +108,7 @@ export default function EditProfileScreen() {
           />
         </View>
 
-        {/* Input Email (Lecture seule ou info) */}
-        <View style={{ marginTop: 12 }}>
+        <View className="mt-3">
           <Input
             label={t('common.email', 'Adresse email')}
             value={email}
@@ -129,8 +119,7 @@ export default function EditProfileScreen() {
           />
         </View>
 
-        {/* Input Sélection de Pays du Monde (Composant dédié i18n-iso-countries) */}
-        <View style={{ marginTop: 12 }}>
+        <View className="mt-3">
           <CountrySelectInput
             label={t('common.country', 'Pays')}
             value={countryName}
@@ -142,24 +131,23 @@ export default function EditProfileScreen() {
           />
         </View>
 
-        {/* Bouton d'enregistrement principal */}
         <TouchableOpacity
           activeOpacity={0.85}
           disabled={isSaving}
           onPress={handleSave}
-          style={[styles.saveBtn, { backgroundColor: colors.orange, marginTop: 32 }]}
+          className="h-13 rounded-2xl items-center justify-center bg-brand-orange mt-8"
+          style={{ height: 52 }}
         >
           {isSaving ? (
             <ActivityIndicator color={colors.white} />
           ) : (
-            <Text style={styles.saveBtnText}>
+            <Text className="font-bold text-base text-white">
               {t('common.saveChanges', 'Enregistrer les modifications')}
             </Text>
           )}
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Modale de changement de photo (Caméra / Galerie) */}
       <ProfilePhotoPickerModal
         visible={isPhotoPickerOpen}
         onClose={() => setIsPhotoPickerOpen(false)}
@@ -169,55 +157,3 @@ export default function EditProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollBody: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-  },
-  avatarSection: {
-    alignSelf: 'center',
-    position: 'relative',
-    marginBottom: 24,
-  },
-  avatarBigCircle: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarInitial: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(32),
-    fontWeight: '800',
-    color: '#0F172A',
-  },
-  cameraBadgeBtn: {
-    position: 'absolute',
-    bottom: 2,
-    right: 2,
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: colors.green,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: colors.white,
-  },
-  saveBtn: {
-    height: 52,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  saveBtnText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(15),
-    fontWeight: '700',
-    color: colors.white,
-  },
-});

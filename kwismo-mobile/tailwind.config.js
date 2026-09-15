@@ -15,6 +15,7 @@ module.exports = {
           mint: '#E6F7F2',
           blue: '#6B98FF',
           darkBg: '#0F1626',
+          cardDark: '#162035',
         },
         primary: {
           50: '#e7e9f0',

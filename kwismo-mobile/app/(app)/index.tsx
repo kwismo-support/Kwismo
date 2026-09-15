@@ -140,7 +140,7 @@ export default function HomeScreen() {
       <HeaderBar isHome={true} />
 
       <View className="px-4 -mt-14 z-10">
-        <View className="rounded-xl p-4 mb-4 shadow-md shadow-black/10 elevation-4 bg-white dark:bg-[#162035]">
+        <View className="rounded-xl p-4 mb-4 shadow-md shadow-black/10 elevation-4 bg-white dark:bg-brand-cardDark">
           <View className="flex-row items-center mb-4">
             <View className="mr-3">
               {user?.avatarUrl ? (
@@ -325,7 +325,7 @@ export default function HomeScreen() {
                 key={item.id}
                 activeOpacity={0.75}
                 onPress={() => router.push({ pathname: '/(app)/verify', params: { phone: item.phone } })}
-                className="flex-row items-center py-2 px-3 rounded-lg border-0 bg-white dark:bg-[#162035]"
+                className="flex-row items-center py-2 px-3 rounded-lg border-0 bg-white dark:bg-brand-cardDark"
               >
                 <View
                   className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 justify-center items-center mr-2.5"

@@ -5,6 +5,7 @@ interface CountryFlagProps {
   countryCode: string;
   size?: number;
   style?: ViewStyle;
+  className?: string;
 }
 
 export const CountryFlag: React.FC<CountryFlagProps> = ({

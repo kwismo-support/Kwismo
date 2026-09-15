@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   Switch,
@@ -22,14 +21,12 @@ import { useThemeStore, ThemePreference } from '@/shared/store/themeStore';
 import { useAuthStore } from '@/shared/store/authStore';
 import { useProfile } from '@/features/profile/hooks/useProfile';
 import { toast } from '@/shared/store/toastStore';
-import { colors, fonts } from '@/styles/tokens';
-import { scaleFont } from '@/shared/lib/responsive';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { isDark } = useAppTheme();
   const { userThemePreference, setTheme } = useThemeStore();
   const { user } = useAuthStore();
   const { profile, loading } = useProfile();
@@ -37,11 +34,9 @@ export default function ProfileScreen() {
 
   const [callDetectionEnabled, setCallDetectionEnabled] = useState(true);
 
-  // Bottom Sheet Modals
   const [themeModalVisible, setThemeModalVisible] = useState(false);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
 
-  // Informations utilisateur réelles
   const userName = user?.firstName
     ? `${user.firstName} ${user.lastName || ''}`.trim()
     : profile?.prenom
@@ -57,7 +52,6 @@ export default function ProfileScreen() {
     router.replace('/(auth)/login');
   };
 
-
   const getThemeLabel = (pref: ThemePreference) => {
     if (pref === 'light') return t('theme.light');
     if (pref === 'dark') return t('theme.dark');
@@ -70,41 +64,39 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-      <StatusBar style="light" />
+    <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg">
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
       <HeaderBar title={t('common.profile')} />
 
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollBody,
-          { paddingBottom: insets.bottom + 95 },
-        ]}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 95 }}
         showsVerticalScrollIndicator={false}
+        className="px-4 pt-4"
       >
         {loading ? (
           <SkeletonLoader>
-            <View style={[styles.userHeaderCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
+            <View className="flex-row items-center p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark mb-4">
               <SkeletonCircle size={52} />
-              <View style={{ flex: 1, marginLeft: 14 }}>
+              <View className="flex-1 ml-3.5">
                 <Skeleton width={140} height={18} borderRadius={4} />
                 <Skeleton width={160} height={14} borderRadius={4} style={{ marginTop: 6 }} />
               </View>
             </View>
           </SkeletonLoader>
         ) : (
-          <View style={[styles.userHeaderCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
-            <View style={styles.avatarCircle}>
-              <Text style={styles.avatarInitialText}>
+          <View className="flex-row items-center p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark mb-4">
+            <View className="w-13 h-13 rounded-full bg-slate-300 dark:bg-slate-700 items-center justify-center">
+              <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white">
                 {userName.charAt(0).toUpperCase()}
               </Text>
             </View>
 
-            <View style={styles.userTextInfo}>
-              <Text style={[styles.userNameText, { color: themeColors.textPrimary }]}>
+            <View className="flex-1 ml-3.5">
+              <Text className="font-font-bold text-base font-bold text-slate-900 dark:text-white">
                 {userName}
               </Text>
-              <Text style={[styles.userEmailText, { color: themeColors.textSecondary }]}>
+              <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 {userEmail}
               </Text>
             </View>
@@ -112,170 +104,169 @@ export default function ProfileScreen() {
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => router.push('/(app)/edit-profile')}
-              style={styles.editPenBtn}
+              className="p-1.5"
             >
-              <Icon name="solar:pen-new-square-bold" color={colors.green} size={20} />
+              <Icon name="solar:pen-new-square-bold" color="#25B876" size={20} />
             </TouchableOpacity>
           </View>
         )}
 
-        <Text style={[styles.groupSectionLabel, { color: themeColors.textSecondary }]}>
+        <Text className="font-font-bold text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
           {t('profile.accountSection')}
         </Text>
 
-        <View style={[styles.groupCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
+        <View className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-4 mb-3">
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => router.push('/(app)/edit-profile')}
-            style={styles.itemRow}
+            className="flex-row items-center justify-between py-3.5"
           >
-            <View style={styles.itemLeft}>
-              <Icon name="solar:user-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
-              <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
+            <View className="flex-row items-center">
+              <Icon name="solar:user-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} className="mr-3" />
+              <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
                 {t('profile.personalInfo')}
               </Text>
             </View>
-            <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
+            <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={18} />
           </TouchableOpacity>
 
-          <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
+          <View className="h-px bg-slate-100 dark:bg-slate-800" />
 
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => router.push('/(app)/security')}
-            style={styles.itemRow}
+            className="flex-row items-center justify-between py-3.5"
           >
-            <View style={styles.itemLeft}>
-              <Icon name="solar:lock-keyhole-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
-              <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
+            <View className="flex-row items-center">
+              <Icon name="solar:lock-keyhole-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} className="mr-3" />
+              <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
                 {t('profile.security')}
               </Text>
             </View>
-            <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
+            <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={18} />
           </TouchableOpacity>
 
-          <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
+          <View className="h-px bg-slate-100 dark:bg-slate-800" />
 
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => router.push('/(app)/two-factor')}
-            style={styles.itemRow}
+            className="flex-row items-center justify-between py-3.5"
           >
-            <View style={styles.itemLeft}>
-              <Icon name="solar:shield-keyhole-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
-              <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
+            <View className="flex-row items-center">
+              <Icon name="solar:shield-keyhole-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} className="mr-3" />
+              <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
                 {t('profile.twoFactor')}
               </Text>
             </View>
-            <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
+            <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={18} />
           </TouchableOpacity>
 
-          <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
+          <View className="h-px bg-slate-100 dark:bg-slate-800" />
 
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => router.push('/(app)/notifications')}
-            style={styles.itemRow}
+            className="flex-row items-center justify-between py-3.5"
           >
-            <View style={styles.itemLeft}>
-              <Icon name="solar:bell-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
-              <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
+            <View className="flex-row items-center">
+              <Icon name="solar:bell-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} className="mr-3" />
+              <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
                 {t('common.notifications')}
               </Text>
             </View>
-            <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} />
+            <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={18} />
           </TouchableOpacity>
         </View>
 
-        <Text style={[styles.groupSectionLabel, { color: themeColors.textSecondary, marginTop: 16 }]}>
+        <Text className="font-font-bold text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mt-4 mb-2">
           {t('profile.preferences')}
         </Text>
 
-        <View style={[styles.groupCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
+        <View className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-4 mb-3">
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setThemeModalVisible(true)}
-            style={styles.itemRow}
+            className="flex-row items-center justify-between py-3.5"
           >
-            <View style={styles.itemLeft}>
-              <Icon name="solar:sun-2-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
-              <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
+            <View className="flex-row items-center">
+              <Icon name="solar:sun-2-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} className="mr-3" />
+              <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
                 {t('profile.darkMode')}
               </Text>
             </View>
 
-            <View style={styles.itemRightRow}>
-              <Text style={[styles.itemValueText, { color: themeColors.textSecondary }]}>
+            <View className="flex-row items-center">
+              <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400">
                 {getThemeLabel(userThemePreference)}
               </Text>
-              <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} style={{ marginLeft: 6 }} />
+              <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={18} className="ml-1.5" />
             </View>
           </TouchableOpacity>
 
-          <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
+          <View className="h-px bg-slate-100 dark:bg-slate-800" />
 
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setLanguageModalVisible(true)}
-            style={styles.itemRow}
+            className="flex-row items-center justify-between py-3.5"
           >
-            <View style={styles.itemLeft}>
-              <Icon name="solar:global-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
-              <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
+            <View className="flex-row items-center">
+              <Icon name="solar:global-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} className="mr-3" />
+              <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
                 {t('profile.language')}
               </Text>
             </View>
 
-            <View style={styles.itemRightRow}>
-              <Text style={[styles.itemValueText, { color: themeColors.textSecondary }]}>
+            <View className="flex-row items-center">
+              <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400">
                 {getLanguageLabel(i18n.language)}
               </Text>
-              <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={18} style={{ marginLeft: 6 }} />
+              <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={18} className="ml-1.5" />
             </View>
           </TouchableOpacity>
 
-          <View style={[styles.rowDivider, { backgroundColor: themeColors.divider }]} />
+          <View className="h-px bg-slate-100 dark:bg-slate-800" />
 
-          <View style={styles.itemRow}>
-            <View style={styles.itemLeft}>
-              <Icon name="solar:phone-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} style={{ marginRight: 12 }} />
-              <Text style={[styles.itemText, { color: themeColors.textPrimary }]}>
+          <View className="flex-row items-center justify-between py-3.5">
+            <View className="flex-row items-center">
+              <Icon name="solar:phone-bold" color={isDark ? '#94A3B8' : '#1E293B'} size={20} className="mr-3" />
+              <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
                 Détection d'appel
               </Text>
             </View>
             <Switch
               value={callDetectionEnabled}
               onValueChange={setCallDetectionEnabled}
-              trackColor={{ false: '#CBD5E1', true: colors.green }}
-              thumbColor={colors.white}
+              trackColor={{ false: '#CBD5E1', true: '#25B876' }}
+              thumbColor="#FFFFFF"
             />
           </View>
         </View>
 
-        <View style={styles.bottomButtonsContainer}>
+        <View className="gap-2.5 mt-9 mb-4">
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => toast.info('Action de suppression temporisée.')}
-            style={[styles.dangerBtn, { backgroundColor: '#DC2626' }]}
+            className="h-12 rounded-xl items-center justify-center bg-red-600"
           >
-            <Text style={styles.dangerBtnText}>Supprimer son compte</Text>
+            <Text className="font-font-bold text-sm font-bold text-white">Supprimer son compte</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={handleLogout}
-            style={[styles.logoutDarkBtn, { backgroundColor: isDark ? '#334155' : '#0F172A' }]}
+            className="h-12 rounded-xl items-center justify-center bg-slate-900 dark:bg-slate-800"
           >
-            <Text style={styles.logoutDarkBtnText}>{t('auth.logout')}</Text>
+            <Text className="font-font-bold text-sm font-bold text-white">{t('auth.logout')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
-      {/* MODALE BOTTOM SHEET : THÈME */}
       <Modal visible={themeModalVisible} transparent animationType="fade">
-        <Pressable style={styles.modalOverlayBackdrop} onPress={() => setThemeModalVisible(false)}>
-          <Pressable style={[styles.bottomSheetModalCard, { backgroundColor: themeColors.cardBg }]}>
-            <Text style={[styles.sheetTitle, { color: themeColors.textPrimary }]}>
+        <Pressable className="flex-1 bg-black/50 justify-end" onPress={() => setThemeModalVisible(false)}>
+          <Pressable className="rounded-t-3xl p-5 pb-8 bg-white dark:bg-brand-cardDark">
+            <Text className="font-font-bold text-base font-extrabold text-slate-900 dark:text-white mb-4">
               {t('profile.darkMode', 'Thème')}
             </Text>
 
@@ -289,13 +280,17 @@ export default function ProfileScreen() {
                     setTheme(mode);
                     setThemeModalVisible(false);
                   }}
-                  style={styles.sheetOptionRow}
+                  className="flex-row items-center justify-between py-3"
                 >
-                  <Text style={[styles.sheetOptionText, { color: themeColors.textPrimary }]}>
+                  <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
                     {getThemeLabel(mode)}
                   </Text>
-                  <View style={[styles.radioCircleOut, { borderColor: isSelected ? colors.green : themeColors.inputBorder }]}>
-                    {isSelected && <View style={styles.radioCircleIn} />}
+                  <View
+                    className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
+                      isSelected ? 'border-brand-green' : 'border-slate-300 dark:border-slate-600'
+                    }`}
+                  >
+                    {isSelected && <View className="w-2.5 h-2.5 rounded-full bg-brand-green" />}
                   </View>
                 </TouchableOpacity>
               );
@@ -304,11 +299,10 @@ export default function ProfileScreen() {
         </Pressable>
       </Modal>
 
-      {/* MODALE BOTTOM SHEET : LANGUE */}
       <Modal visible={languageModalVisible} transparent animationType="fade">
-        <Pressable style={styles.modalOverlayBackdrop} onPress={() => setLanguageModalVisible(false)}>
-          <Pressable style={[styles.bottomSheetModalCard, { backgroundColor: themeColors.cardBg }]}>
-            <Text style={[styles.sheetTitle, { color: themeColors.textPrimary }]}>
+        <Pressable className="flex-1 bg-black/50 justify-end" onPress={() => setLanguageModalVisible(false)}>
+          <Pressable className="rounded-t-3xl p-5 pb-8 bg-white dark:bg-brand-cardDark">
+            <Text className="font-font-bold text-base font-extrabold text-slate-900 dark:text-white mb-4">
               {t('profile.language', 'Langue')}
             </Text>
 
@@ -325,13 +319,17 @@ export default function ProfileScreen() {
                     i18n.changeLanguage(lang.code);
                     setLanguageModalVisible(false);
                   }}
-                  style={styles.sheetOptionRow}
+                  className="flex-row items-center justify-between py-3"
                 >
-                  <Text style={[styles.sheetOptionText, { color: themeColors.textPrimary }]}>
+                  <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
                     {lang.label}
                   </Text>
-                  <View style={[styles.radioCircleOut, { borderColor: isSelected ? colors.green : themeColors.inputBorder }]}>
-                    {isSelected && <View style={styles.radioCircleIn} />}
+                  <View
+                    className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
+                      isSelected ? 'border-brand-green' : 'border-slate-300 dark:border-slate-600'
+                    }`}
+                  >
+                    {isSelected && <View className="w-2.5 h-2.5 rounded-full bg-brand-green" />}
                   </View>
                 </TouchableOpacity>
               );
@@ -345,164 +343,3 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollBody: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-  },
-  userHeaderCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    marginBottom: 16,
-  },
-  avatarCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: '#CBD5E1',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarInitialText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(20),
-    fontWeight: '800',
-    color: '#0F172A',
-  },
-  userTextInfo: {
-    flex: 1,
-    marginLeft: 14,
-  },
-  userNameText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(16),
-    fontWeight: '800',
-  },
-  userEmailText: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-    marginTop: 2,
-  },
-  editPenBtn: {
-    padding: 6,
-  },
-  groupSectionLabel: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(12),
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 8,
-  },
-  groupCard: {
-    borderRadius: 16,
-    borderWidth: 1,
-    paddingHorizontal: 16,
-    marginBottom: 12,
-  },
-  itemRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 14,
-  },
-  itemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  itemText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '600',
-  },
-  itemRightRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  itemValueText: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(13),
-  },
-  rowDivider: {
-    height: 1,
-  },
-  bottomButtonsContainer: {
-    gap: 10,
-    marginTop: 36,
-    marginBottom: 16,
-  },
-  dangerBtn: {
-    height: 48,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  dangerBtnText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '700',
-    color: colors.white,
-  },
-  logoutDarkBtn: {
-    height: 48,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoutDarkBtnText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '700',
-    color: colors.white,
-  },
-
-  // Bottom Sheets Thème & Langue
-  modalOverlayBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  bottomSheetModalCard: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 20,
-    paddingBottom: 30,
-  },
-  sheetTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(16),
-    fontWeight: '800',
-    marginBottom: 16,
-  },
-  sheetOptionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-  },
-  sheetOptionText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '600',
-  },
-  radioCircleOut: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  radioCircleIn: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: colors.green,
-  },
-});

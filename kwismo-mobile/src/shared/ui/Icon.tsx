@@ -53,6 +53,7 @@ export interface IconProps {
   color?: string;
   strokeWidth?: number;
   style?: any;
+  className?: string;
 }
 
 // Ionicons fallback dictionary

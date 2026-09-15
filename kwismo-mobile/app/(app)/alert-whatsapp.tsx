@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   Switch,
   ActivityIndicator,
-  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,10 +16,7 @@ import { HeaderBar } from '@/shared/components/HeaderBar';
 import { Skeleton, SkeletonLoader } from '@/shared/ui/Skeleton';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { toast } from '@/shared/store/toastStore';
-import { colors, fonts } from '@/styles/tokens';
-import { scaleFont } from '@/shared/lib/responsive';
 
-// Liste simulée des numéros enregistrés par l'utilisateur
 const USER_REGISTERED_NUMBERS = [
   { id: '1', phone: '+237 6 98 44 43 88', operator: 'Orange Cameroun', isProtected: true, countryCode: 'CM' },
   { id: '2', phone: '+237 6 70 12 34 56', operator: 'MTN Cameroun', isProtected: false, countryCode: 'CM' },
@@ -31,7 +26,7 @@ export default function AlertWhatsappScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { isDark } = useAppTheme();
 
   const [loading, setLoading] = useState(true);
   const [selectedNumberId, setSelectedNumberId] = useState('1');
@@ -61,31 +56,27 @@ export default function AlertWhatsappScreen() {
   const selectedNumberObj = USER_REGISTERED_NUMBERS.find((n) => n.id === selectedNumberId);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.green }]}>
+    <View className="flex-1 bg-brand-green">
       <StatusBar style="light" />
 
-      {/* Header global unifié de page secondaire */}
       <HeaderBar
         title={t('whatsapp.title', 'Alerte WhatsApp')}
         showBack={true}
       />
 
-      <View style={[styles.mainSheet, { backgroundColor: themeColors.background }]}>
+      <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg rounded-tl-3xl overflow-hidden">
         <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            { paddingBottom: insets.bottom + 40 },
-          ]}
+          contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
           showsVerticalScrollIndicator={false}
+          className="px-4 pt-5"
         >
-          {/* Banner explicatif */}
-          <View style={[styles.bannerCard, { backgroundColor: isDark ? '#143324' : '#E6F7F0', borderColor: colors.green }]}>
-            <Icon name="ic:baseline-whatsapp" color="#25D366" size={28} style={{ marginRight: 12 }} />
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.bannerTitle, { color: isDark ? '#A7F3D0' : '#065F46' }]}>
+          <View className="flex-row items-start p-4 rounded-2xl border border-brand-green bg-emerald-50 dark:bg-emerald-950/40">
+            <Icon name="ic:baseline-whatsapp" color="#25D366" size={28} className="mr-3" />
+            <View className="flex-1">
+              <Text className="font-font-bold text-sm font-bold text-emerald-900 dark:text-emerald-300 mb-1">
                 {t('whatsapp.subtitle', 'Protection anti-piratage WhatsApp')}
               </Text>
-              <Text style={[styles.bannerText, { color: isDark ? '#D1FAE5' : '#047857' }]}>
+              <Text className="font-font-regular text-xs text-emerald-700 dark:text-emerald-400 leading-4.5">
                 {t(
                   'whatsapp.noticeText',
                   'En activant cette protection, Kwismo surveillera automatiquement les tentatives d’usurpation de votre compte WhatsApp sur le numéro sélectionné.'
@@ -94,20 +85,19 @@ export default function AlertWhatsappScreen() {
             </View>
           </View>
 
-          {/* Sélecteur du numéro concerné */}
-          <Text style={[styles.sectionTitle, { color: themeColors.textPrimary, marginTop: 20 }]}>
+          <Text className="font-font-bold text-base font-extrabold text-slate-900 dark:text-white mt-5">
             {t('whatsapp.selectNumberLabel', 'Sélectionner le numéro à protéger')}
           </Text>
 
           {loading ? (
             <SkeletonLoader>
-              <View style={{ gap: 10, marginTop: 10 }}>
+              <View className="gap-2.5 mt-2.5">
                 <Skeleton width="100%" height={70} borderRadius={16} />
                 <Skeleton width="100%" height={70} borderRadius={16} />
               </View>
             </SkeletonLoader>
           ) : (
-            <View style={styles.numbersList}>
+            <View className="gap-2.5 mt-2.5">
               {USER_REGISTERED_NUMBERS.map((item) => {
                 const isSelected = selectedNumberId === item.id;
                 return (
@@ -115,46 +105,42 @@ export default function AlertWhatsappScreen() {
                     key={item.id}
                     activeOpacity={0.8}
                     onPress={() => handleSelectNumber(item.id, item.isProtected)}
-                    style={[
-                      styles.numberCardItem,
-                      {
-                        backgroundColor: isSelected
-                          ? isDark ? '#1E3A2F' : '#F0FDF4'
-                          : themeColors.cardBg,
-                        borderColor: isSelected ? colors.green : themeColors.inputBorder,
-                      },
-                    ]}
+                    className={`flex-row items-center justify-between p-3.5 rounded-2xl border-2 ${
+                      isSelected
+                        ? 'bg-emerald-50 dark:bg-emerald-950/40 border-brand-green'
+                        : 'bg-white dark:bg-brand-cardDark border-slate-200 dark:border-slate-700'
+                    }`}
                   >
-                    <View style={styles.numberLeftRow}>
-                      <View style={[styles.radioDot, { borderColor: isSelected ? colors.green : themeColors.inputBorder }]}>
-                        {isSelected && <View style={styles.radioDotInner} />}
+                    <View className="flex-row items-center">
+                      <View
+                        className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
+                          isSelected ? 'border-brand-green' : 'border-slate-300 dark:border-slate-600'
+                        }`}
+                      >
+                        {isSelected && <View className="w-2.5 h-2.5 rounded-full bg-brand-green" />}
                       </View>
 
-                      <View style={{ marginLeft: 12 }}>
-                        <Text style={[styles.numberPhoneText, { color: themeColors.textPrimary }]}>
+                      <View className="ml-3">
+                        <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">
                           {item.phone}
                         </Text>
-                        <Text style={[styles.numberOperatorText, { color: themeColors.textSecondary }]}>
+                        <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                           {item.operator}
                         </Text>
                       </View>
                     </View>
 
                     <View
-                      style={[
-                        styles.badgeStatus,
-                        {
-                          backgroundColor: item.isProtected
-                            ? isDark ? '#143324' : '#DCFCE7'
-                            : isDark ? '#334155' : '#F1F5F9',
-                        },
-                      ]}
+                      className={`px-2.5 py-1 rounded-xl ${
+                        item.isProtected
+                          ? 'bg-emerald-100 dark:bg-emerald-950/50'
+                          : 'bg-slate-100 dark:bg-slate-800'
+                      }`}
                     >
                       <Text
-                        style={[
-                          styles.badgeStatusText,
-                          { color: item.isProtected ? colors.green : themeColors.textSecondary },
-                        ]}
+                        className={`font-font-bold text-xs font-bold ${
+                          item.isProtected ? 'text-brand-green' : 'text-slate-500 dark:text-slate-400'
+                        }`}
                       >
                         {item.isProtected
                           ? t('whatsapp.statusProtected', 'Protégé')
@@ -167,22 +153,12 @@ export default function AlertWhatsappScreen() {
             </View>
           )}
 
-          {/* Switch de protection */}
-          <View
-            style={[
-              styles.switchContainerCard,
-              {
-                backgroundColor: themeColors.cardBg,
-                borderColor: themeColors.inputBorder,
-                marginTop: 20,
-              },
-            ]}
-          >
-            <View style={{ flex: 1, paddingRight: 12 }}>
-              <Text style={[styles.switchTitle, { color: themeColors.textPrimary }]}>
+          <View className="flex-row items-center justify-between p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark mt-5">
+            <View className="flex-1 pr-3">
+              <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">
                 {t('whatsapp.enableProtection', 'Activer la détection de piratage')}
               </Text>
-              <Text style={[styles.switchSub, { color: themeColors.textSecondary }]}>
+              <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 {selectedNumberObj ? selectedNumberObj.phone : ''}
               </Text>
             </View>
@@ -190,42 +166,35 @@ export default function AlertWhatsappScreen() {
             <Switch
               value={protectionEnabled}
               onValueChange={setProtectionEnabled}
-              trackColor={{ false: '#CBD5E1', true: colors.green }}
-              thumbColor={colors.white}
+              trackColor={{ false: '#CBD5E1', true: '#25B876' }}
+              thumbColor="#FFFFFF"
             />
           </View>
 
-          {/* Card de résumé de sécurité */}
           <View
-            style={[
-              styles.securitySummaryCard,
-              {
-                backgroundColor: protectionEnabled
-                  ? isDark ? '#143324' : '#F0FDF4'
-                  : isDark ? '#3B181E' : '#FEF2F2',
-                borderColor: protectionEnabled ? colors.green : '#EF4444',
-                marginTop: 20,
-              },
-            ]}
+            className={`flex-row items-center p-4 rounded-2xl border mt-5 ${
+              protectionEnabled
+                ? 'bg-emerald-50 dark:bg-emerald-950/40 border-brand-green'
+                : 'bg-red-50 dark:bg-red-950/40 border-red-500'
+            }`}
           >
             <Icon
               name={protectionEnabled ? 'solar:shield-check-bold' : 'solar:shield-warning-bold'}
-              color={protectionEnabled ? colors.green : '#EF4444'}
+              color={protectionEnabled ? '#25B876' : '#EF4444'}
               size={24}
-              style={{ marginRight: 12 }}
+              className="mr-3"
             />
-            <View style={{ flex: 1 }}>
+            <View className="flex-1">
               <Text
-                style={[
-                  styles.summaryStatusTitle,
-                  { color: protectionEnabled ? colors.green : '#EF4444' },
-                ]}
+                className={`font-font-bold text-sm font-bold ${
+                  protectionEnabled ? 'text-brand-green' : 'text-red-500'
+                }`}
               >
                 {protectionEnabled
                   ? t('whatsapp.statusProtected', 'Protection WhatsApp Active')
                   : t('whatsapp.statusNotProtected', 'Protection Désactivée')}
               </Text>
-              <Text style={[styles.summaryStatusSub, { color: themeColors.textSecondary }]}>
+              <Text className="font-font-regular text-xs text-slate-600 dark:text-slate-300 mt-0.5">
                 {protectionEnabled
                   ? 'Alerte instantanée en cas de connexion suspecte sur un autre appareil.'
                   : 'Ce numéro ne recevra pas d’alertes préventives sur WhatsApp.'}
@@ -233,19 +202,20 @@ export default function AlertWhatsappScreen() {
             </View>
           </View>
 
-          {/* Bouton d'enregistrement */}
           <TouchableOpacity
             activeOpacity={0.85}
             disabled={isSaving}
             onPress={handleSaveSettings}
-            style={[styles.saveBtn, { backgroundColor: colors.green, marginTop: 28 }]}
+            className="flex-row items-center justify-center h-13 rounded-2xl bg-brand-green mt-7"
           >
             {isSaving ? (
-              <ActivityIndicator color={colors.white} />
+              <ActivityIndicator color="#FFFFFF" />
             ) : (
               <>
-                <Icon name="solar:check-read-bold" color={colors.white} size={20} style={{ marginRight: 8 }} />
-                <Text style={styles.saveBtnText}>{t('whatsapp.saveSettings', 'Enregistrer la configuration')}</Text>
+                <Icon name="solar:check-read-bold" color="#FFFFFF" size={20} className="mr-2" />
+                <Text className="font-font-bold text-base font-bold text-white">
+                  {t('whatsapp.saveSettings', 'Enregistrer la configuration')}
+                </Text>
               </>
             )}
           </TouchableOpacity>
@@ -255,140 +225,3 @@ export default function AlertWhatsappScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  mainSheet: {
-    flex: 1,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 0,
-    marginTop: 0,
-    overflow: 'hidden',
-  },
-  scrollContent: {
-    paddingHorizontal: 16,
-    paddingTop: 20,
-  },
-  bannerCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-  bannerTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(15),
-    fontWeight: '700',
-    marginBottom: 4,
-  },
-  bannerText: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-    lineHeight: scaleFont(17),
-  },
-  sectionTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(16),
-    fontWeight: '800',
-  },
-  numbersList: {
-    gap: 10,
-    marginTop: 10,
-  },
-  numberCardItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 14,
-    borderRadius: 16,
-    borderWidth: 1.5,
-  },
-  numberLeftRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  radioDot: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  radioDotInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: colors.green,
-  },
-  numberPhoneText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '700',
-  },
-  numberOperatorText: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-    marginTop: 2,
-  },
-  badgeStatus: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 12,
-  },
-  badgeStatusText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(11),
-    fontWeight: '700',
-  },
-  switchContainerCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-  switchTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '700',
-  },
-  switchSub: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-    marginTop: 2,
-  },
-  securitySummaryCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-  summaryStatusTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '700',
-  },
-  summaryStatusSub: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-    marginTop: 2,
-  },
-  saveBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 52,
-    borderRadius: 16,
-  },
-  saveBtnText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(15),
-    fontWeight: '700',
-    color: colors.white,
-  },
-});
