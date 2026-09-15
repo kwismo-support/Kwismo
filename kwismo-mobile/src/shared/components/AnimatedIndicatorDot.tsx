@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, TouchableOpacity, StyleSheet } from 'react-native';
-import { colors } from '../../styles/tokens';
+import { Animated, TouchableOpacity } from 'react-native';
 
 interface AnimatedIndicatorDotProps {
   index: number;
@@ -41,7 +40,7 @@ export const AnimatedIndicatorDot: React.FC<AnimatedIndicatorDotProps> = ({
 
   const backgroundColor = scrollX.interpolate({
     inputRange,
-    outputRange: ['rgba(255, 255, 255, 0.65)', colors.orange, 'rgba(255, 255, 255, 0.65)'],
+    outputRange: ['rgba(255, 255, 255, 0.65)', '#FF9900', 'rgba(255, 255, 255, 0.65)'],
     extrapolate: 'clamp',
   });
 
@@ -50,28 +49,15 @@ export const AnimatedIndicatorDot: React.FC<AnimatedIndicatorDotProps> = ({
       activeOpacity={0.7}
       onPress={onPress}
       hitSlop={{ top: 16, bottom: 16, left: 10, right: 10 }}
-      style={styles.touchArea}
+      className="py-1.5 px-1"
     >
       <Animated.View
-        style={[
-          styles.indicatorBase,
-          {
-            width,
-            backgroundColor,
-          },
-        ]}
+        className="h-1.5 rounded-full"
+        style={{
+          width,
+          backgroundColor,
+        }}
       />
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  touchArea: {
-    paddingVertical: 6,
-    paddingHorizontal: 4,
-  },
-  indicatorBase: {
-    height: 6,
-    borderRadius: 3,
-  },
-});

@@ -1,8 +1,8 @@
+/// <reference types="nativewind/types" />
 import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -11,20 +11,21 @@ import {
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../../src/shared/ui/Icon';
-import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
-import { Input } from '../../src/shared/ui/Input';
-import { Button } from '../../src/shared/ui/Button';
-import { validateEmail } from '../../src/shared/lib/validation';
-import { colors, fonts } from '../../src/styles/tokens';
+import { Icon } from '@/shared/ui/Icon';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { AuthGradientBackground } from '@/shared/components/AuthGradientBackground';
+import { Input } from '@/shared/ui/Input';
+import { Button } from '@/shared/ui/Button';
+import { validateEmail } from '@/shared/lib/validation';
+import { useForgotPassword } from '@/features/auth/hooks/useForgotPassword';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { colors: themeColors } = useAppTheme();
+  const { handleForgotPassword } = useForgotPassword();
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
 
@@ -39,51 +40,41 @@ export default function ForgotPasswordScreen() {
       return false;
     }
 
-    router.push('/(auth)/reset-password');
-    return true;
+    const res = await handleForgotPassword(email);
+    if (res.success) {
+      router.push({ pathname: '/(auth)/reset-password', params: { email: email.trim() } });
+      return true;
+    }
+    return false;
   };
 
-  const headerGradientColors: readonly [string, string, ...string[]] = isDark
-    ? ['#2BB673', '#249460', '#1B2E3D', '#162035', '#0F1626', '#0F1626']
-    : ['#2BB673', '#28A86B', '#249460', '#213E35', '#23303B', '#3C4A56', '#60707F', '#98A8B8', '#D8E2EC', '#FFFFFF', '#FFFFFF'];
-
-  const headerGradientLocations: readonly [number, number, ...number[]] = isDark
-    ? [0, 0.25, 0.5, 0.7, 0.85, 1.0]
-    : [0, 0.10, 0.20, 0.30, 0.38, 0.46, 0.53, 0.60, 0.66, 0.72, 0.76, 1.0];
-
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-        <StatusBar style="light" />
+    <AuthGradientBackground>
+      <StatusBar style="light" />
 
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <LinearGradient
-            colors={headerGradientColors}
-            locations={headerGradientLocations}
-            style={StyleSheet.absoluteFill}
-          />
-        </View>
-
-
-
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
         <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            {
-              paddingTop: Math.max(insets.top + 50, 70),
-              paddingBottom: Math.max(insets.bottom + 30, 40),
-            },
-          ]}
+          className="flex-1 px-6 z-10"
+          contentContainerStyle={{
+            paddingTop: Math.max(insets.top + 40, 60),
+            paddingBottom: Math.max(insets.bottom + 40, 60),
+            flexGrow: 1,
+          }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets={true}
         >
-          <Text style={styles.title}>{t('auth.forgotTitle')}</Text>
-          <Text style={styles.subtitle}>{t('auth.forgotSubtitle')}</Text>
+          <Text className="font-montserrat-bold text-[34px] leading-[44px] text-white mt-5">
+            {t('auth.forgotTitle')}
+          </Text>
+          <Text className="font-medium text-base leading-[22px] text-white/95 mt-3 mb-10">
+            {t('auth.forgotSubtitle')}
+          </Text>
 
-          {/* Email Input */}
           <Input
             placeholder={t('common.email')}
             value={email}
@@ -105,56 +96,17 @@ export default function ForgotPasswordScreen() {
             size="md"
           />
 
-          {/* Bouton de retour vers la connexion */}
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => router.back()}
-            style={{ marginTop: 16, alignItems: 'center', paddingVertical: 10 }}
+            className="mt-4 items-center py-2.5"
           >
-            <Text style={{ fontFamily: fonts.headlineBold, fontSize: 14, color: themeColors.textSecondary }}>
-              ← Retour à la connexion
+            <Text className="font-semibold text-sm text-slate-700">
+              {t('common.back')}
             </Text>
           </TouchableOpacity>
         </ScrollView>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </AuthGradientBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  backButton: {
-    position: 'absolute',
-    left: 20,
-    zIndex: 20,
-  },
-  langWrapper: {
-    position: 'absolute',
-    right: 20,
-    zIndex: 20,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    zIndex: 10,
-  },
-  title: {
-    fontFamily: fonts.h2,
-    fontSize: 34,
-    fontWeight: '700',
-    color: colors.white,
-    marginTop: 20,
-    lineHeight: 44,
-  },
-  subtitle: {
-    fontFamily: fonts.medium,
-    fontSize: 15,
-    color: colors.white,
-    opacity: 0.95,
-    marginTop: 12,
-    marginBottom: 40,
-    lineHeight: 22,
-  },
-});
-

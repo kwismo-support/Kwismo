@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
-import { colors, fonts } from '../../src/styles/tokens';
+import { View, Text, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { colors, fonts } from '@/styles/tokens';
 
 export default function SurveyScreen() {
   return (

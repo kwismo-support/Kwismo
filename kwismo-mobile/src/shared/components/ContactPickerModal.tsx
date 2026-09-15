@@ -240,7 +240,8 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontFamily: fonts.h6,
-    fontSize: scaleFont(18),
+    fontSize: 20,
+    lineHeight: 28,
     fontWeight: '700',
   },
   closeBtn: {
@@ -257,8 +258,9 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(15),
+    fontFamily: fonts.bodyMedium,
+    fontSize: 14,
+    lineHeight: 20,
     height: '100%',
   },
   centerBox: {
@@ -268,13 +270,15 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   permissionText: {
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(14),
+    fontFamily: fonts.bodyMedium,
+    fontSize: 14,
+    lineHeight: 20,
     textAlign: 'center',
   },
   emptyText: {
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(14),
+    fontFamily: fonts.bodyMedium,
+    fontSize: 14,
+    lineHeight: 20,
   },
   listContent: {
     paddingVertical: 6,
@@ -299,18 +303,21 @@ const styles = StyleSheet.create({
   avatarText: {
     fontFamily: fonts.bold,
     fontSize: 16,
+    lineHeight: 27,
     color: colors.white,
   },
   info: {
     flex: 1,
   },
   name: {
-    fontFamily: fonts.semiBold,
-    fontSize: scaleFont(14),
+    fontFamily: fonts.caption,
+    fontSize: 14,
+    lineHeight: 21,
     marginBottom: 2,
   },
   phone: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
+    fontFamily: fonts.bodySmall,
+    fontSize: 12,
+    lineHeight: 16,
   },
 });

@@ -256,8 +256,9 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     height: 50,
-    fontSize: scaleFont(14),
-    fontFamily: fonts.medium,
+    fontSize: 14,
+    lineHeight: 20,
+    fontFamily: fonts.bodyMedium,
     color: '#0F172A',
   },
   cancelButton: {
@@ -265,8 +266,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   cancelButtonText: {
-    fontFamily: fonts.semiBold,
-    fontSize: scaleFont(14),
+    fontFamily: fonts.caption,
+    fontSize: 14,
+    lineHeight: 21,
     color: colors.white,
   },
   /* ESPACE BLANC - CONTAINER POPUP POUR RÉSULTATS DE RECHERCHE */

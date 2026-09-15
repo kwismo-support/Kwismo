@@ -77,12 +77,13 @@ export const Input: React.FC<InputProps> = ({
 
   const textInputDynamicStyle: TextStyle = isDisplayingMaskedPassword
     ? {
-        fontSize: scaleFont(18),
+        fontSize: 18,
         letterSpacing: Platform.OS === 'ios' ? 4 : 3,
         fontWeight: 'bold',
       }
     : {
-        fontSize: scaleFont(15),
+        fontSize: 14,
+        lineHeight: 20,
         letterSpacing: 0,
         fontWeight: 'normal',
       };
@@ -184,15 +185,16 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
-    fontFamily: fonts.semiBold,
+    fontFamily: fonts.caption,
     fontSize: 14,
+    lineHeight: 21,
     marginBottom: 6,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     height: 54,
-    borderRadius: 14,
+    borderRadius: 12,
     paddingHorizontal: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },

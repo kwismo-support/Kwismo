@@ -1,35 +1,36 @@
+/// <reference types="nativewind/types" />
 import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../../src/shared/ui/Icon';
-import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
-import { Input } from '../../src/shared/ui/Input';
-import { Button } from '../../src/shared/ui/Button';
-import { toast } from '../../src/shared/store/toastStore';
-import { validatePassword } from '../../src/shared/lib/validation';
-import { colors, fonts } from '../../src/styles/tokens';
+import { Icon } from '@/shared/ui/Icon';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { AuthGradientBackground } from '@/shared/components/AuthGradientBackground';
+import { Input } from '@/shared/ui/Input';
+import { Button } from '@/shared/ui/Button';
+import { validatePassword } from '@/shared/lib/validation';
+import { colors } from '@/styles/tokens';
+import { useResetPassword } from '@/features/auth/hooks/useForgotPassword';
 
 export default function ResetPasswordScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ token?: string }>();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { colors: themeColors } = useAppTheme();
+  const { handleResetPassword } = useResetPassword();
 
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // Inline errors state
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
@@ -62,52 +63,42 @@ export default function ResetPasswordScreen() {
   const handleResetConfirm = async () => {
     if (!validateForm()) return false;
 
-    toast.success(t('toasts.passwordResetSuccess'));
-    router.replace('/(auth)/login');
-    return true;
+    const token = params.token || 'demo-token';
+    const res = await handleResetPassword(token, newPassword);
+    if (res.success) {
+      router.replace('/(auth)/login');
+      return true;
+    }
+    return false;
   };
 
-  const headerGradientColors: readonly [string, string, ...string[]] = isDark
-    ? ['#2BB673', '#249460', '#1B2E3D', '#162035', '#0F1626', '#0F1626']
-    : ['#2BB673', '#28A86B', '#249460', '#213E35', '#23303B', '#3C4A56', '#60707F', '#98A8B8', '#D8E2EC', '#FFFFFF', '#FFFFFF'];
-
-  const headerGradientLocations: readonly [number, number, ...number[]] = isDark
-    ? [0, 0.25, 0.5, 0.7, 0.85, 1.0]
-    : [0, 0.10, 0.20, 0.30, 0.38, 0.46, 0.53, 0.60, 0.66, 0.72, 0.76, 1.0];
-
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-        <StatusBar style="light" />
+    <AuthGradientBackground>
+      <StatusBar style="light" />
 
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <LinearGradient
-            colors={headerGradientColors}
-            locations={headerGradientLocations}
-            style={StyleSheet.absoluteFill}
-          />
-        </View>
-
-
-
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
         <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            {
-              paddingTop: Math.max(insets.top + 50, 70),
-              paddingBottom: Math.max(insets.bottom + 30, 40),
-            },
-          ]}
+          className="flex-1 px-6 z-10"
+          contentContainerStyle={{
+            paddingTop: Math.max(insets.top + 40, 60),
+            paddingBottom: Math.max(insets.bottom + 40, 60),
+            flexGrow: 1,
+          }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets={true}
         >
-          <Text style={styles.title}>{t('auth.resetTitle')}</Text>
-          <Text style={styles.subtitle}>{t('auth.resetSubtitle')}</Text>
+          <Text className="font-montserrat-bold text-[34px] leading-[44px] text-white mt-5">
+            {t('auth.resetTitle')}
+          </Text>
+          <Text className="font-medium text-base leading-[22px] text-white/95 mt-3 mb-8">
+            {t('auth.resetSubtitle')}
+          </Text>
 
-          {/* Nouveau mot de passe */}
           <Input
             placeholder={t('common.newPassword')}
             value={newPassword}
@@ -120,125 +111,75 @@ export default function ResetPasswordScreen() {
             leftIcon={<Icon name="solar:lock-password-linear" color={themeColors.inputPlaceholder} size={20} />}
           />
 
-          {/* Indicateur de force & 5 critères du mot de passe */}
           {newPassword.length > 0 && (
-            <View style={styles.criteriaContainer}>
-              <View style={styles.criteriaBarsRow}>
+            <View className="mb-4">
+              <View className="flex-row gap-1.5 mb-2.5">
                 {[1, 2, 3, 4, 5].map((idx) => (
                   <View
                     key={`crit-bar-${idx}`}
-                    style={[
-                      styles.criteriaBar,
-                      {
-                        backgroundColor:
-                          passwordAnalysis.score >= idx
-                            ? passwordAnalysis.score === 5
-                              ? colors.green
-                              : '#F59E0B'
-                            : themeColors.inputBorder,
-                      },
-                    ]}
+                    className={`flex-1 h-1 rounded-full ${
+                      passwordAnalysis.score >= idx
+                        ? passwordAnalysis.score === 5
+                          ? 'bg-emerald-500'
+                          : 'bg-amber-500'
+                        : 'bg-slate-300'
+                    }`}
                   />
                 ))}
               </View>
 
-              <View style={styles.criteriaGrid}>
-                <View style={styles.criteriaItem}>
+              <View className="flex-row flex-wrap justify-between gap-y-2">
+                <View className="flex-row items-center w-[48%]">
                   <Icon
-                    name={passwordAnalysis.criteria.minLength ? "solar:check-circle-bold" : "solar:close-circle-linear"}
+                    name={passwordAnalysis.criteria.minLength ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                     size={14}
                     color={passwordAnalysis.criteria.minLength ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text
-                    style={[
-                      styles.criteriaText,
-                      {
-                        color: passwordAnalysis.criteria.minLength
-                          ? colors.green
-                          : themeColors.textSecondary,
-                      },
-                    ]}
-                  >
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.minLength ? 'text-emerald-600' : 'text-slate-500'}`}>
                     {t('validation.criteriaMinLength')}
                   </Text>
                 </View>
 
-                <View style={styles.criteriaItem}>
+                <View className="flex-row items-center w-[48%]">
                   <Icon
-                    name={passwordAnalysis.criteria.hasUppercase ? "solar:check-circle-bold" : "solar:close-circle-linear"}
+                    name={passwordAnalysis.criteria.hasUppercase ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                     size={14}
                     color={passwordAnalysis.criteria.hasUppercase ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text
-                    style={[
-                      styles.criteriaText,
-                      {
-                        color: passwordAnalysis.criteria.hasUppercase
-                          ? colors.green
-                          : themeColors.textSecondary,
-                      },
-                    ]}
-                  >
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasUppercase ? 'text-emerald-600' : 'text-slate-500'}`}>
                     {t('validation.criteriaUppercase')}
                   </Text>
                 </View>
 
-                <View style={styles.criteriaItem}>
+                <View className="flex-row items-center w-[48%]">
                   <Icon
-                    name={passwordAnalysis.criteria.hasLowercase ? "solar:check-circle-bold" : "solar:close-circle-linear"}
+                    name={passwordAnalysis.criteria.hasLowercase ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                     size={14}
                     color={passwordAnalysis.criteria.hasLowercase ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text
-                    style={[
-                      styles.criteriaText,
-                      {
-                        color: passwordAnalysis.criteria.hasLowercase
-                          ? colors.green
-                          : themeColors.textSecondary,
-                      },
-                    ]}
-                  >
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasLowercase ? 'text-emerald-600' : 'text-slate-500'}`}>
                     {t('validation.criteriaLowercase')}
                   </Text>
                 </View>
 
-                <View style={styles.criteriaItem}>
+                <View className="flex-row items-center w-[48%]">
                   <Icon
-                    name={passwordAnalysis.criteria.hasNumber ? "solar:check-circle-bold" : "solar:close-circle-linear"}
+                    name={passwordAnalysis.criteria.hasNumber ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                     size={14}
                     color={passwordAnalysis.criteria.hasNumber ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text
-                    style={[
-                      styles.criteriaText,
-                      {
-                        color: passwordAnalysis.criteria.hasNumber
-                          ? colors.green
-                          : themeColors.textSecondary,
-                      },
-                    ]}
-                  >
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasNumber ? 'text-emerald-600' : 'text-slate-500'}`}>
                     {t('validation.criteriaNumber')}
                   </Text>
                 </View>
 
-                <View style={styles.criteriaItem}>
+                <View className="flex-row items-center w-[48%]">
                   <Icon
-                    name={passwordAnalysis.criteria.hasSymbol ? "solar:check-circle-bold" : "solar:close-circle-linear"}
+                    name={passwordAnalysis.criteria.hasSymbol ? 'solar:check-circle-bold' : 'solar:close-circle-linear'}
                     size={14}
                     color={passwordAnalysis.criteria.hasSymbol ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text
-                    style={[
-                      styles.criteriaText,
-                      {
-                        color: passwordAnalysis.criteria.hasSymbol
-                          ? colors.green
-                          : themeColors.textSecondary,
-                      },
-                    ]}
-                  >
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasSymbol ? 'text-emerald-600' : 'text-slate-500'}`}>
                     {t('validation.criteriaSymbol')}
                   </Text>
                 </View>
@@ -246,7 +187,6 @@ export default function ResetPasswordScreen() {
             </View>
           )}
 
-          {/* Confirmation mot de passe */}
           <Input
             placeholder={t('common.confirmPassword')}
             value={confirmPassword}
@@ -261,75 +201,13 @@ export default function ResetPasswordScreen() {
           />
 
           <Button
-            title={t('common.signUp')}
+            title={t('common.reset')}
             onPress={handleResetConfirm}
             variant="primary"
             size="md"
           />
         </ScrollView>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </AuthGradientBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  langWrapper: {
-    position: 'absolute',
-    right: 20,
-    zIndex: 20,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    zIndex: 10,
-  },
-  title: {
-    fontFamily: fonts.h2,
-    fontSize: 34,
-    fontWeight: '700',
-    color: colors.white,
-    marginTop: 20,
-    lineHeight: 44,
-  },
-  subtitle: {
-    fontFamily: fonts.medium,
-    fontSize: 15,
-    color: colors.white,
-    opacity: 0.95,
-    marginTop: 12,
-    marginBottom: 32,
-    lineHeight: 22,
-  },
-  criteriaContainer: {
-    marginTop: -8,
-    marginBottom: 16,
-    paddingHorizontal: 4,
-  },
-  criteriaBarsRow: {
-    flexDirection: 'row',
-    gap: 6,
-    marginBottom: 10,
-  },
-  criteriaBar: {
-    flex: 1,
-    height: 4,
-    borderRadius: 2,
-  },
-  criteriaGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  criteriaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginRight: 10,
-  },
-  criteriaText: {
-    fontFamily: fonts.medium,
-    fontSize: 11,
-  },
-});

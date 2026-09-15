@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import i18next from 'i18next';
 import { env } from '../config/env';
 import { storage } from '../services/storage';
 
@@ -48,6 +49,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       if (savedToken && savedUserStr) {
         const parsedUser = JSON.parse(savedUserStr);
+        if (parsedUser.langue && (parsedUser.langue === 'fr' || parsedUser.langue === 'en')) {
+          i18next.changeLanguage(parsedUser.langue).catch(() => {});
+        }
         set({
           isAuthenticated: true,
           isInitialized: true,
@@ -81,6 +85,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (refreshToken) {
       await storage.setItem(REFRESH_TOKEN_KEY, refreshToken);
     }
+    if (user.langue && (user.langue === 'fr' || user.langue === 'en')) {
+      i18next.changeLanguage(user.langue).catch(() => {});
+    }
     set({
       isAuthenticated: true,
       token,
@@ -103,6 +110,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   setUser: (user: User) => {
     set({ user });
+    if (user.langue && (user.langue === 'fr' || user.langue === 'en')) {
+      i18next.changeLanguage(user.langue).catch(() => {});
+    }
     storage.setItem(USER_STORAGE_KEY, JSON.stringify(user)).catch(() => {});
   },
 }));

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Image, ImageSourcePropType } from 'react-native';
+import { View, Image, ImageSourcePropType, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface OnboardingBackgroundProps {
@@ -18,62 +18,41 @@ export const OnboardingBackground: React.FC<OnboardingBackgroundProps> = ({
   imageSource,
 }) => {
   const activeImage = imageSource || DEFAULT_SLIDE_IMAGES[slideIndex];
-
   const resolvedImageSource: ImageSourcePropType =
     typeof activeImage === 'string' ? { uri: activeImage } : activeImage;
 
   return (
-    <View style={styles.container}>
+    <View className="absolute inset-0 bg-black overflow-hidden" style={StyleSheet.absoluteFill}>
       {resolvedImageSource && (
         <Image
           source={resolvedImageSource}
-          style={styles.backgroundImage}
+          className="absolute inset-0 w-full h-full"
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' }}
           resizeMode="cover"
         />
       )}
 
-      <LinearGradient
-        colors={[
-          'rgba(50, 176, 127, 0)',
-          'rgba(50, 176, 127, 0.06)',
-          'rgba(50, 176, 127, 0.30)',
-          'rgba(50, 176, 127, 0.60)',
-          'rgba(40, 150, 107, 0.82)',
-          'rgba(30, 125, 88, 0.95)',
-        ]}
-        locations={[0, 0.35, 0.55, 0.75, 0.90, 1.0]}
-        style={styles.gradientOverlay}
+      <View
+        className="absolute left-0 right-0 bottom-0 pointer-events-none"
+        style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '30%' }}
         pointerEvents="none"
-      />
+      >
+        <LinearGradient
+          colors={[
+            'transparent',
+            'rgba(50, 176, 127, 0.40)',
+            'rgba(50, 176, 127, 0.85)',
+            '#32B07F',
+          ]}
+          locations={[0, 0.35, 0.75, 1.0]}
+          style={{ width: '100%', height: '100%' }}
+          pointerEvents="none"
+        />
+      </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: '#32B07F',
-  },
-  backgroundImage: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: '100%',
-    height: '100%',
-  },
-  gradientOverlay: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width: '100%',
-    height: '100%',
-  },
-});
+
+
+

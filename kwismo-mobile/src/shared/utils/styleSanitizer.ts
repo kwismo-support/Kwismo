@@ -5,82 +5,121 @@ import { NativeWindStyleSheet } from 'nativewind';
 function cleanValue(val: any): any {
   if (typeof val === 'string') {
     const trimmed = val.trim();
+    if (trimmed.endsWith('%') || trimmed === 'auto') {
+      return trimmed;
+    }
     if (trimmed.endsWith('rem')) {
       const num = parseFloat(trimmed);
-      return !isNaN(num) ? Math.round(num * 16) : 16;
+      return !isNaN(num) ? Math.round(num * 16) : val;
     }
     if (trimmed.endsWith('px')) {
       const num = parseFloat(trimmed);
-      return !isNaN(num) ? num : 16;
+      return !isNaN(num) ? num : val;
     }
     if (trimmed.endsWith('em')) {
       const num = parseFloat(trimmed);
-      return !isNaN(num) ? Math.round(num * 16) : 16;
+      return !isNaN(num) ? Math.round(num * 16) : val;
     }
     if (trimmed.endsWith('pt')) {
       const num = parseFloat(trimmed);
-      return !isNaN(num) ? Math.round(num * 1.33) : 16;
+      return !isNaN(num) ? Math.round(num * 1.33) : val;
     }
     const parsed = parseFloat(trimmed);
-    if (!isNaN(parsed)) {
+    if (!isNaN(parsed) && /^-?\d+(\.\d+)?$/.test(trimmed)) {
       return parsed;
     }
-    return 16;
+    return val;
   }
   return val;
 }
 
-export function sanitizeStyleObject(style: any): any {
-  if (!style) return style;
-  if (Array.isArray(style)) {
-    return style.map(sanitizeStyleObject);
+export function sanitizeStyleObject(style: any, isTextElement: boolean = false): any {
+  if (!style && !isTextElement) return style;
+
+  let targetStyle = style;
+  if (isTextElement && style) {
+    targetStyle = StyleSheet.flatten(style) || {};
+  } else if (Array.isArray(targetStyle)) {
+    return targetStyle.map((item) => sanitizeStyleObject(item, isTextElement));
   }
-  if (typeof style === 'object') {
-    const cleaned: any = {};
-    for (const key of Object.keys(style)) {
-      const val = style[key];
-      if (
-        key === 'fontSize' ||
-        key === 'lineHeight' ||
-        key.includes('Radius') ||
-        key.startsWith('margin') ||
-        key.startsWith('padding') ||
-        key === 'letterSpacing' ||
-        key === 'borderWidth' ||
-        key === 'top' ||
-        key === 'bottom' ||
-        key === 'left' ||
-        key === 'right'
-      ) {
-        cleaned[key] = cleanValue(val);
+
+  const cleaned: any = typeof targetStyle === 'object' && targetStyle ? { ...targetStyle } : {};
+
+  for (const key of Object.keys(cleaned)) {
+    const val = cleaned[key];
+    if (
+      key === 'fontSize' ||
+      key === 'lineHeight' ||
+      key.includes('Radius') ||
+      key.startsWith('margin') ||
+      key.startsWith('padding') ||
+      key === 'letterSpacing' ||
+      key === 'borderWidth' ||
+      key === 'top' ||
+      key === 'bottom' ||
+      key === 'left' ||
+      key === 'right'
+    ) {
+      cleaned[key] = cleanValue(val);
+    }
+  }
+
+  if (isTextElement || cleaned.fontFamily || cleaned.fontWeight) {
+    let family = cleaned.fontFamily;
+    const weight = String(cleaned.fontWeight || '');
+
+    if (family && typeof family === 'string' && family.includes(',')) {
+      family = family.split(',')[0].trim();
+    }
+
+    const isCustomFont =
+      family &&
+      typeof family === 'string' &&
+      (family.includes('Montserrat') || family.includes('Ageo'));
+
+    if (!isCustomFont) {
+      const fontSize = typeof cleaned.fontSize === 'number' ? cleaned.fontSize : parseFloat(String(cleaned.fontSize || 0));
+      const isHeadlineSize = fontSize >= 20;
+
+      if (isHeadlineSize) {
+        if (weight === '500' || weight === 'medium') {
+          family = 'MontserratAlternates-Medium';
+        } else if (weight === '600') {
+          family = 'MontserratAlternates-SemiBold';
+        } else if (weight === '400' || weight === 'regular') {
+          family = 'MontserratAlternates-Regular';
+        } else {
+          family = 'MontserratAlternates-Bold';
+        }
       } else {
-        cleaned[key] = val;
+        if (weight === '700' || weight === 'bold') {
+          family = 'Ageo-Bold';
+        } else if (weight === '600') {
+          family = 'Ageo-SemiBold';
+        } else if (weight === '500' || weight === 'medium') {
+          family = 'Ageo-Medium';
+        } else {
+          family = 'Ageo-Regular';
+        }
       }
     }
-    if (cleaned.fontFamily && typeof cleaned.fontFamily === 'string') {
-      const family = cleaned.fontFamily;
-      if (
-        family.includes('Montserrat') ||
-        family.includes('Ageo') ||
-        family.includes('-Bold') ||
-        family.includes('-Medium') ||
-        family.includes('-SemiBold') ||
-        family.includes('-Regular')
-      ) {
-        delete cleaned.fontWeight;
-      }
+
+    delete cleaned.fontWeight;
+    if (family) {
+      cleaned.fontFamily = family;
     }
-    return cleaned;
   }
-  return style;
+
+  return cleaned;
 }
 
 const originalCreateElement = React.createElement;
 (React as any).createElement = function (type: any, props: any, ...children: any[]) {
-  if (props && props.style) {
+  const isText = type === Text || type === TextInput || (typeof type === 'string' && (type === 'text' || type === 'input'));
+  if (isText || (props && props.style)) {
     props = {
       ...props,
-      style: sanitizeStyleObject(props.style),
+      style: sanitizeStyleObject(props ? props.style : undefined, isText),
     };
   }
   return originalCreateElement.call(React, type, props, ...children);
@@ -122,8 +161,8 @@ const TextComponent = Text as any;
 if (TextComponent && TextComponent.render) {
   const origTextRender = TextComponent.render;
   TextComponent.render = function (props: any, ref: any) {
-    if (props && props.style) {
-      props = { ...props, style: sanitizeStyleObject(props.style) };
+    if (props) {
+      props = { ...props, style: sanitizeStyleObject(props.style, true) };
     }
     return origTextRender.call(this, props, ref);
   };
@@ -133,9 +172,12 @@ const TextInputComponent = TextInput as any;
 if (TextInputComponent && TextInputComponent.render) {
   const origTextInputRender = TextInputComponent.render;
   TextInputComponent.render = function (props: any, ref: any) {
-    if (props && props.style) {
-      props = { ...props, style: sanitizeStyleObject(props.style) };
+    if (props) {
+      props = { ...props, style: sanitizeStyleObject(props.style, true) };
     }
     return origTextInputRender.call(this, props, ref);
   };
 }
+
+
+

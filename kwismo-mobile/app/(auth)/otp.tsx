@@ -1,44 +1,41 @@
-import React, { useState, useRef, useEffect } from 'react';
+/// <reference types="nativewind/types" />
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../../src/shared/ui/Icon';
-import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
-import { Input } from '../../src/shared/ui/Input';
-import { Button } from '../../src/shared/ui/Button';
-import { toast } from '../../src/shared/store/toastStore';
-import { validateEmail } from '../../src/shared/lib/validation';
-import { colors, fonts } from '../../src/styles/tokens';
-import { scaleFont } from '../../src/shared/lib/responsive';
-
-import { useLocalSearchParams } from 'expo-router';
-import { useOtp } from '../../src/features/auth/hooks/useOtp';
+import { Icon } from '@/shared/ui/Icon';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { AuthGradientBackground } from '@/shared/components/AuthGradientBackground';
+import { Input } from '@/shared/ui/Input';
+import { Button } from '@/shared/ui/Button';
+import { toast } from '@/shared/store/toastStore';
+import { validateEmail } from '@/shared/lib/validation';
+import { colors } from '@/styles/tokens';
+import { useOtp } from '@/features/auth/hooks/useOtp';
 
 export default function OtpScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ email?: string }>();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { colors: themeColors } = useAppTheme();
 
   const initialEmailParam = (params.email || '').trim();
   const [step, setStep] = useState<'email' | 'code'>(initialEmailParam ? 'code' : 'email');
   const [email, setEmail] = useState(initialEmailParam);
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
 
-  const { verifyOtp: verifyOtpCall, resendOtp: resendOtpCall, loading, resendTimer, canResend } = useOtp(email);
+  const { verifyOtp: verifyOtpCall, resendOtp: resendOtpCall, resendTimer, canResend } = useOtp(email);
   const [emailError, setEmailError] = useState('');
   const [otpError, setOtpError] = useState('');
 
@@ -101,49 +98,33 @@ export default function OtpScreen() {
     }
   };
 
-
-  const headerGradientColors: readonly [string, string, ...string[]] = isDark
-    ? ['#2BB673', '#249460', '#1B2E3D', '#162035', '#0F1626', '#0F1626']
-    : ['#2BB673', '#28A86B', '#249460', '#213E35', '#23303B', '#3C4A56', '#60707F', '#98A8B8', '#D8E2EC', '#FFFFFF', '#FFFFFF'];
-
-  const headerGradientLocations: readonly [number, number, ...number[]] = isDark
-    ? [0, 0.25, 0.5, 0.7, 0.85, 1.0]
-    : [0, 0.10, 0.20, 0.30, 0.38, 0.46, 0.53, 0.60, 0.66, 0.72, 0.76, 1.0];
-
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-        <StatusBar style="light" />
+    <AuthGradientBackground>
+      <StatusBar style="light" />
 
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <LinearGradient
-            colors={headerGradientColors}
-            locations={headerGradientLocations}
-            style={StyleSheet.absoluteFill}
-          />
-        </View>
-
-
-
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
         <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            {
-              paddingTop: Math.max(insets.top + 50, 70),
-              paddingBottom: Math.max(insets.bottom + 30, 40),
-            },
-          ]}
+          className="flex-1 px-6 z-10"
+          contentContainerStyle={{
+            paddingTop: Math.max(insets.top + 40, 60),
+            paddingBottom: Math.max(insets.bottom + 40, 60),
+            flexGrow: 1,
+          }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets={true}
         >
-          <Text style={styles.title}>{t('auth.secureAccountTitle')}</Text>
+          <Text className="font-montserrat-bold text-[34px] leading-[44px] text-white mt-5">
+            {t('auth.secureAccountTitle')}
+          </Text>
 
           {step === 'email' ? (
             <>
-              <Text style={styles.subtitle}>
+              <Text className="font-medium text-base leading-[22px] text-white/95 mt-3 mb-9">
                 {t('auth.secureAccountEmailSubtitle')}
               </Text>
 
@@ -170,36 +151,30 @@ export default function OtpScreen() {
             </>
           ) : (
             <>
-              <Text style={styles.subtitle}>
+              <Text className="font-medium text-base leading-[22px] text-white/95 mt-3 mb-6">
                 {t('auth.secureAccountOtpSubtitle')}
               </Text>
 
-              <View style={styles.otpRow}>
+              <Text className="font-medium text-body-md text-slate-700 mb-6 text-center">
+                {email}
+              </Text>
+
+              <View className="flex-row justify-between mb-4 gap-2">
                 {otpDigits.map((digit, index) => (
                   <View
                     key={`otp-${index}`}
-                    style={[
-                      styles.otpBox,
-                      {
-                        backgroundColor: themeColors.cardBg,
-                        borderColor: otpError
-                          ? '#EF4444'
-                          : digit
-                          ? colors.green
-                          : themeColors.inputBorder,
-                      },
-                    ]}
+                    className={`flex-1 h-14 max-w-[52px] rounded-xl border-[1.5px] items-center justify-center bg-white ${
+                      otpError
+                        ? 'border-red-500'
+                        : digit
+                        ? 'border-emerald-500'
+                        : 'border-slate-300'
+                    }`}
                   >
                     <TextInput
                       ref={(el) => { inputRefs.current[index] = el; }}
-                      style={[
-                        styles.otpInput,
-                        {
-                          color: themeColors.textPrimary,
-                          fontSize: scaleFont(22),
-                        },
-                        Platform.OS === 'web' ? ({ outline: 'none', outlineStyle: 'none' } as any) : {},
-                      ]}
+                      className="font-bold text-center text-slate-900 w-full h-full text-xl"
+                      style={Platform.OS === 'web' ? ({ outline: 'none', outlineStyle: 'none' } as any) : {}}
                       keyboardType="number-pad"
                       maxLength={1}
                       value={digit}
@@ -211,34 +186,29 @@ export default function OtpScreen() {
                 ))}
               </View>
 
-              {/* Message d'erreur OTP inline */}
               {otpError ? (
-                <View style={styles.otpErrorRow}>
-                  <Icon name="solar:danger-circle-bold" color="#EF4444" size={14} />
-                  <Text style={styles.otpErrorText}>{otpError}</Text>
+                <View className="flex-row items-center justify-center mb-6 gap-1.5">
+                  <Icon name="solar:danger-circle-bold" size={14} color="#EF4444" />
+                  <Text className="font-medium text-xs text-red-500">{otpError}</Text>
                 </View>
               ) : null}
 
-              <View style={styles.resendRow}>
+              <View className="flex-row items-center justify-between mb-8">
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={handleResend}
-                  disabled={!canResend}
+                  disabled={resendTimer > 0}
                 >
-                  <Text style={[styles.resendText, { color: themeColors.textPrimary }]}>
-                    {t('auth.alreadySentQuestion')}{' '}
-                    <Text
-                      style={[
-                        styles.resendLink,
-                        { color: !canResend ? themeColors.textSecondary : colors.green },
-                      ]}
-                    >
-                      {t('auth.resendCode')}
-                    </Text>
+                  <Text
+                    className={`font-semibold text-sm ${
+                      resendTimer > 0 ? 'text-slate-400' : 'text-emerald-700 underline'
+                    }`}
+                  >
+                    {t('auth.alreadySentQuestion')} {t('auth.resendCode')}
                   </Text>
                 </TouchableOpacity>
 
-                <Text style={[styles.timerText, { color: themeColors.textPrimary }]}>
+                <Text className="font-bold text-sm text-slate-800">
                   {resendTimer}s
                 </Text>
               </View>
@@ -252,97 +222,7 @@ export default function OtpScreen() {
             </>
           )}
         </ScrollView>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </AuthGradientBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  langWrapper: {
-    position: 'absolute',
-    right: 20,
-    zIndex: 20,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    zIndex: 10,
-  },
-  title: {
-    fontFamily: fonts.h2,
-    fontSize: 34,
-    fontWeight: '700',
-    color: colors.white,
-    marginTop: 20,
-    lineHeight: 44,
-  },
-  subtitle: {
-    fontFamily: fonts.medium,
-    fontSize: 15,
-    color: colors.white,
-    opacity: 0.95,
-    marginTop: 12,
-    marginBottom: 36,
-    lineHeight: 22,
-  },
-  otpRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-    gap: 8,
-  },
-  otpBox: {
-    flex: 1,
-    height: 56,
-    maxWidth: 52,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  otpInput: {
-    fontFamily: fonts.bold,
-    textAlign: 'center',
-    width: '100%',
-    height: '100%',
-  },
-  otpErrorRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 16,
-    paddingHorizontal: 4,
-  },
-  otpErrorText: {
-    fontFamily: fonts.medium,
-    fontSize: 12,
-    color: '#EF4444',
-  },
-  resendRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 32,
-    paddingHorizontal: 4,
-  },
-  resendText: {
-    fontFamily: fonts.medium,
-    fontSize: 13,
-  },
-  resendLink: {
-    fontFamily: fonts.semiBold,
-    textDecorationLine: 'underline',
-  },
-  timerText: {
-    fontFamily: fonts.bold,
-    fontSize: 14,
-  },
-});
-

@@ -1,12 +1,11 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+/// <reference types="nativewind/types" />
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
-import { KwismoLogo } from '../../src/shared/components/KwismoLogo';
-import { AuthDomeBackground } from '../../src/shared/components/AuthDomeBackground';
-import { colors, fonts } from '../../src/styles/tokens';
+import { KwismoLogo } from '@/shared/components/KwismoLogo';
+import { AuthGradientBackground } from '@/shared/components/AuthGradientBackground';
 
 export default function AuthWelcomeScreen() {
   const router = useRouter();
@@ -14,97 +13,41 @@ export default function AuthWelcomeScreen() {
   const { t } = useTranslation();
 
   return (
-    <AuthDomeBackground>
-      <View style={styles.container}>
+    <AuthGradientBackground variant="mirror">
+      <View className="flex-1 w-full h-full justify-between">
         <StatusBar style="light" />
 
-        {/* Logo Kwismo centré sur le dôme */}
-        <View style={styles.centerContainer}>
+        <View className="flex-1 w-full items-center justify-center z-10">
           <KwismoLogo size={200} variant="white" />
         </View>
 
-        {/* Boutons d'action en bas de page */}
         <View
-          style={[
-            styles.bottomContainer,
-            { paddingBottom: Math.max(insets.bottom + 24, 36) },
-          ]}
+          className="w-full px-6 gap-3.5 z-10"
+          style={{ paddingBottom: Math.max(insets.bottom + 24, 36) }}
         >
           <TouchableOpacity
             activeOpacity={0.85}
-            style={styles.loginButton}
             onPress={() => router.push('/(auth)/login')}
+            className="w-full bg-brand-orange rounded-xl items-center justify-center shadow-md shadow-black/15 elevation-2"
+            style={{ height: 52 }}
           >
-            <Text style={styles.loginText}>{t('common.login', 'Se connecter')}</Text>
+            <Text className="font-semibold text-body-lg text-white">
+              {t('common.login')}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             activeOpacity={0.85}
-            style={styles.registerButton}
             onPress={() => router.push('/(auth)/register')}
+            className="w-full bg-transparent rounded-xl border-[1.5px] border-[#1E293B] items-center justify-center"
+            style={{ height: 52 }}
           >
-            <Text style={styles.registerText}>{t('common.register', 'Créer un compte')}</Text>
+            <Text className="font-semibold text-body-lg text-[#1E293B]">
+              {t('common.register')}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
-    </AuthDomeBackground>
+    </AuthGradientBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  langWrapper: {
-    position: 'absolute',
-    right: 20,
-    zIndex: 20,
-  },
-  centerContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10,
-  },
-  bottomContainer: {
-    paddingHorizontal: 24,
-    gap: 14,
-    width: '100%',
-    zIndex: 10,
-  },
-  loginButton: {
-    width: '100%',
-    height: 52,
-    backgroundColor: colors.orange,
-    borderRadius: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 2,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 4,
-  },
-  loginText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.white,
-  },
-  registerButton: {
-    width: '100%',
-    height: 52,
-    backgroundColor: 'transparent',
-    borderRadius: 26,
-    borderWidth: 1.5,
-    borderColor: '#3B4E7A',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  registerText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#3B4E7A',
-  },
-});

@@ -1,8 +1,8 @@
+/// <reference types="nativewind/types" />
 import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
@@ -11,28 +11,27 @@ import {
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../../src/shared/ui/Icon';
-import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
-import { useLogin } from '../../src/features/auth/hooks/useLogin';
-import { Input } from '../../src/shared/ui/Input';
-import { Button } from '../../src/shared/ui/Button';
-import { validateEmail } from '../../src/shared/lib/validation';
-import { colors, fonts } from '../../src/styles/tokens';
+import { Icon } from '@/shared/ui/Icon';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { AuthGradientBackground } from '@/shared/components/AuthGradientBackground';
+import { useLogin } from '@/features/auth/hooks/useLogin';
+import { Input } from '@/shared/ui/Input';
+import { Button } from '@/shared/ui/Button';
+import { validateEmail } from '@/shared/lib/validation';
+import { colors } from '@/styles/tokens';
 
 export default function LoginScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
-  const { handleLogin: loginApiCall, loading: apiLoading } = useLogin();
+  const { handleLogin: loginApiCall } = useLogin();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Inline errors state
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
@@ -71,49 +70,34 @@ export default function LoginScreen() {
     return false;
   };
 
-
-  const headerGradientColors: readonly [string, string, ...string[]] = isDark
-    ? ['#2BB673', '#249460', '#1B2E3D', '#162035', '#0F1626', '#0F1626']
-    : ['#2BB673', '#28A86B', '#249460', '#213E35', '#23303B', '#3C4A56', '#60707F', '#98A8B8', '#D8E2EC', '#FFFFFF', '#FFFFFF'];
-
-  const headerGradientLocations: readonly [number, number, ...number[]] = isDark
-    ? [0, 0.25, 0.5, 0.7, 0.85, 1.0]
-    : [0, 0.10, 0.20, 0.30, 0.38, 0.46, 0.53, 0.60, 0.66, 0.72, 0.76, 1.0];
-
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-        <StatusBar style="light" />
+    <AuthGradientBackground>
+      <StatusBar style="light" />
 
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <LinearGradient
-            colors={headerGradientColors}
-            locations={headerGradientLocations}
-            style={StyleSheet.absoluteFill}
-          />
-        </View>
-
-
-
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
         <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            {
-              paddingTop: Math.max(insets.top + 50, 70),
-              paddingBottom: Math.max(insets.bottom + 30, 40),
-            },
-          ]}
+          className="flex-1 px-6 z-10"
+          contentContainerStyle={{
+            paddingTop: Math.max(insets.top + 40, 60),
+            paddingBottom: Math.max(insets.bottom + 40, 60),
+            flexGrow: 1,
+          }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets={true}
         >
-          <Text style={styles.title}>{t('auth.loginTitle')}</Text>
-          <Text style={styles.subtitle}>{t('auth.loginSubtitle')}</Text>
+          <Text className="font-montserrat-bold text-[32px] leading-[40px] text-white mt-2.5">
+            {t('auth.loginTitle')}
+          </Text>
+          <Text className="font-medium text-body-md text-white/95 mt-3 mb-8">
+            {t('auth.loginSubtitle')}
+          </Text>
 
-          <View style={styles.formContainer}>
-            {/* Champ Email */}
+          <View className="w-full">
             <Input
               placeholder={t('common.email')}
               value={email}
@@ -127,7 +111,6 @@ export default function LoginScreen() {
               leftIcon={<Icon name="solar:letter-linear" color={themeColors.inputPlaceholder} size={20} />}
             />
 
-            {/* Champ Mot de passe */}
             <Input
               placeholder={t('common.password')}
               value={password}
@@ -143,40 +126,36 @@ export default function LoginScreen() {
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => router.push('/(auth)/forgot-password')}
-              style={styles.forgotWrapper}
+              className="self-start -mt-0.5 mb-6"
             >
-              <Text style={[styles.forgotText, { color: themeColors.textSecondary }]}>
+              <Text className="font-caption text-caption text-slate-700">
                 {t('auth.forgotPasswordLink')}
               </Text>
             </TouchableOpacity>
 
-            {/* Remember Me Checkbox */}
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => setRememberMe(!rememberMe)}
-              style={styles.checkboxRow}
+              className="flex-row items-center mb-16"
             >
               <View
-                style={[
-                  styles.checkbox,
-                  { borderColor: themeColors.textPrimary },
-                  rememberMe && { backgroundColor: themeColors.textPrimary },
-                ]}
+                className={`w-5 h-5 rounded border-[1.5px] items-center justify-center mr-3 ${
+                  rememberMe ? 'bg-slate-900 border-slate-900' : 'border-slate-800'
+                }`}
               >
                 {rememberMe && (
                   <Icon
                     name="solar:check-read-linear"
-                    color={isDark ? themeColors.background : colors.white}
+                    color={colors.white}
                     size={14}
                   />
                 )}
               </View>
-              <Text style={[styles.checkboxLabel, { color: themeColors.textPrimary }]}>
+              <Text className="font-medium text-body-md text-slate-800">
                 {t('common.rememberMe')}
               </Text>
             </TouchableOpacity>
 
-            {/* Bouton de Connexion avec 2s min de chargement */}
             <Button
               title={t('common.login')}
               onPress={handleLogin}
@@ -185,15 +164,14 @@ export default function LoginScreen() {
               style={{ marginBottom: 20 }}
             />
 
-            <View style={styles.dividerRow}>
-              <View style={[styles.dividerLine, { backgroundColor: themeColors.divider }]} />
-              <Text style={[styles.dividerText, { color: themeColors.textSecondary }]}>
+            <View className="flex-row items-center mb-5">
+              <View className="flex-1 h-[1px] bg-slate-300/80" />
+              <Text className="font-medium text-body-md text-slate-600 mx-4">
                 {t('common.or')}
               </Text>
-              <View style={[styles.dividerLine, { backgroundColor: themeColors.divider }]} />
+              <View className="flex-1 h-[1px] bg-slate-300/80" />
             </View>
 
-            {/* Bouton Créer un compte */}
             <Button
               title={t('common.register')}
               onPress={() => router.push('/(auth)/register')}
@@ -203,85 +181,7 @@ export default function LoginScreen() {
             />
           </View>
         </ScrollView>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </AuthGradientBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  langWrapper: {
-    position: 'absolute',
-    right: 20,
-    zIndex: 20,
-  },
-  scrollContent: {
-    paddingHorizontal: 24,
-    flexGrow: 1,
-    zIndex: 10,
-  },
-  title: {
-    fontFamily: fonts.h2,
-    fontSize: 32,
-    fontWeight: '700',
-    color: colors.white,
-    marginTop: 10,
-    lineHeight: 40,
-  },
-  subtitle: {
-    fontFamily: fonts.medium,
-    fontSize: 14,
-    color: colors.white,
-    opacity: 0.95,
-    marginTop: 12,
-    marginBottom: 32,
-    lineHeight: 20,
-  },
-  formContainer: {
-    width: '100%',
-  },
-  forgotWrapper: {
-    alignSelf: 'flex-start',
-    marginBottom: 24,
-    marginTop: -2,
-  },
-  forgotText: {
-    fontFamily: fonts.medium,
-    fontSize: 13,
-  },
-  checkboxRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 64,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 6,
-    borderWidth: 1.5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  checkboxLabel: {
-    fontFamily: fonts.medium,
-    fontSize: 14,
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-  },
-  dividerText: {
-    fontFamily: fonts.medium,
-    fontSize: 14,
-    marginHorizontal: 16,
-  },
-});
-

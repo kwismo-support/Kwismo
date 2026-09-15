@@ -42,7 +42,7 @@ export const BODY_FONT = 'Ageo';
 const getFont = (family: string, weightSuffix: string) => {
   const cleanName = family.replace(/\s+/g, '');
   return Platform.select({
-    web: `'${family}', '${cleanName}-${weightSuffix}', system-ui, -apple-system, BlinkMacSystemFont, sans-serif`,
+    web: `'${family}', '${cleanName}-${weightSuffix}', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif`,
     default: `${cleanName}-${weightSuffix}`,
   });
 };
@@ -70,7 +70,7 @@ export const fonts = {
   bold: getFont(BODY_FONT, 'Bold'),
 };
 
-// Typography scale
+// Typography scale (Conforme à maquettes/Typographie.png)
 export const typography = {
   h1: { fontSize: 56, lineHeight: 72, fontFamily: fonts.h1, fontWeight: '700' as const },
   h2: { fontSize: 40, lineHeight: 56, fontFamily: fonts.h2, fontWeight: '700' as const },

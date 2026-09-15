@@ -127,9 +127,9 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   label: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(13),
-    fontWeight: '600',
+    fontFamily: fonts.caption,
+    fontSize: 14,
+    lineHeight: 21,
     marginBottom: 6,
   },
   inputContainer: {
@@ -147,8 +147,9 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   valueText: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(14),
+    fontFamily: fonts.bodyMedium,
+    fontSize: 14,
+    lineHeight: 20,
     flex: 1,
   },
   errorRow: {
@@ -158,8 +159,9 @@ const styles = StyleSheet.create({
     paddingLeft: 2,
   },
   errorText: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
+    fontFamily: fonts.footnote,
+    fontSize: 12,
+    lineHeight: 16,
     color: '#EF4444',
   },
 });
