@@ -30,7 +30,7 @@ export default function LoginScreen() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
 
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -59,7 +59,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     if (!validateForm()) return false;
 
-    const res = await loginApiCall(email, password);
+    const res = await loginApiCall(email, password, rememberMe);
     if (res.success) {
       router.replace('/(app)');
       return true;
@@ -69,6 +69,7 @@ export default function LoginScreen() {
     }
     return false;
   };
+
 
   return (
     <AuthGradientBackground>

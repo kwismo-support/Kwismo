@@ -25,7 +25,8 @@ interface AuthState {
   user: User | null;
   token: string | null;
   refreshToken: string | null;
-  login: (user: User, token: string, refreshToken?: string) => Promise<void>;
+  rememberMe: boolean;
+  login: (user: User, token: string, refreshToken?: string, rememberMe?: boolean) => Promise<void>;
   logout: () => Promise<void>;
   initializeAuth: () => Promise<void>;
   setUser: (user: User) => void;
@@ -33,6 +34,7 @@ interface AuthState {
 
 const USER_STORAGE_KEY = 'kwismo_user_session';
 const REFRESH_TOKEN_KEY = 'kwismo_refresh_token';
+const REMEMBER_ME_KEY = 'kwismo_remember_me';
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
@@ -40,9 +42,28 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   token: null,
   refreshToken: null,
+  rememberMe: true,
 
   initializeAuth: async () => {
     try {
+      const savedRememberMe = await storage.getItem(REMEMBER_ME_KEY);
+      const isRemembered = savedRememberMe !== 'false';
+
+      if (!isRemembered) {
+        await storage.removeItem(env.AUTH_TOKEN_KEY);
+        await storage.removeItem(USER_STORAGE_KEY);
+        await storage.removeItem(REFRESH_TOKEN_KEY);
+        set({
+          isAuthenticated: false,
+          isInitialized: true,
+          user: null,
+          token: null,
+          refreshToken: null,
+          rememberMe: false,
+        });
+        return;
+      }
+
       const savedToken = await storage.getItem(env.AUTH_TOKEN_KEY);
       const savedUserStr = await storage.getItem(USER_STORAGE_KEY);
       const savedRefreshToken = await storage.getItem(REFRESH_TOKEN_KEY);
@@ -58,6 +79,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           token: savedToken,
           refreshToken: savedRefreshToken,
           user: parsedUser,
+          rememberMe: true,
         });
       } else {
         set({
@@ -66,6 +88,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           token: null,
           refreshToken: null,
           user: null,
+          rememberMe: true,
         });
       }
     } catch {
@@ -75,13 +98,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         token: null,
         refreshToken: null,
         user: null,
+        rememberMe: true,
       });
     }
   },
 
-  login: async (user: User, token: string, refreshToken?: string) => {
+  login: async (user: User, token: string, refreshToken?: string, rememberMe: boolean = true) => {
     await storage.setItem(env.AUTH_TOKEN_KEY, token);
     await storage.setItem(USER_STORAGE_KEY, JSON.stringify(user));
+    await storage.setItem(REMEMBER_ME_KEY, rememberMe ? 'true' : 'false');
     if (refreshToken) {
       await storage.setItem(REFRESH_TOKEN_KEY, refreshToken);
     }
@@ -93,6 +118,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       token,
       refreshToken: refreshToken || null,
       user,
+      rememberMe,
     });
   },
 
@@ -100,11 +126,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     await storage.removeItem(env.AUTH_TOKEN_KEY);
     await storage.removeItem(USER_STORAGE_KEY);
     await storage.removeItem(REFRESH_TOKEN_KEY);
+    await storage.removeItem(REMEMBER_ME_KEY);
     set({
       isAuthenticated: false,
       token: null,
       refreshToken: null,
       user: null,
+      rememberMe: true,
     });
   },
 
@@ -116,4 +144,5 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     storage.setItem(USER_STORAGE_KEY, JSON.stringify(user)).catch(() => {});
   },
 }));
+
 
