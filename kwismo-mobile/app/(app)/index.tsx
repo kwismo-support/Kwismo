@@ -36,7 +36,7 @@ export default function HomeScreen() {
     ? `${user.firstName} ${user.lastName || ''}`.trim()
     : user?.email
     ? user.email.split('@')[0]
-    : 'Utilisateur KWISMO';
+    : 'LOREM Ipsum';
 
   const rawActivities = summary?.recentActivities && summary.recentActivities.length > 0
     ? summary.recentActivities
@@ -156,7 +156,7 @@ export default function HomeScreen() {
             </View>
             <View style={styles.userInfo}>
               <View style={styles.welcomeRow}>
-                <Text style={[styles.welcomeText, { color: isDark ? themeColors.textSecondary : '#64748B' }]}>
+                <Text style={[styles.welcomeText, { color: isDark ? themeColors.textSecondary : '#475569' }]}>
                   {t('common.welcome')}
                 </Text>
                 <Icon name="solar:verified-check-bold" color={colors.green} size={16} style={{ marginLeft: 4 }} />
@@ -169,38 +169,38 @@ export default function HomeScreen() {
 
           <View style={styles.kpiRowClean}>
             <View style={styles.kpiItemStart}>
-              <Text style={[styles.kpiValueBold, { color: isDark ? themeColors.textPrimary : '#0F172A' }]}>
+              <Text style={[styles.kpiValueBold, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
                 {user?.kpi?.numeros_verifies ?? summary?.numeros_verifies ?? 127}
               </Text>
-              <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textSecondary : '#64748B' }]}>
-                {t('common.verifiedNumber')}
+              <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
+                {t('common.kpiVerified')}
               </Text>
             </View>
 
             <View style={styles.kpiItemStart}>
-              <Text style={[styles.kpiValueBold, { color: isDark ? themeColors.textPrimary : '#0F172A' }]}>
+              <Text style={[styles.kpiValueBold, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
                 25
               </Text>
-              <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textSecondary : '#64748B' }]}>
-                {t('common.avoidedThreats')}
+              <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
+                {t('common.kpiThreats')}
               </Text>
             </View>
 
             <View style={styles.kpiItemStart}>
-              <Text style={[styles.kpiValueBold, { color: isDark ? themeColors.textPrimary : '#0F172A' }]}>
+              <Text style={[styles.kpiValueBold, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
                 {user?.kpi?.signalements_effectues ?? summary?.signalements_effectues ?? 10}
               </Text>
-              <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textSecondary : '#64748B' }]}>
-                {t('common.reportsMade')}
+              <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
+                {t('common.kpiReports')}
               </Text>
             </View>
 
             <View style={styles.kpiItemStart}>
-              <Text style={[styles.kpiValueBold, { color: isDark ? themeColors.textPrimary : '#0F172A' }]}>
+              <Text style={[styles.kpiValueBold, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
                 {user?.kpi?.transferts_proteges ?? summary?.transferts_proteges ?? 50}
               </Text>
-              <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textSecondary : '#64748B' }]}>
-                {t('common.transfers')}
+              <Text style={[styles.kpiLabelLeft, { color: isDark ? themeColors.textPrimary : '#000000' }]}>
+                {t('common.kpiTransfers')}
               </Text>
             </View>
           </View>
@@ -212,11 +212,11 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/verify')}
             style={styles.actionBtnWrapper}
           >
-            <View style={[styles.actionCircle, { backgroundColor: '#F1F5F9' }]}>
-              <Icon name="solar:shield-user-bold" color="#161E33" size={26} />
+            <View style={[styles.actionCircle, { backgroundColor: '#E8F0FE' }]}>
+              <Icon name="solar:shield-user-bold" color="#161E33" size={24} />
             </View>
             <Text style={[styles.actionText, { color: isDark ? themeColors.textPrimary : '#161E33' }]}>
-              {t('common.verifyNumber')}
+              {t('common.actionVerify')}
             </Text>
           </TouchableOpacity>
 
@@ -225,11 +225,11 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/transfer')}
             style={styles.actionBtnWrapper}
           >
-            <View style={[styles.actionCircle, { backgroundColor: '#F1F5F9' }]}>
-              <Icon name="solar:transfer-horizontal-bold" color="#161E33" size={26} />
+            <View style={[styles.actionCircle, { backgroundColor: '#E8F0FE' }]}>
+              <Icon name="solar:transfer-horizontal-bold" color="#161E33" size={24} />
             </View>
             <Text style={[styles.actionText, { color: isDark ? themeColors.textPrimary : '#161E33' }]}>
-              {t('common.moneyTransfer')}
+              {t('common.actionTransfer')}
             </Text>
           </TouchableOpacity>
 
@@ -238,11 +238,11 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/alert-whatsapp')}
             style={styles.actionBtnWrapper}
           >
-            <View style={[styles.actionCircle, { backgroundColor: '#F1F5F9' }]}>
-              <Icon name="ic:baseline-whatsapp" color="#161E33" size={26} />
+            <View style={[styles.actionCircle, { backgroundColor: '#E8F0FE' }]}>
+              <Icon name="solar:chat-round-dots-bold" color="#161E33" size={24} />
             </View>
             <Text style={[styles.actionText, { color: isDark ? themeColors.textPrimary : '#161E33' }]}>
-              {t('common.whatsappAlert')}
+              {t('common.actionWhatsapp')}
             </Text>
           </TouchableOpacity>
 
@@ -251,24 +251,15 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/report')}
             style={styles.actionBtnWrapper}
           >
-            <View style={[styles.actionCircle, { backgroundColor: '#F1F5F9' }]}>
-              <Icon name="solar:danger-triangle-bold" color="#161E33" size={26} />
+            <View style={[styles.actionCircle, { backgroundColor: '#FCE8E6' }]}>
+              <Icon name="heroicons:signal-16-solid" color="#D93025" size={24} />
             </View>
-            <Text style={[styles.actionText, { color: isDark ? themeColors.textPrimary : '#161E33' }]}>
+            <Text style={[styles.actionText, { color: '#D93025' }]}>
               {t('common.report')}
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
 
-      <ScrollView
-        style={styles.activityScrollArea}
-        contentContainerStyle={[
-          styles.scrollBodyContent,
-          { paddingBottom: insets.bottom + 100 },
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
         <View style={styles.activityHeaderRow}>
           <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
             {t('common.recentActivity')}
@@ -281,7 +272,16 @@ export default function HomeScreen() {
             <Icon name="solar:tuning-3-linear" color="#161E33" size={22} />
           </TouchableOpacity>
         </View>
+      </View>
 
+      <ScrollView
+        style={styles.activityScrollArea}
+        contentContainerStyle={[
+          styles.scrollBodyContent,
+          { paddingBottom: insets.bottom + 100 },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
         {showFilters && (
           <ScrollView
             horizontal
@@ -421,7 +421,8 @@ const styles = StyleSheet.create({
   avatarInitial: {
     color: '#FFFFFF',
     fontSize: 20,
-    fontWeight: 'bold',
+    fontFamily: fonts.bold,
+    fontWeight: '700',
   },
   userInfo: {
     flex: 1,
@@ -433,12 +434,13 @@ const styles = StyleSheet.create({
   welcomeText: {
     fontSize: 13,
     lineHeight: 18,
-    fontFamily: fonts.headlineBold,
+    fontFamily: fonts.bold,
+    fontWeight: '700',
   },
   userNameText: {
     fontSize: 18,
     lineHeight: 24,
-    fontFamily: fonts.headlineBold,
+    fontFamily: fonts.bold,
     fontWeight: '700',
     marginTop: 2,
   },
@@ -454,14 +456,14 @@ const styles = StyleSheet.create({
   kpiValueBold: {
     fontSize: 16,
     lineHeight: 22,
-    fontFamily: fonts.headlineBold,
+    fontFamily: fonts.bold,
     fontWeight: '700',
     textAlign: 'left',
   },
   kpiLabelLeft: {
     fontSize: 10,
-    lineHeight: 13,
-    fontFamily: fonts.headlineBold,
+    lineHeight: 14,
+    fontFamily: fonts.medium,
     fontWeight: '600',
     textAlign: 'left',
     marginTop: 2,
@@ -476,44 +478,45 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   actionCircle: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 6,
   },
   actionText: {
     fontSize: 11,
-    lineHeight: 15,
-    fontFamily: fonts.caption,
+    lineHeight: 14,
+    fontFamily: fonts.medium,
     textAlign: 'center',
     fontWeight: '600',
+  },
+  activityHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+    paddingTop: 4,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontFamily: fonts.bold,
+    fontWeight: '700',
+  },
+  filterIconButton: {
+    padding: 6,
   },
   activityScrollArea: {
     flex: 1,
   },
   scrollBodyContent: {
     paddingHorizontal: 16,
-    paddingTop: 4,
-  },
-  activityHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    lineHeight: 24,
-    fontFamily: fonts.headlineBold,
-    fontWeight: '700',
-  },
-  filterIconButton: {
-    padding: 6,
+    paddingTop: 0,
   },
   filterScrollRow: {
-    marginBottom: 10,
+    marginBottom: 8,
   },
   filterScrollContainer: {
     gap: 8,
@@ -531,12 +534,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   activityList: {
-    gap: 6,
+    gap: 4,
   },
   activityCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 14,
     borderWidth: 0,
@@ -554,7 +557,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '700',
     fontSize: 13,
-    fontFamily: fonts.headlineBold,
+    fontFamily: fonts.bold,
   },
   activityInfo: {
     flex: 1.2,
@@ -562,7 +565,7 @@ const styles = StyleSheet.create({
   activityPhone: {
     fontSize: 13,
     lineHeight: 18,
-    fontFamily: fonts.headlineBold,
+    fontFamily: fonts.bold,
     fontWeight: '700',
   },
   activityType: {
@@ -599,4 +602,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bodySmall,
   },
 });
+
 
