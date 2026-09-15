@@ -23,7 +23,7 @@ export function useLogin() {
     return { deviceId, deviceName };
   };
 
-  const handleLogin = async (email: string, password: string) => {
+  const handleLogin = async (email: string, password: string, rememberMe: boolean = true) => {
     setLoading(true);
     setError(null);
     try {
@@ -38,7 +38,7 @@ export function useLogin() {
       if (res.success && res.data) {
         const data: any = res.data;
         if (data.requires_device_verification) {
-          toast.error(t('auth.secureAccountOtpSubtitle', 'Nouvel appareil : vérification requise.'));
+          toast.error(t('auth.secureAccountOtpSubtitle'));
           return { success: false, requiresDeviceVerification: true };
         }
 
@@ -51,29 +51,30 @@ export function useLogin() {
             role: data.user.role || 'user',
           };
 
-          await login(userPayload, data.access_token, data.refresh_token);
-          toast.success(t('toasts.loginSuccess', 'Connexion réussie !'));
+          await login(userPayload, data.access_token, data.refresh_token, rememberMe);
+          toast.success(t('toasts.loginSuccess'));
           return { success: true };
         }
       }
 
       if (res.status === 403 || (res.message && res.message.toLowerCase().includes('email non v'))) {
         await storage.setItem('kwismo_pending_email', email.trim());
-        toast.info(t('toasts.unverifiedEmailOtpSent', 'Email non vérifié : un nouveau code OTP vous a été envoyé par email.'));
+        toast.info(t('toasts.unverifiedEmailOtpSent'));
         return { success: false, requiresEmailVerification: true };
       }
 
-      const msg = res.message || t('errors.generalMessage', 'Connexion échouée.');
+      const msg = res.message || t('errors.generalMessage');
       setError(msg);
       return { success: false, message: msg };
     } catch (err: any) {
-      const msg = err.message || t('toasts.networkError', 'Connexion réseau impossible.');
+      const msg = err.message || t('toasts.networkError');
       setError(msg);
       return { success: false, message: msg };
     } finally {
       setLoading(false);
     }
   };
+
 
   return { handleLogin, loading, error };
 }
