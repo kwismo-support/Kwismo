@@ -16,6 +16,7 @@ import biCollection from '@iconify/json/json/bi.json';
 import tablerCollection from '@iconify/json/json/tabler.json';
 import icCollection from '@iconify/json/json/ic.json';
 import ggCollection from '@iconify/json/json/gg.json';
+import f7Collection from '@iconify/json/json/f7.json';
 
 const collectionsMap: Record<string, any> = {
   'bitcoin-icons': bitcoinIconsCollection,
@@ -29,20 +30,11 @@ const collectionsMap: Record<string, any> = {
   tabler: tablerCollection,
   ic: icCollection,
   gg: ggCollection,
+  f7: f7Collection,
 };
 
 function getCollectionData(prefix: string) {
-  if (collectionsMap[prefix]) return collectionsMap[prefix];
-  try {
-    const loaded = require(`@iconify/json/json/${prefix}.json`);
-    collectionsMap[prefix] = loaded;
-    if (Platform.OS === 'web') {
-      try { addCollection(loaded); } catch {}
-    }
-    return loaded;
-  } catch (err) {
-    return null;
-  }
+  return collectionsMap[prefix] || null;
 }
 
 if (Platform.OS === 'web') {
@@ -52,6 +44,7 @@ if (Platform.OS === 'web') {
     } catch (e) {}
   });
 }
+
 
 
 export interface IconProps {
