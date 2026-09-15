@@ -1,43 +1,43 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 
 interface BadgeProps {
   label: string;
   variant?: 'success' | 'warning' | 'error' | 'info';
+  className?: string;
 }
 
-export const Badge: React.FC<BadgeProps> = ({ label, variant = 'info' }) => {
-  const getStyles = () => {
+export const Badge: React.FC<BadgeProps> = ({ label, variant = 'info', className = '' }) => {
+  const getVariantClasses = () => {
     switch (variant) {
       case 'success':
-        return { bg: '#DCFCE7', text: '#16A34A' };
+        return {
+          container: 'bg-emerald-100 dark:bg-emerald-950/60',
+          text: 'text-emerald-700 dark:text-emerald-300',
+        };
       case 'warning':
-        return { bg: '#FEF3C7', text: '#D97706' };
+        return {
+          container: 'bg-amber-100 dark:bg-amber-950/60',
+          text: 'text-amber-800 dark:text-amber-300',
+        };
       case 'error':
-        return { bg: '#FEE2E2', text: '#DC2626' };
+        return {
+          container: 'bg-red-100 dark:bg-red-950/60',
+          text: 'text-red-700 dark:text-red-300',
+        };
       default:
-        return { bg: '#E2E8F0', text: '#334155' };
+        return {
+          container: 'bg-slate-200 dark:bg-slate-800',
+          text: 'text-slate-700 dark:text-slate-300',
+        };
     }
   };
 
-  const style = getStyles();
+  const { container, text } = getVariantClasses();
 
   return (
-    <View style={[styles.badge, { backgroundColor: style.bg }]}>
-      <Text style={[styles.text, { color: style.text }]}>{label}</Text>
+    <View className={`px-2 py-1 rounded-md self-start ${container} ${className}`}>
+      <Text className={`font-bold text-2xs ${text}`}>{label}</Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-    alignSelf: 'flex-start',
-  },
-  text: {
-    fontSize: 11,
-    fontWeight: 'bold',
-  },
-});

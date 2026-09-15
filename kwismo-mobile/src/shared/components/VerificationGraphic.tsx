@@ -1,15 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated, Easing } from 'react-native';
+import { View, Animated, Easing } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import { Icon } from '../ui/Icon';
-import { colors } from '../../styles/tokens';
+import { Icon } from '@/shared/ui/Icon';
 
 interface VerificationGraphicProps {
   state: 'analyzing' | 'result';
   isDark?: boolean;
 }
 
-// Étoile à 4 branches (Sparkle)
 const FourPointStar = ({ size, color }: { size: number; color: string }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
     <Path
@@ -23,7 +21,6 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
   state,
   isDark = false,
 }) => {
-  // Seules les étoiles / éléments gravitant autour sont animés
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -49,71 +46,54 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
     outputRange: ['360deg', '0deg'],
   });
 
-  const circleBgColor = isDark ? '#162338' : '#E8F7F0';
-  const sparkleColor = colors.green;
+  const sparkleColor = '#25B46E';
 
   return (
-    <View style={styles.wrapper}>
-      {/* Grand cercle d'arrière-plan statique */}
-      <View style={[styles.outerCircle, { backgroundColor: circleBgColor }]}>
-        {/* Anneau d'étoiles (sparkles) animées qui tournent autour du cercle */}
+    <View className="items-center justify-center my-4.5">
+      <View className="w-55 h-55 rounded-full items-center justify-center relative bg-emerald-50 dark:bg-slate-800">
         <Animated.View
-          style={[
-            styles.sparkleOrbit,
-            { transform: [{ rotate: spinInterpolate }] },
-          ]}
+          className="absolute w-55 h-55 rounded-full"
+          style={{ transform: [{ rotate: spinInterpolate }] }}
         >
-          {/* Étoile haut-gauche */}
-          <View style={[styles.starPosition, { top: 18, left: 32 }]}>
+          <View className="absolute top-4.5 left-8">
             <FourPointStar size={26} color={sparkleColor} />
           </View>
-
-          {/* Étoile bas-gauche */}
-          <View style={[styles.starPosition, { bottom: 28, left: 38 }]}>
+          <View className="absolute bottom-7 left-9.5">
             <FourPointStar size={16} color={sparkleColor} />
           </View>
-
-          {/* Étoile bas-droite */}
-          <View style={[styles.starPosition, { bottom: 24, right: 36 }]}>
+          <View className="absolute bottom-6 right-9">
             <FourPointStar size={20} color={sparkleColor} />
           </View>
-
-          {/* Étoile haut-droite */}
-          <View style={[styles.starPosition, { top: 48, right: 24 }]}>
+          <View className="absolute top-12 right-6">
             <FourPointStar size={14} color={isDark ? '#64748B' : '#FFFFFF'} />
           </View>
         </Animated.View>
 
-        {/* Petits sparkles additionnels animés en mode résultat */}
         {state === 'result' && (
           <Animated.View
-            style={[
-              styles.sparkleOrbit,
-              { transform: [{ rotate: reverseSpinInterpolate }] },
-            ]}
+            className="absolute w-55 h-55 rounded-full"
+            style={{ transform: [{ rotate: reverseSpinInterpolate }] }}
           >
-            <View style={[styles.starPosition, { top: 26, right: 48 }]}>
+            <View className="absolute top-6.5 right-12">
               <FourPointStar size={16} color={sparkleColor} />
             </View>
-            <View style={[styles.starPosition, { bottom: 38, left: 24 }]}>
+            <View className="absolute bottom-9.5 left-6">
               <FourPointStar size={18} color={sparkleColor} />
             </View>
-            <View style={[styles.starPosition, { top: 62, left: 20 }]}>
+            <View className="absolute top-15.5 left-5">
               <FourPointStar size={12} color={isDark ? '#64748B' : '#FFFFFF'} />
             </View>
           </Animated.View>
         )}
 
-        {/* Bouclier central uni et entier (non sectionné) avec l'icône duotone centrée au-dessus */}
-        <View style={styles.shieldContainer}>
+        <View className="w-34 h-34 items-center justify-center relative">
           <Icon
             name="solar:shield-minimalistic-bold"
             size={138}
-            color={colors.green}
+            color="#25B46E"
           />
 
-          {/* Icône centrale superposée */}
-          <View style={styles.shieldIconCenter}>
+          <View className="absolute inset-0 items-center justify-center pb-1.5">
             {state === 'analyzing' ? (
               <Icon
                 name="solar:user-bold-duotone"
@@ -134,7 +114,6 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
   );
 };
 
-// Spinner rotatif pour l'étape en cours d'analyse avec l'icône gg:spinner
 export const OperationStepSpinner = ({ size = 22 }: { size?: number }) => {
   const spinAnim = useRef(new Animated.Value(0)).current;
 
@@ -158,49 +137,9 @@ export const OperationStepSpinner = ({ size = 22 }: { size?: number }) => {
 
   return (
     <Animated.View style={{ transform: [{ rotate: spin }] }}>
-      <Icon name="gg:spinner" size={size} color={colors.green} />
+      <Icon name="gg:spinner" size={size} color="#25B46E" />
     </Animated.View>
   );
 };
 
-const styles = StyleSheet.create({
-  wrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 18,
-  },
-  outerCircle: {
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  sparkleOrbit: {
-    position: 'absolute',
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-  },
-  starPosition: {
-    position: 'absolute',
-  },
-  shieldContainer: {
-    width: 136,
-    height: 136,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  shieldIconCenter: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingBottom: 6,
-  },
-});
+export default VerificationGraphic;

@@ -2,18 +2,15 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Modal,
   Pressable,
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../ui/Icon';
-import { useAppTheme } from '../hooks/useAppTheme';
-import { toast } from '../store/toastStore';
-import { colors, fonts } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
+import { Icon } from '@/shared/ui/Icon';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { toast } from '@/shared/store/toastStore';
 
 interface ProfilePhotoPickerModalProps {
   visible: boolean;
@@ -27,7 +24,7 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
   onSelectPhoto,
 }) => {
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { colors: themeColors } = useAppTheme();
 
   const handlePickFromGallery = () => {
     if (Platform.OS === 'web') {
@@ -44,7 +41,6 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
       };
       input.click();
     } else {
-      // Sur mobile natif : simulation de sélection rapide ou utilisation du sélecteur
       onSelectPhoto('https://via.placeholder.com/150');
       toast.success(t('toasts.generalSuccess', 'Photo de profil sélectionnée !'));
     }
@@ -75,13 +71,13 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose}>
+      <Pressable className="flex-1 bg-black/50 justify-end" onPress={onClose}>
         <Pressable
           onPress={(e) => e.stopPropagation()}
-          style={[styles.sheetCard, { backgroundColor: themeColors.cardBg }]}
+          className="rounded-t-3xl p-5 pb-8 bg-white dark:bg-brand-cardDark"
         >
-          <View style={styles.headerRow}>
-            <Text style={[styles.title, { color: themeColors.textPrimary }]}>
+          <View className="flex-row items-center justify-between mb-4">
+            <Text className="font-headline-bold text-base font-extrabold text-slate-900 dark:text-white">
               Changer la photo de profil
             </Text>
             <TouchableOpacity onPress={onClose}>
@@ -92,16 +88,16 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={handleTakePhoto}
-            style={[styles.optionBtn, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}
+            className="flex-row items-center p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800"
           >
-            <View style={[styles.iconCircle, { backgroundColor: colors.green }]}>
-              <Icon name="solar:camera-bold" color={colors.white} size={20} />
+            <View className="w-10 h-10 rounded-full bg-brand-green items-center justify-center">
+              <Icon name="solar:camera-bold" color="#FFFFFF" size={20} />
             </View>
-            <View style={{ flex: 1, marginLeft: 14 }}>
-              <Text style={[styles.optionTitle, { color: themeColors.textPrimary }]}>
+            <View className="flex-1 ml-3.5">
+              <Text className="font-headline-bold text-sm font-bold text-slate-900 dark:text-white">
                 Prendre une photo à l'instant
               </Text>
-              <Text style={[styles.optionSub, { color: themeColors.textSecondary }]}>
+              <Text className="font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Utiliser la caméra de votre appareil
               </Text>
             </View>
@@ -110,16 +106,16 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={handlePickFromGallery}
-            style={[styles.optionBtn, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC', marginTop: 10 }]}
+            className="flex-row items-center p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 mt-2.5"
           >
-            <View style={[styles.iconCircle, { backgroundColor: '#3B82F6' }]}>
-              <Icon name="solar:gallery-bold" color={colors.white} size={20} />
+            <View className="w-10 h-10 rounded-full bg-blue-500 items-center justify-center">
+              <Icon name="solar:gallery-bold" color="#FFFFFF" size={20} />
             </View>
-            <View style={{ flex: 1, marginLeft: 14 }}>
-              <Text style={[styles.optionTitle, { color: themeColors.textPrimary }]}>
+            <View className="flex-1 ml-3.5">
+              <Text className="font-headline-bold text-sm font-bold text-slate-900 dark:text-white">
                 Choisir dans la galerie / l'appareil
               </Text>
-              <Text style={[styles.optionSub, { color: themeColors.textSecondary }]}>
+              <Text className="font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Sélectionner un fichier image (PC, Mac, Android, iOS)
               </Text>
             </View>
@@ -130,50 +126,4 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
   );
 };
 
-const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  sheetCard: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 20,
-    paddingBottom: 32,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  title: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(16),
-    fontWeight: '800',
-  },
-  optionBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 14,
-    borderRadius: 16,
-  },
-  iconCircle: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  optionTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '700',
-  },
-  optionSub: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-    marginTop: 2,
-  },
-});
+export default ProfilePhotoPickerModal;

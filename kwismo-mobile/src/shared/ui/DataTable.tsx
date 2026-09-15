@@ -2,16 +2,12 @@ import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
-  ScrollView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Icon } from './Icon';
-import { Skeleton } from './Skeleton';
-import { useAppTheme } from '../hooks/useAppTheme';
-import { colors, fonts } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
+import { Icon } from '@/shared/ui/Icon';
+import { Skeleton } from '@/shared/ui/Skeleton';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
 export interface ColumnDef<T> {
   key: string;
@@ -28,6 +24,7 @@ interface DataTableProps<T> {
   error?: string;
   emptyText?: string;
   onRowPress?: (item: T) => void;
+  className?: string;
 }
 
 export function DataTable<T extends { id: string | number }>({
@@ -38,9 +35,10 @@ export function DataTable<T extends { id: string | number }>({
   error,
   emptyText,
   onRowPress,
+  className = '',
 }: DataTableProps<T>) {
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { colors: themeColors } = useAppTheme();
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(data.length / pageSize) || 1;
@@ -60,36 +58,33 @@ export function DataTable<T extends { id: string | number }>({
 
   if (error) {
     return (
-      <View style={[styles.errorCard, { backgroundColor: themeColors.cardBg, borderColor: '#EF4444' }]}>
-        <Icon name="solar:danger-triangle-bold" size={24} color="#EF4444" style={{ marginBottom: 6 }} />
-        <Text style={styles.errorText}>{error}</Text>
+      <View className="p-4 rounded-2xl border border-red-500 bg-white dark:bg-brand-cardDark items-center">
+        <Icon name="solar:danger-triangle-bold" size={24} color="#EF4444" className="mb-1.5" />
+        <Text className="text-red-500 font-medium text-xs text-center">{error}</Text>
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
-      {/* Table Header */}
-      <View style={[styles.headerRow, { borderBottomColor: themeColors.divider }]}>
+    <View className={`rounded-2xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-brand-cardDark overflow-hidden ${className}`}>
+      <View className="flex-row items-center px-3.5 py-3 border-b border-slate-200 dark:border-slate-700/60">
         {columns.map((col) => (
           <Text
             key={col.key}
-            style={[
-              styles.headerCellText,
-              { color: themeColors.textSecondary },
-              col.width ? { width: col.width as any } : { flex: 1 },
-            ]}
+            style={col.width ? { width: col.width as any } : undefined}
+            className={`font-montserrat-bold text-2xs uppercase tracking-wider text-slate-500 dark:text-slate-400 ${
+              col.width ? '' : 'flex-1'
+            }`}
           >
             {col.header}
           </Text>
         ))}
       </View>
 
-      {/* Table Body */}
       {loading ? (
-        <View style={styles.skeletonBody}>
+        <View className="p-3.5 gap-3">
           {[1, 2, 3].map((idx) => (
-            <View key={idx} style={styles.skeletonRow}>
+            <View key={idx} className="flex-row items-center justify-between">
               <Skeleton width="40%" height={16} borderRadius={4} />
               <Skeleton width="30%" height={16} borderRadius={4} />
               <Skeleton width="20%" height={16} borderRadius={4} />
@@ -97,9 +92,9 @@ export function DataTable<T extends { id: string | number }>({
           ))}
         </View>
       ) : paginatedData.length === 0 ? (
-        <View style={styles.emptyContainer}>
+        <View className="py-8 items-center justify-center">
           <Icon name="solar:inbox-line-bold" size={32} color="#94A3B8" />
-          <Text style={[styles.emptyText, { color: themeColors.textSecondary }]}>
+          <Text className="font-regular text-xs text-slate-500 dark:text-slate-400 mt-1.5">
             {emptyText || t('common.noDataAvailable', 'Aucune donnée disponible')}
           </Text>
         </View>
@@ -109,20 +104,20 @@ export function DataTable<T extends { id: string | number }>({
             key={item.id}
             activeOpacity={onRowPress ? 0.7 : 1}
             onPress={() => onRowPress && onRowPress(item)}
-            style={[
-              styles.dataRow,
-              rowIdx < paginatedData.length - 1 && { borderBottomColor: themeColors.divider, borderBottomWidth: 1 },
-            ]}
+            className={`flex-row items-center px-3.5 py-3 ${
+              rowIdx < paginatedData.length - 1 ? 'border-b border-slate-200 dark:border-slate-700/40' : ''
+            }`}
           >
             {columns.map((col) => (
               <View
                 key={col.key}
-                style={col.width ? { width: col.width as any } : { flex: 1 }}
+                style={col.width ? { width: col.width as any } : undefined}
+                className={col.width ? '' : 'flex-1'}
               >
                 {col.render ? (
                   col.render(item)
                 ) : (
-                  <Text style={[styles.dataCellText, { color: themeColors.textPrimary }]}>
+                  <Text className="font-medium text-xs text-slate-900 dark:text-white">
                     {String((item as any)[col.key] ?? '')}
                   </Text>
                 )}
@@ -132,24 +127,19 @@ export function DataTable<T extends { id: string | number }>({
         ))
       )}
 
-      {/* Table Pagination Bar */}
       {data.length > 0 && !loading && (
-        <View style={[styles.paginationRow, { borderTopColor: themeColors.divider }]}>
-          <Text style={[styles.pageIndicatorText, { color: themeColors.textSecondary }]}>
+        <View className="flex-row items-center justify-between px-3.5 py-2.5 border-t border-slate-200 dark:border-slate-700/60">
+          <Text className="font-regular text-2xs text-slate-500 dark:text-slate-400">
             Page {currentPage} / {totalPages} ({data.length} {t('common.items', 'éléments')})
           </Text>
 
-          <View style={styles.paginationButtonsRow}>
+          <View className="flex-row items-center gap-2">
             <TouchableOpacity
               disabled={currentPage <= 1}
               onPress={handlePrev}
-              style={[
-                styles.pageBtn,
-                {
-                  borderColor: themeColors.inputBorder,
-                  opacity: currentPage <= 1 ? 0.4 : 1,
-                },
-              ]}
+              className={`w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 items-center justify-center ${
+                currentPage <= 1 ? 'opacity-40' : ''
+              }`}
             >
               <Icon name="solar:alt-arrow-left-linear" size={16} color={themeColors.textPrimary} />
             </TouchableOpacity>
@@ -157,13 +147,9 @@ export function DataTable<T extends { id: string | number }>({
             <TouchableOpacity
               disabled={currentPage >= totalPages}
               onPress={handleNext}
-              style={[
-                styles.pageBtn,
-                {
-                  borderColor: themeColors.inputBorder,
-                  opacity: currentPage >= totalPages ? 0.4 : 1,
-                },
-              ]}
+              className={`w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 items-center justify-center ${
+                currentPage >= totalPages ? 'opacity-40' : ''
+              }`}
             >
               <Icon name="solar:alt-arrow-right-linear" size={16} color={themeColors.textPrimary} />
             </TouchableOpacity>
@@ -173,90 +159,3 @@ export function DataTable<T extends { id: string | number }>({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 16,
-    borderWidth: 1,
-    overflow: 'hidden',
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-  },
-  headerCellText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(12),
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  dataRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-  dataCellText: {
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(13),
-  },
-  skeletonBody: {
-    padding: 14,
-    gap: 12,
-  },
-  skeletonRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  emptyContainer: {
-    paddingVertical: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyText: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(13),
-    marginTop: 6,
-  },
-  errorCard: {
-    padding: 16,
-    borderRadius: 14,
-    borderWidth: 1,
-    alignItems: 'center',
-  },
-  errorText: {
-    color: '#EF4444',
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(13),
-    textAlign: 'center',
-  },
-  paginationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderTopWidth: 1,
-  },
-  pageIndicatorText: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-  },
-  paginationButtonsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  pageBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

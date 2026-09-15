@@ -1,10 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../ui/Icon';
-import { useAppTheme } from '../hooks/useAppTheme';
-import { colors, fonts } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
+import { Icon } from '@/shared/ui/Icon';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
 interface ErrorScreenProps {
   title?: string;
@@ -21,17 +19,17 @@ export const ErrorScreen: React.FC<ErrorScreenProps> = ({
   const { colors: themeColors } = useAppTheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-      <View style={styles.card}>
-        <View style={styles.iconCircle}>
+    <View className="flex-1 items-center justify-center px-6 bg-white dark:bg-brand-darkBg">
+      <View className="items-center p-7 rounded-3xl w-full">
+        <View className="w-18 h-18 rounded-full bg-red-500/10 items-center justify-center mb-4">
           <Icon name="solar:danger-triangle-bold" size={42} color="#EF4444" />
         </View>
 
-        <Text style={[styles.title, { color: themeColors.textPrimary }]}>
+        <Text className="font-montserrat-bold text-lg text-center font-extrabold text-slate-900 dark:text-white">
           {title || t('errors.generalTitle', 'Une erreur est survenue')}
         </Text>
 
-        <Text style={[styles.message, { color: themeColors.textSecondary }]}>
+        <Text className="font-regular text-xs text-center mt-2 leading-5 text-slate-500 dark:text-slate-400">
           {message || t('errors.generalMessage', 'Impossible de charger la ressource. Veuillez réessayer.')}
         </Text>
 
@@ -39,10 +37,12 @@ export const ErrorScreen: React.FC<ErrorScreenProps> = ({
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={onRetry}
-            style={[styles.retryBtn, { backgroundColor: colors.green }]}
+            className="flex-row items-center h-12 px-6 rounded-xl mt-5 bg-brand-green"
           >
-            <Icon name="solar:restart-bold" size={18} color={colors.white} style={{ marginRight: 6 }} />
-            <Text style={styles.retryText}>{t('common.retry', 'Réessayer')}</Text>
+            <Icon name="solar:restart-bold" size={18} color="#FFFFFF" className="mr-1.5" />
+            <Text className="font-montserrat-bold text-sm text-white font-bold">
+              {t('common.retry', 'Réessayer')}
+            </Text>
           </TouchableOpacity>
         )}
       </View>
@@ -50,53 +50,4 @@ export const ErrorScreen: React.FC<ErrorScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-  },
-  card: {
-    alignItems: 'center',
-    padding: 28,
-    borderRadius: 24,
-    width: '100%',
-  },
-  iconCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: 'rgba(239, 68, 68, 0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  title: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(18),
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  message: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(13),
-    textAlign: 'center',
-    marginTop: 8,
-    lineHeight: 20,
-  },
-  retryBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 46,
-    paddingHorizontal: 24,
-    borderRadius: 14,
-    marginTop: 20,
-  },
-  retryText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    color: colors.white,
-    fontWeight: '700',
-  },
-});
+export default ErrorScreen;

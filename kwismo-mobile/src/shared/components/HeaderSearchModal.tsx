@@ -5,17 +5,14 @@ import {
   TextInput,
   TouchableOpacity,
   Modal,
-  StyleSheet,
   ScrollView,
   Pressable,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Icon } from '../ui/Icon';
-import { useAppTheme } from '../hooks/useAppTheme';
-import { colors, fonts } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
+import { Icon } from '@/shared/ui/Icon';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
 interface HeaderSearchModalProps {
   visible: boolean;
@@ -38,10 +35,9 @@ export const HeaderSearchModal: React.FC<HeaderSearchModalProps> = ({
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { colors: themeColors } = useAppTheme();
   const [query, setQuery] = useState('');
 
-  // Sample searchable index covering Kwismo app features, SIMs, contacts
   const searchIndex: SearchItem[] = useMemo(
     () => [
       {
@@ -135,49 +131,43 @@ export const HeaderSearchModal: React.FC<HeaderSearchModalProps> = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <Pressable style={styles.backdrop} onPress={onClose}>
+      <Pressable className="flex-1 bg-slate-900/65" onPress={onClose}>
         <Pressable
           onPress={(e) => e.stopPropagation()}
-          style={[
-            styles.searchContainer,
-            {
-              paddingTop: Math.max(insets.top + 8, 16),
-            },
-          ]}
+          className="px-4 pb-4"
+          style={{ paddingTop: Math.max(insets.top + 8, 16) }}
         >
-          {/* BARRE DE RECHERCHE ANIMÉE EN HAUT DU HEADER */}
-          <View style={styles.searchBarRow}>
-            <View style={styles.inputWrapper}>
+          <View className="flex-row items-center gap-2.5">
+            <View className="flex-1 h-12 rounded-full bg-white dark:bg-brand-cardDark flex-row items-center shadow-lg elevation-6 px-3.5">
               <Icon
                 name="solar:magnifer-linear"
                 size={20}
-                color={colors.green}
-                style={{ marginLeft: 14, marginRight: 10 }}
+                color="#25B46E"
+                className="mr-2.5"
               />
               <TextInput
                 autoFocus
                 value={query}
                 onChangeText={setQuery}
                 placeholder={t('common.searchPlaceholder', 'Rechercher une fonction, un numéro...')}
-                placeholderTextColor="#94A3B8"
-                style={styles.searchInput}
+                placeholderTextColor={themeColors.inputPlaceholder}
+                className="flex-1 h-12 font-medium text-sm text-slate-900 dark:text-white py-0"
               />
               {query.length > 0 && (
-                <TouchableOpacity onPress={() => setQuery('')} style={{ padding: 8 }}>
-                  <Icon name="solar:close-circle-bold" size={18} color="#94A3B8" />
+                <TouchableOpacity onPress={() => setQuery('')} className="p-2">
+                  <Icon name="solar:close-circle-bold" size={18} color={themeColors.inputPlaceholder} />
                 </TouchableOpacity>
               )}
             </View>
 
-            <TouchableOpacity onPress={onClose} style={styles.cancelButton}>
-              <Text style={styles.cancelButtonText}>{t('common.cancel', 'Annuler')}</Text>
+            <TouchableOpacity onPress={onClose} className="px-2.5 py-2">
+              <Text className="font-caption text-sm text-white">{t('common.cancel', 'Annuler')}</Text>
             </TouchableOpacity>
           </View>
 
-          {/* ESPACE BLANC (CONTAINER DE RÉSULTATS) JUSTE EN BAS DE LA BARRE */}
-          <View style={styles.resultsWhiteContainer}>
-            <View style={styles.resultsHeaderRow}>
-              <Text style={styles.resultsSectionTitle}>
+          <View className="bg-white dark:bg-brand-cardDark rounded-2xl mt-3 py-3 px-4 shadow-xl elevation-8">
+            <View className="py-2 border-b border-slate-100 dark:border-slate-700/60 mb-1.5">
+              <Text className="font-headline-bold text-2xs text-slate-400 dark:text-slate-400 uppercase tracking-widest">
                 {query.trim()
                   ? `${t('common.searchResults', 'Résultats')} (${filteredResults.length})`
                   : t('common.quickSuggestions', 'Suggestions rapides')}
@@ -187,12 +177,12 @@ export const HeaderSearchModal: React.FC<HeaderSearchModalProps> = ({
             <ScrollView
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
-              style={{ maxHeight: 360 }}
+              className="max-h-90"
             >
               {filteredResults.length === 0 ? (
-                <View style={styles.emptyStateContainer}>
+                <View className="py-8 items-center justify-center">
                   <Icon name="solar:magnifer-bug-linear" size={36} color="#CBD5E1" />
-                  <Text style={styles.emptyStateText}>
+                  <Text className="font-medium text-xs text-slate-400 mt-2 text-center">
                     {t('common.noResultsFound', 'Aucun résultat trouvé pour cette recherche')}
                   </Text>
                 </View>
@@ -202,19 +192,22 @@ export const HeaderSearchModal: React.FC<HeaderSearchModalProps> = ({
                     key={item.id}
                     activeOpacity={0.7}
                     onPress={() => handleSelectItem(item.route)}
-                    style={[
-                      styles.resultItemRow,
-                      index < filteredResults.length - 1 && styles.itemBorderBottom,
-                    ]}
+                    className={`flex-row items-center py-3 ${
+                      index < filteredResults.length - 1 ? 'border-b border-slate-100 dark:border-slate-700/40' : ''
+                    }`}
                   >
-                    <View style={styles.iconCircle}>
-                      <Icon name={item.icon} size={20} color={colors.green} />
+                    <View className="w-9 h-9 rounded-full bg-brand-green/10 items-center justify-center mr-3">
+                      <Icon name={item.icon} size={20} color="#25B46E" />
                     </View>
-                    <View style={{ flex: 1, marginLeft: 12 }}>
-                      <Text style={styles.itemTitleText}>{item.title}</Text>
-                      <Text style={styles.itemSubtitleText}>{item.subtitle}</Text>
+                    <View className="flex-1">
+                      <Text className="font-headline-bold text-sm text-slate-900 dark:text-white font-bold">
+                        {item.title}
+                      </Text>
+                      <Text className="font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        {item.subtitle}
+                      </Text>
                     </View>
-                    <Icon name="solar:alt-arrow-right-linear" size={16} color="#94A3B8" />
+                    <Icon name="solar:alt-arrow-right-linear" size={16} color={themeColors.inputPlaceholder} />
                   </TouchableOpacity>
                 ))
               )}
@@ -226,116 +219,4 @@ export const HeaderSearchModal: React.FC<HeaderSearchModalProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.65)',
-  },
-  searchContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-  },
-  searchBarRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  inputWrapper: {
-    flex: 1,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  searchInput: {
-    flex: 1,
-    height: 50,
-    fontSize: 14,
-    lineHeight: 20,
-    fontFamily: fonts.bodyMedium,
-    color: '#0F172A',
-  },
-  cancelButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-  },
-  cancelButtonText: {
-    fontFamily: fonts.caption,
-    fontSize: 14,
-    lineHeight: 21,
-    color: colors.white,
-  },
-  /* ESPACE BLANC - CONTAINER POPUP POUR RÉSULTATS DE RECHERCHE */
-  resultsWhiteContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    marginTop: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 16,
-    elevation: 10,
-  },
-  resultsHeaderRow: {
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-    marginBottom: 6,
-  },
-  resultsSectionTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(12),
-    color: '#64748B',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  resultItemRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  itemBorderBottom: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-  },
-  iconCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: 'rgba(43, 182, 115, 0.12)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  itemTitleText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    color: '#0F172A',
-    fontWeight: '700',
-  },
-  itemSubtitleText: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-    color: '#64748B',
-    marginTop: 2,
-  },
-  emptyStateContainer: {
-    paddingVertical: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyStateText: {
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(13),
-    color: '#94A3B8',
-    marginTop: 8,
-    textAlign: 'center',
-  },
-});
+export default HeaderSearchModal;

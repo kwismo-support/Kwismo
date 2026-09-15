@@ -1,11 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Animated, StyleSheet, ViewStyle, Platform } from 'react-native';
-import { useAppTheme } from '../hooks/useAppTheme';
+import { View, Animated, ViewStyle, Platform } from 'react-native';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
 export interface SkeletonProps {
   width?: number | string;
   height?: number;
   borderRadius?: number;
+  className?: string;
   style?: ViewStyle;
 }
 
@@ -13,6 +14,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   width = '100%',
   height = 20,
   borderRadius = 8,
+  className = '',
   style,
 }) => {
   const { isDark } = useAppTheme();
@@ -39,12 +41,12 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 
   return (
     <Animated.View
+      className={`bg-slate-200 dark:bg-slate-800 ${className}`}
       style={[
         {
           width: width as any,
           height,
           borderRadius,
-          backgroundColor: isDark ? '#1E293B' : '#E2E8F0',
           opacity,
         },
         style,
@@ -53,8 +55,9 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   );
 };
 
-export const SkeletonCircle: React.FC<{ size?: number; style?: ViewStyle }> = ({
+export const SkeletonCircle: React.FC<{ size?: number; className?: string; style?: ViewStyle }> = ({
   size = 48,
+  className = '',
   style,
 }) => {
   return (
@@ -62,6 +65,7 @@ export const SkeletonCircle: React.FC<{ size?: number; style?: ViewStyle }> = ({
       width={size}
       height={size}
       borderRadius={size / 2}
+      className={className}
       style={style}
     />
   );
@@ -70,13 +74,15 @@ export const SkeletonCircle: React.FC<{ size?: number; style?: ViewStyle }> = ({
 export const SkeletonLine: React.FC<{
   width?: number | string;
   height?: number;
+  className?: string;
   style?: ViewStyle;
-}> = ({ width = '100%', height = 14, style }) => {
+}> = ({ width = '100%', height = 14, className = '', style }) => {
   return (
     <Skeleton
       width={width}
       height={height}
       borderRadius={4}
+      className={className}
       style={style}
     />
   );
@@ -84,25 +90,17 @@ export const SkeletonLine: React.FC<{
 
 export const SkeletonCard: React.FC<{
   height?: number;
+  className?: string;
   style?: ViewStyle;
   children?: React.ReactNode;
-}> = ({ height = 120, style, children }) => {
-  const { colors: themeColors } = useAppTheme();
-
+}> = ({ height = 120, className = '', style, children }) => {
   return (
     <View
-      style={[
-        styles.cardContainer,
-        {
-          backgroundColor: themeColors.cardBg,
-          borderColor: themeColors.inputBorder,
-          minHeight: height,
-        },
-        style,
-      ]}
+      style={[{ minHeight: height }, style]}
+      className={`w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-brand-cardDark justify-center ${className}`}
     >
       {children || (
-        <View style={{ gap: 10, width: '100%' }}>
+        <View className="gap-2.5 w-full">
           <Skeleton width="40%" height={16} />
           <Skeleton width="80%" height={24} />
           <Skeleton width="60%" height={14} />
@@ -112,11 +110,11 @@ export const SkeletonCard: React.FC<{
   );
 };
 
-// Composant Skeleton unifié conditionnel
 interface SkeletonLoaderProps {
   loading?: boolean;
   fallback?: React.ReactNode;
   children: React.ReactNode;
+  className?: string;
   style?: ViewStyle;
 }
 
@@ -124,22 +122,13 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
   loading = true,
   fallback,
   children,
+  className = '',
   style,
 }) => {
   if (loading && fallback) {
-    return <View style={style}>{fallback}</View>;
+    return <View style={style} className={className}>{fallback}</View>;
   }
-  return <View style={style}>{children}</View>;
+  return <View style={style} className={className}>{children}</View>;
 };
 
 export default Skeleton;
-
-const styles = StyleSheet.create({
-  cardContainer: {
-    width: '100%',
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-    justifyContent: 'center',
-  },
-});

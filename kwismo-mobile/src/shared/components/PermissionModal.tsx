@@ -1,11 +1,8 @@
-// Composant de popup personnalisé pour demander l'accord de l'utilisateur avant les permissions système
 import React from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import { View, Text, Modal, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../ui/Icon';
-import { useAppTheme } from '../hooks/useAppTheme';
-import { colors, fonts } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
+import { Icon } from '@/shared/ui/Icon';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
 interface PermissionModalProps {
   visible: boolean;
@@ -24,7 +21,7 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
   title,
   description,
   iconName,
-  iconColor = colors.green,
+  iconColor = '#25B46E',
   confirmText,
   cancelText,
   onConfirm,
@@ -35,32 +32,38 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
 
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.backdrop}>
-        <View style={[styles.card, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
-          <View style={[styles.iconCircle, { backgroundColor: `${iconColor}15` }]}>
+      <View className="flex-1 bg-black/65 justify-center items-center px-5">
+        <View className="w-full max-w-xs rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-6 items-center shadow-xl elevation-10">
+          <View className="w-16 h-16 rounded-full bg-brand-green/15 justify-center items-center mb-4">
             <Icon name={iconName} size={36} color={iconColor} />
           </View>
 
-          <Text style={[styles.title, { color: themeColors.textPrimary }]}>{title}</Text>
-          <Text style={[styles.description, { color: themeColors.textSecondary }]}>{description}</Text>
+          <Text className="text-base font-headline-bold font-extrabold text-center mb-2 text-slate-900 dark:text-white">
+            {title}
+          </Text>
+          <Text className="text-xs font-regular text-center leading-4.5 mb-6 text-slate-500 dark:text-slate-400">
+            {description}
+          </Text>
 
-          <View style={styles.actionsRow}>
+          <View className="flex-row gap-3 w-full">
             <TouchableOpacity
-              style={[styles.cancelBtn, { borderColor: themeColors.inputBorder }]}
+              className="flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 justify-center items-center"
               onPress={onCancel}
               activeOpacity={0.7}
             >
-              <Text style={[styles.cancelText, { color: themeColors.textPrimary }]}>
+              <Text className="text-sm font-headline-bold font-semibold text-slate-900 dark:text-white">
                 {cancelText || t('common.cancel', 'Refuser')}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.confirmBtn, { backgroundColor: iconColor }]}
+              className="flex-1 h-11 rounded-xl bg-brand-green justify-center items-center"
               onPress={onConfirm}
               activeOpacity={0.85}
             >
-              <Text style={styles.confirmText}>{confirmText || t('common.allow', 'Autoriser')}</Text>
+              <Text className="text-sm font-headline-bold font-bold text-white">
+                {confirmText || t('common.allow', 'Autoriser')}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -69,74 +72,4 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  card: {
-    width: '100%',
-    maxWidth: 340,
-    borderRadius: 20,
-    borderWidth: 1,
-    padding: 24,
-    alignItems: 'center',
-    elevation: 10,
-  },
-  iconCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: scaleFont(17),
-    fontFamily: fonts.headlineBold,
-    fontWeight: '800',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: scaleFont(13),
-    fontFamily: fonts.regular,
-    textAlign: 'center',
-    lineHeight: scaleFont(18),
-    marginBottom: 24,
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    gap: 12,
-    width: '100%',
-  },
-  cancelBtn: {
-    flex: 1,
-    height: 46,
-    borderRadius: 12,
-    borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cancelText: {
-    fontSize: scaleFont(14),
-    fontFamily: fonts.headlineBold,
-    fontWeight: '600',
-  },
-  confirmBtn: {
-    flex: 1,
-    height: 46,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  confirmText: {
-    fontSize: scaleFont(14),
-    fontFamily: fonts.headlineBold,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-});
+export default PermissionModal;

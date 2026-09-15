@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Image, Text, StyleSheet, ViewStyle } from 'react-native';
+import { View, Image, Text, ViewStyle } from 'react-native';
 
 interface CountryFlagProps {
   countryCode: string;
@@ -12,11 +12,11 @@ export const CountryFlag: React.FC<CountryFlagProps> = ({
   countryCode,
   size = 24,
   style,
+  className = '',
 }) => {
   const [hasError, setHasError] = useState(false);
   const code = (countryCode || '').toLowerCase().trim();
 
-  // Fallback emoji
   const fallbackEmoji = countryCode
     ? countryCode.toUpperCase().replace(/./g, (c) => String.fromCodePoint(c.charCodeAt(0) + 127397))
     : '🌐';
@@ -24,8 +24,8 @@ export const CountryFlag: React.FC<CountryFlagProps> = ({
   if (!code || hasError || code.length !== 2) {
     return (
       <View
+        className={`overflow-hidden items-center justify-center bg-slate-200 dark:bg-slate-800 ${className}`}
         style={[
-          styles.container,
           { width: size, height: size, borderRadius: size / 2 },
           style,
         ]}
@@ -37,8 +37,8 @@ export const CountryFlag: React.FC<CountryFlagProps> = ({
 
   return (
     <View
+      className={`overflow-hidden items-center justify-center bg-slate-200 dark:bg-slate-800 ${className}`}
       style={[
-        styles.container,
         { width: size, height: size, borderRadius: size / 2 },
         style,
       ]}
@@ -53,11 +53,4 @@ export const CountryFlag: React.FC<CountryFlagProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.05)',
-  },
-});
+export default CountryFlag;

@@ -2,16 +2,13 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { CountryFlag } from './CountryFlag';
-import { CountryPickerModal, CountryItem, getAllCountries } from './CountryPickerModal';
-import { Icon } from '../ui/Icon';
-import { useAppTheme } from '../hooks/useAppTheme';
-import { colors, fonts } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
+import { CountryFlag } from '@/shared/components/CountryFlag';
+import { CountryPickerModal, CountryItem } from '@/shared/components/CountryPickerModal';
+import { Icon } from '@/shared/ui/Icon';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
 interface CountrySelectInputProps {
   value: string;
@@ -30,8 +27,8 @@ export const CountrySelectInput: React.FC<CountrySelectInputProps> = ({
   placeholder,
   countryCode = 'CM',
 }) => {
-  const { i18n, t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { t } = useTranslation();
+  const { colors: themeColors } = useAppTheme();
   const [modalVisible, setModalVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -44,16 +41,10 @@ export const CountrySelectInput: React.FC<CountrySelectInputProps> = ({
   const hasError = !!error;
   const isSelected = !!value;
 
-  const borderColor = hasError
-    ? '#EF4444'
-    : isFocused || modalVisible
-    ? colors.green
-    : themeColors.inputBorder;
-
   return (
-    <View style={styles.wrapper}>
+    <View className="mb-1 w-full">
       {label && (
-        <Text style={[styles.label, { color: themeColors.textPrimary }]}>
+        <Text className="font-caption text-sm text-slate-800 dark:text-slate-200 mb-1.5">
           {label}
         </Text>
       )}
@@ -64,32 +55,26 @@ export const CountrySelectInput: React.FC<CountrySelectInputProps> = ({
           setIsFocused(true);
           setModalVisible(true);
         }}
-        style={[
-          styles.inputContainer,
-          {
-            backgroundColor: themeColors.inputBg,
-            borderColor,
-            borderWidth: isFocused || modalVisible || hasError ? 1.5 : 1,
-          },
-        ]}
+        className={`flex-row items-center justify-between h-13 rounded-xl px-3.5 bg-white dark:bg-brand-cardDark border ${
+          hasError
+            ? 'border-red-500 border-2'
+            : isFocused || modalVisible
+            ? 'border-brand-green border-2'
+            : 'border-slate-200 dark:border-slate-700'
+        }`}
       >
-        <View style={styles.leftRow}>
+        <View className="flex-row items-center flex-1 pr-2.5">
           {countryCode ? (
-            <CountryFlag countryCode={countryCode} size={22} style={{ marginRight: 10 }} />
+            <CountryFlag countryCode={countryCode} size={22} className="mr-2.5" />
           ) : (
-            <Icon name="solar:global-linear" color={colors.green} size={20} style={{ marginRight: 10 }} />
+            <Icon name="solar:global-linear" color="#25B46E" size={20} className="mr-2.5" />
           )}
 
           <Text
             numberOfLines={1}
-            style={[
-              styles.valueText,
-              {
-                color: isSelected
-                  ? themeColors.textPrimary
-                  : themeColors.inputPlaceholder,
-              },
-            ]}
+            className={`font-medium text-sm flex-1 ${
+              isSelected ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'
+            }`}
           >
             {value || placeholder || t('common.selectCountry', 'Sélectionner un pays')}
           </Text>
@@ -97,15 +82,15 @@ export const CountrySelectInput: React.FC<CountrySelectInputProps> = ({
 
         <Icon
           name="solar:alt-arrow-down-linear"
-          color={isFocused || modalVisible ? colors.green : themeColors.inputPlaceholder}
+          color={isFocused || modalVisible ? '#25B46E' : themeColors.inputPlaceholder}
           size={18}
         />
       </TouchableOpacity>
 
       {hasError && (
-        <View style={styles.errorRow}>
-          <Icon name="solar:danger-circle-bold" color="#EF4444" size={14} style={{ marginRight: 4 }} />
-          <Text style={styles.errorText}>{error}</Text>
+        <View className="flex-row items-center mt-1.5 px-0.5">
+          <Icon name="solar:danger-circle-bold" color="#EF4444" size={14} className="mr-1" />
+          <Text className="font-regular text-xs text-red-500">{error}</Text>
         </View>
       )}
 
@@ -122,46 +107,4 @@ export const CountrySelectInput: React.FC<CountrySelectInputProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  wrapper: {
-    marginBottom: 4,
-  },
-  label: {
-    fontFamily: fonts.caption,
-    fontSize: 14,
-    lineHeight: 21,
-    marginBottom: 6,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: 52,
-    borderRadius: 14,
-    paddingHorizontal: 14,
-  },
-  leftRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    paddingRight: 10,
-  },
-  valueText: {
-    fontFamily: fonts.bodyMedium,
-    fontSize: 14,
-    lineHeight: 20,
-    flex: 1,
-  },
-  errorRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6,
-    paddingLeft: 2,
-  },
-  errorText: {
-    fontFamily: fonts.footnote,
-    fontSize: 12,
-    lineHeight: 16,
-    color: '#EF4444',
-  },
-});
+export default CountrySelectInput;

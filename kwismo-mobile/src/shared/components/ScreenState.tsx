@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 
 interface ScreenStateProps {
   loading?: boolean;
@@ -10,16 +10,16 @@ interface ScreenStateProps {
 export const ScreenState: React.FC<ScreenStateProps> = ({ loading, error, children }) => {
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#0F172A" />
+      <View className="flex-1 justify-center items-center p-5">
+        <ActivityIndicator size="large" color="#25B46E" />
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.errorText}>{error}</Text>
+      <View className="flex-1 justify-center items-center p-5">
+        <Text className="text-red-600 text-sm text-center font-medium">{error}</Text>
       </View>
     );
   }
@@ -27,16 +27,4 @@ export const ScreenState: React.FC<ScreenStateProps> = ({ loading, error, childr
   return <>{children}</>;
 };
 
-const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  errorText: {
-    color: '#DC2626',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-});
+export default ScreenState;

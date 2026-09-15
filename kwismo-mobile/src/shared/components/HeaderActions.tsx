@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Icon } from '../ui/Icon';
-import { colors } from '../../styles/tokens';
-import { HeaderSearchModal } from './HeaderSearchModal';
+import { Icon } from '@/shared/ui/Icon';
+import { HeaderSearchModal } from '@/shared/components/HeaderSearchModal';
 
 interface HeaderActionsProps {
   unreadNotificationsCount?: number;
@@ -14,7 +13,7 @@ interface HeaderActionsProps {
 
 export const HeaderActions: React.FC<HeaderActionsProps> = ({
   unreadNotificationsCount = 0,
-  iconColor = colors.white,
+  iconColor = '#FFFFFF',
   onPressNotifications,
   showBell = true,
 }) => {
@@ -32,7 +31,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
   };
 
   return (
-    <View className="flex-row items-center space-x-2">
+    <View className="flex-row items-center gap-2">
       {showBell && (
         <TouchableOpacity
           activeOpacity={0.7}
@@ -45,7 +44,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
             color={iconColor}
           />
           {hasUnread && (
-            <View className="absolute top-0.5 right-0.5 min-w-[16px] h-[16px] rounded-full bg-red-500 items-center justify-center px-1">
+            <View className="absolute top-0.5 right-0.5 min-w-[16px] h-4 rounded-full bg-red-500 items-center justify-center px-1">
               <Text className="font-montserrat-bold text-[9px] text-white font-bold">
                 {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
               </Text>
@@ -71,4 +70,3 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
 };
 
 export default HeaderActions;
-
