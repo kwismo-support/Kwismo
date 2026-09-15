@@ -1,9 +1,9 @@
-// Hook personnalisé pour gérer la vérification et le renvoi d'OTP avec FastAPI backend
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { authApi } from '../services/auth.api';
 import { useAuthStore } from '../../../shared/store/authStore';
 import { toast } from '../../../shared/store/toastStore';
+import { getDeviceInfo } from '../../../shared/utils/deviceInfo';
 
 export function useOtp(initialEmail: string = '') {
   const [loading, setLoading] = useState(false);
@@ -28,18 +28,24 @@ export function useOtp(initialEmail: string = '') {
     setLoading(true);
     try {
       const email = (emailTarget || initialEmail).trim();
-      const res = await authApi.verifyEmail({ email, code: code.trim() });
+      const { deviceId } = getDeviceInfo();
+
+      let res = await authApi.verifyDevice({ email, code: code.trim(), device_id: deviceId });
+      if (!res.success) {
+        res = await authApi.verifyEmail({ email, code: code.trim() });
+      }
+
       if (res.success && res.data) {
         const data = res.data;
         const userPayload = {
           id: data.user.id,
           email: data.user.email,
-          firstName: data.user.prenom,
-          lastName: data.user.nom,
-          role: data.user.role,
+          firstName: data.user.prenom || data.user.email.split('@')[0],
+          lastName: data.user.nom || '',
+          role: data.user.role || 'user',
         };
         await login(userPayload, data.access_token, data.refresh_token);
-        toast.success(t('toasts.otpSent', 'Code validé avec succès !'));
+        toast.success(t('toasts.otpSent'));
         return { success: true, data };
       }
       return { success: false, message: res.message };
@@ -59,7 +65,7 @@ export function useOtp(initialEmail: string = '') {
       if (res.success) {
         setResendTimer(60);
         setCanResend(false);
-        toast.success(t('toasts.otpResent', 'Nouveau code envoyé.'));
+        toast.success(t('toasts.otpResent'));
       }
       return res;
     } finally {
@@ -69,4 +75,5 @@ export function useOtp(initialEmail: string = '') {
 
   return { verifyOtp, resendOtp, loading, resendTimer, canResend };
 }
+
 
