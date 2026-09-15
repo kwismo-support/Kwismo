@@ -1,9 +1,9 @@
-// Hook personnalisé React pour gérer l'inscription d'un nouvel utilisateur
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { authApi } from '../services/auth.api';
 import { RegisterPayload } from '../schemas/auth.schema';
 import { toast } from '../../../shared/store/toastStore';
+import { storage } from '../../../shared/services/storage';
 
 export function useRegister() {
   const [loading, setLoading] = useState(false);
@@ -16,6 +16,7 @@ export function useRegister() {
     try {
       const res = await authApi.register(payload);
       if (res.success) {
+        await storage.setItem('kwismo_pending_email', payload.email.trim());
         toast.success(t('toasts.registerSuccess', 'Compte créé avec succès !'));
         return { success: true, message: res.message };
       } else {

@@ -63,7 +63,7 @@ export default function LoginScreen() {
     if (res.success) {
       router.replace('/(app)');
       return true;
-    } else if (res.requiresDeviceVerification) {
+    } else if (res.requiresDeviceVerification || res.requiresEmailVerification) {
       router.push({ pathname: '/(auth)/otp', params: { email: email.trim() } });
       return false;
     }

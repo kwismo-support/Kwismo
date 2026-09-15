@@ -9,7 +9,6 @@ export function useProfile() {
   const [profile, setProfile] = useState<UserMeResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { setUser } = useAuthStore();
   const { t } = useTranslation();
 
   const fetchProfile = useCallback(async () => {
@@ -19,7 +18,7 @@ export function useProfile() {
       const res = await profileApi.getProfile();
       if (res.success && res.data) {
         setProfile(res.data);
-        setUser({
+        useAuthStore.getState().setUser({
           id: res.data.id,
           email: res.data.email,
           firstName: res.data.prenom,
@@ -36,7 +35,7 @@ export function useProfile() {
     } finally {
       setLoading(false);
     }
-  }, [setUser, t]);
+  }, []);
 
   useEffect(() => {
     fetchProfile();
@@ -48,7 +47,7 @@ export function useProfile() {
       const res = await profileApi.updateProfile(payload);
       if (res.success && res.data) {
         setProfile(res.data);
-        setUser({
+        useAuthStore.getState().setUser({
           id: res.data.id,
           email: res.data.email,
           firstName: res.data.prenom,

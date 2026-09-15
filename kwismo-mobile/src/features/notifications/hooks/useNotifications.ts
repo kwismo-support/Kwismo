@@ -25,7 +25,7 @@ export function useNotifications() {
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, []);
 
   useEffect(() => {
     fetchNotifications();
