@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Icon } from '../ui/Icon';
@@ -50,6 +50,11 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
         },
       ]}
     >
+      {/* Forme / Image de fond décorative en filigrane */}
+      <View style={styles.headerShapeContainer} pointerEvents="none">
+        <View style={styles.decorativeCurveOverlay} />
+      </View>
+
       <View style={styles.contentRow}>
         {showBack ? (
           /* Page secondaire : Retour à gauche, Titre au milieu, Actions (sans cloche) à droite */
@@ -163,5 +168,21 @@ const styles = StyleSheet.create({
     fontSize: scaleFont(18),
     fontWeight: '700',
     textAlign: 'center',
+  },
+  headerShapeContainer: {
+    ...StyleSheet.absoluteFill,
+    overflow: 'hidden',
+    opacity: 0.18,
+  },
+  decorativeCurveOverlay: {
+    position: 'absolute',
+    top: -40,
+    right: -20,
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    borderWidth: 26,
+    borderColor: '#FFFFFF',
+    transform: [{ rotate: '-25deg' }, { scaleX: 1.4 }],
   },
 });

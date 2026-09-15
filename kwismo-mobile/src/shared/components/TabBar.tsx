@@ -19,13 +19,15 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { colors: themeColors } = useAppTheme();
+  const { isDark, colors: themeColors } = useAppTheme();
 
   const currentTab: TabRoute = activeTab || (
     pathname.includes('management') ? 'management' :
     pathname.includes('transfer') ? 'transfer' :
     pathname.includes('profile') ? 'profile' : 'home'
   );
+
+  const activeColor = isDark ? colors.white : '#161E33';
 
   return (
     <View
@@ -44,14 +46,14 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
         style={styles.tabItem}
       >
         <Icon
-          name={currentTab === 'home' ? 'solar:home-smile-bold' : 'solar:home-smile-linear'}
+          name={currentTab === 'home' ? 'solar:home-2-bold' : 'solar:home-2-linear'}
           size={24}
-          color={currentTab === 'home' ? colors.green : themeColors.inputPlaceholder}
+          color={currentTab === 'home' ? activeColor : themeColors.inputPlaceholder}
         />
         <Text
           style={[
             styles.tabLabel,
-            { color: currentTab === 'home' ? colors.green : themeColors.inputPlaceholder },
+            { color: currentTab === 'home' ? activeColor : themeColors.inputPlaceholder },
             currentTab === 'home' && styles.tabLabelActive,
           ]}
         >
@@ -67,12 +69,12 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
         <Icon
           name={currentTab === 'management' ? 'solar:user-id-bold' : 'solar:user-id-linear'}
           size={24}
-          color={currentTab === 'management' ? colors.green : themeColors.inputPlaceholder}
+          color={currentTab === 'management' ? activeColor : themeColors.inputPlaceholder}
         />
         <Text
           style={[
             styles.tabLabel,
-            { color: currentTab === 'management' ? colors.green : themeColors.inputPlaceholder },
+            { color: currentTab === 'management' ? activeColor : themeColors.inputPlaceholder },
             currentTab === 'management' && styles.tabLabelActive,
           ]}
         >
@@ -88,12 +90,12 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
         <Icon
           name={currentTab === 'transfer' ? 'solar:card-transfer-bold' : 'solar:card-transfer-linear'}
           size={24}
-          color={currentTab === 'transfer' ? colors.green : themeColors.inputPlaceholder}
+          color={currentTab === 'transfer' ? activeColor : themeColors.inputPlaceholder}
         />
         <Text
           style={[
             styles.tabLabel,
-            { color: currentTab === 'transfer' ? colors.green : themeColors.inputPlaceholder },
+            { color: currentTab === 'transfer' ? activeColor : themeColors.inputPlaceholder },
             currentTab === 'transfer' && styles.tabLabelActive,
           ]}
         >
@@ -109,12 +111,12 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
         <Icon
           name={currentTab === 'profile' ? 'solar:user-bold' : 'solar:user-linear'}
           size={24}
-          color={currentTab === 'profile' ? colors.green : themeColors.inputPlaceholder}
+          color={currentTab === 'profile' ? activeColor : themeColors.inputPlaceholder}
         />
         <Text
           style={[
             styles.tabLabel,
-            { color: currentTab === 'profile' ? colors.green : themeColors.inputPlaceholder },
+            { color: currentTab === 'profile' ? activeColor : themeColors.inputPlaceholder },
             currentTab === 'profile' && styles.tabLabelActive,
           ]}
         >
