@@ -33,16 +33,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Icône de Recherche (Loupe) positionnée à GAUCHE de la cloche de notifications */}
-      <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={() => setSearchModalVisible(true)}
-        style={styles.iconButton}
-      >
-        <Icon name="solar:magnifer-linear" size={24} color={iconColor} />
-      </TouchableOpacity>
-
-      {/* Cloche de notifications (visible sur les pages principales) */}
+      {/* Cloche de notifications (positionnée à GAUCHE de la loupe de recherche) */}
       {showBell && (
         <TouchableOpacity
           activeOpacity={0.7}
@@ -64,7 +55,16 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
         </TouchableOpacity>
       )}
 
-      {/* Modal de recherche animée avec espace blanc de résultats */}
+      {/* Icône de Recherche (Loupe) positionnée à DROITE */}
+      <TouchableOpacity
+        activeOpacity={0.7}
+        onPress={() => setSearchModalVisible(true)}
+        style={styles.iconButton}
+      >
+        <Icon name="solar:magnifer-linear" size={24} color={iconColor} />
+      </TouchableOpacity>
+
+      {/* Modal de recherche animée */}
       <HeaderSearchModal
         visible={searchModalVisible}
         onClose={() => setSearchModalVisible(false)}

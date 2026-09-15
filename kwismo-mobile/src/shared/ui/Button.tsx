@@ -33,7 +33,7 @@ export const Button: React.FC<ButtonProps> = ({
   size = 'md',
   loading = false,
   disabled = false,
-  minLoadingDuration = 1000,
+  minLoadingDuration = 0,
   style,
   textStyle,
   leftIcon,

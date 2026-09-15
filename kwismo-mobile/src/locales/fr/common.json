@@ -127,6 +127,11 @@
     "kpiTransfersSub": "100% sécurisés",
     "suspectCallDetected": "Appel suspect détecté",
     "secureUssdTransfer": "Transfert USSD sécurisé",
-    "scamReport": "Signalement arnaque"
+    "scamReport": "Signalement arnaque",
+    "filterAll": "Tous",
+    "filterVerified": "Numéro vérifié",
+    "filterThreats": "Ménaces évitées",
+    "filterReports": "Signalements effectués",
+    "filterTransfers": "Transferts d'argent"
   }
 }
