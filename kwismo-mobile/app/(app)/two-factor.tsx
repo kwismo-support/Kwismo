@@ -1,9 +1,7 @@
-// Écran de gestion de l'Authentification à Deux Facteurs (Biométrie & PIN 6 chiffres)
 import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   Switch,
@@ -19,8 +17,6 @@ import { HeaderBar } from '@/shared/components/HeaderBar';
 import { PinPad } from '@/shared/components/PinPad';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { toast } from '@/shared/store/toastStore';
-import { colors, fonts } from '@/styles/tokens';
-import { scaleFont } from '@/shared/lib/responsive';
 import {
   hasConfiguredPin,
   getBiometricPreference,
@@ -31,12 +27,10 @@ export default function TwoFactorScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { isDark } = useAppTheme();
 
   const [biometricsEnabled, setBiometricsEnabled] = useState(false);
   const [pinConfigured, setPinConfigured] = useState(false);
-  const [twoFactorSmsEnabled, setTwoFactorSmsEnabled] = useState(false);
-
   const [pinVerifyModalVisible, setPinVerifyModalVisible] = useState(false);
 
   useFocusEffect(
@@ -63,7 +57,6 @@ export default function TwoFactorScreen() {
         toast.success(t('security.bioEnabled', 'Authentification biométrique activée.'));
       }
     } else {
-      // Pour désactiver la biométrie, demander le code PIN pour confirmer
       setPinVerifyModalVisible(true);
     }
   };
@@ -76,34 +69,31 @@ export default function TwoFactorScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-      <StatusBar style="light" />
+    <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg">
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
       <HeaderBar title={t('security.twoFactorTitle', 'Authentification à Deux Facteurs')} showBack={true} />
 
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollBody,
-          { paddingBottom: insets.bottom + 40 },
-        ]}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
         showsVerticalScrollIndicator={false}
+        className="px-5 pt-5"
       >
-        <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
+        <Text className="font-font-bold text-base font-extrabold text-slate-900 dark:text-white">
           {t('security.securityHeader', 'Protection du compte')}
         </Text>
-        <Text style={[styles.sectionSub, { color: themeColors.textSecondary }]}>
+        <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-1">
           {t('security.securitySubtitle', 'Configurez le verrouillage biométrique et votre code PIN de secours.')}
         </Text>
 
-        {/* Option 1 : Biométrie */}
-        <View style={[styles.card, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder, marginTop: 16 }]}>
-          <View style={styles.row}>
-            <Icon name="solar:fingerprint-bold" color={colors.green} size={24} style={{ marginRight: 12 }} />
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              <Text style={[styles.rowTitle, { color: themeColors.textPrimary }]}>
+        <View className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-4 mt-4">
+          <View className="flex-row items-center justify-between py-4">
+            <Icon name="solar:fingerprint-bold" color="#25B876" size={24} className="mr-3" />
+            <View className="flex-1 pr-2.5">
+              <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">
                 {t('security.biometricsTitle', 'Empreinte digital / Face ID')}
               </Text>
-              <Text style={[styles.rowSub, { color: themeColors.textSecondary }]}>
+              <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 {biometricsEnabled
                   ? t('security.biometricsActive', 'Déverrouillage rapide activé')
                   : t('security.biometricsDisabled', 'Désactivé par défaut')}
@@ -112,38 +102,36 @@ export default function TwoFactorScreen() {
             <Switch
               value={biometricsEnabled}
               onValueChange={handleToggleBiometrics}
-              trackColor={{ false: '#CBD5E1', true: colors.green }}
-              thumbColor={colors.white}
+              trackColor={{ false: '#CBD5E1', true: '#25B876' }}
+              thumbColor="#FFFFFF"
             />
           </View>
         </View>
 
-        {/* Option 2 : Code PIN 6 Chiffres */}
-        <View style={[styles.card, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder, marginTop: 16 }]}>
+        <View className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-4 mt-4">
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/pin-setup')}
-            style={styles.row}
+            className="flex-row items-center justify-between py-4"
           >
-            <Icon name="solar:shield-keyhole-bold" color={colors.green} size={24} style={{ marginRight: 12 }} />
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              <Text style={[styles.rowTitle, { color: themeColors.textPrimary }]}>
+            <Icon name="solar:shield-keyhole-bold" color="#25B876" size={24} className="mr-3" />
+            <View className="flex-1 pr-2.5">
+              <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">
                 {t('security.pinTitle', 'Code PIN (6 chiffres)')}
               </Text>
-              <Text style={[styles.rowSub, { color: themeColors.textSecondary }]}>
+              <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 {pinConfigured
                   ? t('security.pinActive', 'Code PIN configuré')
                   : t('security.pinNotConfigured', 'Non défini (Requis pour la biométrie)')}
               </Text>
             </View>
-            <Icon name="solar:alt-arrow-right-linear" color={themeColors.inputPlaceholder} size={20} />
+            <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={20} />
           </TouchableOpacity>
         </View>
       </ScrollView>
 
-      {/* Modale de vérification PIN pour désactivation */}
       <Modal visible={pinVerifyModalVisible} animationType="slide">
-        <View style={{ flex: 1, backgroundColor: themeColors.background }}>
+        <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg">
           <HeaderBar title={t('security.disableBiometrics', 'Désactiver la Biométrie')} showBack={true} onBack={() => setPinVerifyModalVisible(false)} />
           <PinPad
             mode="verify"
@@ -157,43 +145,3 @@ export default function TwoFactorScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollBody: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-  },
-  sectionTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(16),
-    fontWeight: '800',
-  },
-  sectionSub: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(13),
-    marginTop: 4,
-  },
-  card: {
-    borderRadius: 16,
-    borderWidth: 1,
-    paddingHorizontal: 16,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-  },
-  rowTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '700',
-  },
-  rowSub: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-    marginTop: 2,
-  },
-});

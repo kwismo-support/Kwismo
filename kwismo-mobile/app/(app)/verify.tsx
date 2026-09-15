@@ -1,9 +1,7 @@
-// Écran de Vérification de Numéro conforme à la maquette (Image 1 et Image 2)
 import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   TextInput,
@@ -16,8 +14,6 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
-import { colors, fonts } from '@/styles/tokens';
-import { scaleFont } from '@/shared/lib/responsive';
 import { verifyApi, VerifyResult } from '@/features/verify/services/verify.api';
 import { lookupNumberOffline } from '@/shared/services/database';
 
@@ -26,7 +22,7 @@ export default function VerifyScreen() {
   const params = useLocalSearchParams<{ phone?: string }>();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { isDark } = useAppTheme();
 
   const [inputPhone, setInputPhone] = useState(params.phone || '');
   const [loading, setLoading] = useState(false);
@@ -83,32 +79,27 @@ export default function VerifyScreen() {
     }
   };
 
-
   const isFraudulent = result?.riskLevel === 'HIGH' || result?.riskLevel === 'CRITICAL' || (result?.riskScore || 0) >= 70;
   const isSuspect = result?.riskLevel === 'MEDIUM' || ((result?.riskScore || 0) >= 40 && (result?.riskScore || 0) < 70);
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-      <StatusBar style="light" />
+    <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg">
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
-      {/* Header Bar conforme avec titre et retour */}
       <HeaderBar title="Verification du numero" showBack={true} />
 
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollBody,
-          { paddingBottom: insets.bottom + 40 },
-        ]}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
         showsVerticalScrollIndicator={false}
+        className="px-4 pt-4"
       >
-        {/* Champ de recherche de numéro si pas encore soumis */}
-        <View style={styles.searchBoxContainer}>
-          <View style={[styles.searchInputWrapper, { backgroundColor: themeColors.inputBg, borderColor: themeColors.inputBorder }]}>
-            <Icon name="solar:magnifer-linear" color="#94A3B8" size={20} style={{ marginRight: 10 }} />
+        <View className="mb-5">
+          <View className="flex-row items-center h-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-3.5 mb-2.5">
+            <Icon name="solar:magnifer-linear" color="#94A3B8" size={20} className="mr-2.5" />
             <TextInput
-              style={[styles.searchInput, { color: themeColors.textPrimary }]}
+              className="flex-1 text-base font-font-regular text-slate-900 dark:text-white"
               placeholder="Entrez un numéro (+237...)"
-              placeholderTextColor={themeColors.inputPlaceholder}
+              placeholderTextColor="#94A3B8"
               keyboardType="phone-pad"
               value={inputPhone}
               onChangeText={setInputPhone}
@@ -116,54 +107,61 @@ export default function VerifyScreen() {
           </View>
 
           <TouchableOpacity
-            style={[styles.verifyButton, { backgroundColor: colors.green }]}
+            className="h-12 rounded-xl bg-brand-green justify-center items-center"
             onPress={handleVerify}
             disabled={loading}
             activeOpacity={0.85}
           >
             {loading ? (
-              <ActivityIndicator color={colors.white} />
+              <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={styles.verifyButtonText}>Vérifier</Text>
+              <Text className="text-white text-base font-font-bold font-bold">Vérifier</Text>
             )}
           </TouchableOpacity>
         </View>
 
-        {/* RÉSULTAT CONFORME AUX MAQUETTES (Image 1 & Image 2) */}
         {result && (
-          <View style={styles.resultContentCard}>
-            {/* 1. Pill de Statut Haut (Frauduleux / A signaler / Sécurisé) */}
+          <View className="bg-white dark:bg-brand-cardDark rounded-3xl p-5 shadow-sm mb-6">
             <View
-              style={[
-                styles.statusOutlinePill,
-                {
-                  borderColor: isFraudulent ? '#EF4444' : isSuspect ? '#F59E0B' : '#10B981',
-                },
-              ]}
+              className={`self-center px-10 py-2.5 rounded-full border-2 mb-5 ${
+                isFraudulent
+                  ? 'border-red-500'
+                  : isSuspect
+                  ? 'border-amber-500'
+                  : 'border-emerald-500'
+              }`}
             >
               <Text
-                style={[
-                  styles.statusOutlinePillText,
-                  { color: isFraudulent ? '#EF4444' : isSuspect ? '#F59E0B' : '#10B981' },
-                ]}
+                className={`text-lg font-font-bold font-black ${
+                  isFraudulent
+                    ? 'text-red-500'
+                    : isSuspect
+                    ? 'text-amber-500'
+                    : 'text-emerald-500'
+                }`}
               >
                 {isFraudulent ? 'Frauduleux' : isSuspect ? 'A signaler' : 'Sécurisé'}
               </Text>
             </View>
 
-            {/* 2. Illustration centrale (Bouclier avec crâne ou attention) */}
-            <View style={styles.illustrationWrapper}>
+            <View className="items-center my-4">
               <View
-                style={[
-                  styles.outerCircleGraphic,
-                  { backgroundColor: isFraudulent ? '#FEE2E2' : isSuspect ? '#FEF3C7' : '#DCFCE7' },
-                ]}
+                className={`w-36 h-36 rounded-full justify-center items-center ${
+                  isFraudulent
+                    ? 'bg-red-100 dark:bg-red-950/40'
+                    : isSuspect
+                    ? 'bg-amber-100 dark:bg-amber-950/40'
+                    : 'bg-emerald-100 dark:bg-emerald-950/40'
+                }`}
               >
                 <View
-                  style={[
-                    styles.shieldIconBox,
-                    { backgroundColor: isFraudulent ? '#EF4444' : isSuspect ? '#F59E0B' : '#10B981' },
-                  ]}
+                  className={`w-24 h-24 rounded-full justify-center items-center ${
+                    isFraudulent
+                      ? 'bg-red-500'
+                      : isSuspect
+                      ? 'bg-amber-500'
+                      : 'bg-emerald-500'
+                  }`}
                 >
                   <Icon
                     name={
@@ -180,98 +178,93 @@ export default function VerifyScreen() {
               </View>
             </View>
 
-            {/* 3. Carte Verte : Score de Risque (0 à 100) */}
-            <View style={styles.greenScoreCard}>
-              <View style={styles.scoreHeaderRow}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={styles.scoreTitleText}>Score de risque</Text>
-                  <Icon name="solar:info-circle-linear" color="#FFFFFF" size={16} style={{ marginLeft: 4 }} />
+            <View className="bg-brand-green rounded-2xl p-4 my-4">
+              <View className="flex-row justify-between items-center mb-3">
+                <View className="flex-row items-center">
+                  <Text className="text-white text-sm font-font-bold font-bold">Score de risque</Text>
+                  <Icon name="solar:info-circle-linear" color="#FFFFFF" size={16} className="ml-1" />
                 </View>
-                <View style={styles.riskBadgePill}>
-                  <Text style={styles.riskBadgeText}>
+                <View className="bg-white/25 px-3 py-1 rounded-xl">
+                  <Text className="text-white text-xs font-font-bold font-bold">
                     {isFraudulent ? 'Attention' : isSuspect ? 'Suspect' : 'Faible'}
                   </Text>
                 </View>
               </View>
 
-              <View style={styles.gaugeContainer}>
-                <View style={styles.gaugeLabelsRow}>
-                  <Text style={styles.gaugeMinMaxText}>0</Text>
-                  <Text style={styles.gaugeMinMaxText}>100</Text>
+              <View className="mt-1">
+                <View className="flex-row justify-between mb-1">
+                  <Text className="text-white text-xs font-font-regular">0</Text>
+                  <Text className="text-white text-xs font-font-regular">100</Text>
                 </View>
-                <View style={styles.gaugeTrack}>
+                <View className="h-2 bg-white/30 rounded-full overflow-hidden">
                   <View
-                    style={[
-                      styles.gaugeFill,
-                      { width: `${Math.min(result.riskScore, 100)}%` },
-                    ]}
+                    className="h-full bg-white rounded-full"
+                    style={{ width: `${Math.min(result.riskScore, 100)}%` }}
                   />
                 </View>
               </View>
             </View>
 
-            {/* 4. Historique Communautaire */}
-            <View style={styles.communitySection}>
-              <Text style={[styles.communityTitle, { color: themeColors.textPrimary }]}>
+            <View className="my-3">
+              <Text className="text-base font-font-bold font-black text-slate-900 dark:text-white mb-3">
                 Historique communautaire
               </Text>
 
-              <View style={styles.communityRow}>
-                <View style={styles.communityLeft}>
-                  <Icon name="solar:bell-bing-bold" color="#0F172A" size={20} style={{ marginRight: 10 }} />
-                  <Text style={[styles.communityLabel, { color: themeColors.textPrimary }]}>
+              <View className="flex-row justify-between items-center py-2.5 border-b border-slate-100 dark:border-slate-800">
+                <View className="flex-row items-center">
+                  <Icon name="solar:bell-bing-bold" color={isDark ? '#94A3B8' : '#0F172A'} size={20} className="mr-2.5" />
+                  <Text className="text-sm font-font-regular text-slate-900 dark:text-white">
                     Signalements
                   </Text>
                 </View>
-                <Text style={[styles.communityValue, { color: themeColors.textPrimary }]}>
+                <Text className="text-base font-font-bold font-black text-slate-900 dark:text-white">
                   {result.reportCount < 10 ? `0${result.reportCount}` : result.reportCount}
                 </Text>
               </View>
 
-              <View style={styles.communityRow}>
-                <View style={styles.communityLeft}>
-                  <Icon name="solar:chat-round-line-bold" color="#0F172A" size={20} style={{ marginRight: 10 }} />
-                  <Text style={[styles.communityLabel, { color: themeColors.textPrimary }]}>
+              <View className="flex-row justify-between items-center py-2.5 border-b border-slate-100 dark:border-slate-800">
+                <View className="flex-row items-center">
+                  <Icon name="solar:chat-round-line-bold" color={isDark ? '#94A3B8' : '#0F172A'} size={20} className="mr-2.5" />
+                  <Text className="text-sm font-font-regular text-slate-900 dark:text-white">
                     Commentaires positifs
                   </Text>
                 </View>
-                <Text style={[styles.communityValue, { color: themeColors.textPrimary }]}>
+                <Text className="text-base font-font-bold font-black text-slate-900 dark:text-white">
                   {isFraudulent ? '00' : isSuspect ? '10' : '45'}
                 </Text>
               </View>
 
-              <Text style={styles.lastReportSubtext}>
+              <Text className="text-xs text-slate-400 font-font-regular mt-3">
                 {result.recommendation || 'Dernier signalement il y’a 8 mois'}
               </Text>
             </View>
 
-            {/* 5. Boutons d'actions bas (Signaler / Transferer) */}
-            <View style={styles.bottomButtonsRow}>
+            <View className="flex-row justify-between mt-5 gap-3">
               {isFraudulent ? (
                 <>
                   <TouchableOpacity
                     activeOpacity={0.85}
                     onPress={() => router.push({ pathname: '/(app)/report', params: { phone: result.phone } })}
-                    style={[styles.actionBtnHalf, { backgroundColor: '#F59E0B' }]}
+                    className="flex-1 h-12 rounded-full bg-amber-500 justify-center items-center"
                   >
-                    <Text style={styles.actionBtnText}>Signaler</Text>
+                    <Text className="text-white text-base font-font-bold font-bold">Signaler</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
                     activeOpacity={0.85}
                     onPress={() => router.push({ pathname: '/(app)/transfer', params: { recipient: result.phone } })}
-                    style={[styles.actionBtnHalf, { backgroundColor: '#0F172A' }]}
+                    className="flex-1 h-12 rounded-full bg-slate-900 dark:bg-slate-700 justify-center items-center"
                   >
-                    <Text style={styles.actionBtnText}>Transferer</Text>
+                    <Text className="text-white text-base font-font-bold font-bold">Transferer</Text>
                   </TouchableOpacity>
                 </>
               ) : (
                 <TouchableOpacity
                   activeOpacity={0.85}
                   onPress={() => router.push({ pathname: '/(app)/transfer', params: { recipient: result.phone } })}
-                  style={[styles.actionBtnFull, { backgroundColor: '#F59E0B' }]}
+                  className="w-full h-12 rounded-full bg-amber-500 justify-center items-center"
                 >
-                  <Text style={styles.actionBtnText}>Transferer</Text>
+                  <Text className="text-white text-base font-font-bold font-bold">Transferer</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -282,198 +275,3 @@ export default function VerifyScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollBody: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-  },
-  searchBoxContainer: {
-    marginBottom: 20,
-  },
-  searchInputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 50,
-    borderRadius: 14,
-    borderWidth: 1,
-    paddingHorizontal: 14,
-    marginBottom: 10,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: scaleFont(15),
-    fontFamily: fonts.regular,
-  },
-  verifyButton: {
-    height: 48,
-    borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  verifyButtonText: {
-    color: '#FFFFFF',
-    fontSize: scaleFont(15),
-    fontFamily: fonts.headlineBold,
-    fontWeight: '700',
-  },
-  resultContentCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 3,
-  },
-  statusOutlinePill: {
-    alignSelf: 'center',
-    paddingHorizontal: 40,
-    paddingVertical: 10,
-    borderRadius: 30,
-    borderWidth: 1.5,
-    marginBottom: 20,
-  },
-  statusOutlinePillText: {
-    fontSize: scaleFont(18),
-    fontFamily: fonts.headlineBold,
-    fontWeight: '800',
-  },
-  illustrationWrapper: {
-    alignItems: 'center',
-    marginVertical: 16,
-  },
-  outerCircleGraphic: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  shieldIconBox: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  greenScoreCard: {
-    backgroundColor: colors.green,
-    borderRadius: 18,
-    padding: 16,
-    marginVertical: 16,
-  },
-  scoreHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  scoreTitleText: {
-    color: '#FFFFFF',
-    fontSize: scaleFont(14),
-    fontFamily: fonts.headlineBold,
-    fontWeight: '700',
-  },
-  riskBadgePill: {
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  riskBadgeText: {
-    color: '#FFFFFF',
-    fontSize: scaleFont(12),
-    fontFamily: fonts.headlineBold,
-    fontWeight: '700',
-  },
-  gaugeContainer: {
-    marginTop: 4,
-  },
-  gaugeLabelsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 4,
-  },
-  gaugeMinMaxText: {
-    color: '#FFFFFF',
-    fontSize: scaleFont(11),
-    fontFamily: fonts.regular,
-  },
-  gaugeTrack: {
-    height: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  gaugeFill: {
-    height: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 4,
-  },
-  communitySection: {
-    marginVertical: 12,
-  },
-  communityTitle: {
-    fontSize: scaleFont(15),
-    fontFamily: fonts.headlineBold,
-    fontWeight: '800',
-    marginBottom: 12,
-  },
-  communityRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-  },
-  communityLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  communityLabel: {
-    fontSize: scaleFont(14),
-    fontFamily: fonts.regular,
-  },
-  communityValue: {
-    fontSize: scaleFont(15),
-    fontFamily: fonts.headlineBold,
-    fontWeight: '800',
-  },
-  lastReportSubtext: {
-    fontSize: scaleFont(12),
-    color: '#94A3B8',
-    fontFamily: fonts.regular,
-    marginTop: 12,
-  },
-  bottomButtonsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-    gap: 12,
-  },
-  actionBtnHalf: {
-    flex: 1,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  actionBtnFull: {
-    width: '100%',
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  actionBtnText: {
-    color: '#FFFFFF',
-    fontSize: scaleFont(15),
-    fontFamily: fonts.headlineBold,
-    fontWeight: '700',
-  },
-});

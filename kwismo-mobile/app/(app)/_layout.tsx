@@ -16,8 +16,8 @@ export default function AppLayout() {
 
   if (!isInitialized) {
     return (
-      <View className="flex-1 bg-brand-navy justify-center items-center">
-        <ActivityIndicator size="large" color="#2BB673" />
+      <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg justify-center items-center">
+        <ActivityIndicator size="large" color="#25B876" />
       </View>
     );
   }
@@ -30,9 +30,7 @@ export default function AppLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: '#161E33' },
       }}
     />
   );
 }
-

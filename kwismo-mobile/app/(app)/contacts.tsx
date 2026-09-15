@@ -54,7 +54,7 @@ export default function ContactsScreen() {
                 {Array.from({ length: 4 }).map((_, idx) => (
                   <View
                     key={`skel-contact-${idx}`}
-                    className="flex-row items-center p-3.5 rounded-xl mb-2.5 bg-white dark:bg-[#162035] border border-slate-200 dark:border-slate-700/60"
+                    className="flex-row items-center p-3.5 rounded-xl mb-2.5 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700/60"
                   >
                     <SkeletonCircle size={44} style={{ marginRight: 12 }} />
                     <View style={{ flex: 1, gap: 6 }}>
@@ -71,7 +71,7 @@ export default function ContactsScreen() {
               <TouchableOpacity
                 key={item.id}
                 activeOpacity={0.7}
-                className="flex-row items-center p-3.5 rounded-xl mb-2.5 bg-white dark:bg-[#162035] border border-slate-200 dark:border-slate-700/60 shadow-sm"
+                className="flex-row items-center p-3.5 rounded-xl mb-2.5 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700/60 shadow-sm"
               >
                 <View className="w-11 h-11 rounded-full bg-blue-500 justify-center items-center mr-3">
                   <Text className="font-bold text-lg text-white">{item.name[0]}</Text>

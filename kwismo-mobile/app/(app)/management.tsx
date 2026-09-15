@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   TextInput,
@@ -18,13 +17,11 @@ import { AsYouType, isValidPhoneNumber } from 'libphonenumber-js/min';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
 import { TabBar } from '@/shared/components/TabBar';
-import { Skeleton, SkeletonCircle, SkeletonLoader } from '@/shared/ui/Skeleton';
+import { Skeleton, SkeletonLoader } from '@/shared/ui/Skeleton';
 import { CountryFlag } from '@/shared/components/CountryFlag';
 import { CountryPickerModal, CountryItem } from '@/shared/components/CountryPickerModal';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { toast } from '@/shared/store/toastStore';
-import { colors, fonts } from '@/styles/tokens';
-import { scaleFont } from '@/shared/lib/responsive';
 
 import { UserSimNumber, MOCK_SIM_NUMBERS } from '@/shared/mock/simNumbersMock';
 
@@ -32,7 +29,7 @@ export default function ManagementScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { isDark } = useAppTheme();
 
   const [loading, setLoading] = useState(true);
   const [numbers, setNumbers] = useState<UserSimNumber[]>(MOCK_SIM_NUMBERS);
@@ -42,7 +39,6 @@ export default function ManagementScreen() {
     return () => clearTimeout(t);
   }, []);
 
-  // États pour l'ajout / modification d'un numéro
   const [fullScreenAddVisible, setFullScreenAddVisible] = useState(false);
   const [editingNumberId, setEditingNumberId] = useState<string | null>(null);
   const [countryModalVisible, setCountryModalVisible] = useState(false);
@@ -55,19 +51,16 @@ export default function ManagementScreen() {
   const [phoneError, setPhoneError] = useState('');
   const [isSubmittingPhone, setIsSubmittingPhone] = useState(false);
 
-  // États pour la validation OTP par SMS (Plein écran)
   const [fullScreenOtpVisible, setFullScreenOtpVisible] = useState(false);
   const [otpTargetNumber, setOtpTargetNumber] = useState<UserSimNumber | null>(null);
   const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);
   const [otpTimer, setOtpTimer] = useState(60);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
-  // Modales d'actions
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [restoreSecurityModalVisible, setRestoreSecurityModalVisible] = useState(false);
   const [targetActionNumber, setTargetActionNumber] = useState<UserSimNumber | null>(null);
 
-  // Compte à rebours OTP
   useEffect(() => {
     let interval: any;
     if (fullScreenOtpVisible && otpTimer > 0) {
@@ -98,7 +91,6 @@ export default function ManagementScreen() {
     if (phoneError) setPhoneError('');
   };
 
-  // Ouverture du formulaire d'ajout
   const handleOpenAddNumber = () => {
     setEditingNumberId(null);
     setNewPhoneNumber('');
@@ -106,7 +98,6 @@ export default function ManagementScreen() {
     setFullScreenAddVisible(true);
   };
 
-  // Ouverture du formulaire de modification
   const handleOpenEditNumber = (item: UserSimNumber) => {
     setEditingNumberId(item.id);
     setNewPhoneNumber(item.phone);
@@ -119,7 +110,6 @@ export default function ManagementScreen() {
     setFullScreenAddVisible(true);
   };
 
-  // Envoi de la saisie (Ajout ou Modification)
   const handleSavePhone = () => {
     const fullNumber = `${selectedCountry.callingCode}${newPhoneNumber.replace(/\s+/g, '')}`;
     const isValid = isValidPhoneNumber(fullNumber, selectedCountry.code as any);
@@ -172,7 +162,6 @@ export default function ManagementScreen() {
       setFullScreenAddVisible(false);
       setNewPhoneNumber('');
 
-      // Ouvrir immédiatement l'écran OTP SMS pour valider ce numéro
       setOtpTargetNumber(targetSim);
       setOtpCode(['', '', '', '', '', '']);
       setOtpTimer(60);
@@ -214,7 +203,6 @@ export default function ManagementScreen() {
     }, 900);
   };
 
-  // Déclarer compromis -> propose d'alerter les contacts
   const handleDeclareCompromised = (item: UserSimNumber) => {
     setNumbers((prev) =>
       prev.map((n) => (n.id === item.id ? { ...n, status: 'compromised' } : n))
@@ -223,7 +211,6 @@ export default function ManagementScreen() {
     router.push('/(app)/alert-whatsapp');
   };
 
-  // Rétablir la sécurité (désactiver l'état compromis)
   const handleRestoreSecurity = () => {
     if (!targetActionNumber) return;
     setNumbers((prev) =>
@@ -241,41 +228,36 @@ export default function ManagementScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-      <StatusBar style="light" />
+    <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg">
+      <StatusBar style={isDark ? 'light' : 'dark'} />
 
-      {/* Header global unifié : Titre à gauche, Actions à droite */}
       <HeaderBar title={t('common.management', 'Gestion')} showBack={false} />
 
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollBody,
-          { paddingBottom: insets.bottom + 110 },
-        ]}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 110 }}
         showsVerticalScrollIndicator={false}
+        className="px-4 pt-4"
       >
-        {/* En-tête : Titre et description des numéros */}
-        <View style={styles.topSectionRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.sectionTitle, { color: themeColors.textPrimary }]}>
+        <View className="flex-row items-center justify-between mb-4">
+          <View className="flex-1">
+            <Text className="font-font-bold text-lg font-extrabold text-slate-900 dark:text-white">
               {t('management.title', 'Mes numéros')} ({numbers.length})
             </Text>
-            <Text style={[styles.sectionSub, { color: themeColors.textSecondary }]}>
+            <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               {t('management.subtitle', 'Gérez et sécurisez vos cartes SIM et numéros associés')}
             </Text>
           </View>
         </View>
 
-        {/* Grille : Exactement 2 numéros par ligne pour un affichage dense et sans scroll */}
         {loading ? (
           <SkeletonLoader>
-            <View style={styles.gridContainer}>
-              <View style={[styles.gridCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
+            <View className="flex-row flex-wrap justify-between gap-y-3">
+              <View className="w-[48.5%] rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-3 justify-between">
                 <Skeleton width={70} height={16} borderRadius={4} />
                 <Skeleton width={110} height={20} borderRadius={6} style={{ marginVertical: 10 }} />
                 <Skeleton width={80} height={14} borderRadius={4} />
               </View>
-              <View style={[styles.gridCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}>
+              <View className="w-[48.5%] rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-3 justify-between">
                 <Skeleton width={70} height={16} borderRadius={4} />
                 <Skeleton width={110} height={20} borderRadius={6} style={{ marginVertical: 10 }} />
                 <Skeleton width={80} height={14} borderRadius={4} />
@@ -283,262 +265,232 @@ export default function ManagementScreen() {
             </View>
           </SkeletonLoader>
         ) : (
-          <View style={styles.gridContainer}>
+          <View className="flex-row flex-wrap justify-between gap-y-3">
             {numbers.map((item) => {
               const isVerified = item.status === 'verified';
               const isPending = item.status === 'pending';
               const isCompromised = item.status === 'compromised';
 
-            return (
-              <View
-                key={item.id}
-                style={[
-                  styles.gridCard,
-                  {
-                    backgroundColor: themeColors.cardBg,
-                    borderColor: isCompromised ? '#EF4444' : themeColors.inputBorder,
-                  },
-                ]}
-              >
-                {/* Ligne haute : Drapeau + Opérateur + Action Modifier */}
-                <View style={styles.cardHeaderRow}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <CountryFlag countryCode={item.countryCode} size={20} style={{ marginRight: 6 }} />
-                    <Text style={[styles.operatorText, { color: themeColors.textPrimary }]}>
-                      {item.operator}
+              return (
+                <View
+                  key={item.id}
+                  className={`w-[48.5%] rounded-2xl border bg-white dark:bg-brand-cardDark p-3 justify-between shadow-sm ${
+                    isCompromised ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
+                  }`}
+                >
+                  <View className="flex-row items-center justify-between mb-2">
+                    <View className="flex-row items-center">
+                      <CountryFlag countryCode={item.countryCode} size={20} className="mr-1.5" />
+                      <Text className="font-font-bold text-xs font-bold text-slate-900 dark:text-white">
+                        {item.operator}
+                      </Text>
+                    </View>
+
+                    <TouchableOpacity
+                      activeOpacity={0.7}
+                      onPress={() => handleOpenEditNumber(item)}
+                      className="p-0.5"
+                    >
+                      <Icon name="solar:pen-new-square-linear" color="#94A3B8" size={16} />
+                    </TouchableOpacity>
+                  </View>
+
+                  <Text
+                    numberOfLines={1}
+                    className="font-font-bold text-sm font-bold text-slate-900 dark:text-white mb-2"
+                  >
+                    {item.phone}
+                  </Text>
+
+                  <View className="flex-row items-center mb-3">
+                    <Icon
+                      name={
+                        isVerified
+                          ? 'solar:shield-check-bold'
+                          : isPending
+                          ? 'solar:clock-circle-bold'
+                          : 'solar:danger-triangle-bold'
+                      }
+                      size={15}
+                      color={
+                        isVerified
+                          ? '#25B876'
+                          : isPending
+                          ? '#F97316'
+                          : '#EF4444'
+                      }
+                      className="mr-1"
+                    />
+                    <Text
+                      className={`font-font-bold text-xs font-bold ${
+                        isVerified
+                          ? 'text-brand-green'
+                          : isPending
+                          ? 'text-orange-500'
+                          : 'text-red-500'
+                      }`}
+                    >
+                      {isVerified
+                        ? t('common.statusVerified', 'Vérifié')
+                        : isPending
+                        ? t('common.statusPending', 'En attente')
+                        : t('common.statusCompromised', 'Compromis')}
                     </Text>
                   </View>
 
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => handleOpenEditNumber(item)}
-                    style={styles.cardMenuBtn}
-                  >
-                    <Icon name="solar:pen-new-square-linear" color={themeColors.textSecondary} size={16} />
-                  </TouchableOpacity>
-                </View>
+                  <View className="flex-row items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+                    {isPending && (
+                      <TouchableOpacity
+                        activeOpacity={0.75}
+                        onPress={() => {
+                          setOtpTargetNumber(item);
+                          setOtpCode(['', '', '', '', '', '']);
+                          setOtpTimer(60);
+                          setFullScreenOtpVisible(true);
+                        }}
+                        className="px-2 py-1 rounded-lg bg-orange-500"
+                      >
+                        <Text className="font-font-bold text-xs font-bold text-white">
+                          {t('common.validate', 'Valider OTP')}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
 
-                {/* Numéro formaté */}
-                <Text
-                  numberOfLines={1}
-                  style={[styles.cardNumberText, { color: themeColors.textPrimary }]}
-                >
-                  {item.phone}
-                </Text>
+                    {isVerified && (
+                      <TouchableOpacity
+                        activeOpacity={0.75}
+                        onPress={() => handleDeclareCompromised(item)}
+                        className="px-2 py-1 rounded-lg border border-red-500"
+                      >
+                        <Text className="font-font-bold text-xs font-bold text-red-500">
+                          {t('common.statusCompromised', 'Compromis')}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
 
-                {/* Badge de statut compact */}
-                <View style={styles.badgeRow}>
-                  <Icon
-                    name={
-                      isVerified
-                        ? 'solar:shield-check-bold'
-                        : isPending
-                        ? 'solar:clock-circle-bold'
-                        : 'solar:danger-triangle-bold'
-                    }
-                    size={15}
-                    color={
-                      isVerified
-                        ? colors.green
-                        : isPending
-                        ? colors.orange
-                        : '#EF4444'
-                    }
-                    style={{ marginRight: 4 }}
-                  />
-                  <Text
-                    style={[
-                      styles.statusText,
-                      {
-                        color: isVerified
-                          ? colors.green
-                          : isPending
-                          ? colors.orange
-                          : '#EF4444',
-                      },
-                    ]}
-                  >
-                    {isVerified
-                      ? t('common.statusVerified', 'Vérifié')
-                      : isPending
-                      ? t('common.statusPending', 'En attente')
-                      : t('common.statusCompromised', 'Compromis')}
-                  </Text>
-                </View>
+                    {isCompromised && (
+                      <TouchableOpacity
+                        activeOpacity={0.75}
+                        onPress={() => {
+                          setTargetActionNumber(item);
+                          setRestoreSecurityModalVisible(true);
+                        }}
+                        className="px-2 py-1 rounded-lg bg-brand-green"
+                      >
+                        <Text className="font-font-bold text-xs font-bold text-white">
+                          {t('common.reset', 'Rétablir')}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
 
-                {/* Actions contextuelles selon l'état */}
-                <View style={[styles.bottomActionsRow, { borderTopColor: themeColors.divider }]}>
-                  {isPending && (
                     <TouchableOpacity
-                      activeOpacity={0.75}
-                      onPress={() => {
-                        setOtpTargetNumber(item);
-                        setOtpCode(['', '', '', '', '', '']);
-                        setOtpTimer(60);
-                        setFullScreenOtpVisible(true);
-                      }}
-                      style={[styles.smallActionBtn, { backgroundColor: colors.orange }]}
-                    >
-                      <Text style={styles.smallActionBtnText}>{t('common.validate', 'Valider OTP')}</Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {isVerified && (
-                    <TouchableOpacity
-                      activeOpacity={0.75}
-                      onPress={() => handleDeclareCompromised(item)}
-                      style={[styles.smallActionOutlineBtn, { borderColor: '#EF4444' }]}
-                    >
-                      <Text style={[styles.smallActionOutlineBtnText, { color: '#EF4444' }]}>
-                        {t('common.statusCompromised', 'Compromis')}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {isCompromised && (
-                    <TouchableOpacity
-                      activeOpacity={0.75}
+                      activeOpacity={0.7}
                       onPress={() => {
                         setTargetActionNumber(item);
-                        setRestoreSecurityModalVisible(true);
+                        setDeleteModalVisible(true);
                       }}
-                      style={[styles.smallActionBtn, { backgroundColor: colors.green }]}
+                      className="p-1"
                     >
-                      <Text style={styles.smallActionBtnText}>{t('common.reset', 'Rétablir')}</Text>
+                      <Icon name="solar:trash-bin-trash-linear" color="#94A3B8" size={16} />
                     </TouchableOpacity>
-                  )}
-
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => {
-                      setTargetActionNumber(item);
-                      setDeleteModalVisible(true);
-                    }}
-                    style={styles.cardDeleteBtn}
-                  >
-                    <Icon name="solar:trash-bin-trash-linear" color={themeColors.disabledText} size={16} />
-                  </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            );
-          })}
-        </View>
-      )}
+              );
+            })}
+          </View>
+        )}
 
-        {/* Section Actions de sécurité : Icônes pleines sans fond */}
-        <Text style={[styles.sectionTitle, { color: themeColors.textPrimary, marginTop: 28 }]}>
+        <Text className="font-font-bold text-lg font-extrabold text-slate-900 dark:text-white mt-7 mb-3">
           Actions de sécurité
         </Text>
 
-        <View style={styles.securityActionsColumn}>
-          {/* Signalement de fraude */}
+        <View className="gap-2.5">
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/report')}
-            style={[styles.cleanActionCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
+            className="flex-row items-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-4"
           >
-            <Icon name="heroicons:signal-16-solid" color={colors.orange} size={24} style={{ marginRight: 14 }} />
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.cleanActionTitle, { color: themeColors.textPrimary }]}>
+            <Icon name="heroicons:signal-16-solid" color="#F97316" size={24} className="mr-3.5" />
+            <View className="flex-1">
+              <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">
                 Signaler une fraude
               </Text>
-              <Text style={[styles.cleanActionSub, { color: themeColors.textSecondary }]}>
+              <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Signalez un numéro suspect vous ayant contacté
               </Text>
             </View>
-            <Icon name="solar:alt-arrow-right-linear" color={themeColors.textSecondary} size={18} />
+            <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={18} />
           </TouchableOpacity>
 
-          {/* Répertoire & Insignes de confiance */}
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => router.push('/(app)/contacts')}
-            style={[styles.cleanActionCard, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
+            className="flex-row items-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-4"
           >
-            <Icon name="solar:users-group-two-rounded-bold" color={colors.green} size={24} style={{ marginRight: 14 }} />
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.cleanActionTitle, { color: themeColors.textPrimary }]}>
+            <Icon name="solar:users-group-two-rounded-bold" color="#25B876" size={24} className="mr-3.5" />
+            <View className="flex-1">
+              <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">
                 Répertoire de contacts
               </Text>
-              <Text style={[styles.cleanActionSub, { color: themeColors.textSecondary }]}>
+              <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Consultez vos contacts et leurs insignes de confiance
               </Text>
             </View>
-            <Icon name="solar:alt-arrow-right-linear" color={themeColors.textSecondary} size={18} />
+            <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={18} />
           </TouchableOpacity>
         </View>
       </ScrollView>
 
-      {/* Bouton flottant (FAB) d'ajout de numéro style WhatsApp */}
       <TouchableOpacity
         activeOpacity={0.85}
         onPress={handleOpenAddNumber}
-        style={[
-          styles.fabButton,
-          {
-            bottom: Math.max(insets.bottom + 72, 84),
-            backgroundColor: colors.green,
-          },
-        ]}
+        style={{ bottom: Math.max(insets.bottom + 72, 84) }}
+        className="absolute right-5 w-14 h-14 rounded-full items-center justify-center bg-brand-green shadow-lg z-50"
       >
-        <Icon name="solar:add-circle-bold" color={colors.white} size={28} />
+        <Icon name="solar:add-circle-bold" color="#FFFFFF" size={28} />
       </TouchableOpacity>
 
-      {/* Navigation TabBar basse */}
       <TabBar activeTab="management" />
 
-      {/* ========================================================================= */}
-      {/* FORMULAIRE PLEIN ÉCRAN : AJOUT / MODIFICATION D'UN NUMÉRO */}
-      {/* ========================================================================= */}
       <Modal visible={fullScreenAddVisible} animationType="slide">
-        <View style={[styles.fullScreenContainer, { backgroundColor: colors.green }]}>
+        <View className="flex-1 bg-brand-green">
           <StatusBar style="light" />
 
-          {/* Header plein écran avec retour */}
           <HeaderBar
             title={editingNumberId ? 'Modifier le numéro' : 'Ajouter un numéro'}
             showBack={true}
             onBack={() => setFullScreenAddVisible(false)}
           />
 
-          <View style={[styles.fullScreenContentCard, { backgroundColor: themeColors.background }]}>
-            <Text style={[styles.fullScreenFormTitle, { color: themeColors.textPrimary }]}>
+          <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg rounded-tl-3xl p-6">
+            <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1.5">
               Rattachement d'une ligne SIM
             </Text>
-            <Text style={[styles.fullScreenFormSub, { color: themeColors.textSecondary }]}>
+            <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 leading-5 mb-7">
               Un code de validation OTP par SMS sera envoyé sur ce numéro pour certifier votre détention de la ligne.
             </Text>
 
-            {/* Input avec sélecteur de pays */}
             <View
-              style={[
-                styles.phoneInputRow,
-                {
-                  backgroundColor: themeColors.inputBg,
-                  borderColor: phoneError ? '#EF4444' : themeColors.inputBorder,
-                },
-              ]}
+              className={`flex-row items-center h-13 rounded-xl border px-3 bg-white dark:bg-brand-cardDark ${
+                phoneError ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
+              }`}
             >
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setCountryModalVisible(true)}
-                style={styles.countryTrigger}
+                className="flex-row items-center pr-2.5 border-r border-slate-200 dark:border-slate-700"
               >
-                <CountryFlag countryCode={selectedCountry.code} size={22} style={{ marginRight: 6 }} />
-                <Text style={[styles.countryTriggerCode, { color: themeColors.textPrimary }]}>
+                <CountryFlag countryCode={selectedCountry.code} size={22} className="mr-1.5" />
+                <Text className="font-font-bold text-sm text-slate-900 dark:text-white mr-1">
                   {selectedCountry.callingCode}
                 </Text>
-                <Icon name="solar:alt-arrow-down-linear" color={themeColors.textSecondary} size={16} />
+                <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={16} />
               </TouchableOpacity>
 
               <TextInput
-                style={[
-                  styles.phoneInputField,
-                  { color: themeColors.textPrimary },
-                  Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
-                ]}
+                className="flex-1 px-3 font-font-semibold text-base text-slate-900 dark:text-white"
                 placeholder="6 98 44 43 88"
-                placeholderTextColor={themeColors.inputPlaceholder}
+                placeholderTextColor="#94A3B8"
                 keyboardType="phone-pad"
                 value={newPhoneNumber}
                 onChangeText={handlePhoneChange}
@@ -547,26 +499,23 @@ export default function ManagementScreen() {
             </View>
 
             {phoneError ? (
-              <Text style={styles.errorText}>{phoneError}</Text>
+              <Text className="font-font-medium text-xs text-red-500 mt-1.5 ml-1">{phoneError}</Text>
             ) : null}
 
             <TouchableOpacity
               activeOpacity={0.85}
               disabled={!newPhoneNumber.trim() || isSubmittingPhone}
               onPress={handleSavePhone}
-              style={[
-                styles.primarySubmitBtn,
-                {
-                  backgroundColor: newPhoneNumber.trim()
-                    ? colors.green
-                    : themeColors.disabled,
-                },
-              ]}
+              className={`h-13 rounded-xl items-center justify-center mt-8 ${
+                newPhoneNumber.trim()
+                  ? 'bg-brand-green'
+                  : 'bg-slate-300 dark:bg-slate-700'
+              }`}
             >
               {isSubmittingPhone ? (
-                <ActivityIndicator color={colors.white} />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
-                <Text style={styles.primarySubmitBtnText}>
+                <Text className="font-font-bold text-sm font-bold text-white">
                   {editingNumberId ? 'Valider et envoyer OTP' : 'Continuer'}
                 </Text>
               )}
@@ -575,11 +524,8 @@ export default function ManagementScreen() {
         </View>
       </Modal>
 
-      {/* ========================================================================= */}
-      {/* FORMULAIRE PLEIN ÉCRAN : VALIDATION OTP PAR SMS */}
-      {/* ========================================================================= */}
       <Modal visible={fullScreenOtpVisible} animationType="slide">
-        <View style={[styles.fullScreenContainer, { backgroundColor: colors.green }]}>
+        <View className="flex-1 bg-brand-green">
           <StatusBar style="light" />
 
           <HeaderBar
@@ -588,31 +534,24 @@ export default function ManagementScreen() {
             onBack={() => setFullScreenOtpVisible(false)}
           />
 
-          <View style={[styles.fullScreenContentCard, { backgroundColor: themeColors.background }]}>
-            <Text style={[styles.fullScreenFormTitle, { color: themeColors.textPrimary }]}>
+          <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg rounded-tl-3xl p-6">
+            <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1.5">
               Vérifiez votre numéro
             </Text>
-            <Text style={[styles.fullScreenFormSub, { color: themeColors.textSecondary }]}>
+            <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 leading-5 mb-7">
               Saisissez le code à 6 chiffres envoyé par SMS au{' '}
-              <Text style={{ fontWeight: '700', color: themeColors.textPrimary }}>
+              <Text className="font-bold text-slate-900 dark:text-white">
                 {otpTargetNumber?.callingCode} {otpTargetNumber?.phone}
               </Text>
             </Text>
 
-            {/* Cases OTP contenues strictement dans la largeur de l'écran */}
-            <View style={styles.otpBoxesContainer}>
+            <View className="flex-row justify-center items-center gap-2 my-6 w-full">
               {otpCode.map((digit, idx) => (
                 <TextInput
                   key={idx}
-                  style={[
-                    styles.otpBoxResponsive,
-                    {
-                      backgroundColor: themeColors.inputBg,
-                      borderColor: digit ? colors.green : themeColors.inputBorder,
-                      color: themeColors.textPrimary,
-                    },
-                    Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
-                  ]}
+                  className={`w-11 h-13 rounded-xl border-2 text-center font-font-bold text-xl font-extrabold bg-white dark:bg-brand-cardDark text-slate-900 dark:text-white ${
+                    digit ? 'border-brand-green' : 'border-slate-200 dark:border-slate-700'
+                  }`}
                   maxLength={1}
                   keyboardType="number-pad"
                   value={digit}
@@ -622,15 +561,14 @@ export default function ManagementScreen() {
               ))}
             </View>
 
-            {/* Minuteur & Renvoi */}
-            <View style={styles.resendRow}>
+            <View className="items-center mb-2.5">
               {otpTimer > 0 ? (
-                <Text style={[styles.timerText, { color: themeColors.textSecondary }]}>
+                <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
                   Renvoyer le code dans {otpTimer}s
                 </Text>
               ) : (
                 <TouchableOpacity onPress={() => setOtpTimer(60)}>
-                  <Text style={[styles.resendBtnText, { color: colors.green }]}>
+                  <Text className="font-font-bold text-xs font-bold text-brand-green">
                     Renvoyer un nouveau code
                   </Text>
                 </TouchableOpacity>
@@ -641,83 +579,76 @@ export default function ManagementScreen() {
               activeOpacity={0.85}
               disabled={isVerifyingOtp || otpCode.some((c) => c === '')}
               onPress={() => handleConfirmOtp()}
-              style={[
-                styles.primarySubmitBtn,
-                {
-                  backgroundColor: otpCode.every((c) => c !== '')
-                    ? colors.green
-                    : themeColors.disabled,
-                },
-              ]}
+              className={`h-13 rounded-xl items-center justify-center mt-8 ${
+                otpCode.every((c) => c !== '')
+                  ? 'bg-brand-green'
+                  : 'bg-slate-300 dark:bg-slate-700'
+              }`}
             >
               {isVerifyingOtp ? (
-                <ActivityIndicator color={colors.white} />
+                <ActivityIndicator color="#FFFFFF" />
               ) : (
-                <Text style={styles.primarySubmitBtnText}>Confirmer le numéro</Text>
+                <Text className="font-font-bold text-sm font-bold text-white">Confirmer le numéro</Text>
               )}
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
-      {/* ========================================================================= */}
-      {/* MODALE DE SÉCURITÉ : Rétablir un numéro compromis */}
-      {/* ========================================================================= */}
       <Modal visible={restoreSecurityModalVisible} transparent animationType="fade">
-        <View style={styles.modalBackdrop}>
-          <View style={[styles.confirmCard, { backgroundColor: themeColors.cardBg }]}>
-            <Icon name="solar:shield-check-bold" color={colors.green} size={42} style={{ alignSelf: 'center', marginBottom: 12 }} />
-            <Text style={[styles.confirmTitle, { color: themeColors.textPrimary }]}>
+        <View className="flex-1 bg-black/60 justify-center items-center">
+          <View className="mx-6 rounded-3xl p-6 w-11/12 bg-white dark:bg-brand-cardDark">
+            <Icon name="solar:shield-check-bold" color="#25B876" size={42} className="self-center mb-3" />
+            <Text className="font-font-bold text-lg font-extrabold text-slate-900 dark:text-white text-center mb-2">
               Rétablir la sécurité de la ligne ?
             </Text>
-            <Text style={[styles.confirmSub, { color: themeColors.textSecondary }]}>
+            <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 text-center leading-5 mb-5">
               Confirmez que vous avez repris le contrôle total de la ligne {targetActionNumber?.callingCode} {targetActionNumber?.phone}.
             </Text>
 
-            <View style={styles.confirmButtonsRow}>
+            <View className="flex-row gap-3">
               <TouchableOpacity
                 onPress={() => setRestoreSecurityModalVisible(false)}
-                style={[styles.cancelBtn, { borderColor: themeColors.inputBorder }]}
+                className="flex-1 h-12 rounded-xl border border-slate-200 dark:border-slate-700 items-center justify-center"
               >
-                <Text style={[styles.cancelBtnText, { color: themeColors.textPrimary }]}>Annuler</Text>
+                <Text className="font-font-bold text-sm text-slate-900 dark:text-white">Annuler</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={handleRestoreSecurity}
-                style={[styles.confirmSaveBtn, { backgroundColor: colors.green }]}
+                className="flex-1 h-12 rounded-xl bg-brand-green items-center justify-center"
               >
-                <Text style={styles.confirmSaveBtnText}>Rétablir</Text>
+                <Text className="font-font-bold text-sm font-bold text-white">Rétablir</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
 
-      {/* MODALE DE CONFIRMATION DE SUPPRESSION */}
       <Modal visible={deleteModalVisible} transparent animationType="fade">
-        <View style={styles.modalBackdrop}>
-          <View style={[styles.confirmCard, { backgroundColor: themeColors.cardBg }]}>
-            <Icon name="solar:trash-bin-trash-bold" color="#EF4444" size={40} style={{ alignSelf: 'center', marginBottom: 12 }} />
-            <Text style={[styles.confirmTitle, { color: themeColors.textPrimary }]}>
+        <View className="flex-1 bg-black/60 justify-center items-center">
+          <View className="mx-6 rounded-3xl p-6 w-11/12 bg-white dark:bg-brand-cardDark">
+            <Icon name="solar:trash-bin-trash-bold" color="#EF4444" size={40} className="self-center mb-3" />
+            <Text className="font-font-bold text-lg font-extrabold text-slate-900 dark:text-white text-center mb-2">
               Supprimer cette ligne ?
             </Text>
-            <Text style={[styles.confirmSub, { color: themeColors.textSecondary }]}>
+            <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 text-center leading-5 mb-5">
               Le numéro {targetActionNumber?.callingCode} {targetActionNumber?.phone} ne sera plus surveillé au titre de votre compte.
             </Text>
 
-            <View style={styles.confirmButtonsRow}>
+            <View className="flex-row gap-3">
               <TouchableOpacity
                 onPress={() => setDeleteModalVisible(false)}
-                style={[styles.cancelBtn, { borderColor: themeColors.inputBorder }]}
+                className="flex-1 h-12 rounded-xl border border-slate-200 dark:border-slate-700 items-center justify-center"
               >
-                <Text style={[styles.cancelBtnText, { color: themeColors.textPrimary }]}>Annuler</Text>
+                <Text className="font-font-bold text-sm text-slate-900 dark:text-white">Annuler</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={handleConfirmDelete}
-                style={[styles.confirmDeleteBtn, { backgroundColor: '#EF4444' }]}
+                className="flex-1 h-12 rounded-xl bg-red-500 items-center justify-center"
               >
-                <Text style={styles.confirmDeleteBtnText}>Supprimer</Text>
+                <Text className="font-font-bold text-sm font-bold text-white">Supprimer</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -733,322 +664,3 @@ export default function ManagementScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollBody: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-  },
-  topSectionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(18),
-    fontWeight: '800',
-  },
-  sectionSub: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-    marginTop: 2,
-  },
-  addTopBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 12,
-  },
-  addTopBtnText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(13),
-    fontWeight: '700',
-    color: colors.white,
-  },
-  gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    rowGap: 12,
-  },
-  gridCard: {
-    width: '48.5%',
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 12,
-    justifyContent: 'space-between',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  cardHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  operatorText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(12),
-    fontWeight: '700',
-  },
-  cardMenuBtn: {
-    padding: 2,
-  },
-  cardNumberText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '700',
-    marginBottom: 8,
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  statusText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(11),
-    fontWeight: '700',
-  },
-  bottomActionsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 8,
-    borderTopWidth: 1,
-  },
-  smallActionBtn: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  smallActionBtnText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(10),
-    fontWeight: '700',
-    color: colors.white,
-  },
-  smallActionOutlineBtn: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  smallActionOutlineBtnText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(10),
-    fontWeight: '700',
-  },
-  cardDeleteBtn: {
-    padding: 4,
-  },
-  securityActionsColumn: {
-    gap: 10,
-    marginTop: 12,
-  },
-  cleanActionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 16,
-  },
-  cleanActionTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(14),
-    fontWeight: '700',
-  },
-  cleanActionSub: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(12),
-    marginTop: 2,
-  },
-  fullScreenContainer: {
-    flex: 1,
-  },
-  fullScreenContentCard: {
-    flex: 1,
-    borderTopLeftRadius: 36,
-    borderTopRightRadius: 0,
-    padding: 24,
-  },
-  fullScreenFormTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(20),
-    fontWeight: '800',
-    marginBottom: 6,
-  },
-  fullScreenFormSub: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(13),
-    lineHeight: 20,
-    marginBottom: 28,
-  },
-  phoneInputRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 54,
-    borderRadius: 14,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-  },
-  countryTrigger: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingRight: 10,
-    borderRightWidth: 1,
-    borderRightColor: '#E2E8F0',
-  },
-  countryTriggerCode: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(14),
-    marginRight: 4,
-  },
-  phoneInputField: {
-    flex: 1,
-    paddingHorizontal: 12,
-    fontFamily: fonts.semiBold,
-    fontSize: scaleFont(15),
-  },
-  errorText: {
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(12),
-    color: '#EF4444',
-    marginTop: 6,
-    marginLeft: 4,
-  },
-  primarySubmitBtn: {
-    height: 54,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 32,
-  },
-  primarySubmitBtnText: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(15),
-    fontWeight: '700',
-    color: colors.white,
-  },
-  otpBoxesContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 8,
-    marginVertical: 24,
-    width: '100%',
-  },
-  otpBoxResponsive: {
-    width: 44,
-    height: 52,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    textAlign: 'center',
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(20),
-    fontWeight: '800',
-  },
-  resendRow: {
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  timerText: {
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(13),
-  },
-  resendBtnText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(13),
-    fontWeight: '700',
-  },
-  modalBackdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  confirmCard: {
-    marginHorizontal: 24,
-    borderRadius: 24,
-    padding: 24,
-    width: '88%',
-  },
-  confirmTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(18),
-    fontWeight: '800',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  confirmSub: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(13),
-    textAlign: 'center',
-    lineHeight: 19,
-    marginBottom: 20,
-  },
-  confirmButtonsRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  cancelBtn: {
-    flex: 1,
-    height: 48,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cancelBtnText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(14),
-  },
-  confirmSaveBtn: {
-    flex: 1,
-    height: 48,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  confirmSaveBtnText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(14),
-    color: colors.white,
-  },
-  confirmDeleteBtn: {
-    flex: 1,
-    height: 48,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  confirmDeleteBtnText: {
-    fontFamily: fonts.bold,
-    fontSize: scaleFont(14),
-    color: colors.white,
-  },
-  fabButton: {
-    position: 'absolute',
-    right: 20,
-    width: 58,
-    height: 58,
-    borderRadius: 29,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 8,
-    zIndex: 99,
-  },
-});
