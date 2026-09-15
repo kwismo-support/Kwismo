@@ -12,6 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { Input } from '@/shared/ui/Input';
+import { Button } from '@/shared/ui/Button';
 import { HeaderBar } from '@/shared/components/HeaderBar';
 import { CountrySelectInput } from '@/shared/components/CountrySelectInput';
 import { ProfilePhotoPickerModal } from '@/shared/components/ProfilePhotoPickerModal';
@@ -131,21 +132,14 @@ export default function EditProfileScreen() {
           />
         </View>
 
-        <TouchableOpacity
-          activeOpacity={0.85}
-          disabled={isSaving}
+        <Button
+          title={t('common.saveChanges', 'Enregistrer les modifications')}
           onPress={handleSave}
-          className="h-13 rounded-2xl items-center justify-center bg-brand-orange mt-8"
-          style={{ height: 52 }}
-        >
-          {isSaving ? (
-            <ActivityIndicator color={colors.white} />
-          ) : (
-            <Text className="font-bold text-base text-white">
-              {t('common.saveChanges', 'Enregistrer les modifications')}
-            </Text>
-          )}
-        </TouchableOpacity>
+          loading={isSaving}
+          variant="primary"
+          size="md"
+          className="mt-8"
+        />
       </ScrollView>
 
       <ProfilePhotoPickerModal
