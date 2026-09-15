@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Modal,
   TouchableOpacity,
   TextInput,
@@ -14,12 +13,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { parsePhoneNumberFromString, getCountryCallingCode, CountryCode } from 'libphonenumber-js/min';
 import countries from 'i18n-iso-countries';
-import { Icon } from '../ui/Icon';
-import { useAppTheme } from '../hooks/useAppTheme';
-import { CountryItem } from './CountryPickerModal';
-import { getDeviceContacts, RawContact } from '../lib/contactsService';
-import { colors, fonts } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
+import { Icon } from '@/shared/ui/Icon';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { CountryItem } from '@/shared/components/CountryPickerModal';
+import { getDeviceContacts, RawContact } from '@/shared/lib/contactsService';
 
 interface ContactPickerModalProps {
   visible: boolean;
@@ -111,46 +108,29 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
       transparent={true}
       onRequestClose={onClose}
     >
-      <View style={styles.modalOverlay}>
+      <View className="flex-1 bg-black/60 justify-end">
         <View
-          style={[
-            styles.sheetContainer,
-            {
-              backgroundColor: themeColors.background,
-              paddingTop: 16,
-              paddingBottom: Math.max(insets.bottom + 16, 24),
-            },
-          ]}
+          className="h-[80%] bg-white dark:bg-brand-darkBg rounded-t-3xl px-5 pt-4"
+          style={{ paddingBottom: Math.max(insets.bottom + 16, 24) }}
         >
-          <View style={styles.headerRow}>
-            <Text style={[styles.modalTitle, { color: themeColors.textPrimary }]}>
+          <View className="flex-row items-center justify-between mb-4">
+            <Text className="font-montserrat-bold text-xl text-slate-900 dark:text-white">
               {t('common.selectFromContacts', 'Choisir dans mes contacts')}
             </Text>
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={onClose}
-              style={styles.closeBtn}
+              className="p-1"
             >
               <Icon name="solar:close-circle-bold" color={themeColors.textSecondary} size={26} />
             </TouchableOpacity>
           </View>
 
-          <View
-            style={[
-              styles.searchBar,
-              {
-                backgroundColor: themeColors.cardBg,
-                borderColor: themeColors.inputBorder,
-              },
-            ]}
-          >
-            <Icon name="solar:magnifer-linear" color={themeColors.inputPlaceholder} size={20} style={{ marginRight: 10 }} />
+          <View className="flex-row items-center h-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-brand-cardDark px-3.5 mb-3.5">
+            <Icon name="solar:magnifer-linear" color={themeColors.inputPlaceholder} size={20} className="mr-2.5" />
             <TextInput
-              style={[
-                styles.searchInput,
-                { color: themeColors.textPrimary },
-                Platform.OS === 'web' ? ({ outline: 'none' } as any) : {},
-              ]}
+              style={Platform.OS === 'web' ? ({ outline: 'none' } as any) : {}}
+              className="flex-1 font-medium text-sm text-slate-900 dark:text-white h-full"
               placeholder={t('common.search')}
               placeholderTextColor={themeColors.inputPlaceholder}
               value={search}
@@ -164,19 +144,19 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
           </View>
 
           {loading ? (
-            <View style={styles.centerBox}>
-              <ActivityIndicator color={colors.green} size="large" />
+            <View className="flex-1 items-center justify-center p-6">
+              <ActivityIndicator color="#25B46E" size="large" />
             </View>
           ) : permissionDenied ? (
-            <View style={styles.centerBox}>
-              <Icon name="solar:shield-warning-bold" color={colors.orange} size={48} style={{ marginBottom: 12 }} />
-              <Text style={[styles.permissionText, { color: themeColors.textPrimary }]}>
+            <View className="flex-1 items-center justify-center p-6">
+              <Icon name="solar:shield-warning-bold" color="#FF9900" size={48} className="mb-3" />
+              <Text className="font-medium text-sm text-slate-900 dark:text-white text-center">
                 {t('common.permissionContactsDenied', "Permission d'accès aux contacts refusée.")}
               </Text>
             </View>
           ) : filtered.length === 0 ? (
-            <View style={styles.centerBox}>
-              <Text style={[styles.emptyText, { color: themeColors.textSecondary }]}>
+            <View className="flex-1 items-center justify-center p-6">
+              <Text className="font-medium text-sm text-slate-500 dark:text-slate-400">
                 {t('common.noContactsFound', 'Aucun contact trouvé')}
               </Text>
             </View>
@@ -185,27 +165,21 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
               data={filtered}
               keyExtractor={(item) => item.id}
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.listContent}
+              contentContainerStyle={{ paddingVertical: 6 }}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => handleSelectContact(item)}
-                  style={[
-                    styles.contactItem,
-                    {
-                      backgroundColor: themeColors.cardBg,
-                      borderColor: themeColors.inputBorder,
-                    },
-                  ]}
+                  className="flex-row items-center p-3 rounded-xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-brand-cardDark mb-2"
                 >
-                  <View style={styles.avatar}>
-                    <Text style={styles.avatarText}>{item.name[0] || '?'}</Text>
+                  <View className="w-10 h-10 rounded-full bg-brand-green items-center justify-center mr-3">
+                    <Text className="font-bold text-base text-white">{item.name[0] || '?'}</Text>
                   </View>
-                  <View style={styles.info}>
-                    <Text style={[styles.name, { color: themeColors.textPrimary }]}>
+                  <View className="flex-1">
+                    <Text className="font-caption text-sm text-slate-900 dark:text-white mb-0.5">
                       {item.name}
                     </Text>
-                    <Text style={[styles.phone, { color: themeColors.textSecondary }]}>
+                    <Text className="font-regular text-xs text-slate-500 dark:text-slate-400">
                       {item.phone}
                     </Text>
                   </View>
@@ -220,104 +194,4 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
-    justifyContent: 'flex-end',
-  },
-  sheetContainer: {
-    height: '80%',
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    paddingHorizontal: 20,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  modalTitle: {
-    fontFamily: fonts.h6,
-    fontSize: 20,
-    lineHeight: 28,
-    fontWeight: '700',
-  },
-  closeBtn: {
-    padding: 4,
-  },
-  searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 48,
-    borderRadius: 14,
-    borderWidth: 1,
-    paddingHorizontal: 14,
-    marginBottom: 14,
-  },
-  searchInput: {
-    flex: 1,
-    fontFamily: fonts.bodyMedium,
-    fontSize: 14,
-    lineHeight: 20,
-    height: '100%',
-  },
-  centerBox: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
-  },
-  permissionText: {
-    fontFamily: fonts.bodyMedium,
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: 'center',
-  },
-  emptyText: {
-    fontFamily: fonts.bodyMedium,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  listContent: {
-    paddingVertical: 6,
-  },
-  contactItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 14,
-    borderWidth: 1,
-    marginBottom: 8,
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.green,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  avatarText: {
-    fontFamily: fonts.bold,
-    fontSize: 16,
-    lineHeight: 27,
-    color: colors.white,
-  },
-  info: {
-    flex: 1,
-  },
-  name: {
-    fontFamily: fonts.caption,
-    fontSize: 14,
-    lineHeight: 21,
-    marginBottom: 2,
-  },
-  phone: {
-    fontFamily: fonts.bodySmall,
-    fontSize: 12,
-    lineHeight: 16,
-  },
-});
+export default ContactPickerModal;

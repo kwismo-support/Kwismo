@@ -5,15 +5,13 @@ import {
   TextInput,
   TextInputProps,
   TouchableOpacity,
-  StyleSheet,
   ViewStyle,
   TextStyle,
   Platform,
 } from 'react-native';
-import { Icon } from './Icon';
-import { useAppTheme } from '../hooks/useAppTheme';
-import { fonts, colors } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
+import { Icon } from '@/shared/ui/Icon';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { colors } from '@/styles/tokens';
 
 export interface InputProps extends Omit<TextInputProps, 'style'> {
   label?: string;
@@ -36,6 +34,7 @@ export const Input: React.FC<InputProps> = ({
   iconLeft,
   rightIcon,
   containerStyle,
+  className = '',
   inputStyle,
   hint,
   placeholder,
@@ -46,7 +45,7 @@ export const Input: React.FC<InputProps> = ({
   secureTextEntry,
   ...rest
 }) => {
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { colors: themeColors } = useAppTheme();
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
@@ -62,14 +61,10 @@ export const Input: React.FC<InputProps> = ({
     onBlur?.(e);
   };
 
-  let borderColor = themeColors.inputBorder;
   let activeIconColor = themeColors.inputPlaceholder;
-
   if (error) {
-    borderColor = '#EF4444';
     activeIconColor = '#EF4444';
   } else if (isFocused) {
-    borderColor = colors.green;
     activeIconColor = colors.green;
   }
 
@@ -86,12 +81,10 @@ export const Input: React.FC<InputProps> = ({
         fontSize: 14,
         lineHeight: 20,
         letterSpacing: 0,
-        fontWeight: 'normal',
       };
 
-  // Render leftIcon or iconLeft with dynamic focus/error color
   const renderedLeftIcon = iconLeft ? (
-    <Icon name={iconLeft} size={20} color={activeIconColor} style={{ marginRight: 10 }} />
+    <Icon name={iconLeft} size={20} color={activeIconColor} className="mr-2.5" />
   ) : React.isValidElement(leftIcon) ? (
     React.cloneElement(leftIcon as React.ReactElement<any>, {
       color: activeIconColor,
@@ -101,37 +94,31 @@ export const Input: React.FC<InputProps> = ({
   );
 
   return (
-    <View style={[styles.wrapper, containerStyle]}>
+    <View style={containerStyle} className={`w-full mb-4 ${className}`}>
       {label ? (
-        <Text style={[styles.label, { color: themeColors.textPrimary }]}>
+        <Text className="font-caption text-sm text-slate-800 dark:text-slate-200 mb-1.5">
           {label}
         </Text>
       ) : null}
 
       <View
-        style={[
-          styles.inputContainer,
-          {
-            backgroundColor: themeColors.cardBg,
-            borderColor,
-            borderWidth: isFocused || error ? 1.5 : 1,
-          },
-        ]}
+        className={`flex-row items-center h-13 rounded-xl px-4 bg-white dark:bg-brand-cardDark border ${
+          error
+            ? 'border-red-500 border-2'
+            : isFocused
+            ? 'border-brand-green border-2'
+            : 'border-slate-200 dark:border-slate-700'
+        }`}
       >
-        {renderedLeftIcon ? <View style={styles.leftIconWrapper}>{renderedLeftIcon}</View> : null}
+        {renderedLeftIcon ? <View className="mr-3 items-center justify-center">{renderedLeftIcon}</View> : null}
 
         <TextInput
           style={[
-            styles.textInput,
-            {
-              color: themeColors.textPrimary,
-              fontFamily: fonts.medium,
-              backgroundColor: 'transparent',
-            },
             Platform.OS === 'web' ? ({ outline: 'none', outlineStyle: 'none' } as any) : {},
             textInputDynamicStyle,
             inputStyle,
           ]}
+          className="flex-1 h-full font-medium text-slate-900 dark:text-white bg-transparent py-0"
           selectionColor={colors.green}
           cursorColor={colors.green}
           placeholder={placeholder}
@@ -150,7 +137,7 @@ export const Input: React.FC<InputProps> = ({
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-            style={styles.rightIconButton}
+            className="p-1.5 ml-2 items-center justify-center"
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             {isPasswordVisible ? (
@@ -160,17 +147,17 @@ export const Input: React.FC<InputProps> = ({
             )}
           </TouchableOpacity>
         ) : rightIcon ? (
-          <View style={styles.rightIconWrapper}>{rightIcon}</View>
+          <View className="ml-2 items-center justify-center">{rightIcon}</View>
         ) : null}
       </View>
 
       {error ? (
-        <View style={styles.errorRow}>
+        <View className="flex-row items-center mt-1.5 px-1 gap-1.5">
           <Icon name="solar:danger-circle-bold" color="#EF4444" size={14} />
-          <Text style={styles.errorText}>{error}</Text>
+          <Text className="font-medium text-xs text-red-500 flex-1 leading-4">{error}</Text>
         </View>
       ) : hint ? (
-        <Text style={[styles.hintText, { color: themeColors.textSecondary }]}>
+        <Text className="font-regular text-xs text-slate-500 dark:text-slate-400 mt-1 px-1">
           {hint}
         </Text>
       ) : null}
@@ -179,71 +166,3 @@ export const Input: React.FC<InputProps> = ({
 };
 
 export default Input;
-
-const styles = StyleSheet.create({
-  wrapper: {
-    width: '100%',
-    marginBottom: 16,
-  },
-  label: {
-    fontFamily: fonts.caption,
-    fontSize: 14,
-    lineHeight: 21,
-    marginBottom: 6,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 54,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  leftIconWrapper: {
-    marginRight: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textInput: {
-    flex: 1,
-    height: '100%',
-    fontFamily: fonts.medium,
-    paddingVertical: 0,
-    textAlignVertical: 'center',
-  },
-  rightIconButton: {
-    padding: 6,
-    marginLeft: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  rightIconWrapper: {
-    marginLeft: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  errorRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6,
-    paddingHorizontal: 4,
-    gap: 6,
-  },
-  errorText: {
-    fontFamily: fonts.medium,
-    fontSize: 12,
-    color: '#EF4444',
-    flex: 1,
-    lineHeight: 16,
-  },
-  hintText: {
-    fontFamily: fonts.regular,
-    fontSize: 12,
-    marginTop: 4,
-    paddingHorizontal: 4,
-  },
-});

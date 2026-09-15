@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import i18n from '../../locales/i18n';
-import { colors, fonts } from '../../styles/tokens';
+import { View, Text, TouchableOpacity } from 'react-native';
+import i18n from '@/locales/i18n';
 
 interface LanguageSwitcherProps {
   darkTheme?: boolean;
@@ -17,25 +16,27 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ darkTheme = 
 
   return (
     <View
-      style={[
-        styles.container,
-        darkTheme ? styles.containerDark : styles.containerLight,
-      ]}
+      className={`flex-row items-center rounded-full px-1.5 py-1 border-1.5 ${
+        darkTheme
+          ? 'bg-slate-900/75 border-slate-700/60 dark:bg-slate-900/75'
+          : 'bg-white/90 border-slate-300 dark:bg-slate-800/90'
+      }`}
     >
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => toggleLanguage('fr')}
-        style={[
-          styles.btn,
-          currentLang === 'fr' && styles.btnActive,
-        ]}
+        className={`px-3 py-1 rounded-full ${
+          currentLang === 'fr' ? 'bg-brand-orange' : 'bg-transparent'
+        }`}
       >
         <Text
-          style={[
-            styles.text,
-            darkTheme ? styles.textDark : styles.textLight,
-            currentLang === 'fr' && styles.textActive,
-          ]}
+          className={`font-caption text-sm font-semibold ${
+            currentLang === 'fr'
+              ? 'text-white'
+              : darkTheme
+              ? 'text-white'
+              : 'text-slate-900 dark:text-white'
+          }`}
         >
           FR
         </Text>
@@ -44,17 +45,18 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ darkTheme = 
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => toggleLanguage('en')}
-        style={[
-          styles.btn,
-          currentLang === 'en' && styles.btnActive,
-        ]}
+        className={`px-3 py-1 rounded-full ${
+          currentLang === 'en' ? 'bg-brand-orange' : 'bg-transparent'
+        }`}
       >
         <Text
-          style={[
-            styles.text,
-            darkTheme ? styles.textDark : styles.textLight,
-            currentLang === 'en' && styles.textActive,
-          ]}
+          className={`font-caption text-sm font-semibold ${
+            currentLang === 'en'
+              ? 'text-white'
+              : darkTheme
+              ? 'text-white'
+              : 'text-slate-900 dark:text-white'
+          }`}
         >
           EN
         </Text>
@@ -63,55 +65,4 @@ export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ darkTheme = 
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 22,
-    paddingHorizontal: 6,
-    paddingVertical: 4,
-    borderWidth: 1.5,
-  },
-  containerDark: {
-    backgroundColor: 'rgba(15, 23, 42, 0.75)',
-    borderColor: 'rgba(255, 255, 255, 0.35)',
-  },
-  containerLight: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderColor: 'rgba(22, 30, 51, 0.25)',
-  },
-  btn: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 16,
-  },
-  btnActive: {
-    backgroundColor: colors.orange,
-  },
-  dividerBar: {
-    width: 1.5,
-    height: 16,
-    marginHorizontal: 2,
-  },
-  dividerDark: {
-    backgroundColor: 'rgba(255, 255, 255, 0.55)',
-  },
-  dividerLight: {
-    backgroundColor: 'rgba(22, 30, 51, 0.35)',
-  },
-  text: {
-    fontFamily: fonts.caption,
-    fontSize: 14,
-    lineHeight: 21,
-    fontWeight: '600',
-  },
-  textDark: {
-    color: '#FFFFFF',
-  },
-  textLight: {
-    color: colors.navy,
-  },
-  textActive: {
-    color: '#FFFFFF',
-  },
-});
+export default LanguageSwitcher;

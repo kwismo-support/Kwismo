@@ -1,37 +1,25 @@
 import React from 'react';
-import { View, StyleSheet, Modal as RNModal, TouchableWithoutFeedback } from 'react-native';
+import { View, Modal as RNModal, TouchableWithoutFeedback } from 'react-native';
 
 interface BottomSheetProps {
   visible: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  className?: string;
 }
 
-export const BottomSheet: React.FC<BottomSheetProps> = ({ visible, onClose, children }) => {
+export const BottomSheet: React.FC<BottomSheetProps> = ({ visible, onClose, children, className = '' }) => {
   return (
     <RNModal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay}>
+        <View className="flex-1 bg-black/50 justify-end">
           <TouchableWithoutFeedback>
-            <View style={styles.content}>{children}</View>
+            <View className={`bg-white dark:bg-brand-cardDark rounded-t-3xl p-5 min-h-50 border-t border-slate-200 dark:border-slate-700/60 ${className}`}>
+              {children}
+            </View>
           </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
     </RNModal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  content: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    minHeight: 200,
-  },
-});

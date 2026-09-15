@@ -1,18 +1,14 @@
-// Composant de pavé numérique PIN 6 chiffres pour la sécurité biométrique et verrouillage
 import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../ui/Icon';
-import { useAppTheme } from '../hooks/useAppTheme';
-import { colors, fonts } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
-import { verifyUserPin, saveUserPin } from '../lib/secureStore';
+import { Icon } from '@/shared/ui/Icon';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { verifyUserPin, saveUserPin } from '@/shared/lib/secureStore';
 
 const PIN_LEN = 6;
 type Mode = 'setup' | 'verify';
@@ -70,7 +66,6 @@ export const PinPad: React.FC<PinPadProps> = ({
       return;
     }
 
-    // Mode 'verify'
     const check = async () => {
       setLoading(true);
       const ok = await verifyUserPin(pin);
@@ -115,59 +110,57 @@ export const PinPad: React.FC<PinPadProps> = ({
       : t('pinPad.verifySub'));
 
   return (
-    <View style={[styles.root, { backgroundColor: themeColors.background }]}>
-      {/* En-tête avec Icône de cadenats unifiée */}
-      <View style={styles.header}>
-        <View style={[styles.iconBox, { backgroundColor: themeColors.inputBg }]}>
-          <Icon name="solar:lock-password-bold" size={32} color={colors.green} />
+    <View className="flex-1 items-center justify-center px-6 pb-6 bg-white dark:bg-brand-darkBg">
+      <View className="items-center mb-6">
+        <View className="w-16 h-16 rounded-full bg-slate-100 dark:bg-brand-cardDark items-center justify-center mb-4">
+          <Icon name="solar:lock-password-bold" size={32} color="#25B46E" />
         </View>
-        <Text style={[styles.title, { color: themeColors.textPrimary }]}>{currentTitle}</Text>
-        <Text style={[styles.subtitle, { color: themeColors.textSecondary }]}>{currentSubtitle}</Text>
+        <Text className="font-headline-bold text-lg font-extrabold text-center mb-1 text-slate-900 dark:text-white">
+          {currentTitle}
+        </Text>
+        <Text className="font-regular text-xs text-center text-slate-500 dark:text-slate-400">
+          {currentSubtitle}
+        </Text>
       </View>
 
-      {/* Indicateur de saisie à 6 points */}
-      <View style={styles.dotsRow}>
+      <View className="flex-row gap-3.5 mb-4">
         {Array.from({ length: PIN_LEN }).map((_, i) => {
           const filled = i < pin.length;
           return (
             <View
               key={i}
-              style={[
-                styles.dot,
-                {
-                  backgroundColor: filled ? colors.green : 'transparent',
-                  borderColor: filled ? colors.green : themeColors.inputBorder,
-                },
-              ]}
+              className={`w-3.5 h-3.5 rounded-full border-2 ${
+                filled
+                  ? 'bg-brand-green border-brand-green'
+                  : 'bg-transparent border-slate-300 dark:border-slate-700'
+              }`}
             />
           );
         })}
       </View>
 
-      {/* Affichage d'erreur avec traduction i18n */}
       {error ? (
-        <Text style={[styles.error, { color: '#EF4444' }]}>{error}</Text>
+        <Text className="font-regular text-xs mb-2 text-center text-red-500">{error}</Text>
       ) : (
-        <View style={styles.errorPlaceholder} />
+        <View className="h-5 mb-2" />
       )}
 
-      {loading && <ActivityIndicator color={colors.green} style={styles.spinner} />}
+      {loading && <ActivityIndicator color="#25B46E" className="mb-3" />}
 
-      {/* Clavier numérique */}
-      <View style={styles.numpad}>
+      <View className="flex-row flex-wrap w-64 justify-center gap-3.5">
         {KEYS.map((k) => {
           if (k === 'bio') {
             return showBiometric && mode === 'verify' ? (
               <TouchableOpacity
                 key="bio"
-                style={styles.key}
+                className="w-17 h-17 rounded-full border border-slate-200 dark:border-slate-700 items-center justify-center"
                 onPress={() => press('bio')}
                 activeOpacity={0.7}
               >
-                <Icon name="solar:fingerprint-bold" size={28} color={colors.green} />
+                <Icon name="solar:fingerprint-bold" size={28} color="#25B46E" />
               </TouchableOpacity>
             ) : (
-              <View key="bio" style={styles.key} />
+              <View key="bio" className="w-17 h-17" />
             );
           }
 
@@ -175,7 +168,7 @@ export const PinPad: React.FC<PinPadProps> = ({
             return (
               <TouchableOpacity
                 key="del"
-                style={styles.key}
+                className="w-17 h-17 rounded-full border border-slate-200 dark:border-slate-700 items-center justify-center"
                 onPress={() => press('del')}
                 activeOpacity={0.7}
               >
@@ -187,20 +180,21 @@ export const PinPad: React.FC<PinPadProps> = ({
           return (
             <TouchableOpacity
               key={k}
-              style={[styles.key, { backgroundColor: themeColors.cardBg, borderColor: themeColors.inputBorder }]}
+              className="w-17 h-17 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark items-center justify-center"
               onPress={() => press(k)}
               activeOpacity={0.7}
             >
-              <Text style={[styles.keyText, { color: themeColors.textPrimary }]}>{k}</Text>
+              <Text className="font-headline-bold text-xl font-bold text-slate-900 dark:text-white">
+                {k}
+              </Text>
             </TouchableOpacity>
           );
         })}
       </View>
 
-      {/* Bouton Annuler */}
       {onCancel ? (
-        <TouchableOpacity style={styles.cancelBtn} onPress={onCancel} activeOpacity={0.7}>
-          <Text style={[styles.cancelText, { color: themeColors.textSecondary }]}>
+        <TouchableOpacity className="mt-6" onPress={onCancel} activeOpacity={0.7}>
+          <Text className="font-headline-bold text-sm font-semibold text-slate-500 dark:text-slate-400">
             {t('common.cancel', 'Annuler')}
           </Text>
         </TouchableOpacity>
@@ -209,88 +203,4 @@ export const PinPad: React.FC<PinPadProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingBottom: 24,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  iconBox: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: scaleFont(18),
-    fontFamily: fonts.headlineBold,
-    fontWeight: '800',
-    textAlign: 'center',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: scaleFont(13),
-    fontFamily: fonts.regular,
-    textAlign: 'center',
-  },
-  dotsRow: {
-    flexDirection: 'row',
-    gap: 14,
-    marginBottom: 16,
-  },
-  dot: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    borderWidth: 2,
-  },
-  error: {
-    fontSize: scaleFont(12),
-    fontFamily: fonts.regular,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  errorPlaceholder: {
-    height: 20,
-    marginBottom: 8,
-  },
-  spinner: {
-    marginBottom: 12,
-  },
-  numpad: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    width: 252,
-    justifyContent: 'center',
-    gap: 14,
-  },
-  key: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  keyText: {
-    fontSize: scaleFont(22),
-    fontFamily: fonts.headlineBold,
-    fontWeight: '700',
-  },
-  cancelBtn: {
-    marginTop: 24,
-  },
-  cancelText: {
-    fontSize: scaleFont(14),
-    fontFamily: fonts.headlineBold,
-    fontWeight: '600',
-  },
-});
+export default PinPad;

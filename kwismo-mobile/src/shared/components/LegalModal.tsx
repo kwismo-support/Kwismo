@@ -3,15 +3,12 @@ import {
   View,
   Text,
   Modal,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Icon } from '../ui/Icon';
-import { useAppTheme } from '../hooks/useAppTheme';
-import { colors, fonts } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
+import { Icon } from '@/shared/ui/Icon';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
 interface LegalModalProps {
   visible: boolean;
@@ -38,26 +35,12 @@ export const LegalModal: React.FC<LegalModalProps> = ({
       onRequestClose={onClose}
     >
       <SafeAreaView
-        style={[
-          styles.container,
-          {
-            backgroundColor: themeColors.background,
-            paddingTop: insets.top,
-          },
-        ]}
+        className="flex-1 bg-white dark:bg-brand-darkBg"
+        style={{ paddingTop: insets.top }}
       >
-        {/* En-tête avec titre et bouton de fermeture à l'extrême haut droit */}
-        <View
-          style={[
-            styles.header,
-            {
-              borderBottomColor: themeColors.inputBorder,
-              backgroundColor: themeColors.cardBg,
-            },
-          ]}
-        >
+        <View className="flex-row items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700/60 bg-white dark:bg-brand-cardDark">
           <Text
-            style={[styles.headerTitle, { color: themeColors.textPrimary }]}
+            className="font-headline-bold text-lg font-bold text-slate-900 dark:text-white flex-1 mr-3"
             numberOfLines={1}
           >
             {title}
@@ -66,7 +49,7 @@ export const LegalModal: React.FC<LegalModalProps> = ({
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={onClose}
-            style={styles.closeButton}
+            className="p-1"
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
             <Icon
@@ -77,26 +60,17 @@ export const LegalModal: React.FC<LegalModalProps> = ({
           </TouchableOpacity>
         </View>
 
-        {/* Zone de contenu prête à accueillir le texte */}
         <ScrollView
-          contentContainerStyle={[
-            styles.scrollContent,
-            { paddingBottom: insets.bottom + 32 },
-          ]}
+          contentContainerStyle={{ padding: 20, paddingBottom: insets.bottom + 32 }}
           showsVerticalScrollIndicator={false}
         >
           {content ? (
-            <Text style={[styles.contentText, { color: themeColors.textPrimary }]}>
+            <Text className="font-regular text-sm leading-6 text-slate-900 dark:text-white">
               {content}
             </Text>
           ) : (
-            <View style={styles.placeholderContainer}>
-              <Text
-                style={[
-                  styles.placeholderText,
-                  { color: themeColors.textSecondary },
-                ]}
-              >
+            <View className="py-5">
+              <Text className="font-medium text-sm leading-6 text-slate-500 dark:text-slate-400">
                 {title}
               </Text>
             </View>
@@ -108,43 +82,3 @@ export const LegalModal: React.FC<LegalModalProps> = ({
 };
 
 export default LegalModal;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-  },
-  headerTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(18),
-    fontWeight: '700',
-    flex: 1,
-    marginRight: 12,
-  },
-  closeButton: {
-    padding: 4,
-  },
-  scrollContent: {
-    padding: 20,
-  },
-  contentText: {
-    fontFamily: fonts.regular,
-    fontSize: scaleFont(14),
-    lineHeight: 22,
-  },
-  placeholderContainer: {
-    paddingVertical: 20,
-  },
-  placeholderText: {
-    fontFamily: fonts.medium,
-    fontSize: scaleFont(14),
-    lineHeight: 22,
-  },
-});

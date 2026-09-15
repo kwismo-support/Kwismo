@@ -1,11 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Icon } from '../ui/Icon';
-import { HeaderActions } from './HeaderActions';
-import { colors, fonts } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
+import { Icon } from '@/shared/ui/Icon';
+import { HeaderActions } from '@/shared/components/HeaderActions';
+import { colors } from '@/styles/tokens';
 
 interface HeaderBarProps {
   title?: string;
@@ -41,45 +40,42 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
 
   return (
     <View
-      style={[
-        styles.container,
-        {
-          backgroundColor,
-          paddingTop: Math.max(insets.top + 8, 18),
-          paddingBottom: isHome ? 75 : 16,
-        },
-      ]}
+      style={{
+        backgroundColor,
+        paddingTop: Math.max(insets.top + 8, 18),
+        paddingBottom: isHome ? 75 : 16,
+      }}
+      className="px-4 pb-4 relative overflow-hidden"
     >
-      {/* Forme / Image de fond décorative en filigrane */}
-      <View style={styles.headerShapeContainer} pointerEvents="none">
-        <View style={styles.decorativeCurveOverlay} />
+      <View className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
+        <View className="absolute -top-10 -right-5 w-55 h-55 rounded-full border-[26px] border-white -rotate-25 scale-x-140" />
       </View>
 
-      <View style={styles.contentRow}>
+      <View className="flex-row items-center justify-between min-h-11">
         {showBack ? (
-          /* Page secondaire : Retour à gauche, Titre au milieu, Actions (sans cloche) à droite */
           <>
-            <View style={[styles.sideColLeft, { width: 40 }]}>
+            <View className="w-10 flex-row items-center justify-start">
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={handleBack}
-                style={styles.backBtn}
+                className="p-1.5 -ml-1"
               >
                 <Icon name="solar:arrow-left-linear" color={textColor} size={24} />
               </TouchableOpacity>
             </View>
 
-            <View style={styles.centerCol}>
+            <View className="flex-1 items-center justify-center">
               <Text
                 numberOfLines={1}
                 ellipsizeMode="tail"
-                style={[styles.screenTitleCenter, { color: textColor }]}
+                style={{ color: textColor }}
+                className="font-montserrat-bold text-lg font-bold text-center"
               >
                 {title}
               </Text>
             </View>
 
-            <View style={[styles.sideColRight, { width: 40 }]}>
+            <View className="w-10 flex-row items-center justify-end">
               <HeaderActions
                 unreadNotificationsCount={unreadNotificationsCount}
                 iconColor={textColor}
@@ -89,19 +85,20 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             </View>
           </>
         ) : (
-          /* Page principale : Titre à gauche, Actions (avec cloche) à droite */
           <>
-            <View style={styles.mainLeftCol}>
+            <View className="flex-1 justify-center">
               {isHome ? (
-                <Text style={[styles.brandTitle, { color: textColor }]}>KWISMO</Text>
+                <Text style={{ color: textColor }} className="font-montserrat-bold text-2xl font-extrabold tracking-wider">
+                  KWISMO
+                </Text>
               ) : (
-                <Text numberOfLines={1} style={[styles.mainPageTitle, { color: textColor }]}>
+                <Text numberOfLines={1} style={{ color: textColor }} className="font-montserrat-bold text-xl font-extrabold">
                   {title}
                 </Text>
               )}
             </View>
 
-            <View style={styles.sideColRight}>
+            <View className="w-18 flex-row items-center justify-end">
               <HeaderActions
                 unreadNotificationsCount={unreadNotificationsCount}
                 iconColor={textColor}
@@ -115,74 +112,3 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-  },
-  contentRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: 44,
-  },
-  sideColLeft: {
-    width: 60,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  sideColRight: {
-    width: 72,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  centerCol: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  mainLeftCol: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  backBtn: {
-    padding: 6,
-    marginLeft: -4,
-  },
-  brandTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(22),
-    fontWeight: '800',
-    letterSpacing: 1.5,
-  },
-  mainPageTitle: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(20),
-    fontWeight: '800',
-  },
-  screenTitleCenter: {
-    fontFamily: fonts.headlineBold,
-    fontSize: scaleFont(18),
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  headerShapeContainer: {
-    ...StyleSheet.absoluteFill,
-    overflow: 'hidden',
-    opacity: 0.18,
-  },
-  decorativeCurveOverlay: {
-    position: 'absolute',
-    top: -40,
-    right: -20,
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    borderWidth: 26,
-    borderColor: '#FFFFFF',
-    transform: [{ rotate: '-25deg' }, { scaleX: 1.4 }],
-  },
-});

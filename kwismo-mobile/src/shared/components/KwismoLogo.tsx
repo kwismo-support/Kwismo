@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, Image, StyleSheet, ImageSourcePropType } from 'react-native';
+import { View, Image, ImageSourcePropType } from 'react-native';
 
 interface KwismoLogoProps {
   size?: number;
   variant?: 'default' | 'white';
 }
 
-const logoWhite = require('../../../assets/logo-white.png');
-const logoDefault = require('../../../assets/logo.png');
+const logoWhite = require('@/../assets/logo-white.png');
+const logoDefault = require('@/../assets/logo.png');
 
 export const KwismoLogo: React.FC<KwismoLogoProps> = ({
   size = 140,
@@ -16,7 +16,7 @@ export const KwismoLogo: React.FC<KwismoLogoProps> = ({
   const logoSource: ImageSourcePropType = variant === 'white' ? logoWhite : logoDefault;
 
   return (
-    <View style={[styles.container, { width: size * 1.6, height: size }]}>
+    <View className="align-center justify-center z-10" style={{ width: size * 1.6, height: size }}>
       <Image
         source={logoSource}
         style={{ width: size * 1.6, height: size }}
@@ -26,11 +26,4 @@ export const KwismoLogo: React.FC<KwismoLogoProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10,
-  },
-});
-
+export default KwismoLogo;

@@ -1,13 +1,10 @@
-// Écran de déverrouillage sécurisé par Biométrie et/ou PIN 6 chiffres
 import React, { useEffect, useCallback, useState } from 'react';
-import { View, Text, StatusBar, StyleSheet, Platform } from 'react-native';
+import { View, Text, StatusBar, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useAppTheme } from '../hooks/useAppTheme';
-import { useBiometricLock } from '../hooks/useBiometricLock';
-import { PinPad } from './PinPad';
-import { colors, fonts } from '../../styles/tokens';
-import { scaleFont } from '../lib/responsive';
-import { useAuthStore } from '../store/authStore';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { useBiometricLock } from '@/shared/hooks/useBiometricLock';
+import { PinPad } from '@/shared/components/PinPad';
+import { useAuthStore } from '@/shared/store/authStore';
 
 interface LockScreenProps {
   onUnlock: () => void;
@@ -16,7 +13,7 @@ interface LockScreenProps {
 
 export const LockScreen: React.FC<LockScreenProps> = ({ onUnlock, biometricEnabled = false }) => {
   const { t } = useTranslation();
-  const { colors: themeColors } = useAppTheme();
+  const { isDark, colors: themeColors } = useAppTheme();
   const { user } = useAuthStore();
   const { isAvailable: biometricAvailable, authenticate } = useBiometricLock();
   const [biometricPending, setBiometricPending] = useState(false);
@@ -45,21 +42,21 @@ export const LockScreen: React.FC<LockScreenProps> = ({ onUnlock, biometricEnabl
     .toUpperCase();
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-      <StatusBar barStyle="light-content" backgroundColor={themeColors.background} />
+    <View className="flex-1 bg-white dark:bg-brand-darkBg">
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
 
-      {/* Profil de l'utilisateur en haut */}
-      <View style={styles.userRow}>
-        <View style={[styles.avatar, { backgroundColor: colors.green }]}>
-          <Text style={styles.avatarInitials}>{initials}</Text>
+      <View className="items-center pt-15 pb-2">
+        <View className="w-16 h-16 rounded-full bg-brand-green items-center justify-center mb-2.5">
+          <Text className="text-xl font-headline-bold text-white font-bold">{initials}</Text>
         </View>
-        <Text style={[styles.appName, { color: themeColors.textSecondary }]}>KWISMO SECURITY</Text>
-        <Text style={[styles.userName, { color: themeColors.textPrimary }]}>
+        <Text className="text-2xs font-regular tracking-widest text-slate-400 dark:text-slate-400 mb-0.5">
+          KWISMO SECURITY
+        </Text>
+        <Text className="text-base font-headline-bold font-bold text-slate-900 dark:text-white">
           {displayName}
         </Text>
       </View>
 
-      {/* Pavé numérique PIN */}
       <PinPad
         mode="verify"
         onSuccess={onUnlock}
@@ -70,38 +67,4 @@ export const LockScreen: React.FC<LockScreenProps> = ({ onUnlock, biometricEnabl
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  userRow: {
-    alignItems: 'center',
-    paddingTop: 60,
-    paddingBottom: 8,
-  },
-  avatar: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-  avatarInitials: {
-    fontSize: scaleFont(22),
-    fontFamily: fonts.headlineBold,
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-  },
-  appName: {
-    fontSize: scaleFont(11),
-    fontFamily: fonts.regular,
-    letterSpacing: 1,
-    marginBottom: 2,
-  },
-  userName: {
-    fontSize: scaleFont(16),
-    fontFamily: fonts.headlineBold,
-    fontWeight: '700',
-  },
-});
+export default LockScreen;

@@ -1,12 +1,13 @@
 import React from 'react';
 import { ViewStyle } from 'react-native';
-import { Skeleton } from '../ui/Skeleton';
+import { Skeleton } from '@/shared/ui/Skeleton';
 
 interface SkeletonItemProps {
   width?: number | string;
   height?: number;
   borderRadius?: number;
   style?: ViewStyle;
+  className?: string;
 }
 
 export const SkeletonItem: React.FC<SkeletonItemProps> = ({
@@ -14,6 +15,7 @@ export const SkeletonItem: React.FC<SkeletonItemProps> = ({
   height = 20,
   borderRadius = 6,
   style,
+  className = '',
 }) => {
   return (
     <Skeleton
@@ -21,6 +23,7 @@ export const SkeletonItem: React.FC<SkeletonItemProps> = ({
       height={height}
       borderRadius={borderRadius}
       style={style}
+      className={className}
     />
   );
 };

@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useAppTheme } from '../hooks/useAppTheme';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
 export interface AuthGradientBackgroundProps {
   children?: React.ReactNode;
@@ -52,29 +52,28 @@ export const AuthGradientBackground: React.FC<AuthGradientBackgroundProps> = ({
   variant = 'default',
 }) => {
   const { isDark } = useAppTheme();
-  const colors = isDark ? DARK_AUTH_GRADIENT_COLORS : LIGHT_AUTH_GRADIENT_COLORS;
-  const containerBg = isDark ? '#0F1626' : '#FFFFFF';
+  const gradientColors = isDark ? DARK_AUTH_GRADIENT_COLORS : LIGHT_AUTH_GRADIENT_COLORS;
 
   if (variant === 'mirror') {
     return (
-      <View style={{ flex: 1, width: '100%', height: '100%', backgroundColor: containerBg, position: 'relative' }}>
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <View style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '42%' }}>
+      <View className="flex-1 w-full h-full bg-white dark:bg-brand-darkBg relative">
+        <View className="absolute inset-0" pointerEvents="none">
+          <View className="absolute top-0 left-0 right-0 h-[42%]">
             <LinearGradient
-              colors={colors}
+              colors={gradientColors}
               locations={AUTH_GRADIENT_LOCATIONS}
               start={{ x: 0.0, y: 0.0 }}
               end={{ x: 0.85, y: 0.55 }}
-              style={StyleSheet.absoluteFill}
+              className="absolute inset-0"
             />
           </View>
-          <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '42%' }}>
+          <View className="absolute bottom-0 left-0 right-0 h-[42%]">
             <LinearGradient
-              colors={colors}
+              colors={gradientColors}
               locations={AUTH_GRADIENT_LOCATIONS}
               start={{ x: 0.85, y: 1.0 }}
               end={{ x: 0.0, y: 0.45 }}
-              style={StyleSheet.absoluteFill}
+              className="absolute inset-0"
             />
           </View>
         </View>
@@ -84,14 +83,14 @@ export const AuthGradientBackground: React.FC<AuthGradientBackgroundProps> = ({
   }
 
   return (
-    <View style={{ flex: 1, width: '100%', height: '100%', backgroundColor: containerBg, position: 'relative' }}>
-      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+    <View className="flex-1 w-full h-full bg-white dark:bg-brand-darkBg relative">
+      <View className="absolute inset-0" pointerEvents="none">
         <LinearGradient
-          colors={colors}
+          colors={gradientColors}
           locations={AUTH_GRADIENT_LOCATIONS}
           start={{ x: 0.0, y: 0.0 }}
           end={{ x: 0.85, y: 0.55 }}
-          style={StyleSheet.absoluteFill}
+          className="absolute inset-0"
         />
       </View>
       {children}
@@ -100,4 +99,5 @@ export const AuthGradientBackground: React.FC<AuthGradientBackgroundProps> = ({
 };
 
 export default AuthGradientBackground;
+
 

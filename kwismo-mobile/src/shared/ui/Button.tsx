@@ -3,13 +3,12 @@ import {
   TouchableOpacity,
   Text,
   ActivityIndicator,
-  StyleSheet,
   ViewStyle,
   TextStyle,
   View,
 } from 'react-native';
-import { useAppTheme } from '../hooks/useAppTheme';
-import { colors, fonts } from '../../styles/tokens';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { colors } from '@/styles/tokens';
 
 export interface ButtonProps {
   title: string;
@@ -34,12 +33,13 @@ export const Button: React.FC<ButtonProps> = ({
   loading = false,
   disabled = false,
   minLoadingDuration = 0,
+  className = '',
   style,
   textStyle,
   leftIcon,
   rightIcon,
 }) => {
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { colors: themeColors } = useAppTheme();
   const [internalLoading, setInternalLoading] = useState(false);
 
   const isLoading = loading || internalLoading;
@@ -72,72 +72,56 @@ export const Button: React.FC<ButtonProps> = ({
     }
   };
 
-  const getVariantContainerStyle = (): ViewStyle => {
+  const getVariantContainerClasses = () => {
     switch (variant) {
       case 'primary':
-        return {
-          backgroundColor: colors.orange,
-          borderWidth: 0,
-        };
+        return 'bg-brand-orange border-0';
       case 'secondary':
-        return {
-          backgroundColor: 'transparent',
-          borderWidth: 1.5,
-          borderColor: isDark ? themeColors.inputBorder : '#1E293B',
-          elevation: 0,
-          shadowOpacity: 0,
-        };
+        return 'bg-transparent border-2 border-slate-800 dark:border-slate-700';
       case 'outline':
-        return {
-          backgroundColor: 'transparent',
-          borderWidth: 1.5,
-          borderColor: colors.green,
-          elevation: 0,
-          shadowOpacity: 0,
-        };
+        return 'bg-transparent border-2 border-brand-green';
       case 'danger':
-        return {
-          backgroundColor: '#EF4444',
-          borderWidth: 0,
-        };
+        return 'bg-red-600 border-0';
       default:
-        return {
-          backgroundColor: colors.orange,
-        };
+        return 'bg-brand-orange border-0';
     }
   };
 
-  const getVariantTextStyle = (): TextStyle => {
+  const getVariantTextClasses = () => {
     switch (variant) {
       case 'primary':
       case 'danger':
-        return {
-          color: colors.white,
-        };
+        return 'text-white';
       case 'secondary':
-        return {
-          color: isDark ? themeColors.textPrimary : '#1E293B',
-        };
+        return 'text-slate-900 dark:text-white';
       case 'outline':
-        return {
-          color: colors.green,
-        };
+        return 'text-brand-green';
       default:
-        return {
-          color: colors.white,
-        };
+        return 'text-white';
     }
   };
 
-  const getSizeStyle = (): ViewStyle => {
+  const getSizeClasses = () => {
     switch (size) {
       case 'sm':
-        return { height: 42, paddingHorizontal: 16, borderRadius: 10 };
+        return 'h-10 px-4 rounded-xl';
       case 'lg':
-        return { height: 56, paddingHorizontal: 28, borderRadius: 14 };
+        return 'h-14 px-7 rounded-2xl';
       case 'md':
       default:
-        return { height: 52, paddingHorizontal: 24, borderRadius: 12 };
+        return 'h-13 px-6 rounded-xl';
+    }
+  };
+
+  const getTextSizeClasses = () => {
+    switch (size) {
+      case 'sm':
+        return 'text-sm';
+      case 'lg':
+        return 'text-lg';
+      case 'md':
+      default:
+        return 'text-base';
     }
   };
 
@@ -146,37 +130,28 @@ export const Button: React.FC<ButtonProps> = ({
       activeOpacity={0.85}
       onPress={handlePress}
       disabled={isDisabled}
-      style={[
-        styles.baseButton,
-        getVariantContainerStyle(),
-        getSizeStyle(),
-        isDisabled && styles.disabledButton,
-        style,
-      ]}
+      style={style}
+      className={`w-full items-center justify-center shadow-sm elevation-2 ${getVariantContainerClasses()} ${getSizeClasses()} ${
+        isDisabled ? 'opacity-60' : ''
+      } ${className}`}
     >
       {isLoading ? (
-        <View style={styles.loadingRow}>
+        <View className="flex-row items-center justify-center">
           <ActivityIndicator
             size="small"
             color={variant === 'secondary' ? themeColors.textPrimary : colors.white}
           />
         </View>
       ) : (
-        <View style={styles.contentRow}>
-          {leftIcon ? <View style={styles.iconLeft}>{leftIcon}</View> : null}
+        <View className="flex-row items-center justify-center">
+          {leftIcon ? <View className="mr-2">{leftIcon}</View> : null}
           <Text
-            style={[
-              styles.baseText,
-              getVariantTextStyle(),
-              size === 'sm'
-                ? { fontSize: 14, lineHeight: 21, fontFamily: fonts.caption }
-                : { fontSize: 16, lineHeight: 27, fontFamily: fonts.semiBold },
-              textStyle,
-            ]}
+            style={textStyle}
+            className={`font-semibold text-center ${getVariantTextClasses()} ${getTextSizeClasses()}`}
           >
             {title}
           </Text>
-          {rightIcon ? <View style={styles.iconRight}>{rightIcon}</View> : null}
+          {rightIcon ? <View className="ml-2">{rightIcon}</View> : null}
         </View>
       )}
     </TouchableOpacity>
@@ -184,41 +159,3 @@ export const Button: React.FC<ButtonProps> = ({
 };
 
 export default Button;
-
-const styles = StyleSheet.create({
-  baseButton: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  baseText: {
-    fontFamily: fonts.semiBold,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  contentRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconLeft: {
-    marginRight: 8,
-  },
-  iconRight: {
-    marginLeft: 8,
-  },
-  disabledButton: {
-    opacity: 0.65,
-  },
-});
-

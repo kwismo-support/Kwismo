@@ -133,7 +133,6 @@ export const Icon: React.FC<IconProps> = ({
   color = '#000000',
   style,
 }) => {
-  // Web rendering
   if (Platform.OS === 'web') {
     return (
       <IconifyWeb
@@ -145,7 +144,6 @@ export const Icon: React.FC<IconProps> = ({
     );
   }
 
-  // Mobile rendering (Native iOS / Android)
   if (name && name.includes(':')) {
     const parts = name.split(':');
     const prefix = parts[0];
@@ -157,7 +155,6 @@ export const Icon: React.FC<IconProps> = ({
     }
   }
 
-  // Fallback to Ionicons
   const mappedName = ionicNameMap[name] || (name.includes(':') ? 'help-circle-outline' : (name as any));
 
   return (

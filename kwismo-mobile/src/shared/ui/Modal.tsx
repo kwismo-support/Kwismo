@@ -1,35 +1,21 @@
 import React from 'react';
-import { View, StyleSheet, Modal as RNModal } from 'react-native';
+import { View, Modal as RNModal } from 'react-native';
 
 interface ModalProps {
   visible: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  className?: string;
 }
 
-export const Modal: React.FC<ModalProps> = ({ visible, onClose, children }) => {
+export const Modal: React.FC<ModalProps> = ({ visible, onClose, children, className = '' }) => {
   return (
     <RNModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <View style={styles.backdrop}>
-        <View style={styles.container}>{children}</View>
+      <View className="flex-1 bg-black/60 justify-center items-center p-5">
+        <View className={`w-full max-w-sm bg-white dark:bg-brand-cardDark rounded-2xl p-5 shadow-xl border border-slate-200 dark:border-slate-700/60 ${className}`}>
+          {children}
+        </View>
       </View>
     </RNModal>
   );
 };
-
-const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  container: {
-    width: '100%',
-    maxWidth: 360,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 20,
-  },
-});
