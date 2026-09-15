@@ -30,6 +30,14 @@ export const authApi = {
     });
   },
 
+  async verifyDevice(payload: { email: string; code: string; device_id: string }) {
+    return ApiClient.request<TokenOut>('/auth/device/verify', {
+      method: 'POST',
+      body: payload,
+    });
+  },
+
+
   async resendEmailOtp(email: string) {
     return ApiClient.request<{ message: string }>('/auth/email/resend', {
       method: 'POST',

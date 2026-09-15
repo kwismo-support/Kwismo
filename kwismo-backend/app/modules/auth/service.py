@@ -169,10 +169,9 @@ async def verify_email(payload: EmailVerifyIn) -> TokenOut:
     )
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utilisateur introuvable / User not found.")
-    if user.emailVerifie:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email deja verifie / Email already verified.")
     await _validate_otp(user.id, "email", payload.code)
-    await db.user.update(where={"id": user.id}, data={"emailVerifie": True})
+    if not user.emailVerifie:
+        await db.user.update(where={"id": user.id}, data={"emailVerifie": True})
     return _build_token_out(user, user.role.nomRole)
 
 
@@ -229,7 +228,6 @@ async def login(payload: LoginIn) -> TokenOut | DeviceVerificationRequiredOut:
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Compte suspendu / Suspended account.",
         )
-    # Check known device
     device = await db.device.find_unique(
         where={"userId_identifiant": {"userId": user.id, "identifiant": payload.device_id}}
     )
@@ -239,7 +237,6 @@ async def login(payload: LoginIn) -> TokenOut | DeviceVerificationRequiredOut:
             data={"nom": payload.device_name},
         )
         return _build_token_out(user, user.role.nomRole)
-    # Unknown device — send OTP
     await _invalidate_otps(user.id, "email")
     code = _generate_otp()
     await db.otpcode.create(
@@ -262,14 +259,21 @@ async def verify_device(payload: DeviceVerifyIn) -> TokenOut:
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utilisateur introuvable / User not found.")
     await _validate_otp(user.id, "email", payload.code)
-    await db.device.create(
-        data={
-            "userId": user.id,
-            "identifiant": payload.device_id,
-            "nom": "Appareil verifie",
-        }
+    if not user.emailVerifie:
+        await db.user.update(where={"id": user.id}, data={"emailVerifie": True})
+    existing_device = await db.device.find_unique(
+        where={"userId_identifiant": {"userId": user.id, "identifiant": payload.device_id}}
     )
+    if existing_device is None:
+        await db.device.create(
+            data={
+                "userId": user.id,
+                "identifiant": payload.device_id,
+                "nom": "Appareil verifie",
+            }
+        )
     return _build_token_out(user, user.role.nomRole)
+
 
 
 async def refresh(payload: RefreshIn) -> TokenOut:
