@@ -1,6 +1,6 @@
 import React from 'react';
 import { Stack, Redirect } from 'expo-router';
-import { useAuthStore } from '../../src/shared/store/authStore';
+import { useAuthStore } from '@/shared/store/authStore';
 
 export default function AuthLayout() {
   const { isAuthenticated, isInitialized } = useAuthStore();
@@ -26,4 +26,5 @@ export default function AuthLayout() {
     </Stack>
   );
 }
+
 

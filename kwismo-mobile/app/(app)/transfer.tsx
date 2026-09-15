@@ -16,24 +16,24 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { getCountryCallingCode, CountryCode } from 'libphonenumber-js/min';
 import countries from 'i18n-iso-countries';
-import { Icon } from '../../src/shared/ui/Icon';
-import { TabBar } from '../../src/shared/components/TabBar';
-import { HeaderBar } from '../../src/shared/components/HeaderBar';
-import { PhoneCountryInput } from '../../src/shared/components/PhoneCountryInput';
-import { Input } from '../../src/shared/ui/Input';
-import { Button } from '../../src/shared/ui/Button';
-import { CountryItem } from '../../src/shared/components/CountryPickerModal';
-import { toast } from '../../src/shared/store/toastStore';
-import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
-import { colors, fonts } from '../../src/styles/tokens';
-import { scaleFont } from '../../src/shared/lib/responsive';
+import { Icon } from '@/shared/ui/Icon';
+import { TabBar } from '@/shared/components/TabBar';
+import { HeaderBar } from '@/shared/components/HeaderBar';
+import { PhoneCountryInput } from '@/shared/components/PhoneCountryInput';
+import { Input } from '@/shared/ui/Input';
+import { Button } from '@/shared/ui/Button';
+import { CountryItem } from '@/shared/components/CountryPickerModal';
+import { toast } from '@/shared/store/toastStore';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { colors, fonts } from '@/styles/tokens';
+import { scaleFont } from '@/shared/lib/responsive';
 
 import {
   SenderNumberOption,
   ActionOption,
   MOCK_REGISTERED_SENDERS,
   MOCK_AVAILABLE_ACTIONS,
-} from '../../src/shared/mock/transactionsMock';
+} from '@/shared/mock/transactionsMock';
 
 export default function TransferScreen() {
   const router = useRouter();

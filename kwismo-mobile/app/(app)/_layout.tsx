@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { Stack, Redirect } from 'expo-router';
-import { useAuthStore } from '../../src/shared/store/authStore';
-import { syncDelta, processOutbox } from '../../src/shared/services/syncEngine';
+import { useAuthStore } from '@/shared/store/authStore';
+import { syncDelta, processOutbox } from '@/shared/services/syncEngine';
 
 export default function AppLayout() {
   const { isAuthenticated, isInitialized } = useAuthStore();
@@ -16,7 +16,7 @@ export default function AppLayout() {
 
   if (!isInitialized) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#161E33', justifyContent: 'center', alignItems: 'center' }}>
+      <View className="flex-1 bg-brand-navy justify-center items-center">
         <ActivityIndicator size="large" color="#2BB673" />
       </View>
     );
@@ -35,3 +35,4 @@ export default function AppLayout() {
     />
   );
 }
+

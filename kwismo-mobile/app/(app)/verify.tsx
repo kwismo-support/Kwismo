@@ -13,13 +13,13 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../../src/shared/ui/Icon';
-import { HeaderBar } from '../../src/shared/components/HeaderBar';
-import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
-import { colors, fonts } from '../../src/styles/tokens';
-import { scaleFont } from '../../src/shared/lib/responsive';
-import { verifyApi, VerifyResult } from '../../src/features/verify/services/verify.api';
-import { lookupNumberOffline } from '../../src/shared/services/database';
+import { Icon } from '@/shared/ui/Icon';
+import { HeaderBar } from '@/shared/components/HeaderBar';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { colors, fonts } from '@/styles/tokens';
+import { scaleFont } from '@/shared/lib/responsive';
+import { verifyApi, VerifyResult } from '@/features/verify/services/verify.api';
+import { lookupNumberOffline } from '@/shared/services/database';
 
 export default function VerifyScreen() {
   const router = useRouter();

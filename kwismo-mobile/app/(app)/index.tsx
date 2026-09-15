@@ -10,13 +10,13 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '../../src/shared/ui/Icon';
-import { HeaderBar } from '../../src/shared/components/HeaderBar';
-import { TabBar } from '../../src/shared/components/TabBar';
-import { useAppTheme } from '../../src/shared/hooks/useAppTheme';
-import { useAuthStore } from '../../src/shared/store/authStore';
-import { useDashboard } from '../../src/features/dashboard/hooks/useDashboard';
-import { colors } from '../../src/styles/tokens';
+import { Icon } from '@/shared/ui/Icon';
+import { HeaderBar } from '@/shared/components/HeaderBar';
+import { TabBar } from '@/shared/components/TabBar';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { useAuthStore } from '@/shared/store/authStore';
+import { useDashboard } from '@/features/dashboard/hooks/useDashboard';
+import { colors } from '@/styles/tokens';
 
 type FilterCategory = 'all' | 'verified' | 'threats' | 'reports' | 'transfers';
 
@@ -114,15 +114,15 @@ export default function HomeScreen() {
 
   const getBadgeStyle = (badgeType: string, statusText: string) => {
     if (statusText === 'Faible' || statusText.toLowerCase().includes('faible')) {
-      return { bg: '#E8F0FE', text: '#1A73E8' };
+      return { bgClass: 'bg-blue-50', textClass: 'text-blue-600' };
     }
     if (statusText === 'Détecté' || statusText.toLowerCase().includes('détect') || badgeType === 'red') {
-      return { bg: '#FCE8E6', text: '#D93025' };
+      return { bgClass: 'bg-red-50', textClass: 'text-red-600' };
     }
     if (statusText.toLowerCase().includes('cours') || badgeType === 'yellow') {
-      return { bg: '#FEF7E0', text: '#B06000' };
+      return { bgClass: 'bg-amber-50', textClass: 'text-amber-700' };
     }
-    return { bg: '#E6F4EA', text: '#1E8E3E' };
+    return { bgClass: 'bg-emerald-50', textClass: 'text-emerald-700' };
   };
 
   const filterOptions: { key: FilterCategory; labelKey: string }[] = [
@@ -139,9 +139,9 @@ export default function HomeScreen() {
 
       <HeaderBar isHome={true} />
 
-      <View className="px-4 -mt-[55px] z-10">
+      <View className="px-4 -mt-14 z-10">
         <View
-          className="rounded-[20px] p-4 mb-4 shadow-md shadow-black/10 elevation-4"
+          className="rounded-xl p-4 mb-4 shadow-md shadow-black/10 elevation-4"
           style={{ backgroundColor: isDark ? themeColors.cardBg : '#FFFFFF' }}
         >
           <View className="flex-row items-center mb-4">
@@ -159,7 +159,7 @@ export default function HomeScreen() {
             <View className="flex-1">
               <View className="flex-row items-center">
                 <Text
-                  className="text-[13px] leading-[18px] font-bold"
+                  className="text-2xs font-bold"
                   style={{ color: isDark ? themeColors.textSecondary : '#475569' }}
                 >
                   {t('common.welcome')}
@@ -167,7 +167,7 @@ export default function HomeScreen() {
                 <Icon name="solar:verified-check-bold" color={colors.green} size={16} style={{ marginLeft: 4 }} />
               </View>
               <Text
-                className="text-lg leading-6 font-bold mt-0.5"
+                className="text-lg font-bold mt-0.5"
                 style={{ color: isDark ? themeColors.textPrimary : '#0F172A' }}
               >
                 {userName}
@@ -178,13 +178,13 @@ export default function HomeScreen() {
           <View className="flex-row justify-between pt-1">
             <View className="flex-1 items-start">
               <Text
-                className="text-base leading-[22px] font-bold text-left"
+                className="text-base font-bold text-left"
                 style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
               >
                 {user?.kpi?.numeros_verifies ?? summary?.numeros_verifies ?? 127}
               </Text>
               <Text
-                className="text-[10px] leading-[14px] font-medium text-left mt-0.5"
+                className="text-2xs font-medium text-left mt-0.5"
                 style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
               >
                 {t('common.kpiVerified')}
@@ -193,13 +193,13 @@ export default function HomeScreen() {
 
             <View className="flex-1 items-start">
               <Text
-                className="text-base leading-[22px] font-bold text-left"
+                className="text-base font-bold text-left"
                 style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
               >
                 25
               </Text>
               <Text
-                className="text-[10px] leading-[14px] font-medium text-left mt-0.5"
+                className="text-2xs font-medium text-left mt-0.5"
                 style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
               >
                 {t('common.kpiThreats')}
@@ -208,13 +208,13 @@ export default function HomeScreen() {
 
             <View className="flex-1 items-start">
               <Text
-                className="text-base leading-[22px] font-bold text-left"
+                className="text-base font-bold text-left"
                 style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
               >
                 {user?.kpi?.signalements_effectues ?? summary?.signalements_effectues ?? 10}
               </Text>
               <Text
-                className="text-[10px] leading-[14px] font-medium text-left mt-0.5"
+                className="text-2xs font-medium text-left mt-0.5"
                 style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
               >
                 {t('common.kpiReports')}
@@ -223,13 +223,13 @@ export default function HomeScreen() {
 
             <View className="flex-1 items-start">
               <Text
-                className="text-base leading-[22px] font-bold text-left"
+                className="text-base font-bold text-left"
                 style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
               >
                 {user?.kpi?.transferts_proteges ?? summary?.transferts_proteges ?? 50}
               </Text>
               <Text
-                className="text-[10px] leading-[14px] font-medium text-left mt-0.5"
+                className="text-2xs font-medium text-left mt-0.5"
                 style={{ color: isDark ? themeColors.textPrimary : '#000000' }}
               >
                 {t('common.kpiTransfers')}
@@ -244,11 +244,11 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/verify')}
             className="flex-1 items-center"
           >
-            <View className="w-[52px] h-[52px] rounded-full justify-center items-center mb-1.5 bg-[#E8F0FE]">
+            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50" style={{ width: 52, height: 52 }}>
               <Icon name="solar:shield-user-bold" color="#161E33" size={24} />
             </View>
             <Text
-              className="text-[11px] leading-[14px] font-medium text-center"
+              className="text-2xs font-medium text-center"
               style={{ color: isDark ? themeColors.textPrimary : '#161E33' }}
             >
               {t('common.actionVerify')}
@@ -260,11 +260,11 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/transfer')}
             className="flex-1 items-center"
           >
-            <View className="w-[52px] h-[52px] rounded-full justify-center items-center mb-1.5 bg-[#E8F0FE]">
+            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50" style={{ width: 52, height: 52 }}>
               <Icon name="solar:transfer-horizontal-bold" color="#161E33" size={24} />
             </View>
             <Text
-              className="text-[11px] leading-[14px] font-medium text-center"
+              className="text-2xs font-medium text-center"
               style={{ color: isDark ? themeColors.textPrimary : '#161E33' }}
             >
               {t('common.actionTransfer')}
@@ -276,11 +276,11 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/alert-whatsapp')}
             className="flex-1 items-center"
           >
-            <View className="w-[52px] h-[52px] rounded-full justify-center items-center mb-1.5 bg-[#E8F0FE]">
+            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50" style={{ width: 52, height: 52 }}>
               <Icon name="solar:chat-round-dots-bold" color="#161E33" size={24} />
             </View>
             <Text
-              className="text-[11px] leading-[14px] font-medium text-center"
+              className="text-2xs font-medium text-center"
               style={{ color: isDark ? themeColors.textPrimary : '#161E33' }}
             >
               {t('common.actionWhatsapp')}
@@ -292,10 +292,10 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/report')}
             className="flex-1 items-center"
           >
-            <View className="w-[52px] h-[52px] rounded-full justify-center items-center mb-1.5 bg-[#FCE8E6]">
+            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-red-50" style={{ width: 52, height: 52 }}>
               <Icon name="heroicons:signal-16-solid" color="#D93025" size={24} />
             </View>
-            <Text className="text-[11px] leading-[14px] font-medium text-center text-[#D93025]">
+            <Text className="text-2xs font-medium text-center text-red-600">
               {t('common.report')}
             </Text>
           </TouchableOpacity>
@@ -303,7 +303,7 @@ export default function HomeScreen() {
 
         <View className="flex-row justify-between items-center mb-1.5 pt-1">
           <Text
-            className="text-lg leading-6 font-bold"
+            className="text-lg font-bold"
             style={{ color: themeColors.textPrimary }}
           >
             {t('common.recentActivity')}
@@ -341,21 +341,22 @@ export default function HomeScreen() {
                   key={opt.key}
                   activeOpacity={0.8}
                   onPress={() => setActiveFilter(opt.key)}
-                  className="px-[14px] py-[6px] rounded-full border"
-                  style={{
-                    backgroundColor: isSelected
-                      ? '#E6F4EA'
+                  className={`px-3 py-1.5 rounded-full border ${
+                    isSelected
+                      ? 'bg-emerald-50 border-brand-green'
                       : isDark
-                      ? 'rgba(255, 255, 255, 0.06)'
-                      : '#FFFFFF',
-                    borderColor: isSelected ? colors.green : '#E2E8F0',
-                  }}
+                      ? 'bg-white/5 border-slate-700'
+                      : 'bg-white border-slate-200'
+                  }`}
                 >
                   <Text
-                    className="text-[11px] leading-[15px] font-medium"
-                    style={{
-                      color: isSelected ? colors.green : isDark ? themeColors.textSecondary : '#64748B',
-                    }}
+                    className={`text-2xs font-medium ${
+                      isSelected
+                        ? 'text-brand-green'
+                        : isDark
+                        ? 'text-slate-400'
+                        : 'text-slate-600'
+                    }`}
                   >
                     {t(opt.labelKey)}
                   </Text>
@@ -373,39 +374,39 @@ export default function HomeScreen() {
                 key={item.id}
                 activeOpacity={0.75}
                 onPress={() => router.push({ pathname: '/(app)/verify', params: { phone: item.phone } })}
-                className="flex-row items-center py-2 px-3 rounded-[14px] border-0"
+                className="flex-row items-center py-2 px-3 rounded-lg border-0"
                 style={{ backgroundColor: themeColors.cardBg }}
               >
                 <View
-                  className="w-[38px] h-[38px] rounded-full bg-[#F1F5F9] justify-center items-center mr-[10px]"
+                  className="w-10 h-10 rounded-full bg-slate-100 justify-center items-center mr-2.5"
                   style={item.initialBg ? { backgroundColor: item.initialBg } : item.initials ? { backgroundColor: colors.green } : {}}
                 >
                   {item.initials ? (
-                    <Text className="text-white font-bold text-[13px]">{item.initials}</Text>
+                    <Text className="text-white font-bold text-2xs">{item.initials}</Text>
                   ) : (
                     <Icon name="solar:user-bold" color="#94A3B8" size={20} />
                   )}
                 </View>
 
                 <View style={{ flex: 1.2 }}>
-                  <Text numberOfLines={1} className="text-[13px] leading-[18px] font-bold" style={{ color: themeColors.textPrimary }}>
+                  <Text numberOfLines={1} className="text-2xs font-bold" style={{ color: themeColors.textPrimary }}>
                     {item.phone}
                   </Text>
-                  <Text numberOfLines={1} className="text-[11px] leading-[15px] text-[#94A3B8] mt-0.5" style={{ color: themeColors.textSecondary }}>
+                  <Text numberOfLines={1} className="text-2xs text-slate-400 mt-0.5" style={{ color: themeColors.textSecondary }}>
                     {item.type}
                   </Text>
                 </View>
 
                 <View className="mx-1">
-                  <View className="px-2 py-[3px] rounded-[10px]" style={{ backgroundColor: badgeStyle.bg }}>
-                    <Text className="text-[10px] leading-[14px] font-semibold" style={{ color: badgeStyle.text }}>
+                  <View className={`px-2 py-0.5 rounded-md ${badgeStyle.bgClass}`}>
+                    <Text className={`text-2xs font-semibold ${badgeStyle.textClass}`}>
                       {item.status}
                     </Text>
                   </View>
                 </View>
 
                 <View className="flex-row items-center justify-end ml-1.5">
-                  <Text numberOfLines={1} className="text-[10px] leading-[14px] text-[#94A3B8]">
+                  <Text numberOfLines={1} className="text-2xs text-slate-400">
                     {item.date}
                   </Text>
                   <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={16} style={{ marginLeft: 4 }} />
@@ -420,6 +421,7 @@ export default function HomeScreen() {
     </View>
   );
 }
+
 
 
 
