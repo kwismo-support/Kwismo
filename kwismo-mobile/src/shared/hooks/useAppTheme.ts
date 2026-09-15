@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useColorScheme as useRNColorScheme } from 'react-native';
+import { Platform, useColorScheme as useRNColorScheme } from 'react-native';
 import { useColorScheme as useNativeWindColorScheme } from 'nativewind';
 import { useAuthStore } from '../store/authStore';
 import { useThemeStore, ThemePreference } from '../store/themeStore';
@@ -42,6 +42,13 @@ export function useAppTheme() {
   useEffect(() => {
     if (setColorScheme && nativeWindScheme !== activeTheme) {
       setColorScheme(activeTheme);
+    }
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      if (activeTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
   }, [activeTheme, nativeWindScheme, setColorScheme]);
 

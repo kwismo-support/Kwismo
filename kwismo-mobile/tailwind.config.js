@@ -6,6 +6,15 @@ module.exports = {
   ],
   theme: {
     extend: {
+      spacing: {
+        '13': '52px',
+        '15': '60px',
+        '17': '68px',
+        '18': '72px',
+        '19': '76px',
+        '25': '100px',
+        '50': '200px',
+      },
       colors: {
         brand: {
           navy: '#161E33',

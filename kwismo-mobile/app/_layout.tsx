@@ -22,6 +22,7 @@ import '../src/locales/i18n';
 import { ToastContainer } from '../src/shared/ui/Toast';
 import { useAuthStore } from '../src/shared/store/authStore';
 import { useOTAUpdates } from '../src/shared/utils/useOTAUpdates';
+import { useAppTheme } from '../src/shared/hooks/useAppTheme';
 
 if (typeof globalThis !== 'undefined') {
   const origError = console.error;
@@ -158,6 +159,7 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
+  useAppTheme();
   const [fontsLoaded] = useFonts({
     'MontserratAlternates-Regular': MontserratAlternates_400Regular,
     'MontserratAlternates-Medium': MontserratAlternates_500Medium,
