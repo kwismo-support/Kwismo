@@ -329,5 +329,28 @@
       "confirmValidateTitle": "Valider la demande de partenariat ?",
       "confirmValidateDesc": "Une clé API sera générée et transmise au contact principal."
     }
+  },
+  "notifications": {
+    "title": "Notifications & Alertes",
+    "subtitle": "Historique et journal des alertes de sécurité, détections d'appels suspects et activités du compte.",
+    "unreadCountLabel": "non lue(s)",
+    "filterAll": "Toutes",
+    "filterUnread": "Non lues",
+    "markAllRead": "Tout marquer comme lu",
+    "markRead": "Marquer comme lu",
+    "empty": "Aucune notification pour le moment."
+  },
+  "profile": {
+    "title": "Mon Profil & Sécurité",
+    "subtitle": "Gestion des informations personnelles, préférences linguistiques et appareils de confiance.",
+    "formTitle": "Informations du Compte",
+    "languagePreference": "Langue de l'interface",
+    "verifiedNumbers": "Numéros Vérifiés",
+    "reportsSubmitted": "Signalements Effectués",
+    "protectedTransfers": "Transferts Protégés",
+    "trustedDevicesTitle": "Appareils de Confiance Connectés",
+    "noDevices": "Aucun appareil enregistré.",
+    "lastConnection": "Dernière connexion",
+    "deviceActive": "Actif"
   }
 }

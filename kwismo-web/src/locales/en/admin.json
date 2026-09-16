@@ -364,5 +364,28 @@
     "enableSmsAlerts": "Auto-send SMS alerts upon SIM Swap suspicion",
     "saveGeneral": "Save General Settings",
     "generalSaveSuccess": "General settings saved successfully!"
+  },
+  "notifications": {
+    "title": "Notifications & Alerts",
+    "subtitle": "Security alerts log, suspicious call detections, and account activity history.",
+    "unreadCountLabel": "unread",
+    "filterAll": "All",
+    "filterUnread": "Unread",
+    "markAllRead": "Mark all as read",
+    "markRead": "Mark as read",
+    "empty": "No notifications at the moment."
+  },
+  "profile": {
+    "title": "My Profile & Security",
+    "subtitle": "Management of personal information, language preferences, and trusted devices.",
+    "formTitle": "Account Information",
+    "languagePreference": "Interface Language",
+    "verifiedNumbers": "Verified Numbers",
+    "reportsSubmitted": "Reports Submitted",
+    "protectedTransfers": "Protected Transfers",
+    "trustedDevicesTitle": "Connected Trusted Devices",
+    "noDevices": "No devices registered.",
+    "lastConnection": "Last connection",
+    "deviceActive": "Active"
   }
 }
