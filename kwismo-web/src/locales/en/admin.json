@@ -19,18 +19,63 @@
     "byOperator": "By operator"
   },
   "users": {
-    "title": "Users",
+    "title": "User Management",
+    "subtitle": "Supervision of user access, administrative role assignment, and account management.",
     "detail": "User detail",
-    "suspend": "Suspend",
-    "activate": "Activate",
+    "suspend": "Suspend account",
+    "activate": "Activate account",
     "ban": "Ban",
     "role": "Role",
-    "registeredAt": "Registered",
+    "registeredAt": "Registered on",
     "lastLogin": "Last login",
+    "newUserButton": "New account",
+    "searchPlaceholder": "Search by name, surname, email...",
+    "emptyTitle": "No users found",
+    "emptyDesc": "Change your search filters or add a new user.",
+    "notFoundTitle": "User not found",
+    "backToList": "Back to users",
+    "detailTitle": "User Profile",
+    "detailSubtitle": "Consultation and edition of user info, roles, and privileges.",
+    "formSectionTitle": "General Information & Role",
+    "name": "First Name",
+    "surname": "Last Name",
+    "email": "Email Address",
+    "attachedNumbers": "Attached numbers",
+    "noAttachedNumbers": "No numbers attached to this account.",
+    "systemId": "System ID",
+    "tabInfo": "Profile",
+    "suspendConfirmTitle": "Suspend this user?",
+    "activateConfirmTitle": "Reactivate this user?",
+    "toggleConfirmDesc": "Do you want to modify access for",
+    "deleteConfirmTitle": "Delete account?",
+    "deleteConfirmDesc": "Are you sure you want to permanently delete account of",
+    "kpis": {
+      "total": "Total Accounts",
+      "active": "Active Accounts",
+      "suspended": "Suspended Accounts",
+      "partners": "Partner Accounts"
+    },
+    "filters": {
+      "allRoles": "All roles",
+      "allStatuses": "All statuses",
+      "admin": "Administrator",
+      "partner": "Partner",
+      "user": "User"
+    },
     "status": {
       "active": "Active",
       "suspended": "Suspended",
       "banned": "Banned"
+    },
+    "toasts": {
+      "fetchError": "Error fetching users",
+      "statusSuccess": "User status updated",
+      "statusError": "Error updating user status",
+      "saveSuccess": "User info saved successfully",
+      "saveError": "Error saving user info",
+      "deleteSuccess": "User deleted",
+      "deleteError": "Error deleting user",
+      "exportInitiated": "User CSV export initiated"
     }
   },
   "numbers": {

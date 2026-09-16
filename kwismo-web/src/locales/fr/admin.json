@@ -19,18 +19,63 @@
     "byOperator": "Par opérateur"
   },
   "users": {
-    "title": "Utilisateurs",
+    "title": "Gestion des utilisateurs",
+    "subtitle": "Supervision des accès utilisateurs, attribution des rôles administratifs et gestion des comptes.",
     "detail": "Détail utilisateur",
-    "suspend": "Suspendre",
-    "activate": "Activer",
+    "suspend": "Suspendre le compte",
+    "activate": "Activer le compte",
     "ban": "Bannir",
     "role": "Rôle",
     "registeredAt": "Inscrit le",
     "lastLogin": "Dernière connexion",
+    "newUserButton": "Nouveau compte",
+    "searchPlaceholder": "Rechercher par nom, prénom, email...",
+    "emptyTitle": "Aucun utilisateur trouvé",
+    "emptyDesc": "Modifiez vos critères de recherche ou ajoutez un nouvel utilisateur.",
+    "notFoundTitle": "Utilisateur introuvable",
+    "backToList": "Retour aux utilisateurs",
+    "detailTitle": "Fiche Utilisateur",
+    "detailSubtitle": "Consultation et édition des informations, rôles et privilèges.",
+    "formSectionTitle": "Informations Générales & Rôle",
+    "name": "Prénom",
+    "surname": "Nom",
+    "email": "Adresse Email",
+    "attachedNumbers": "Numéros rattachés",
+    "noAttachedNumbers": "Aucun numéro rattaché à ce compte.",
+    "systemId": "Identifiant système",
+    "tabInfo": "Profil",
+    "suspendConfirmTitle": "Suspendre cet utilisateur ?",
+    "activateConfirmTitle": "Réactiver cet utilisateur ?",
+    "toggleConfirmDesc": "Voulez-vous modifier l'accès au compte de",
+    "deleteConfirmTitle": "Supprimer le compte ?",
+    "deleteConfirmDesc": "Êtes-vous sûr de vouloir supprimer définitivement le compte de",
+    "kpis": {
+      "total": "Total Comptes",
+      "active": "Comptes Actifs",
+      "suspended": "Comptes Suspendus",
+      "partners": "Comptes Partenaires"
+    },
+    "filters": {
+      "allRoles": "Tous les rôles",
+      "allStatuses": "Tous les statuts",
+      "admin": "Administrateur",
+      "partner": "Partenaire",
+      "user": "Utilisateur"
+    },
     "status": {
       "active": "Actif",
       "suspended": "Suspendu",
       "banned": "Banni"
+    },
+    "toasts": {
+      "fetchError": "Erreur lors du chargement des utilisateurs",
+      "statusSuccess": "Statut de l'utilisateur mis à jour",
+      "statusError": "Erreur lors du changement de statut",
+      "saveSuccess": "Informations utilisateur enregistrées avec succès",
+      "saveError": "Erreur lors de l'enregistrement de l'utilisateur",
+      "deleteSuccess": "Utilisateur supprimé",
+      "deleteError": "Erreur lors de la suppression",
+      "exportInitiated": "Export CSV des utilisateurs initié"
     }
   },
   "numbers": {
