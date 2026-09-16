@@ -91,7 +91,7 @@ export default function CallDetectionScreen() {
                 </View>
               </View>
               <View className={`px-2.5 py-1 rounded-md ${item.is_scam ? 'bg-red-100 dark:bg-red-950/50' : 'bg-emerald-100 dark:bg-emerald-950/50'}`}>
-                <Text className={`text-2xs font-bold ${item.is_scam ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                <Text className={`text-2xs font-bold ${item.is_scam ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-brand-green'}`}>
                   {Math.round(item.risk_score * 100)}% ({item.statut.toUpperCase()})
                 </Text>
               </View>

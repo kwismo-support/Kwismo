@@ -36,14 +36,14 @@ const DARK_AUTH_GRADIENT_COLORS: readonly [string, string, ...string[]] = [
 
 const AUTH_GRADIENT_LOCATIONS: readonly [number, number, ...number[]] = [
   0.0,
-  0.25,
-  0.30,
+  0.35,
   0.40,
-  0.45,
   0.50,
   0.55,
   0.60,
+  0.65,
   0.70,
+  0.80,
   1.0,
 ];
 
@@ -56,24 +56,24 @@ export const AuthGradientBackground: React.FC<AuthGradientBackgroundProps> = ({
 
   if (variant === 'mirror') {
     return (
-      <View className="flex-1 w-full h-full bg-white dark:bg-brand-darkBg relative">
-        <View className="absolute inset-0" pointerEvents="none">
-          <View className="absolute top-0 left-0 right-0 h-[42%]">
+      <View className="flex-1 w-full h-full relative">
+        <View className="absolute inset-0 w-full h-full" pointerEvents="none">
+          <View className="absolute top-0 left-0 right-0 w-full h-[42%]">
             <LinearGradient
               colors={gradientColors}
               locations={AUTH_GRADIENT_LOCATIONS}
               start={{ x: 0.0, y: 0.0 }}
               end={{ x: 0.85, y: 0.55 }}
-              className="absolute inset-0"
+              className="absolute inset-0 w-full h-full"
             />
           </View>
-          <View className="absolute bottom-0 left-0 right-0 h-[42%]">
+          <View className="absolute bottom-0 left-0 right-0 w-full h-[42%]">
             <LinearGradient
               colors={gradientColors}
               locations={AUTH_GRADIENT_LOCATIONS}
               start={{ x: 0.85, y: 1.0 }}
               end={{ x: 0.0, y: 0.45 }}
-              className="absolute inset-0"
+              className="absolute inset-0 w-full h-full"
             />
           </View>
         </View>
@@ -83,14 +83,14 @@ export const AuthGradientBackground: React.FC<AuthGradientBackgroundProps> = ({
   }
 
   return (
-    <View className="flex-1 w-full h-full bg-white dark:bg-brand-darkBg relative">
-      <View className="absolute inset-0" pointerEvents="none">
+    <View className="flex-1 w-full h-full relative">
+      <View className="absolute inset-0 w-full h-full" pointerEvents="none">
         <LinearGradient
           colors={gradientColors}
           locations={AUTH_GRADIENT_LOCATIONS}
           start={{ x: 0.0, y: 0.0 }}
           end={{ x: 0.85, y: 0.55 }}
-          className="absolute inset-0"
+          className="absolute inset-0 w-full h-full"
         />
       </View>
       {children}

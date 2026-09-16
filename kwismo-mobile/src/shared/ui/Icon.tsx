@@ -17,6 +17,9 @@ import tablerCollection from '@iconify/json/json/tabler.json';
 import icCollection from '@iconify/json/json/ic.json';
 import ggCollection from '@iconify/json/json/gg.json';
 import f7Collection from '@iconify/json/json/f7.json';
+import hugeiconsCollection from '@iconify/json/json/hugeicons.json';
+import mageCollection from '@iconify/json/json/mage.json';
+import basilCollection from '@iconify/json/json/basil.json';
 
 const collectionsMap: Record<string, any> = {
   'bitcoin-icons': bitcoinIconsCollection,
@@ -31,6 +34,9 @@ const collectionsMap: Record<string, any> = {
   ic: icCollection,
   gg: ggCollection,
   f7: f7Collection,
+  hugeicons: hugeiconsCollection,
+  mage: mageCollection,
+  basil: basilCollection,
 };
 
 function getCollectionData(prefix: string) {

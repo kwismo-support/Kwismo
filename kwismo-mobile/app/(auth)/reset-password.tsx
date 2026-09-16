@@ -116,13 +116,12 @@ export default function ResetPasswordScreen() {
                 {[1, 2, 3, 4, 5].map((idx) => (
                   <View
                     key={`crit-bar-${idx}`}
-                    className={`flex-1 h-1 rounded-full ${
-                      passwordAnalysis.score >= idx
+                    className={`flex-1 h-1 rounded-full ${passwordAnalysis.score >= idx
                         ? passwordAnalysis.score === 5
                           ? 'bg-emerald-500'
                           : 'bg-amber-500'
                         : 'bg-slate-300 dark:bg-slate-700'
-                    }`}
+                      }`}
                   />
                 ))}
               </View>
@@ -134,7 +133,7 @@ export default function ResetPasswordScreen() {
                     size={14}
                     color={passwordAnalysis.criteria.minLength ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.minLength ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.minLength ? 'text-emerald-600 dark:text-brand-green' : 'text-slate-500 dark:text-slate-400'}`}>
                     {t('validation.criteriaMinLength')}
                   </Text>
                 </View>
@@ -145,7 +144,7 @@ export default function ResetPasswordScreen() {
                     size={14}
                     color={passwordAnalysis.criteria.hasUppercase ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasUppercase ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasUppercase ? 'text-emerald-600 dark:text-brand-green' : 'text-slate-500 dark:text-slate-400'}`}>
                     {t('validation.criteriaUppercase')}
                   </Text>
                 </View>
@@ -156,7 +155,7 @@ export default function ResetPasswordScreen() {
                     size={14}
                     color={passwordAnalysis.criteria.hasLowercase ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasLowercase ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasLowercase ? 'text-emerald-600 dark:text-brand-green' : 'text-slate-500 dark:text-slate-400'}`}>
                     {t('validation.criteriaLowercase')}
                   </Text>
                 </View>
@@ -167,7 +166,7 @@ export default function ResetPasswordScreen() {
                     size={14}
                     color={passwordAnalysis.criteria.hasNumber ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasNumber ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasNumber ? 'text-emerald-600 dark:text-brand-green' : 'text-slate-500 dark:text-slate-400'}`}>
                     {t('validation.criteriaNumber')}
                   </Text>
                 </View>
@@ -178,7 +177,7 @@ export default function ResetPasswordScreen() {
                     size={14}
                     color={passwordAnalysis.criteria.hasSymbol ? colors.green : themeColors.inputPlaceholder}
                   />
-                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasSymbol ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                  <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasSymbol ? 'text-emerald-600 dark:text-brand-green' : 'text-slate-500 dark:text-slate-400'}`}>
                     {t('validation.criteriaSymbol')}
                   </Text>
                 </View>

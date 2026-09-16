@@ -77,7 +77,7 @@ export const Button: React.FC<ButtonProps> = ({
       case 'primary':
         return 'bg-brand-orange border-0';
       case 'secondary':
-        return 'bg-transparent border-2 border-slate-800 dark:border-slate-700';
+        return 'bg-transparent border-2 border-brand-navy dark:border-white/70';
       case 'outline':
         return 'bg-transparent border-2 border-brand-green';
       case 'danger':
@@ -93,7 +93,7 @@ export const Button: React.FC<ButtonProps> = ({
       case 'danger':
         return 'text-white';
       case 'secondary':
-        return 'text-slate-900 dark:text-white';
+        return 'text-brand-navy dark:text-white';
       case 'outline':
         return 'text-brand-green';
       default:

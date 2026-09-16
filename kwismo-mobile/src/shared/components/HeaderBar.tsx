@@ -88,11 +88,11 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           <>
             <View className="flex-1 justify-center">
               {isHome ? (
-                <Text style={{ color: textColor }} className="font-montserrat-bold text-2xl font-extrabold tracking-wider">
+                <Text style={{ color: textColor }} className="font-montserrat-bold text-2xl font-h1 tracking-wider">
                   KWISMO
                 </Text>
               ) : (
-                <Text numberOfLines={1} style={{ color: textColor }} className="font-montserrat-bold text-xl font-extrabold">
+                <Text numberOfLines={1} style={{ color: textColor }} className="font-montserrat-bold text-xl font-h1">
                   {title}
                 </Text>
               )}

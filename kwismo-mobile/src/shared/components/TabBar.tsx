@@ -41,7 +41,7 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
         className="items-center justify-center flex-1 py-1"
       >
         <Icon
-          name={currentTab === 'home' ? 'solar:home-2-bold' : 'solar:home-2-linear'}
+          name={currentTab === 'home' ? 'solar:home-smile-bold' : 'solar:home-smile-linear'}
           size={24}
           color={currentTab === 'home' ? activeColor : themeColors.inputPlaceholder}
         />

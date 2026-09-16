@@ -212,13 +212,12 @@ export default function RegisterScreen() {
                   {[1, 2, 3, 4, 5].map((idx) => (
                     <View
                       key={`crit-bar-${idx}`}
-                      className={`flex-1 h-1 rounded-full ${
-                        passwordAnalysis.score >= idx
-                          ? passwordAnalysis.score === 5
-                            ? 'bg-emerald-500'
-                            : 'bg-amber-500'
-                          : 'bg-slate-300 dark:bg-slate-700'
-                      }`}
+                      className={`flex-1 h-1 rounded-full ${passwordAnalysis.score >= idx
+                        ? passwordAnalysis.score === 5
+                          ? 'bg-emerald-500'
+                          : 'bg-amber-500'
+                        : 'bg-slate-300 dark:bg-slate-700'
+                        }`}
                     />
                   ))}
                 </View>
@@ -230,7 +229,7 @@ export default function RegisterScreen() {
                       size={14}
                       color={passwordAnalysis.criteria.minLength ? colors.green : themeColors.inputPlaceholder}
                     />
-                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.minLength ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.minLength ? 'text-emerald-600 dark:text-brand-green' : 'text-slate-500 dark:text-slate-400'}`}>
                       {t('validation.criteriaMinLength')}
                     </Text>
                   </View>
@@ -241,7 +240,7 @@ export default function RegisterScreen() {
                       size={14}
                       color={passwordAnalysis.criteria.hasUppercase ? colors.green : themeColors.inputPlaceholder}
                     />
-                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasUppercase ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasUppercase ? 'text-emerald-600 dark:text-brand-green' : 'text-slate-500 dark:text-slate-400'}`}>
                       {t('validation.criteriaUppercase')}
                     </Text>
                   </View>
@@ -252,7 +251,7 @@ export default function RegisterScreen() {
                       size={14}
                       color={passwordAnalysis.criteria.hasLowercase ? colors.green : themeColors.inputPlaceholder}
                     />
-                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasLowercase ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasLowercase ? 'text-emerald-600 dark:text-brand-green' : 'text-slate-500 dark:text-slate-400'}`}>
                       {t('validation.criteriaLowercase')}
                     </Text>
                   </View>
@@ -263,7 +262,7 @@ export default function RegisterScreen() {
                       size={14}
                       color={passwordAnalysis.criteria.hasNumber ? colors.green : themeColors.inputPlaceholder}
                     />
-                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasNumber ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasNumber ? 'text-emerald-600 dark:text-brand-green' : 'text-slate-500 dark:text-slate-400'}`}>
                       {t('validation.criteriaNumber')}
                     </Text>
                   </View>
@@ -274,7 +273,7 @@ export default function RegisterScreen() {
                       size={14}
                       color={passwordAnalysis.criteria.hasSymbol ? colors.green : themeColors.inputPlaceholder}
                     />
-                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasSymbol ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'}`}>
+                    <Text className={`font-medium text-xs ml-1.5 ${passwordAnalysis.criteria.hasSymbol ? 'text-emerald-600 dark:text-brand-green' : 'text-slate-500 dark:text-slate-400'}`}>
                       {t('validation.criteriaSymbol')}
                     </Text>
                   </View>
@@ -304,9 +303,8 @@ export default function RegisterScreen() {
                     setAcceptPrivacy(!acceptPrivacy);
                     if (privacyError) setPrivacyError('');
                   }}
-                  className={`w-5 h-5 rounded border-2 items-center justify-center mr-3 mt-0.5 ${
-                    acceptPrivacy ? 'bg-emerald-600 border-emerald-600' : privacyError ? 'border-red-500' : 'border-slate-400 dark:border-slate-600'
-                  }`}
+                  className={`w-5 h-5 rounded border-2 items-center justify-center mr-3 mt-0.5 ${acceptPrivacy ? 'bg-brand-green border-brand-green' : privacyError ? 'border-red-500' : 'border-slate-400 dark:border-slate-600'
+                    }`}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
                   {acceptPrivacy && <Icon name="solar:check-read-linear" size={13} color={colors.white} />}
@@ -321,7 +319,7 @@ export default function RegisterScreen() {
                         title: t('auth.privacyPolicyTitle'),
                       })
                     }
-                    className="font-semibold text-emerald-700 dark:text-emerald-400 underline"
+                    className="font-semibold text-brand-green dark:text-brand-green underline"
                   >
                     {t('auth.privacyPolicyLink')}
                   </Text>{' '}
@@ -342,9 +340,8 @@ export default function RegisterScreen() {
                     setAcceptTerms(!acceptTerms);
                     if (termsError) setTermsError('');
                   }}
-                  className={`w-5 h-5 rounded border-2 items-center justify-center mr-3 mt-0.5 ${
-                    acceptTerms ? 'bg-emerald-600 border-emerald-600' : termsError ? 'border-red-500' : 'border-slate-400 dark:border-slate-600'
-                  }`}
+                  className={`w-5 h-5 rounded border-2 items-center justify-center mr-3 mt-0.5 ${acceptTerms ? 'bg-brand-green border-brand-green' : termsError ? 'border-red-500' : 'border-slate-400 dark:border-slate-600'
+                    }`}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
                   {acceptTerms && <Icon name="solar:check-read-linear" size={13} color={colors.white} />}
@@ -359,7 +356,7 @@ export default function RegisterScreen() {
                         title: t('auth.termsTitle'),
                       })
                     }
-                    className="font-semibold text-emerald-700 dark:text-emerald-400 underline"
+                    className="font-semibold text-brand-green dark:text-brand-green underline"
                   >
                     {t('auth.termsOfServiceLink')}
                   </Text>{' '}

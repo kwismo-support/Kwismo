@@ -13,7 +13,7 @@ export const Badge: React.FC<BadgeProps> = ({ label, variant = 'info', className
       case 'success':
         return {
           container: 'bg-emerald-100 dark:bg-emerald-950/60',
-          text: 'text-emerald-700 dark:text-emerald-300',
+          text: 'text-brand-green dark:text-emerald-300',
         };
       case 'warning':
         return {
