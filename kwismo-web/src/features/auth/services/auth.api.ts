@@ -6,7 +6,6 @@ import { MOCK_USERS } from '@/shared/mock/mockUsers';
 import { setAuthTokens, getDeviceId } from '@/shared/lib/token';
 import { useLanguageStore } from '@/shared/store/languageStore';
 import type { LoginInput, ForgotPasswordInput, ResetPasswordInput, PartnerRegisterInput } from '../schemas/auth.schema';
-import { useAuthStore } from '@/shared/store/authStore';
 
 const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
 

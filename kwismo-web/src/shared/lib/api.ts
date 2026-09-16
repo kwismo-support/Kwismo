@@ -1,6 +1,5 @@
 import { env } from '@/config/env';
 import { apiClient } from './axios';
-import { ENDPOINTS } from '@/config/endpoints';
 import {
   MOCK_USERS, MOCK_PARTNERS, MOCK_NUMBERS,
   MOCK_COUNTRIES, MOCK_OPERATORS, MOCK_USSD_ACTIONS,
