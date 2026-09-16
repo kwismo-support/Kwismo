@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
@@ -18,8 +19,9 @@ export default function ValidatePartnerModal({
   onClose,
   onConfirmValidate,
 }: ValidatePartnerModalProps) {
+  const { t } = useTranslation(['admin', 'common']);
   const [emailConnexion, setEmailConnexion] = useState('');
-  const [role, setRole] = useState('Partenaire Telco / Banque');
+  const [role] = useState('Partenaire Telco / Banque');
   const [password, setPassword] = useState('');
   const [sendEmailNotification, setSendEmailNotification] = useState(true);
 
@@ -64,7 +66,7 @@ export default function ValidatePartnerModal({
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="font-title text-lg font-bold text-slate-900 dark:text-white">
-                    Validation du Partenaire
+                    {t('admin:partners.validateModalTitle')}
                   </h3>
                   <StatusBadge status={request.typePartenariat} size="xs" />
                 </div>
@@ -84,17 +86,12 @@ export default function ValidatePartnerModal({
 
           <form onSubmit={handleSubmit} className="mt-5 space-y-4">
             <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-brand-darkBg/60 border border-slate-200/60 dark:border-white/5 text-xs text-slate-600 dark:text-slate-300 space-y-1 font-mono">
-              <div><strong className="text-slate-800 dark:text-white">Contact :</strong> {request.prenomContact} {request.nomContact}</div>
-              <div><strong className="text-slate-800 dark:text-white">Téléphone :</strong> {request.telephone}</div>
-              {request.message && (
-                <div className="mt-1 pt-1.5 border-t border-slate-200 dark:border-white/10 italic text-[11px]">
-                  "{request.message}"
-                </div>
-              )}
+              <div><strong className="text-slate-800 dark:text-white">{t('admin:partners.contactPerson')}:</strong> {request.prenomContact} {request.nomContact}</div>
+              <div><strong className="text-slate-800 dark:text-white">{t('admin:numbers.phoneNumber')}:</strong> {request.telephone}</div>
             </div>
 
             <Input
-              label="Email de connexion du compte"
+              label={t('admin:users.email')}
               value={emailConnexion}
               onChange={(e) => setEmailConnexion(e.target.value)}
               leftIcon="solar:letter-bold"
@@ -102,25 +99,9 @@ export default function ValidatePartnerModal({
             />
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                Rôle &amp; Type de Compte
-              </label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-darkBg/60 text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:border-brand-green"
-              >
-                <option value="Partenaire Telco / Banque">Partenaire Telco / Banque</option>
-                <option value="Partenaire Fintech / API">Partenaire Fintech / API</option>
-                <option value="Partenaire Microfinance">Partenaire Microfinance</option>
-                <option value="Super Partenaire (Accès Global)">Super Partenaire (Accès Global)</option>
-              </select>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Mot de passe généré
+                  {t('admin:partners.generatedPassword')}
                 </label>
                 <button
                   type="button"
@@ -128,7 +109,7 @@ export default function ValidatePartnerModal({
                   className="text-[11px] font-bold text-brand-orange hover:underline flex items-center gap-1 cursor-pointer"
                 >
                   <Icon icon="solar:restart-bold" className="text-xs" />
-                  Régénérer
+                  {t('admin:partners.regenerate')}
                 </button>
               </div>
               <Input
@@ -146,15 +127,15 @@ export default function ValidatePartnerModal({
                 onChange={(e) => setSendEmailNotification(e.target.checked)}
                 className="rounded border-slate-300 text-brand-orange focus:ring-brand-orange"
               />
-              <span>Envoyer automatiquement les accès par email</span>
+              <span>{t('admin:partners.autoSendEmail')}</span>
             </label>
 
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-white/10">
               <Button type="button" variant="outline" size="sm" onClick={onClose}>
-                Annuler
+                {t('common:actions.cancel')}
               </Button>
               <Button type="submit" variant="primary" size="sm" leftIcon="solar:check-circle-bold">
-                Activer le Partenaire
+                {t('admin:partners.activatePartner')}
               </Button>
             </div>
           </form>

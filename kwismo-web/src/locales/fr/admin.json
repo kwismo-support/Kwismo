@@ -218,5 +218,82 @@
       "roles": "Rôles & Droits d'Accès",
       "settings": "Paramètres Système"
     }
+  },
+  "partners": {
+    "title": "Partenaires & Affiliation",
+    "subtitle": "Gestion des entreprises partenaires, clés API, intégrations et règles d'affiliation de numéros.",
+    "tabs": {
+      "list": "Liste des Partenaires",
+      "pending": "Demandes en attente",
+      "rules": "Règles d'affiliation"
+    },
+    "newPartner": "Nouveau Partenaire",
+    "searchPlaceholder": "Rechercher par nom, email, société...",
+    "emptyTitle": "Aucun partenaire trouvé",
+    "emptyDesc": "Modifiez vos critères de recherche ou ajoutez un nouveau partenaire.",
+    "deleteConfirmTitle": "Supprimer ce partenaire ?",
+    "deleteConfirmDesc": "Êtes-vous sûr de vouloir supprimer définitivement le partenaire",
+    "kpis": {
+      "total": "Total Partenaires",
+      "active": "Partenaires Actifs",
+      "pending": "Demandes en attente",
+      "revoked": "Accès Révoqués"
+    },
+    "form": {
+      "titleNew": "Créer un Partenaire",
+      "titleEdit": "Modifier le Partenaire",
+      "sectionGeneral": "Informations de l'Entreprise",
+      "companyName": "Nom de la société",
+      "companyNamePlaceholder": "Ex: Wave CI, Orange Money",
+      "contactName": "Nom du contact principal",
+      "contactEmail": "Email professionnel",
+      "phoneNumber": "Téléphone",
+      "webhookUrl": "Webhook URL (Optionnel)",
+      "status": "Statut"
+    },
+    "rules": {
+      "title": "Règles d'Affiliation par Opérateur",
+      "subtitle": "Définissez les tranches de préfixes téléphoniques associées à chaque pays et opérateur.",
+      "selectCountry": "Sélectionner un pays",
+      "selectOperator": "Sélectionner un opérateur",
+      "prefixes": "Préfixes attribués (séparés par virgule)",
+      "prefixesPlaceholder": "Ex: 69, 651-654, 68",
+      "addRule": "Ajouter la règle",
+      "existingRules": "Règles actives",
+      "noRules": "Aucune règle d'affiliation enregistrée pour ce pays/opérateur."
+    },
+    "status": {
+      "active": "Actif",
+      "pending": "En attente",
+      "revoked": "Révoqué"
+    },
+    "toasts": {
+      "fetchError": "Erreur lors du chargement des partenaires",
+      "saveSuccess": "Partenaire enregistré avec succès",
+      "saveError": "Erreur lors de l'enregistrement du partenaire",
+      "deleteSuccess": "Partenaire supprimé",
+      "deleteError": "Erreur lors de la suppression",
+      "validateSuccess": "Partenaire validé avec succès",
+      "rejectSuccess": "Demande du partenaire rejetée",
+      "ruleSaveSuccess": "Règle d'affiliation enregistrée avec succès",
+      "ruleSaveError": "Erreur lors de l'enregistrement de la règle"
+    },
+    "detail": {
+      "title": "Fiche Partenaire",
+      "subtitle": "Statistiques d'utilisation, numéros sous affiliation et métriques.",
+      "scopeKPIs": "Métriques de Portée (Scope)",
+      "scopeUsers": "Utilisateurs affiliés",
+      "scopeNumbers": "Numéros sous gestion",
+      "apiKey": "Clé API / Token",
+      "regenerateKey": "Régénérer la clé API"
+    },
+    "pending": {
+      "title": "Demandes d'Adhésion en Attente",
+      "subtitle": "Validez ou rejetez les demandes de partenariat soumises.",
+      "validate": "Valider le partenaire",
+      "reject": "Rejeter la demande",
+      "confirmValidateTitle": "Valider la demande de partenariat ?",
+      "confirmValidateDesc": "Une clé API sera générée et transmise au contact principal."
+    }
   }
 }

@@ -218,5 +218,82 @@
       "roles": "Roles & Access Rights",
       "settings": "System Settings"
     }
+  },
+  "partners": {
+    "title": "Partners & Affiliation",
+    "subtitle": "Management of partner companies, API keys, integrations, and number affiliation rules.",
+    "tabs": {
+      "list": "Partners List",
+      "pending": "Pending Requests",
+      "rules": "Affiliation Rules"
+    },
+    "newPartner": "New Partner",
+    "searchPlaceholder": "Search by name, email, company...",
+    "emptyTitle": "No partners found",
+    "emptyDesc": "Change your search filters or add a new partner.",
+    "deleteConfirmTitle": "Delete this partner?",
+    "deleteConfirmDesc": "Are you sure you want to permanently delete partner",
+    "kpis": {
+      "total": "Total Partners",
+      "active": "Active Partners",
+      "pending": "Pending Requests",
+      "revoked": "Revoked Access"
+    },
+    "form": {
+      "titleNew": "Create Partner",
+      "titleEdit": "Edit Partner",
+      "sectionGeneral": "Company Information",
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "e.g. Wave CI, Orange Money",
+      "contactName": "Primary Contact Name",
+      "contactEmail": "Business Email",
+      "phoneNumber": "Phone Number",
+      "webhookUrl": "Webhook URL (Optional)",
+      "status": "Status"
+    },
+    "rules": {
+      "title": "Affiliation Rules by Operator",
+      "subtitle": "Define phone prefix ranges associated with each country and operator.",
+      "selectCountry": "Select a country",
+      "selectOperator": "Select an operator",
+      "prefixes": "Assigned prefixes (comma separated)",
+      "prefixesPlaceholder": "e.g. 69, 651-654, 68",
+      "addRule": "Add Rule",
+      "existingRules": "Active Rules",
+      "noRules": "No affiliation rules registered for this country/operator."
+    },
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "revoked": "Revoked"
+    },
+    "toasts": {
+      "fetchError": "Error fetching partners",
+      "saveSuccess": "Partner saved successfully",
+      "saveError": "Error saving partner",
+      "deleteSuccess": "Partner deleted",
+      "deleteError": "Error deleting partner",
+      "validateSuccess": "Partner validated successfully",
+      "rejectSuccess": "Partner request rejected",
+      "ruleSaveSuccess": "Affiliation rule saved successfully",
+      "ruleSaveError": "Error saving affiliation rule"
+    },
+    "detail": {
+      "title": "Partner Profile",
+      "subtitle": "Usage statistics, affiliated numbers and metrics.",
+      "scopeKPIs": "Scope Metrics",
+      "scopeUsers": "Affiliated Users",
+      "scopeNumbers": "Managed Numbers",
+      "apiKey": "API Key / Token",
+      "regenerateKey": "Regenerate API Key"
+    },
+    "pending": {
+      "title": "Pending Registration Requests",
+      "subtitle": "Validate or reject submitted partnership requests.",
+      "validate": "Validate Partner",
+      "reject": "Reject Request",
+      "confirmValidateTitle": "Validate partnership request?",
+      "confirmValidateDesc": "An API key will be generated and sent to the primary contact."
+    }
   }
 }
