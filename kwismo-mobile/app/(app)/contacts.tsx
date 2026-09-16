@@ -8,14 +8,15 @@ import {
   Modal,
   Platform,
   Linking,
-  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import * as Contacts from 'expo-contacts';
+import * as Contacts from 'expo-contacts/legacy';
 import { Icon } from '@/shared/ui/Icon';
+import { HeaderBar } from '@/shared/components/HeaderBar';
+import { Skeleton, SkeletonCircle, SkeletonLoader } from '@/shared/ui/Skeleton';
 import { CountryFlag } from '@/shared/components/CountryFlag';
 import { CountryPickerModal, CountryItem } from '@/shared/components/CountryPickerModal';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
@@ -188,7 +189,7 @@ export default function ContactsScreen() {
     } catch (e) {
       setPermissionGranted(true);
     } finally {
-      setLoading(false);
+      setTimeout(() => setLoading(false), 600);
     }
   };
 
@@ -338,41 +339,33 @@ export default function ContactsScreen() {
     return <Text className="font-bold text-sm text-white">{initials.toUpperCase()}</Text>;
   };
 
+  const handleHeaderBack = () => {
+    if (isInviteMode) {
+      setIsInviteMode(false);
+    } else {
+      router.back();
+    }
+  };
+
   return (
     <View className="flex-1 bg-brand-green">
       <StatusBar style="light" />
 
-      {/* Top Green Curved Header */}
-      <View
-        style={{ paddingTop: Math.max(insets.top, 12), paddingBottom: 16 }}
-        className="px-4 flex-row items-center justify-between"
-      >
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => {
-            if (isInviteMode) {
-              setIsInviteMode(false);
-            } else {
-              router.back();
-            }
-          }}
-          className="p-1"
-        >
-          <Icon name="solar:arrow-left-linear" color="#FFFFFF" size={24} />
-        </TouchableOpacity>
-
-        <Text className="font-title text-lg font-bold text-white text-center">
-          {isInviteMode ? t('common.inviteFriends') : t('common.myContactsTitle')}
-        </Text>
-
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => router.back()}
-          className="p-1"
-        >
-          <Icon name="solar:close-linear" color="#FFFFFF" size={24} />
-        </TouchableOpacity>
-      </View>
+      {/* HeaderBar Component */}
+      <HeaderBar
+        title={isInviteMode ? t('common.inviteFriends') : t('common.myContactsTitle')}
+        showBack={true}
+        onBack={handleHeaderBack}
+        rightAction={
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => router.back()}
+            className="p-1"
+          >
+            <Icon name="solar:close-linear" color="#FFFFFF" size={24} />
+          </TouchableOpacity>
+        }
+      />
 
       {/* Main Content White Container */}
       <View className="flex-1 bg-white dark:bg-brand-darkBg rounded-t-[28px] overflow-hidden pt-4 px-4">
@@ -455,11 +448,25 @@ export default function ContactsScreen() {
                 </TouchableOpacity>
               </View>
 
-              {/* Contacts List */}
+              {/* Contacts List with Skeleton Loader */}
               {loading ? (
-                <View className="py-12 items-center justify-center">
-                  <ActivityIndicator size="large" color="#25B876" />
-                </View>
+                <SkeletonLoader>
+                  <View className="gap-y-3 pt-2">
+                    {Array.from({ length: 6 }).map((_, idx) => (
+                      <View
+                        key={`skel-contact-${idx}`}
+                        className="flex-row items-center py-2.5 border-b border-slate-100 dark:border-slate-800/60"
+                      >
+                        <SkeletonCircle size={44} style={{ marginRight: 14 }} />
+                        <View style={{ flex: 1, gap: 6 }}>
+                          <Skeleton width="55%" height={16} borderRadius={4} />
+                          <Skeleton width="35%" height={12} borderRadius={4} />
+                        </View>
+                        <SkeletonCircle size={20} />
+                      </View>
+                    ))}
+                  </View>
+                </SkeletonLoader>
               ) : filteredContacts.length === 0 ? (
                 <View className="py-12 items-center justify-center">
                   <Text className="text-sm text-slate-400">{t('common.noContactsFound')}</Text>
@@ -539,30 +546,20 @@ export default function ContactsScreen() {
         <View className="flex-1 bg-brand-green">
           <StatusBar style="light" />
 
-          <View
-            style={{ paddingTop: Math.max(insets.top, 12), paddingBottom: 16 }}
-            className="px-4 flex-row items-center justify-between"
-          >
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => setAddNumberModalVisible(false)}
-              className="p-1"
-            >
-              <Icon name="solar:arrow-left-linear" color="#FFFFFF" size={24} />
-            </TouchableOpacity>
-
-            <Text className="font-title text-lg font-bold text-white text-center">
-              {t('common.addPhoneTitle')}
-            </Text>
-
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => setAddNumberModalVisible(false)}
-              className="p-1"
-            >
-              <Icon name="solar:close-linear" color="#FFFFFF" size={24} />
-            </TouchableOpacity>
-          </View>
+          <HeaderBar
+            title={t('common.addPhoneTitle')}
+            showBack={true}
+            onBack={() => setAddNumberModalVisible(false)}
+            rightAction={
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => setAddNumberModalVisible(false)}
+                className="p-1"
+              >
+                <Icon name="solar:close-linear" color="#FFFFFF" size={24} />
+              </TouchableOpacity>
+            }
+          />
 
           <View className="flex-1 bg-white dark:bg-brand-darkBg rounded-t-[28px] p-6 gap-y-4">
             <TextInput

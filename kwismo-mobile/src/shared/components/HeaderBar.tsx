@@ -16,6 +16,7 @@ interface HeaderBarProps {
   onPressNotifications?: () => void;
   backgroundColor?: string;
   textColor?: string;
+  rightAction?: React.ReactNode;
 }
 
 export const HeaderBar: React.FC<HeaderBarProps> = ({
@@ -28,6 +29,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
   onPressNotifications,
   backgroundColor = colors.green,
   textColor = colors.white,
+  rightAction,
 }) => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -78,12 +80,16 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             </View>
 
             <View className="w-10 flex-row items-center justify-end">
-              <HeaderActions
-                unreadNotificationsCount={unreadNotificationsCount}
-                iconColor={textColor}
-                onPressNotifications={onPressNotifications}
-                showBell={false}
-              />
+              {rightAction ? (
+                rightAction
+              ) : (
+                <HeaderActions
+                  unreadNotificationsCount={unreadNotificationsCount}
+                  iconColor={textColor}
+                  onPressNotifications={onPressNotifications}
+                  showBell={false}
+                />
+              )}
             </View>
           </>
         ) : (
