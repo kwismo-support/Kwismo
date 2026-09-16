@@ -23,6 +23,8 @@ import basilCollection from '@iconify/json/json/basil.json';
 import reiconCollection from '@iconify/json/json/reicon.json';
 import famiconsCollection from '@iconify/json/json/famicons.json';
 import gravityUiCollection from '@iconify/json/json/gravity-ui.json';
+import fontistoCollection from '@iconify/json/json/fontisto.json';
+import antDesignCollection from '@iconify/json/json/ant-design.json';
 
 const collectionsMap: Record<string, any> = {
   'bitcoin-icons': bitcoinIconsCollection,
@@ -43,6 +45,8 @@ const collectionsMap: Record<string, any> = {
   reicon: reiconCollection,
   famicons: famiconsCollection,
   'gravity-ui': gravityUiCollection,
+  fontisto: fontistoCollection,
+  'ant-design': antDesignCollection,
 };
 
 function getCollectionData(prefix: string) {

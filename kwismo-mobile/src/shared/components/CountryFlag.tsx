@@ -19,7 +19,7 @@ export const CountryFlag: React.FC<CountryFlagProps> = ({
 
   const fallbackEmoji = countryCode
     ? countryCode.toUpperCase().replace(/./g, (c) => String.fromCodePoint(c.charCodeAt(0) + 127397))
-    : '🌐';
+    : 'solar:global-linear';
 
   if (!code || hasError || code.length !== 2) {
     return (

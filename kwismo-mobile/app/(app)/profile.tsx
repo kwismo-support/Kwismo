@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { TabBar } from '@/shared/components/TabBar';
 import { HeaderBar } from '@/shared/components/HeaderBar';
+import { CustomSwitch } from '@/shared/ui/CustomSwitch';
 import { Skeleton, SkeletonCircle, SkeletonLoader } from '@/shared/ui/Skeleton';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { useThemeStore, ThemePreference } from '@/shared/store/themeStore';
@@ -67,15 +68,11 @@ export default function ProfileScreen() {
       {/* Header Bar */}
       <HeaderBar title={t('common.profile')} />
 
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: insets.bottom + 95 }}
-        showsVerticalScrollIndicator={false}
-        className="px-4"
-      >
+      <View className="px-4">
         {/* User Card (Floating Overlap style matching mockup) */}
         {loading ? (
           <SkeletonLoader>
-            <View className="flex-row items-center p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-brand-cardDark shadow-md -mt-6 mb-4">
+            <View className="flex-row items-center p-4 rounded-2xl shadow-xl shadow-black elevation-4 border border-slate-100 dark:border-slate-800 bg-white dark:bg-brand-cardDark -mt-6 mb-4">
               <SkeletonCircle size={56} />
               <View className="flex-1 ml-3.5">
                 <Skeleton width={100} height={14} borderRadius={4} />
@@ -84,10 +81,10 @@ export default function ProfileScreen() {
             </View>
           </SkeletonLoader>
         ) : (
-          <View className="flex-row items-center p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-brand-cardDark shadow-md -mt-6 mb-4">
+          <View className="flex-row items-center p-4 rounded-2xl shadow-xl shadow-black elevation-4 border border-slate-100 dark:border-slate-800 bg-white dark:bg-brand-cardDark -mt-6 mb-4">
             {/* Avatar Circle */}
-            <View className="w-14 h-14 rounded-full bg-emerald-500 items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800">
-              <Text className="font-bold text-xl text-white">
+            <View className="w-16 h-16 rounded-full bg-emerald-500 items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800">
+              <Text className="font-bold text-2xl text-white">
                 {userName.charAt(0).toUpperCase()}
               </Text>
             </View>
@@ -112,11 +109,17 @@ export default function ProfileScreen() {
               onPress={() => router.push('/(app)/edit-profile')}
               className="p-2"
             >
-              <Icon name="solar:pen-new-square-linear" color="#94A3B8" size={22} />
+              <Icon name="basil:edit-outline" color="#94A3B8" size={24} />
             </TouchableOpacity>
           </View>
         )}
+      </View>
 
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: insets.bottom + 95 }}
+        showsVerticalScrollIndicator={false}
+        className="px-4"
+      >
         {/* Section: Préférence */}
         <Text className="text-xs font-semibold text-slate-400 dark:text-slate-500 mt-3 mb-2 px-1">
           {t('common.preferenceSection')}
@@ -125,17 +128,16 @@ export default function ProfileScreen() {
         <View className="bg-white dark:bg-brand-cardDark">
           {/* Notification */}
           <View className="flex-row items-center justify-between py-3.5 border-b border-slate-100 dark:border-slate-800">
-            <View className="flex-row items-center gap-3">
-              <Icon name="solar:bell-linear" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
+            <View className="flex-row items-center gap-3 ml-1">
+              <Icon name="ph:bell-ringing" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 {t('common.notificationItem')}
               </Text>
             </View>
-            <Switch
+            <CustomSwitch
               value={notificationEnabled}
               onValueChange={setNotificationEnabled}
-              trackColor={{ false: '#E2E8F0', true: '#FF9500' }}
-              thumbColor="#FFFFFF"
+              activeColor="#FF9500"
             />
           </View>
 
@@ -145,8 +147,8 @@ export default function ProfileScreen() {
             onPress={() => setLanguageModalVisible(true)}
             className="flex-row items-center justify-between py-3.5 border-b border-slate-100 dark:border-slate-800"
           >
-            <View className="flex-row items-center gap-3">
-              <Icon name="solar:global-linear" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
+            <View className="flex-row items-center gap-3 ml-1">
+              <Icon name="fontisto:world-o" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 {t('common.language')}
               </Text>
@@ -161,18 +163,17 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           {/* Thème */}
-          <View className="flex-row items-center justify-between py-3.5 border-b border-slate-100 dark:border-slate-800">
-            <View className="flex-row items-center gap-3">
-              <Icon name="solar:moon-linear" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
+          <View className="flex-row items-center justify-between py-3.5">
+            <View className="flex-row items-center gap-3 ml-1">
+              <Icon name="ant-design:moon-outlined" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 {t('common.themeItem')}
               </Text>
             </View>
-            <Switch
+            <CustomSwitch
               value={userThemePreference === 'dark' || isDark}
               onValueChange={(val) => setTheme(val ? 'dark' : 'light')}
-              trackColor={{ false: '#E2E8F0', true: '#CBD5E1' }}
-              thumbColor="#FFFFFF"
+              activeColor="#CBD5E1"
             />
           </View>
         </View>
@@ -189,7 +190,7 @@ export default function ProfileScreen() {
             onPress={() => router.push('/(app)/security')}
             className="flex-row items-center justify-between py-3.5 border-b border-slate-100 dark:border-slate-800"
           >
-            <View className="flex-row items-center gap-3">
+            <View className="flex-row items-center gap-3 ml-1">
               <Icon name="solar:lock-keyhole-linear" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 {t('common.changePassword')}
@@ -200,17 +201,16 @@ export default function ProfileScreen() {
 
           {/* Authentification à 2FA */}
           <View className="flex-row items-center justify-between py-3.5 border-b border-slate-100 dark:border-slate-800">
-            <View className="flex-row items-center gap-3">
+            <View className="flex-row items-center gap-3 ml-1">
               <Icon name="solar:shield-keyhole-linear" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 {t('common.twoFactorAuthItem')}
               </Text>
             </View>
-            <Switch
+            <CustomSwitch
               value={twoFactorEnabled}
               onValueChange={setTwoFactorEnabled}
-              trackColor={{ false: '#E2E8F0', true: '#FF9500' }}
-              thumbColor="#FFFFFF"
+              activeColor="#FF9500"
             />
           </View>
 
@@ -220,7 +220,7 @@ export default function ProfileScreen() {
             onPress={() => toast.info('Sessions actives')}
             className="flex-row items-center justify-between py-3.5 border-b border-slate-100 dark:border-slate-800"
           >
-            <View className="flex-row items-center gap-3">
+            <View className="flex-row items-center gap-3 ml-1">
               <Icon name="solar:devices-linear" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 {t('common.activeSessionsItem')}
@@ -235,7 +235,7 @@ export default function ProfileScreen() {
             onPress={() => toast.info('Suppression du compte')}
             className="flex-row items-center justify-between py-3.5"
           >
-            <View className="flex-row items-center gap-3">
+            <View className="flex-row items-center gap-3 ml-1">
               <Icon name="solar:trash-bin-trash-linear" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 {t('common.deleteAccountItem')}

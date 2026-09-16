@@ -47,7 +47,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
       style={{
         backgroundColor,
         paddingTop: Math.max(insets.top + 8, 18),
-        paddingBottom: isHome ? 75 : 16,
+        paddingBottom: 75,
       }}
       className="px-4 pb-3 relative overflow-hidden"
     >
@@ -91,7 +91,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                   KWISMO
                 </Text>
               ) : (
-                <Text numberOfLines={1} style={{ color: textColor }} className="font-montserrat-bold text-xl font-h1">
+                <Text numberOfLines={1} style={{ color: textColor }} className="font-montserrat-bold text-2xl font-h1 tracking-wider">
                   {title}
                 </Text>
               )}
@@ -110,12 +110,12 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
       </View>
 
       {showBack && title && (
-        <View className="items-center justify-center pt-2 pb-1">
+        <View className="items-center justify-center pt-3.5 pb-1">
           <Text
             numberOfLines={1}
             ellipsizeMode="tail"
             style={{ color: textColor }}
-            className="font-montserrat-bold text-xl font-bold text-center"
+            className="flex-1 justify-end items-end font-montserrat-bold text-2xl font-bold text-center"
           >
             {title}
           </Text>
@@ -123,7 +123,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
       )}
 
       {!showBack && subtitle && (
-        <View className="items-center justify-center pt-2 pb-1">
+        <View className="items-center justify-center pt-3.5 pb-1">
           <Text style={{ color: textColor }} className="font-semibold text-base text-center">
             {subtitle}
           </Text>
