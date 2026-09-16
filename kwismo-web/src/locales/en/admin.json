@@ -82,10 +82,36 @@
     "subtitle": "Role configuration, application permissions and RBAC authorizations.",
     "roles": "Roles",
     "permissions": "Permissions",
-    "addRole": "Add role",
+    "addRole": "New role",
+    "editRole": "Edit role",
+    "deleteRole": "Delete role",
+    "roleName": "Role name",
+    "roleDescription": "Role description",
+    "roleNamePlaceholder": "e.g. Security Moderator",
     "matrix": "Permissions matrix",
     "roleAdmin": "Administrator",
     "rolePartner": "Partner",
-    "roleUser": "User"
+    "roleUser": "User",
+    "saveMatrix": "Save matrix",
+    "saveMatrixSuccess": "Permissions matrix saved successfully.",
+    "roleCreated": "New role created successfully.",
+    "roleDeleted": "Role deleted successfully.",
+    "deleteRoleTitle": "Confirm role deletion",
+    "deleteRoleConfirm": "Are you sure you want to delete this role? Associated permissions will be revoked.",
+    "systemRoleWarning": "Default system roles cannot be deleted.",
+    "selectAll": "Grant all",
+    "deselectAll": "Deselect all",
+    "granted": "Granted",
+    "denied": "Denied",
+    "categories": {
+      "users": "User Management",
+      "numbers": "Number Registry",
+      "reports": "Fraud Reports",
+      "partners": "Partners & Affiliations",
+      "ussd": "Countries, Operators & USSD",
+      "roles": "Roles & Access Rights",
+      "settings": "System Settings"
+    }
   }
 }
+

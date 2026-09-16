@@ -73,8 +73,10 @@ export const ENDPOINTS = {
 
   
   access: {
-    roles:       '/access/roles',
-    role:        (id: string) => `/access/roles/${id}`,
-    permissions: '/access/permissions',
+    roles:  '/roles',
+    role:   (id: string) => `/roles/${id}`,
+    rights: '/access-rights',
+    right:  (id: string) => `/access-rights/${id}`,
   },
 } as const;
+

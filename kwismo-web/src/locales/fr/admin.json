@@ -82,10 +82,36 @@
     "subtitle": "Configuration des rôles, permissions applicatives et habilitations RBAC.",
     "roles": "Rôles",
     "permissions": "Permissions",
-    "addRole": "Ajouter un rôle",
+    "addRole": "Nouveau rôle",
+    "editRole": "Modifier le rôle",
+    "deleteRole": "Supprimer le rôle",
+    "roleName": "Nom du rôle",
+    "roleDescription": "Description du rôle",
+    "roleNamePlaceholder": "Ex: Modérateur Sécurité",
     "matrix": "Matrice des permissions",
     "roleAdmin": "Administrateur",
     "rolePartner": "Partenaire",
-    "roleUser": "Utilisateur"
+    "roleUser": "Utilisateur",
+    "saveMatrix": "Enregistrer la matrice",
+    "saveMatrixSuccess": "Matrice des permissions enregistrée avec succès.",
+    "roleCreated": "Nouveau rôle créé avec succès.",
+    "roleDeleted": "Rôle supprimé avec succès.",
+    "deleteRoleTitle": "Confirmer la suppression du rôle",
+    "deleteRoleConfirm": "Voulez-vous vraiment supprimer ce rôle ? Les permissions associées seront révoquées.",
+    "systemRoleWarning": "Les rôles système par défaut ne peuvent pas être supprimés.",
+    "selectAll": "Tout accorder",
+    "deselectAll": "Tout désélectionner",
+    "granted": "Accordé",
+    "denied": "Refusé",
+    "categories": {
+      "users": "Gestion des utilisateurs",
+      "numbers": "Registre des numéros",
+      "reports": "Signalements de fraude",
+      "partners": "Partenaires & Affiliation",
+      "ussd": "Pays, Opérateurs & USSD",
+      "roles": "Rôles & Droits d'Accès",
+      "settings": "Paramètres Système"
+    }
   }
 }
+
