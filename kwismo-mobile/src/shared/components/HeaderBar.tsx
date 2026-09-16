@@ -88,7 +88,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           </>
         ) : (
           <>
-            <View className="flex-1 justify-center">
+            <View className="flex-1 justify-center ">
               {isHome ? (
                 <Text style={{ color: textColor }} className="font-montserrat-bold text-2xl font-h1 tracking-wider">
                   KWISMO
@@ -114,7 +114,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
 
       {subtitle && (
         <View className="items-center justify-center pt-2 pb-1">
-          <Text style={{ color: textColor }} className="font-font-medium text-base font-semibold text-center">
+          <Text style={{ color: textColor }} className="font-semibold text-base text-center">
             {subtitle}
           </Text>
         </View>

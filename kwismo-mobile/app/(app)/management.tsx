@@ -320,7 +320,7 @@ export default function ManagementScreen() {
                           setOtpTimer(60);
                           setFullScreenOtpVisible(true);
                         }}
-                        className="px-5 py-2 rounded-xl bg-orange-500"
+                        className="px-5 py-2 rounded bg-orange-500"
                       >
                         <Text className="font-bold text-xs text-white">
                           {t('common.validate')}
