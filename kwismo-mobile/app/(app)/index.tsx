@@ -376,7 +376,7 @@ export default function HomeScreen() {
                 className="flex-row items-center py-2.5"
               >
                 <View
-                  className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 justify-center items-center mr-2.5"
+                  className="wx-10 hx-10 rounded-full bg-slate-100 dark:bg-slate-800 justify-center items-center mr-2.5"
                   style={item.initialBg ? { backgroundColor: item.initialBg } : item.initials ? { backgroundColor: colors.green } : {}}
                 >
                   {item.initials ? (
