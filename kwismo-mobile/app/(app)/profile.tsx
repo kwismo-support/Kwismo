@@ -248,7 +248,7 @@ export default function ProfileScreen() {
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={handleLogout}
-          className="items-center justify-center py-8 mt-4 mb-2"
+          className="items-center justify-center py-6 mb-2"
         >
           <Text className="font-bold text-base text-slate-900 dark:text-white">
             {t('common.logoutAction')}

@@ -47,7 +47,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
       style={{
         backgroundColor,
         paddingTop: Math.max(insets.top + 8, 18),
-        paddingBottom: 75,
+        paddingBottom: 30,
       }}
       className="px-4 pb-3 relative overflow-hidden"
     >
@@ -55,7 +55,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
         <View className="absolute -top-10 -right-5 w-55 h-55 rounded-full border-[26px] border-white -rotate-25 scale-x-140" />
       </View>
 
-      <View className="flex-row items-center justify-between min-h-7">
+      <View className="flex-row items-center justify-between min-h-7 mb-10">
         {showBack ? (
           <>
             <View className="w-10 flex-row items-center justify-start">
@@ -110,7 +110,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
       </View>
 
       {showBack && title && (
-        <View className="items-center justify-center pt-3.5 pb-1">
+        <View className="items-center justify-center">
           <Text
             numberOfLines={1}
             ellipsizeMode="tail"
@@ -123,7 +123,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
       )}
 
       {!showBack && subtitle && (
-        <View className="items-center justify-center pt-3.5 pb-1">
+        <View className="items-center justify-center">
           <Text style={{ color: textColor }} className="font-semibold text-base text-center">
             {subtitle}
           </Text>

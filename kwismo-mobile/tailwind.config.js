@@ -1,8 +1,3 @@
-const percentScale = Array.from({ length: 100 }, (_, i) => i + 1).reduce((acc, val) => {
-  acc[val] = `${val}%`;
-  return acc;
-}, {});
-
 module.exports = {
   content: [
     './app/**/*.{js,jsx,ts,tsx}',
@@ -10,24 +5,6 @@ module.exports = {
   ],
   theme: {
     extend: {
-      height: {
-        ...percentScale,
-      },
-      minHeight: {
-        ...percentScale,
-      },
-      maxHeight: {
-        ...percentScale,
-      },
-      width: {
-        ...percentScale,
-      },
-      minWidth: {
-        ...percentScale,
-      },
-      maxWidth: {
-        ...percentScale,
-      },
       spacing: {
         '13': '52px',
         '15': '60px',
@@ -35,7 +12,10 @@ module.exports = {
         '18': '72px',
         '19': '76px',
         '25': '100px',
+        '34': '136px',
         '50': '200px',
+        '55': '220px',
+        '90': '360px',
       },
       colors: {
         transparent: 'transparent',
