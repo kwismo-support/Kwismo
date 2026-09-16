@@ -35,17 +35,78 @@
   },
   "numbers": {
     "title": "Number registry",
+    "subtitle": "Management of phone number pool, fraud detection, and history tracking.",
     "verify": "Verify a number",
     "batchVerify": "Batch verification",
     "phoneNumber": "Phone number",
     "riskScore": "Risk score",
     "lastCheck": "Last check",
     "reportCount": "Reports",
+    "reportsCount": "Reports",
+    "newNumberButton": "New number",
+    "searchPlaceholder": "Search by number, operator, country...",
+    "emptyTitle": "No numbers found",
+    "emptyDesc": "Change your search filters or verify a new number.",
+    "bulkActions": "Bulk actions on numbers",
+    "notFoundTitle": "Number not found",
+    "backToList": "Back to registry",
+    "detailTitle": "In-Depth Analysis",
+    "detailSubtitle": "Evaluation of AI risk score and verification history.",
+    "newTitle": "New Number",
+    "riskScoreLabel": "AI Risk Score",
+    "riskCritical": "Critical Level",
+    "riskSuspicious": "High Suspicion",
+    "riskNormal": "Low / Normal Risk",
+    "formSectionTitle": "Risk Qualification & Notes",
+    "countryOrigin": "Country of origin",
+    "statusSecured": "Secured (Compliant)",
+    "statusWarning": "Suspicious (Warning)",
+    "statusFraud": "Fraudulent (Blocked)",
+    "riskScoreInput": "Risk score (0 to 100)",
+    "expertNote": "Expert analysis note",
+    "modalTitle": "Number History",
+    "modalSubtitle": "Details, AI reputation and logs",
+    "tabOverview": "Overview",
+    "tabReports": "Reports",
+    "tabLogs": "System logs",
+    "aiAnalysisTitle": "Kwismo AI Risk Analysis",
+    "aiAnalysisDesc": "Verified by Kwismo AI algorithm. Risk score is computed based on query frequency and reputation.",
+    "noReports": "No suspicious reports registered for this number.",
+    "reportIncidentTitle": "Fraud / Vishing Attempt",
+    "reportIncidentDesc": "Incident recorded by Kwismo monitoring network.",
+    "deleteConfirmTitle": "Delete this number?",
+    "deleteConfirmDesc": "Are you sure you want to permanently delete number",
+    "toggleConfirmTitle": "Change number status",
+    "toggleConfirmDesc": "Do you want to change security status for number",
+    "kpis": {
+      "total": "Total Numbers",
+      "secured": "Secured Numbers",
+      "fraudulent": "Fraudulent Numbers",
+      "reported": "Reported Numbers"
+    },
+    "filters": {
+      "allOperators": "All operators",
+      "allRisks": "All risk levels",
+      "highRisk": "Fraudulent (≤40)",
+      "mediumRisk": "Suspicious (41-79)",
+      "lowRisk": "Secured (≥80)"
+    },
     "status": {
-      "securise": "Secure",
+      "securise": "Secured",
       "a_signaler": "Suspicious",
       "frauduleux": "Fraudulent",
       "unknown": "Unknown"
+    },
+    "toasts": {
+      "fetchError": "Error fetching numbers",
+      "verifySuccess": "Number verified successfully",
+      "verifyError": "Error verifying number",
+      "statusSuccess": "Number status updated",
+      "statusError": "Error updating number status",
+      "deleteSuccess": "Number removed from registry",
+      "bulkDeleteSuccess": "Selected numbers deleted",
+      "exportInitiated": "Numbers CSV export initiated",
+      "exportSelection": "Exporting selected numbers"
     }
   },
   "reports": {
@@ -107,11 +168,10 @@
       "users": "User Management",
       "numbers": "Number Registry",
       "reports": "Fraud Reports",
-      "partners": "Partners & Affiliations",
+      "partners": "Partners & Affiliation",
       "ussd": "Countries, Operators & USSD",
       "roles": "Roles & Access Rights",
       "settings": "System Settings"
     }
   }
 }
-

@@ -35,17 +35,78 @@
   },
   "numbers": {
     "title": "Registre des numéros",
+    "subtitle": "Gestion du pool de numéros, détection de fraude et suivi de l'historique.",
     "verify": "Vérifier un numéro",
     "batchVerify": "Vérification en lot",
     "phoneNumber": "Numéro de téléphone",
     "riskScore": "Score de risque",
     "lastCheck": "Dernière vérification",
     "reportCount": "Signalements",
+    "reportsCount": "Signalements",
+    "newNumberButton": "Nouveau numéro",
+    "searchPlaceholder": "Rechercher par numéro, opérateur, pays...",
+    "emptyTitle": "Aucun numéro trouvé",
+    "emptyDesc": "Modifiez vos critères de recherche ou vérifiez un nouveau numéro.",
+    "bulkActions": "Actions groupées sur les numéros",
+    "notFoundTitle": "Numéro introuvable",
+    "backToList": "Retour au registre",
+    "detailTitle": "Analyse Approfondie",
+    "detailSubtitle": "Évaluation du score de risque IA et historique des vérifications.",
+    "newTitle": "Nouveau Numéro",
+    "riskScoreLabel": "Score de Risque IA",
+    "riskCritical": "Niveau Critique",
+    "riskSuspicious": "Suspicion Élevée",
+    "riskNormal": "Risque Faible / Normal",
+    "formSectionTitle": "Qualification du Risque & Notes",
+    "countryOrigin": "Pays d'origine",
+    "statusSecured": "Sécurisé (Conforme)",
+    "statusWarning": "À signaler (Avertissement)",
+    "statusFraud": "Frauduleux (Bloqué)",
+    "riskScoreInput": "Score de risque (0 à 100)",
+    "expertNote": "Note d'analyse de l'expert",
+    "modalTitle": "Historique du Numéro",
+    "modalSubtitle": "Détails, réputation IA et logs",
+    "tabOverview": "Vue Générale",
+    "tabReports": "Signalements",
+    "tabLogs": "Logs système",
+    "aiAnalysisTitle": "Analyse de risque IA Kwismo",
+    "aiAnalysisDesc": "Vérifié par l'algorithme IA de Kwismo. Le score est calculé en fonction des fréquences de requêtes et de la réputation.",
+    "noReports": "Aucun signalement suspect enregistré sur ce numéro.",
+    "reportIncidentTitle": "Tentative de fraude / Vishing",
+    "reportIncidentDesc": "Signalement enregistré par le réseau de surveillance Kwismo.",
+    "deleteConfirmTitle": "Supprimer ce numéro ?",
+    "deleteConfirmDesc": "Êtes-vous sûr de vouloir supprimer définitivement le numéro",
+    "toggleConfirmTitle": "Changer le statut du numéro",
+    "toggleConfirmDesc": "Voulez-vous modifier le statut de sécurité du numéro",
+    "kpis": {
+      "total": "Total Numéros",
+      "secured": "Numéros Sécurisés",
+      "fraudulent": "Numéros Frauduleux",
+      "reported": "Numéros à Signaler"
+    },
+    "filters": {
+      "allOperators": "Tous les opérateurs",
+      "allRisks": "Tous les niveaux de risque",
+      "highRisk": "Frauduleux (≤40)",
+      "mediumRisk": "À signaler (41-79)",
+      "lowRisk": "Sécurisé (≥80)"
+    },
     "status": {
       "securise": "Sécurisé",
       "a_signaler": "À signaler",
       "frauduleux": "Frauduleux",
       "unknown": "Inconnu"
+    },
+    "toasts": {
+      "fetchError": "Erreur lors du chargement des numéros",
+      "verifySuccess": "Numéro vérifié avec succès",
+      "verifyError": "Erreur lors de la vérification du numéro",
+      "statusSuccess": "Statut du numéro mis à jour",
+      "statusError": "Erreur lors de la mise à jour du statut",
+      "deleteSuccess": "Numéro supprimé du registre",
+      "bulkDeleteSuccess": "Numéros sélectionnés supprimés",
+      "exportInitiated": "Export des numéros initié",
+      "exportSelection": "Export de la sélection en cours"
     }
   },
   "reports": {
@@ -114,4 +175,3 @@
     }
   }
 }
-
