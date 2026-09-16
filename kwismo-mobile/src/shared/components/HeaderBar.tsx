@@ -49,7 +49,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
         paddingTop: Math.max(insets.top + 8, 18),
         paddingBottom: isHome ? 75 : 16,
       }}
-      className="px-4 pb-4 relative overflow-hidden"
+      className="px-4 pb-3 relative overflow-hidden"
     >
       <View className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
         <View className="absolute -top-10 -right-5 w-55 h-55 rounded-full border-[26px] border-white -rotate-25 scale-x-140" />
@@ -68,16 +68,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
               </TouchableOpacity>
             </View>
 
-            <View className="flex-1 items-center justify-center">
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={{ color: textColor }}
-                className="font-montserrat-bold text-lg font-bold text-center"
-              >
-                {title}
-              </Text>
-            </View>
+            <View className="flex-1" />
 
             <View className="w-10 flex-row items-center justify-end">
               {rightAction ? (
@@ -118,7 +109,20 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
         )}
       </View>
 
-      {subtitle && (
+      {showBack && title && (
+        <View className="items-center justify-center pt-2 pb-1">
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={{ color: textColor }}
+            className="font-montserrat-bold text-xl font-bold text-center"
+          >
+            {title}
+          </Text>
+        </View>
+      )}
+
+      {!showBack && subtitle && (
         <View className="items-center justify-center pt-2 pb-1">
           <Text style={{ color: textColor }} className="font-semibold text-base text-center">
             {subtitle}

@@ -325,7 +325,7 @@ export default function ContactsScreen() {
 
   const getAvatarBg = (item: ContactItem, index: number) => {
     if (!item.hasKwismo) return 'bg-slate-200 dark:bg-slate-700';
-    const bgColors = ['bg-emerald-500', 'bg-orange-500', 'bg-blue-500', 'bg-brand-green'];
+    const bgColors = ['bg-emerald-500', 'bg-orange-400', 'bg-blue-500', 'bg-brand-green'];
     return bgColors[index % bgColors.length];
   };
 
@@ -443,7 +443,7 @@ export default function ContactsScreen() {
                         : 'border-slate-300 dark:border-slate-600'
                     }`}
                   >
-                    {allSelected && <Icon name="solar:check-bold" color="#FFFFFF" size={12} />}
+                    {allSelected && <Icon name="gravity-ui:check" color="#FFFFFF" size={14} />}
                   </View>
                 </TouchableOpacity>
               </View>
@@ -519,7 +519,7 @@ export default function ContactsScreen() {
                               : 'border-slate-300 dark:border-slate-600'
                           }`}
                         >
-                          {isSelected && <Icon name="solar:check-bold" color="#FFFFFF" size={12} />}
+                          {isSelected && <Icon name="gravity-ui:check" color="#FFFFFF" size={14} />}
                         </View>
                       </View>
                     </TouchableOpacity>
@@ -536,9 +536,9 @@ export default function ContactsScreen() {
         activeOpacity={0.85}
         onPress={handleOpenAddNumber}
         style={{ bottom: Math.max(insets.bottom + 24, 30) }}
-        className="absolute right-5 w-14 h-14 rounded-full items-center justify-center bg-orange-500 shadow-lg shadow-orange-500/40 z-50"
+        className="absolute right-5 w-14 h-14 rounded-full items-center justify-center bg-orange-400 shadow-lg shadow-orange-400/40 z-50"
       >
-        <Icon name="gravity-ui:keypad" color="#FFFFFF" size={26} />
+        <Icon name="ic:sharp-dialpad" color="#FFFFFF" size={26} />
       </TouchableOpacity>
 
       {/* Modal: Ajouter un numéro */}
@@ -602,7 +602,7 @@ export default function ContactsScreen() {
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={handleSaveNewNumber}
-              className="h-13 rounded-xl bg-orange-500 items-center justify-center mt-6 shadow-md shadow-orange-500/30"
+              className="h-13 rounded-xl bg-orange-400 items-center justify-center mt-6 shadow-md shadow-orange-400/30"
             >
               <Text className="font-bold text-base text-white">{t('common.save')}</Text>
             </TouchableOpacity>
