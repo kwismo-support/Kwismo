@@ -115,7 +115,7 @@ export default function ManagementScreen() {
     const isValid = isValidPhoneNumber(fullNumber, selectedCountry.code as any);
 
     if (!isValid) {
-      setPhoneError(t('common.invalidPhoneNumber'));
+      setPhoneError(`${t('common.invalidPhoneNumber')} (${selectedCountry.name})`);
       return;
     }
 
@@ -207,7 +207,7 @@ export default function ManagementScreen() {
     setNumbers((prev) =>
       prev.map((n) => (n.id === item.id ? { ...n, status: 'compromised' } : n))
     );
-    toast.error(t('common.lineDeclaredCompromised'));
+    toast.error(`${t('common.lineDeclaredCompromised')}: ${item.phone}`);
     router.push('/(app)/alert-whatsapp');
   };
 
@@ -281,11 +281,10 @@ export default function ManagementScreen() {
               return (
                 <View
                   key={item.id}
-                  className={`w-full rounded-2xl border bg-white dark:bg-brand-cardDark p-4 shadow-sm ${
-                    isCompromised
+                  className={`w-full rounded-2xl border bg-white dark:bg-brand-cardDark p-4 shadow-sm ${isCompromised
                       ? 'border-red-500'
                       : 'border-slate-100 dark:border-slate-800'
-                  }`}
+                    }`}
                 >
                   <View className="flex-row items-center justify-between mb-0.5">
                     <View className="flex-row items-center">
@@ -321,7 +320,7 @@ export default function ManagementScreen() {
                           setOtpTimer(60);
                           setFullScreenOtpVisible(true);
                         }}
-                        className="px-5 py-2 rounded bg-orange-500"
+                        className="px-5 py-2 rounded bg-orange-400"
                       >
                         <Text className="font-bold text-xs text-white">
                           {t('common.validate')}
@@ -438,9 +437,8 @@ export default function ManagementScreen() {
             </Text>
 
             <View
-              className={`flex-row items-center h-13 rounded-xl border px-3 bg-white dark:bg-brand-cardDark ${
-                phoneError ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
-              }`}
+              className={`flex-row items-center h-13 rounded-xl border px-3 bg-white dark:bg-brand-cardDark ${phoneError ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
+                }`}
             >
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -473,11 +471,10 @@ export default function ManagementScreen() {
               activeOpacity={0.85}
               disabled={!newPhoneNumber.trim() || isSubmittingPhone}
               onPress={handleSavePhone}
-              className={`h-13 rounded-xl items-center justify-center mt-8 ${
-                newPhoneNumber.trim()
+              className={`h-13 rounded-xl items-center justify-center mt-8 ${newPhoneNumber.trim()
                   ? 'bg-brand-green'
                   : 'bg-slate-300 dark:bg-slate-700'
-              }`}
+                }`}
             >
               {isSubmittingPhone ? (
                 <ActivityIndicator color="#FFFFFF" />
@@ -516,9 +513,8 @@ export default function ManagementScreen() {
               {otpCode.map((digit, idx) => (
                 <TextInput
                   key={idx}
-                  className={`w-11 h-13 rounded-xl border-2 text-center font-font-bold text-xl font-extrabold bg-white dark:bg-brand-cardDark text-slate-900 dark:text-white ${
-                    digit ? 'border-brand-green' : 'border-slate-200 dark:border-slate-700'
-                  }`}
+                  className={`w-11 h-13 rounded-xl border-2 text-center font-font-bold text-xl font-extrabold bg-white dark:bg-brand-cardDark text-slate-900 dark:text-white ${digit ? 'border-brand-green' : 'border-slate-200 dark:border-slate-700'
+                    }`}
                   maxLength={1}
                   keyboardType="number-pad"
                   value={digit}
@@ -546,11 +542,10 @@ export default function ManagementScreen() {
               activeOpacity={0.85}
               disabled={isVerifyingOtp || otpCode.some((c) => c === '')}
               onPress={() => handleConfirmOtp()}
-              className={`h-13 rounded-xl items-center justify-center mt-8 ${
-                otpCode.every((c) => c !== '')
+              className={`h-13 rounded-xl items-center justify-center mt-8 ${otpCode.every((c) => c !== '')
                   ? 'bg-brand-green'
                   : 'bg-slate-300 dark:bg-slate-700'
-              }`}
+                }`}
             >
               {isVerifyingOtp ? (
                 <ActivityIndicator color="#FFFFFF" />

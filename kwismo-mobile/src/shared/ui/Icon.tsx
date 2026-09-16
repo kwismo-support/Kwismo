@@ -22,6 +22,7 @@ import mageCollection from '@iconify/json/json/mage.json';
 import basilCollection from '@iconify/json/json/basil.json';
 import reiconCollection from '@iconify/json/json/reicon.json';
 import famiconsCollection from '@iconify/json/json/famicons.json';
+import gravityUiCollection from '@iconify/json/json/gravity-ui.json';
 
 const collectionsMap: Record<string, any> = {
   'bitcoin-icons': bitcoinIconsCollection,
@@ -41,6 +42,7 @@ const collectionsMap: Record<string, any> = {
   basil: basilCollection,
   reicon: reiconCollection,
   famicons: famiconsCollection,
+  'gravity-ui': gravityUiCollection,
 };
 
 function getCollectionData(prefix: string) {
