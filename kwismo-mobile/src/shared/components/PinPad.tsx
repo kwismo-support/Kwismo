@@ -153,14 +153,14 @@ export const PinPad: React.FC<PinPadProps> = ({
             return showBiometric && mode === 'verify' ? (
               <TouchableOpacity
                 key="bio"
-                className="w-17 h-17 rounded-full border border-slate-200 dark:border-slate-700 items-center justify-center"
+                className="wx-17 hx-17 rounded-full border border-slate-200 dark:border-slate-700 items-center justify-center"
                 onPress={() => press('bio')}
                 activeOpacity={0.7}
               >
                 <Icon name="solar:fingerprint-bold" size={28} color="#25B46E" />
               </TouchableOpacity>
             ) : (
-              <View key="bio" className="w-17 h-17" />
+              <View key="bio" className="wx-17 hx-17" />
             );
           }
 
@@ -168,7 +168,7 @@ export const PinPad: React.FC<PinPadProps> = ({
             return (
               <TouchableOpacity
                 key="del"
-                className="w-17 h-17 rounded-full border border-slate-200 dark:border-slate-700 items-center justify-center"
+                className="wx-17 hx-17 rounded-full border border-slate-200 dark:border-slate-700 items-center justify-center"
                 onPress={() => press('del')}
                 activeOpacity={0.7}
               >
@@ -180,7 +180,7 @@ export const PinPad: React.FC<PinPadProps> = ({
           return (
             <TouchableOpacity
               key={k}
-              className="w-17 h-17 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark items-center justify-center"
+              className="wx-17 hx-17 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark items-center justify-center"
               onPress={() => press(k)}
               activeOpacity={0.7}
             >

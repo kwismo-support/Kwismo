@@ -185,10 +185,10 @@ export default function HomeScreen() {
                 {user?.avatarUrl ? (
                   <Image
                     source={{ uri: user.avatarUrl }}
-                    className="w-13 h-13 rounded-full"
+                    className="wx-13 hx-13 rounded-full"
                   />
                 ) : (
-                  <View className="w-13 h-13 rounded-full bg-emerald-100 dark:bg-emerald-900/40 justify-center items-center">
+                  <View className="wx-13 hx-13 rounded-full bg-emerald-100 dark:bg-emerald-900/40 justify-center items-center">
                     <Icon name="solar:user-bold" color={colors.green} size={28} />
                   </View>
                 )}
@@ -254,7 +254,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/verify')}
             className="flex-1 items-center"
           >
-            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800">
+            <View className="wx-13 hx-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800">
               <Icon name="mage:scan-user-fill"  color={isDark ? 'white' : '#161E33'} size={24} />
             </View>
             <Text className="text-2xs font-medium text-center text-brand-navy dark:text-white">
@@ -267,7 +267,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/transfer')}
             className="flex-1 items-center"
           >
-            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800">
+            <View className="wx-13 hx-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800">
               <Icon name="solar:square-transfer-horizontal-linear"  color={isDark ? 'white' : '#161E33'} size={24} />
             </View>
             <Text className="text-2xs font-medium text-center text-brand-navy dark:text-white">
@@ -280,7 +280,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/alert-whatsapp')}
             className="flex-1 items-center"
           >
-            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800">
+            <View className="wx-13 hx-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800">
               <Icon name="basil:whatsapp-outline" color={isDark ? 'white' : '#161E33'} size={24} />
             </View>
             <Text className="text-2xs font-medium text-center text-brand-navy dark:text-white">
@@ -293,7 +293,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/report')}
             className="flex-1 items-center"
           >
-            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-red-50 dark:bg-red-950/40">
+            <View className="wx-13 hx-13 rounded-full justify-center items-center mb-1.5 bg-red-50 dark:bg-red-950/40">
               <Icon name="heroicons:signal-16-solid" color="#D93025" size={24} />
             </View>
             <Text className="text-2xs font-medium text-center text-red-600 dark:text-red-400">
@@ -419,7 +419,7 @@ export default function HomeScreen() {
       <TouchableOpacity
         activeOpacity={0.88}
         onPress={() => router.push('/(app)/report')}
-        className="absolute bottom-20 right-5 z-50 w-13 h-13 rounded-full bg-brand-orange justify-center items-center shadow-lg shadow-brand-orange/40 elevation-6"
+        className="absolute bottom-20 right-5 z-50 wx-13 hx-13 rounded-full bg-brand-orange justify-center items-center shadow-lg shadow-brand-orange/40 elevation-6"
       >
         <Icon name="famicons:person-add" color="#FFFFFF" size={24} />
       </TouchableOpacity>

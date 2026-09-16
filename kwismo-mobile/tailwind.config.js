@@ -1,3 +1,29 @@
+const percentScale = Array.from({ length: 100 }, (_, i) => i + 1).reduce((acc, val) => {
+  acc[val] = `${val}%`;
+  return acc;
+}, {});
+
+const plugin = require('tailwindcss/plugin');
+
+// Custom pixel spacing map for wx-* and hx-* classes (e.g. wx-13 = width: 52px, hx-13 = height: 52px)
+const pixelSpacingMap = {
+  '13': '52px',
+  '15': '60px',
+  '17': '68px',
+  '18': '72px',
+  '19': '76px',
+  '25': '100px',
+  '34': '136px',
+  '50': '200px',
+  '55': '220px',
+  '90': '360px',
+};
+Array.from({ length: 100 }, (_, i) => i + 1).forEach((val) => {
+  if (!pixelSpacingMap[val]) {
+    pixelSpacingMap[val] = `${val * 4}px`;
+  }
+});
+
 module.exports = {
   content: [
     './app/**/*.{js,jsx,ts,tsx}',
@@ -5,6 +31,24 @@ module.exports = {
   ],
   theme: {
     extend: {
+      height: {
+        ...percentScale,
+      },
+      minHeight: {
+        ...percentScale,
+      },
+      maxHeight: {
+        ...percentScale,
+      },
+      width: {
+        ...percentScale,
+      },
+      minWidth: {
+        ...percentScale,
+      },
+      maxWidth: {
+        ...percentScale,
+      },
       spacing: {
         '13': '52px',
         '15': '60px',
@@ -108,5 +152,14 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ addUtilities }) {
+      const newUtilities = {};
+      Object.entries(pixelSpacingMap).forEach(([key, val]) => {
+        newUtilities[`.wx-${key}`] = { width: val };
+        newUtilities[`.hx-${key}`] = { height: val };
+      });
+      addUtilities(newUtilities);
+    }),
+  ],
 };
