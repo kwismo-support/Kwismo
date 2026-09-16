@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +5,7 @@ import { Icon } from '@iconify/react';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { forgotPasswordSchema, type ForgotPasswordInput } from '../schemas/auth.schema';
-import { authApi } from '../services/auth.api';
+import { useForgotPassword } from '../hooks/useForgotPassword';
 
 interface ForgotPasswordFormProps {
   onBackToLogin?: () => void;
@@ -14,8 +13,7 @@ interface ForgotPasswordFormProps {
 
 export default function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordFormProps) {
   const { t } = useTranslation('auth');
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
+  const { requestReset, loading, sent } = useForgotPassword();
 
   const {
     register,
@@ -26,14 +24,9 @@ export default function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordForm
   });
 
   const onSubmit = async (data: ForgotPasswordInput) => {
-    setLoading(true);
     try {
-      await authApi.forgotPassword(data);
-      setSent(true);
-    } catch {
-    } finally {
-      setLoading(false);
-    }
+      await requestReset(data);
+    } catch {}
   };
 
   return (
@@ -93,4 +86,5 @@ export default function ForgotPasswordForm({ onBackToLogin }: ForgotPasswordForm
     </form>
   );
 }
+
 

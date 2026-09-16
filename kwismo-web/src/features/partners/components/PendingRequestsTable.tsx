@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { DataTable, type Column } from '@/shared/components/DataTable';
 import { FilterBar } from '@/shared/components/FilterBar';
 import { StatusBadge } from '@/shared/components/StatusBadge';
 import { UserAvatar } from '@/shared/ui/avatar';
+import { usePermissions } from '@/shared/hooks/usePermissions';
 import type { PartnerRequestItem } from '../services/partnerRequestsStore';
 
 interface PendingRequestsTableProps {
@@ -17,17 +19,20 @@ export default function PendingRequestsTable({
   onValidate,
   onReject,
 }: PendingRequestsTableProps) {
+  const { t } = useTranslation(['admin', 'common']);
+  const { hasPermission } = usePermissions();
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
 
   const filtered = useMemo(() => {
     return requests.filter((r) => {
+      const q = search.toLowerCase();
       const matchesSearch =
-        r.nomEntreprise.toLowerCase().includes(search.toLowerCase()) ||
-        r.nomContact.toLowerCase().includes(search.toLowerCase()) ||
-        r.email.toLowerCase().includes(search.toLowerCase()) ||
-        r.typePartenariat.toLowerCase().includes(search.toLowerCase());
+        !search ||
+        r.nomEntreprise.toLowerCase().includes(q) ||
+        r.nomContact.toLowerCase().includes(q) ||
+        r.email.toLowerCase().includes(q);
 
       const matchesType =
         typeFilter === 'ALL' || r.typePartenariat.toUpperCase() === typeFilter.toUpperCase();
@@ -42,7 +47,7 @@ export default function PendingRequestsTable({
   const columns: Column<PartnerRequestItem>[] = [
     {
       key: 'nomEntreprise',
-      header: 'Structure Demandeuse',
+      header: t('admin:partners.company'),
       sortable: true,
       cell: (req) => (
         <div className="flex items-center gap-3">
@@ -52,7 +57,7 @@ export default function PendingRequestsTable({
               {req.nomEntreprise}
             </span>
             <span className="text-xs text-slate-400 font-mono">
-              Reçu le {new Date(req.dateDemande).toLocaleDateString('fr-FR')}
+              {req.dateDemande ? new Date(req.dateDemande).toLocaleDateString() : '—'}
             </span>
           </div>
         </div>
@@ -60,13 +65,13 @@ export default function PendingRequestsTable({
     },
     {
       key: 'typePartenariat',
-      header: 'Type de Partenariat',
+      header: t('admin:partners.type'),
       sortable: true,
       cell: (req) => <StatusBadge status={req.typePartenariat} size="xs" showDot={false} />,
     },
     {
       key: 'nomContact',
-      header: 'Contact Référent',
+      header: t('admin:partners.contactPerson'),
       cell: (req) => (
         <div className="flex flex-col text-xs font-body">
           <span className="font-bold text-slate-800 dark:text-slate-200">
@@ -80,7 +85,7 @@ export default function PendingRequestsTable({
     },
     {
       key: 'statut',
-      header: 'Décision d\'Adhésion',
+      header: t('common:status'),
       sortable: true,
       cell: (req) => (
         <StatusBadge
@@ -92,35 +97,30 @@ export default function PendingRequestsTable({
     },
     {
       key: 'actions',
-      header: 'Actions Super Admin',
+      header: t('common:actions.label'),
       align: 'right',
       cell: (req) => (
         <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
-          {req.statut === 'pending' ? (
+          {req.statut === 'pending' && hasPermission('partners:create') ? (
             <>
               <button
                 onClick={() => onValidate(req)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-green text-white text-xs font-bold hover:bg-emerald-600 transition shadow-xs cursor-pointer"
               >
                 <Icon icon="solar:check-circle-bold" className="text-sm" />
-                <span>Valider</span>
+                <span>{t('admin:partners.validate')}</span>
               </button>
               <button
                 onClick={() => onReject(req)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition shadow-xs cursor-pointer"
               >
                 <Icon icon="solar:close-circle-bold" className="text-sm" />
-                <span>Rejeter</span>
+                <span>{t('admin:partners.reject')}</span>
               </button>
             </>
-          ) : req.statut === 'validated' ? (
-            <span className="text-xs text-brand-green font-bold flex items-center gap-1 font-mono">
-              <Icon icon="solar:check-read-bold" className="text-sm" />
-              Accès configuré
-            </span>
           ) : (
-            <span className="text-xs text-rose-500 font-bold font-mono">
-              Demande refusée
+            <span className="text-xs text-slate-400 font-mono font-bold">
+              {req.statut === 'validated' ? t('admin:partners.configured') : t('admin:partners.rejected')}
             </span>
           )}
         </div>
@@ -133,7 +133,7 @@ export default function PendingRequestsTable({
       <FilterBar
         searchQuery={search}
         onSearchChange={setSearch}
-        searchPlaceholder="Rechercher une demande par nom d'entreprise ou email..."
+        searchPlaceholder={t('admin:partners.searchPlaceholder')}
         onResetFilters={() => {
           setSearch('');
           setTypeFilter('ALL');
@@ -146,22 +146,9 @@ export default function PendingRequestsTable({
             onChange: setTypeFilter,
             icon: 'solar:widget-linear',
             options: [
-              { label: 'Tous les types', value: 'ALL' },
-              { label: 'Opérateurs Telco', value: 'TELCO' },
-              { label: 'Banques', value: 'BANK' },
-              { label: 'Fintechs', value: 'FINTECH' },
-            ],
-          },
-          {
-            id: 'status',
-            value: statusFilter,
-            onChange: setStatusFilter,
-            icon: 'solar:check-read-linear',
-            options: [
-              { label: 'Tous les statuts', value: 'ALL' },
-              { label: 'En attente', value: 'PENDING' },
-              { label: 'Validés', value: 'VALIDATED' },
-              { label: 'Rejetés', value: 'REJECTED' },
+              { label: t('admin:partners.filters.allTypes'), value: 'ALL' },
+              { label: t('admin:partners.filters.telco'), value: 'TELCO' },
+              { label: t('admin:partners.filters.bank'), value: 'BANK' },
             ],
           },
         ]}
@@ -172,8 +159,8 @@ export default function PendingRequestsTable({
         data={filtered}
         getRowKey={(req) => req.id}
         pageSize={10}
-        emptyTitle="Aucune demande d'adhésion en attente"
-        emptyDesc="Toutes les demandes de partenariat ont été traitées."
+        emptyTitle={t('admin:partners.emptyRequestsTitle')}
+        emptyDesc={t('admin:partners.emptyRequestsDesc')}
         emptyIcon="solar:clipboard-check-bold-duotone"
       />
     </div>

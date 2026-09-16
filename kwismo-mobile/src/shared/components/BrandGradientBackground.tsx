@@ -19,7 +19,7 @@ export const BrandGradientBackground: React.FC<BrandGradientBackgroundProps> = (
       <LinearGradient
         colors={colorsList}
         locations={[0.0, 0.35, 0.52, 0.62, 0.74, 0.84, 1.0]}
-        className="absolute inset-0"
+        className="absolute inset-0 w-full h-full"
       />
       {children}
     </View>

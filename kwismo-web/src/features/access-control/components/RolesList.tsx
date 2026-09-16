@@ -1,89 +1,96 @@
 import { Icon } from '@iconify/react';
-import { StatusBadge } from '@/shared/components/StatusBadge';
-import { AvatarGroup } from '@/shared/ui/avatar';
-import type { RoleDTO } from '@/shared/mock';
+import { useTranslation } from 'react-i18next';
+import { usePermissions } from '@/shared/hooks/usePermissions';
+import type { RoleOut } from '../services/accessControl.api';
 
 interface RolesListProps {
-  roles: RoleDTO[];
-  isLoading?: boolean;
-  onAddRole?: () => void;
+  roles: RoleOut[];
+  selectedRoleId: string | null;
+  onSelectRole: (roleId: string) => void;
+  onDeleteRole: (role: RoleOut) => void;
 }
 
-export default function RolesList({ roles, isLoading = false, onAddRole }: RolesListProps) {
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-body">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-40 rounded-2xl bg-slate-100 dark:bg-white/5 animate-pulse" />
-        ))}
-      </div>
-    );
-  }
+export function RolesList({ roles, selectedRoleId, onSelectRole, onDeleteRole }: RolesListProps) {
+  const { t } = useTranslation('admin');
+  const { hasPermission } = usePermissions();
+  const canDeleteRole = hasPermission('roles:delete');
+
+  const getRoleColor = (name: string) => {
+    const lower = name.toLowerCase();
+    if (lower.includes('admin')) return '#4D6AB1';
+    if (lower.includes('partner') || lower.includes('partenaire')) return '#7C3AED';
+    if (lower.includes('user') || lower.includes('utilisateur')) return '#0891B2';
+    return '#F6A020';
+  };
+
+  const isSystemRole = (name: string) => {
+    const lower = name.toLowerCase();
+    return lower === 'admin' || lower === 'partner' || lower === 'user' || lower === 'super_admin';
+  };
 
   return (
-    <div className="flex flex-col gap-4 font-body">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="font-title text-lg font-bold text-slate-900 dark:text-white">
-            Rôles &amp; Privilèges Administrateurs
-          </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Groupes d'utilisateurs et affectations de règles de sécurité
-          </p>
-        </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {roles.map((r) => {
+        const active = r.id === selectedRoleId;
+        const color = getRoleColor(r.nom_role);
+        const system = isSystemRole(r.nom_role);
 
-        {onAddRole && (
-          <button
-            onClick={onAddRole}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-navy dark:bg-brand-orange text-white dark:text-brand-navy text-xs font-semibold hover:opacity-90 transition shadow-sm cursor-pointer"
+        return (
+          <div
+            key={r.id}
+            onClick={() => onSelectRole(r.id)}
+            className={`p-5 rounded-3xl border transition cursor-pointer flex flex-col justify-between ${
+              active
+                ? 'border-brand-navy dark:border-brand-orange bg-white dark:bg-[#161E33] shadow-md ring-2 ring-brand-navy/20 dark:ring-brand-orange/20'
+                : 'border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] hover:border-slate-300 dark:hover:border-white/20'
+            }`}
           >
-            <Icon icon="solar:shield-plus-bold" className="text-base" />
-            <span>Créer un rôle</span>
-          </button>
-        )}
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {roles.map((role) => {
-          const mockUsers = Array.from({ length: role.userCount }).map((_, i) => ({
-            name: `User ${i + 1}`,
-            roleRing: role.nomRole.toLowerCase() === 'admin' ? ('admin' as const) : ('user' as const),
-          }));
-
-          return (
-            <div
-              key={role.id}
-              className="p-5 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy shadow-sm hover:shadow-md transition flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <StatusBadge status={role.nomRole} size="xs" showDot={false} />
-                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 font-mono">
-                    {role.userCount} membre(s)
-                  </span>
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                  <h3 className="font-title text-base font-bold text-slate-900 dark:text-white capitalize">
+                    {r.nom_role}
+                  </h3>
                 </div>
-
-                <h4 className="font-title text-base font-bold text-slate-900 dark:text-white uppercase tracking-tight">
-                  {role.nomRole}
-                </h4>
-
-                <p className="mt-2 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  {role.description}
-                </p>
+                {system ? (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300">
+                    Système
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-orange/10 text-brand-orange">
+                    Personnalisé
+                  </span>
+                )}
               </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                {r.description || t('access.roles')}
+              </p>
+            </div>
 
-              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
-                <AvatarGroup users={mockUsers} max={3} size="xs" />
-
-                <button className="text-xs font-bold text-brand-orange hover:underline flex items-center gap-1 cursor-pointer">
-                  <span>Configurer</span>
-                  <Icon icon="solar:alt-arrow-right-linear" className="text-xs" />
-                </button>
+            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs">
+              <span className="text-slate-400 font-semibold">{t('access.roles')}</span>
+              <div className="flex items-center gap-1">
+                {!system && canDeleteRole ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteRole(r);
+                    }}
+                    className="p-1 rounded-lg text-rose-500 hover:bg-rose-500/10 cursor-pointer"
+                  >
+                    <Icon icon="solar:trash-bin-trash-bold" className="text-sm" />
+                  </button>
+                ) : (
+                  <span className="p-1 text-slate-300 dark:text-slate-600 cursor-not-allowed">
+                    <Icon icon="solar:lock-bold" className="text-sm" />
+                  </span>
+                )}
               </div>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -6,13 +6,11 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { KwismoLogo } from '@/shared/components/KwismoLogo';
 import { BrandGradientBackground } from '@/shared/components/BrandGradientBackground';
-import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
 export default function AuthWelcomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { isDark } = useAppTheme();
 
   return (
     <BrandGradientBackground>
@@ -40,7 +38,7 @@ export default function AuthWelcomeScreen() {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => router.push('/(auth)/register')}
-            className="w-full h-13 bg-transparent dark:bg-transparent rounded-xl border-2 border-brand-navy dark:border-white/80 items-center justify-center"
+            className="w-full h-13 bg-transparent dark:bg-transparent rounded-xl border-2 border-brand-navy dark:border-white/70 items-center justify-center"
           >
             <Text className="font-font-bold text-base font-bold text-brand-navy dark:text-white">
               {t('common.register')}

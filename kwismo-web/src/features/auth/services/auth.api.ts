@@ -1,14 +1,26 @@
 import { env } from '@/config/env';
+import { ENDPOINTS } from '@/config/endpoints';
 import { apiClient } from '@/shared/lib/axios';
 import { toast } from '@/shared/store/toastStore';
 import { MOCK_USERS } from '@/shared/mock/mockUsers';
+import { setAuthTokens, getDeviceId } from '@/shared/lib/token';
+import { useLanguageStore } from '@/shared/store/languageStore';
 import type { LoginInput, ForgotPasswordInput, ResetPasswordInput, PartnerRegisterInput } from '../schemas/auth.schema';
 import { useAuthStore } from '@/shared/store/authStore';
 
 const delay = (ms = 300) => new Promise((resolve) => setTimeout(resolve, ms));
 
+export interface LoginResult {
+  requiresDeviceVerification?: boolean;
+  message?: string;
+  email?: string;
+  deviceId?: string;
+  token?: string;
+  user?: any;
+}
+
 export const authApi = {
-  login: async (data: LoginInput) => {
+  login: async (data: LoginInput): Promise<LoginResult> => {
     if (env.useMock) {
       await delay();
       if (data.email.includes('fail')) {
@@ -30,7 +42,7 @@ export const authApi = {
 
       try {
         localStorage.setItem('kwismo_user', JSON.stringify(userObj));
-        localStorage.setItem('kwismo_auth_token', 'mock-jwt-token-kwismo-2026');
+        setAuthTokens('mock-jwt-token-kwismo-2026', 'mock-refresh-token-kwismo-2026');
       } catch {}
 
       toast.success('auth:loginSuccess');
@@ -41,19 +53,36 @@ export const authApi = {
     }
 
     try {
-      const response = await apiClient.post('/auth/login', {
+      const currentLang = useLanguageStore.getState().lang || 'fr';
+      const deviceId = getDeviceId();
+      const response = await apiClient.post(ENDPOINTS.auth.login, {
         email: data.email,
         mot_de_passe: data.password,
-        device_id: 'web-browser-device',
+        device_id: deviceId,
         device_name: 'Kwismo Web App',
+        lang: currentLang,
       });
 
       const resData = response.data;
-      const token = resData.access_token || resData.token;
-      const user = resData.user || { email: data.email, role: 'admin' };
+
+      // Cas où un nouvel appareil requiert une vérification OTP
+      if (resData.requires_device_verification) {
+        const msg = currentLang === 'en' ? resData.message_en : resData.message_fr;
+        toast.success(msg || 'Nouvel appareil détecté. Un code OTP a été envoyé.');
+        return {
+          requiresDeviceVerification: true,
+          message: msg,
+          email: data.email,
+          deviceId,
+        };
+      }
+
+      const token = resData.access_token;
+      const refreshToken = resData.refresh_token;
+      const user = resData.user;
 
       if (token) {
-        localStorage.setItem('kwismo_auth_token', token);
+        setAuthTokens(token, refreshToken);
       }
       if (user) {
         localStorage.setItem('kwismo_user', JSON.stringify(user));
@@ -62,7 +91,37 @@ export const authApi = {
       toast.success('auth:loginSuccess');
       return { token, user };
     } catch (err: any) {
-      const msg = err.response?.data?.detail ?? err.response?.data?.message ?? 'Email ou mot de passe incorrect.';
+      const msg = err.response?.data?.detail ?? err.message ?? 'Email ou mot de passe incorrect.';
+      toast.error(msg);
+      throw err;
+    }
+  },
+
+  verifyDevice: async (email: string, code: string, deviceId: string) => {
+    if (env.useMock) {
+      await delay();
+      toast.success('auth:loginSuccess');
+      return { token: 'mock-jwt-token-kwismo-2026', user: { email, role: 'user' } };
+    }
+
+    try {
+      const response = await apiClient.post(ENDPOINTS.auth.deviceVerify, {
+        email,
+        code,
+        device_id: deviceId,
+      });
+
+      const { access_token, refresh_token, user } = response.data;
+      if (access_token) {
+        setAuthTokens(access_token, refresh_token);
+      }
+      if (user) {
+        localStorage.setItem('kwismo_user', JSON.stringify(user));
+      }
+      toast.success('auth:loginSuccess');
+      return { token: access_token, user };
+    } catch (err: any) {
+      const msg = err.response?.data?.detail ?? err.message ?? 'Code de vérification invalide.';
       toast.error(msg);
       throw err;
     }
@@ -74,20 +133,23 @@ export const authApi = {
       toast.success('auth:partnerRegisterSuccess');
       return { success: true };
     }
-    return apiClient.post('/partners/request', {
-      nomContact: `${data.prenomContact} ${data.nomContact}`,
-      email: data.email,
-      nomEntreprise: data.nomEntreprise,
-      typePartenariat: data.typePartenariat,
-      telephone: data.telephone,
-      message: data.message,
-    }).then((r) => {
-      toast.success('auth:partnerRegisterSuccess');
-      return r.data;
-    }).catch((err) => {
-      toast.error(err.response?.data?.detail ?? 'Erreur lors de la soumission de la demande.');
-      throw err;
-    });
+    return apiClient
+      .post('/partners/request', {
+        nomContact: `${data.prenomContact} ${data.nomContact}`,
+        email: data.email,
+        nomEntreprise: data.nomEntreprise,
+        typePartenariat: data.typePartenariat,
+        telephone: data.telephone,
+        message: data.message,
+      })
+      .then((r) => {
+        toast.success('auth:partnerRegisterSuccess');
+        return r.data;
+      })
+      .catch((err) => {
+        toast.error(err.response?.data?.detail ?? 'Erreur lors de la soumission de la demande.');
+        throw err;
+      });
   },
 
   forgotPassword: async (data: ForgotPasswordInput) => {
@@ -96,30 +158,42 @@ export const authApi = {
       toast.success('auth:emailSent');
       return { success: true };
     }
-    return apiClient.post('/auth/forgot-password', { email: data.email }).then((r) => {
-      toast.success('auth:emailSent');
-      return r.data;
-    }).catch((err) => {
-      toast.error(err.response?.data?.detail ?? 'Erreur lors de la demande de réinitialisation.');
-      throw err;
-    });
+
+    const currentLang = useLanguageStore.getState().lang || 'fr';
+    return apiClient
+      .post(ENDPOINTS.auth.forgotPassword, {
+        email: data.email,
+        lang: currentLang,
+      })
+      .then((r) => {
+        toast.success(r.data?.message ?? 'auth:emailSent');
+        return r.data;
+      })
+      .catch((err) => {
+        toast.error(err.response?.data?.detail ?? err.message ?? 'Erreur lors de la demande de réinitialisation.');
+        throw err;
+      });
   },
 
-  resetPassword: async (data: ResetPasswordInput) => {
+  resetPassword: async (data: ResetPasswordInput, token: string) => {
     if (env.useMock) {
       await delay();
       toast.success('auth:passwordChanged');
       return { success: true };
     }
-    return apiClient.post('/auth/reset-password', {
-      token: 'reset-token',
-      nouveau_mot_de_passe: data.newPassword,
-    }).then((r) => {
-      toast.success('auth:passwordChanged');
-      return r.data;
-    }).catch((err) => {
-      toast.error(err.response?.data?.detail ?? 'Erreur lors de la réinitialisation du mot de passe.');
-      throw err;
-    });
+    return apiClient
+      .post(ENDPOINTS.auth.resetPassword, {
+        token,
+        new_password: data.newPassword,
+      })
+      .then((r) => {
+        toast.success(r.data?.message ?? 'auth:passwordChanged');
+        return r.data;
+      })
+      .catch((err) => {
+        toast.error(err.response?.data?.detail ?? err.message ?? 'Erreur lors de la réinitialisation du mot de passe.');
+        throw err;
+      });
   },
 };
+

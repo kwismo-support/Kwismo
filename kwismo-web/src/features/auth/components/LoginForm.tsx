@@ -6,7 +6,8 @@ import { Icon } from '@iconify/react';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { loginSchema, type LoginInput } from '../schemas/auth.schema';
-import { authApi } from '../services/auth.api';
+import { useLogin } from '../hooks/useLogin';
+import DeviceVerifyForm from './DeviceVerifyForm';
 
 interface LoginFormProps {
   onForgotPassword?: () => void;
@@ -16,7 +17,7 @@ interface LoginFormProps {
 export default function LoginForm({ onForgotPassword, onRegisterPartner: _onRegisterPartner }: LoginFormProps) {
   const { t } = useTranslation('auth');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { login, verifyDevice, loading, deviceVerifyData, clearDeviceVerify } = useLogin();
 
   const {
     register,
@@ -27,15 +28,25 @@ export default function LoginForm({ onForgotPassword, onRegisterPartner: _onRegi
   });
 
   const onSubmit = async (data: LoginInput) => {
-    setLoading(true);
     try {
-      await authApi.login(data);
-      window.location.href = '/app/dashboard';
-    } catch {
-    } finally {
-      setLoading(false);
-    }
+      const result = await login(data);
+      if (result && !result.requiresDeviceVerification) {
+        window.location.href = '/app/dashboard';
+      }
+    } catch {}
   };
+
+  if (deviceVerifyData) {
+    return (
+      <DeviceVerifyForm
+        email={deviceVerifyData.email}
+        onVerify={async (code) => {
+          await verifyDevice(code);
+        }}
+        onCancel={clearDeviceVerify}
+      />
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-full font-body">
@@ -106,4 +117,5 @@ export default function LoginForm({ onForgotPassword, onRegisterPartner: _onRegi
     </form>
   );
 }
+
 

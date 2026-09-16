@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuthStore } from '@/shared/store/authStore';
+import { usePermissions } from '@/shared/hooks/usePermissions';
 import { kpiApi, KpiItem } from './services/kpi.api';
 import { PageHeader, KpiCard } from '@/shared/components';
 import { CountrySelect } from '@/shared/ui/country-select';
@@ -11,8 +11,7 @@ import RecentActivityLog from './components/RecentActivityLog';
 
 export default function DashboardPage() {
   const { t } = useTranslation('admin');
-  const user = useAuthStore((state) => state.user);
-  const userRole = user?.role?.toLowerCase() || 'admin';
+  const { isPartner, isUser } = usePermissions();
   const [kpiItems, setKpiItems] = useState<KpiItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<'7 jours' | '30 jours' | '90 jours' | 'Cette année'>('30 jours');
@@ -21,7 +20,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let mounted = true;
-    const fetchKpis = userRole === 'partner' ? kpiApi.getPartnerKpi() : kpiApi.getGlobalKpi();
+    const fetchKpis = isPartner ? kpiApi.getPartnerKpi() : kpiApi.getGlobalKpi();
     fetchKpis
       .then((data) => {
         if (mounted) setKpiItems(data || []);
@@ -33,13 +32,13 @@ export default function DashboardPage() {
         if (mounted) setLoading(false);
       });
     return () => { mounted = false; };
-  }, [userRole]);
+  }, [isPartner]);
 
   const findKpi = (key: string) => kpiItems.find((k) => k.nom_indicateur === key)?.valeur;
 
   const adminCards = [
     {
-      title: t('dashboard.activeUsers'),
+      title: t('dashboard.activeUsers', { defaultValue: 'Utilisateurs actifs' }),
       value: (findKpi('total_utilisateurs') ?? 0).toLocaleString('fr-FR'),
       change: '+12,4 %',
       isPositive: true,
@@ -47,7 +46,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-navy bg-brand-navy/10 dark:bg-brand-navy/30 dark:text-blue-300',
     },
     {
-      title: t('dashboard.verifiedNumbers'),
+      title: t('dashboard.verifiedNumbers', { defaultValue: 'Numéros vérifiés' }),
       value: (findKpi('total_numeros_analyses') ?? 0).toLocaleString('fr-FR'),
       change: '+8,7 %',
       isPositive: true,
@@ -55,7 +54,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
-      title: t('dashboard.reports'),
+      title: t('dashboard.reports', { defaultValue: 'Signalements' }),
       value: (findKpi('total_signalements') ?? 0).toLocaleString('fr-FR'),
       change: '+23,1 %',
       isPositive: true,
@@ -63,7 +62,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-orange bg-brand-orange/10 dark:bg-brand-orange/20',
     },
     {
-      title: t('dashboard.blockedFrauds'),
+      title: t('dashboard.blockedFrauds', { defaultValue: 'Taux de fraude bloquée' }),
       value: `${((findKpi('taux_fraude_detectee') ?? 0) * 100).toFixed(1)}%`,
       change: '+5,6 %',
       isPositive: false,
@@ -71,7 +70,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-rose-600 bg-rose-500/10 dark:text-rose-400 dark:bg-rose-500/20',
     },
     {
-      title: t('dashboard.protectedTx'),
+      title: t('dashboard.protectedTx', { defaultValue: 'Transferts protégés' }),
       value: (findKpi('total_transferts_proteges') ?? 0).toLocaleString('fr-FR'),
       change: '+18,2 %',
       isPositive: true,
@@ -79,7 +78,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
-      title: t('dashboard.apiCalls'),
+      title: t('dashboard.apiCalls', { defaultValue: 'Appels API' }),
       value: '4,1M',
       change: '+31,5 %',
       isPositive: true,
@@ -90,7 +89,7 @@ export default function DashboardPage() {
 
   const partnerCards = [
     {
-      title: 'Numéros surveillés',
+      title: 'Numéros du périmètre surveillés',
       value: '28 430',
       change: '+4,2 %',
       isPositive: true,
@@ -98,7 +97,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-navy bg-brand-navy/10 dark:bg-brand-navy/30 dark:text-blue-300',
     },
     {
-      title: 'Fraudes évitées',
+      title: 'Fraudes évitées sur le périmètre',
       value: '1 204',
       change: '+18,7 %',
       isPositive: true,
@@ -106,7 +105,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
-      title: 'Signalements reçus',
+      title: 'Signalements affiliés',
       value: '3 812',
       change: '+9,3 %',
       isPositive: true,
@@ -130,7 +129,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-orange bg-brand-orange/10 dark:bg-brand-orange/20',
     },
     {
-      title: 'Score moyen',
+      title: 'Score moyen de réputation',
       value: '87 / 100',
       change: '+2,1 %',
       isPositive: true,
@@ -141,7 +140,7 @@ export default function DashboardPage() {
 
   const userCards = [
     {
-      title: 'Numéros vérifiés',
+      title: 'Mes cartes SIM vérifiées',
       value: '3',
       change: '+1',
       isPositive: true,
@@ -149,7 +148,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
-      title: 'Menaces évitées',
+      title: 'Tentatives d\'arnaque évitées',
       value: '12',
       change: '+3',
       isPositive: true,
@@ -157,7 +156,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-navy bg-brand-navy/10 dark:bg-brand-navy/30 dark:text-blue-300',
     },
     {
-      title: 'Signalements effectués',
+      title: 'Mes signalements effectués',
       value: '5',
       change: '+2',
       isPositive: true,
@@ -166,14 +165,13 @@ export default function DashboardPage() {
     },
   ];
 
-  const cardsToRender =
-    userRole === 'partner' ? partnerCards : userRole === 'user' ? userCards : adminCards;
+  const cardsToRender = isPartner ? partnerCards : isUser ? userCards : adminCards;
 
   return (
     <div className="flex flex-col gap-6 p-6 font-body">
       <PageHeader
-        title={t('dashboard.title')}
-        subtitle={t('dashboard.subtitle')}
+        title={t('dashboard.title', { defaultValue: 'Tableau de bord' })}
+        subtitle={t('dashboard.subtitle', { defaultValue: 'Supervision des indicateurs et de la réputation récurrente' })}
         showBreadcrumb={false}
       />
 
@@ -257,5 +255,6 @@ export default function DashboardPage() {
     </div>
   );
 }
+
 
 

@@ -127,7 +127,7 @@ export default function LoginScreen() {
               onPress={() => router.push('/(auth)/forgot-password')}
               className="self-start -mt-0.5 mb-6"
             >
-              <Text className="font-caption text-xs text-slate-700 dark:text-slate-300">
+              <Text className="font-caption text-xs text-slate-700 dark:text-slate-200">
                 {t('auth.forgotPasswordLink')}
               </Text>
             </TouchableOpacity>
@@ -140,7 +140,7 @@ export default function LoginScreen() {
               <View
                 className={`w-5 h-5 rounded border-2 items-center justify-center mr-3 ${
                   rememberMe
-                    ? 'bg-slate-900 dark:bg-emerald-600 border-slate-900 dark:border-emerald-600'
+                    ? 'bg-slate-900 dark:bg-brand-green border-slate-900 dark:border-brand-green'
                     : 'border-slate-400 dark:border-slate-600'
                 }`}
               >

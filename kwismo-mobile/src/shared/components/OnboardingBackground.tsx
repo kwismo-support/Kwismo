@@ -22,7 +22,7 @@ export const OnboardingBackground: React.FC<OnboardingBackgroundProps> = ({
     typeof activeImage === 'string' ? { uri: activeImage } : activeImage;
 
   return (
-    <View className="absolute inset-0 bg-black overflow-hidden">
+    <View className="absolute inset-0 w-full h-full bg-white dark:bg-black overflow-hidden">
       {resolvedImageSource && (
         <Image
           source={resolvedImageSource}

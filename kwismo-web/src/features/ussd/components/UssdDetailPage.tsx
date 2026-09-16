@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { PageHeader } from '@/shared/components';
 import { Button } from '@/shared/ui/button';
@@ -7,18 +8,23 @@ import { Input } from '@/shared/ui/input';
 import { FormSkeleton } from '@/shared/ui/skeleton';
 import { ConfirmDialog } from '@/shared/components/ConfirmDialog';
 import { toast } from '@/shared/store/toastStore';
-import { api } from '@/shared/lib/api';
-import type { CountryDTO, OperatorDTO } from '@/shared/mock';
+import { usePermissions } from '@/shared/hooks/usePermissions';
+import { ussdApi } from '../services/ussd.api';
+import type { OperatorItem, UssdActionItem } from '../services/ussd.api';
 
 export default function UssdDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [operator, setOperator] = useState<OperatorDTO | null>(null);
+  const { t } = useTranslation(['admin', 'common']);
+  const { hasPermission } = usePermissions();
+  const canUpdate = hasPermission('ussd:update');
+
+  const [operator, setOperator] = useState<OperatorItem | null>(null);
+  const [actions, setActions] = useState<UssdActionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [showUnsavedModal, setShowUnsavedModal] = useState(false);
 
-  // Form State
   const [initialData, setInitialData] = useState({
     nom: '',
     prefixes: '',
@@ -29,19 +35,27 @@ export default function UssdDetailPage() {
   useEffect(() => {
     let mounted = true;
     if (id) {
-      api.getCountries()
-        .then((countries: CountryDTO[]) => {
+      setLoading(true);
+      ussdApi
+        .getOperators('')
+        .then(async (ops) => {
           if (!mounted) return;
-          const allOps = countries.flatMap((c) => c.operateurs);
-          const found = allOps.find((op) => String(op.id) === id) || allOps[0];
+          const found = ops.find((o) => o.id === id);
           if (found) {
             setOperator(found);
             const state = {
               nom: found.nom || '',
-              prefixes: found.prefixes?.join(', ') || '',
+              prefixes: found.prefixes?.map((p) => p.prefixe).join(', ') || '',
             };
             setInitialData(state);
             setFormData(state);
+
+            try {
+              const actList = await ussdApi.getActions(found.id);
+              if (mounted) setActions(actList);
+            } catch {
+              if (mounted) setActions([]);
+            }
           }
         })
         .finally(() => {
@@ -50,7 +64,9 @@ export default function UssdDetailPage() {
     } else {
       setLoading(false);
     }
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [id]);
 
   if (loading) {
@@ -65,9 +81,11 @@ export default function UssdDetailPage() {
     return (
       <div className="p-6 font-body text-center py-12">
         <Icon icon="solar:global-bold-duotone" className="text-5xl text-slate-400 mx-auto mb-3" />
-        <h3 className="font-title text-lg font-bold text-slate-900 dark:text-white">Opérateur introuvable</h3>
+        <h3 className="font-title text-lg font-bold text-slate-900 dark:text-white">
+          {t('admin:ussd.operatorNotFound')}
+        </h3>
         <Button className="mt-4" variant="outline" onClick={() => navigate('/app/ussd')}>
-          Retour à la liste
+          {t('common:actions.back')}
         </Button>
       </div>
     );
@@ -75,11 +93,25 @@ export default function UssdDetailPage() {
 
   const isDirty = JSON.stringify(formData) !== JSON.stringify(initialData);
 
-  const handleSave = () => {
-    setOperator((prev) => prev ? { ...prev, nom: formData.nom, prefixes: formData.prefixes.split(',').map((p) => p.trim()) } : null);
-    setInitialData({ ...formData });
-    setIsEditing(false);
-    toast.success('Opérateur USSD mis à jour avec succès !');
+  const handleSave = async () => {
+    if (!canUpdate) return;
+    const prefixes = formData.prefixes
+      .split(',')
+      .map((p) => p.trim())
+      .filter(Boolean);
+    try {
+      const updated = await ussdApi.updateOperator(operator.id, {
+        nom: formData.nom,
+        country_id: operator.country_id,
+        prefixes,
+      });
+      setOperator(updated);
+      setInitialData({ ...formData });
+      setIsEditing(false);
+      toast.success(t('admin:ussd.operatorSaveSuccess'));
+    } catch {
+      toast.error(t('admin:ussd.operatorSaveError'));
+    }
   };
 
   const handleBack = () => {
@@ -95,61 +127,65 @@ export default function UssdDetailPage() {
     navigate('/app/ussd');
   };
 
-  const handleConfirmSaveAndLeave = () => {
-    handleSave();
+  const handleConfirmSaveAndLeave = async () => {
+    await handleSave();
     setShowUnsavedModal(false);
     navigate('/app/ussd');
   };
 
   return (
     <div className="flex flex-col gap-6 p-6 font-body max-w-6xl mx-auto">
-      {/* Page Header */}
       <PageHeader
-        title={`Configuration Opérateur — ${operator.nom}`}
-        subtitle="Gestion des préfixes réseau et de la bibliothèque des actions USSD."
+        title={`${t('admin:ussd.operatorDetailTitle')} — ${operator.nom}`}
+        subtitle={t('admin:ussd.operatorDetailSubtitle')}
         showBreadcrumb={false}
         showBack={true}
         onBack={handleBack}
-        actions={[
-          !isEditing ? {
-            label: 'Éditer',
-            icon: 'solar:pen-bold',
-            variant: 'primary',
-            onClick: () => setIsEditing(true),
-          } : {
-            label: 'Enregistrer les modifications',
-            icon: 'solar:diskette-bold',
-            variant: 'primary',
-            disabled: !isDirty,
-            onClick: handleSave,
-          },
-        ]}
+        actions={
+          canUpdate
+            ? [
+                !isEditing
+                  ? {
+                      label: t('common:actions.edit'),
+                      icon: 'solar:pen-bold',
+                      variant: 'primary',
+                      onClick: () => setIsEditing(true),
+                    }
+                  : {
+                      label: t('common:actions.save'),
+                      icon: 'solar:diskette-bold',
+                      variant: 'primary',
+                      disabled: !isDirty,
+                      onClick: handleSave,
+                    },
+              ]
+            : []
+        }
       />
 
-      {/* Main Form */}
       <div className="p-6 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm space-y-6">
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-4">
           <h3 className="font-title text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Icon icon="solar:phone-calling-bold-duotone" className="text-brand-green text-xl" />
-            Paramètres Réseau
+            {t('admin:ussd.networkSettings')}
           </h3>
           {isEditing && (
             <span className="text-xs font-semibold text-brand-orange bg-brand-orange/10 px-3 py-1 rounded-full border border-brand-orange/20 animate-pulse">
-              Mode Édition Actif
+              {t('admin:ussd.editModeActive')}
             </span>
           )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <Input
-            label="Nom de l'opérateur"
+            label={t('admin:ussd.operatorName')}
             disabled={!isEditing}
             value={formData.nom}
             onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
             required
           />
           <Input
-            label="Préfixes attribués (séparés par des virgules)"
+            label={t('admin:ussd.prefixesLabel')}
             disabled={!isEditing}
             value={formData.prefixes}
             onChange={(e) => setFormData({ ...formData, prefixes: e.target.value })}
@@ -157,37 +193,35 @@ export default function UssdDetailPage() {
         </div>
       </div>
 
-      {/* USSD Actions List */}
       <div className="p-6 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm space-y-4">
         <h3 className="font-title text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <Icon icon="solar:code-square-bold-duotone" className="text-brand-blue text-xl" />
-          Actions USSD Définies ({operator.ussd?.length || 0})
+          {t('admin:ussd.definedActions')} ({actions.length})
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          {operator.ussd?.map((u) => (
+          {actions.map((u) => (
             <div key={u.id} className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] flex items-center justify-between">
               <div>
-                <p className="font-title text-xs font-bold text-slate-900 dark:text-white">{u.label}</p>
-                <p className="font-mono text-xs text-brand-green font-bold mt-1">{u.code}</p>
+                <p className="font-title text-xs font-bold text-slate-900 dark:text-white">{u.nom_action}</p>
+                <p className="font-mono text-xs text-brand-green font-bold mt-1">{u.code_ussd}</p>
               </div>
-              <Button size="xs" variant="outline" onClick={() => toast.info(`Exécution USSD : ${u.code}`)}>
-                Tester
+              <Button size="xs" variant="outline" onClick={() => toast.info(`${t('admin:ussd.testUSSD')}: ${u.format}`)}>
+                {t('common:actions.test')}
               </Button>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Unsaved Changes Confirmation Modal */}
       <ConfirmDialog
         isOpen={showUnsavedModal}
         onClose={handleConfirmDiscard}
         onConfirm={handleConfirmSaveAndLeave}
-        title="Modifications non enregistrées"
-        description="Vous avez modifié cet opérateur. Voulez-vous enregistrer vos modifications avant de quitter ?"
-        confirmLabel="Enregistrer et quitter"
-        cancelLabel="Annuler les modifications"
+        title={t('common:unsavedTitle')}
+        description={t('common:unsavedDesc')}
+        confirmLabel={t('common:saveAndLeave')}
+        cancelLabel={t('common:discardChanges')}
         variant="warning"
       />
     </div>

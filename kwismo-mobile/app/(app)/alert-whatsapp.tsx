@@ -76,7 +76,7 @@ export default function AlertWhatsappScreen() {
               <Text className="font-font-bold text-sm font-bold text-emerald-900 dark:text-emerald-300 mb-1">
                 {t('whatsapp.subtitle', 'Protection anti-piratage WhatsApp')}
               </Text>
-              <Text className="font-font-regular text-xs text-emerald-700 dark:text-emerald-400 leading-4.5">
+              <Text className="font-font-regular text-xs text-brand-green dark:text-brand-green leading-4.5">
                 {t(
                   'whatsapp.noticeText',
                   'En activant cette protection, Kwismo surveillera automatiquement les tentatives d’usurpation de votre compte WhatsApp sur le numéro sélectionné.'
@@ -105,17 +105,15 @@ export default function AlertWhatsappScreen() {
                     key={item.id}
                     activeOpacity={0.8}
                     onPress={() => handleSelectNumber(item.id, item.isProtected)}
-                    className={`flex-row items-center justify-between p-3.5 rounded-2xl border-2 ${
-                      isSelected
-                        ? 'bg-emerald-50 dark:bg-emerald-950/40 border-brand-green'
-                        : 'bg-white dark:bg-brand-cardDark border-slate-200 dark:border-slate-700'
-                    }`}
+                    className={`flex-row items-center justify-between p-3.5 rounded-2xl border-2 ${isSelected
+                      ? 'bg-emerald-50 dark:bg-emerald-950/40 border-brand-green'
+                      : 'bg-white dark:bg-brand-cardDark border-slate-200 dark:border-slate-700'
+                      }`}
                   >
                     <View className="flex-row items-center">
                       <View
-                        className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
-                          isSelected ? 'border-brand-green' : 'border-slate-300 dark:border-slate-600'
-                        }`}
+                        className={`w-5 h-5 rounded-full border-2 items-center justify-center ${isSelected ? 'border-brand-green' : 'border-slate-300 dark:border-slate-600'
+                          }`}
                       >
                         {isSelected && <View className="w-2.5 h-2.5 rounded-full bg-brand-green" />}
                       </View>
@@ -131,16 +129,14 @@ export default function AlertWhatsappScreen() {
                     </View>
 
                     <View
-                      className={`px-2.5 py-1 rounded-xl ${
-                        item.isProtected
-                          ? 'bg-emerald-100 dark:bg-emerald-950/50'
-                          : 'bg-slate-100 dark:bg-slate-800'
-                      }`}
+                      className={`px-2.5 py-1 rounded-xl ${item.isProtected
+                        ? 'bg-emerald-100 dark:bg-emerald-950/50'
+                        : 'bg-slate-100 dark:bg-slate-800'
+                        }`}
                     >
                       <Text
-                        className={`font-font-bold text-xs font-bold ${
-                          item.isProtected ? 'text-brand-green' : 'text-slate-500 dark:text-slate-400'
-                        }`}
+                        className={`font-font-bold text-xs font-bold ${item.isProtected ? 'text-brand-green' : 'text-slate-500 dark:text-slate-400'
+                          }`}
                       >
                         {item.isProtected
                           ? t('whatsapp.statusProtected', 'Protégé')
@@ -172,11 +168,10 @@ export default function AlertWhatsappScreen() {
           </View>
 
           <View
-            className={`flex-row items-center p-4 rounded-2xl border mt-5 ${
-              protectionEnabled
-                ? 'bg-emerald-50 dark:bg-emerald-950/40 border-brand-green'
-                : 'bg-red-50 dark:bg-red-950/40 border-red-500'
-            }`}
+            className={`flex-row items-center p-4 rounded-2xl border mt-5 ${protectionEnabled
+              ? 'bg-emerald-50 dark:bg-emerald-950/40 border-brand-green'
+              : 'bg-red-50 dark:bg-red-950/40 border-red-500'
+              }`}
           >
             <Icon
               name={protectionEnabled ? 'solar:shield-check-bold' : 'solar:shield-warning-bold'}
@@ -186,9 +181,8 @@ export default function AlertWhatsappScreen() {
             />
             <View className="flex-1">
               <Text
-                className={`font-font-bold text-sm font-bold ${
-                  protectionEnabled ? 'text-brand-green' : 'text-red-500'
-                }`}
+                className={`font-font-bold text-sm font-bold ${protectionEnabled ? 'text-brand-green' : 'text-red-500'
+                  }`}
               >
                 {protectionEnabled
                   ? t('whatsapp.statusProtected', 'Protection WhatsApp Active')

@@ -223,9 +223,8 @@ export default function TransferScreen() {
               >
                 <View className="flex-row items-center flex-1">
                   <View
-                    className={`px-2 py-1 rounded-lg mr-2.5 ${
-                      selectedSender.operator === 'Orange' ? 'bg-orange-500' : 'bg-yellow-500'
-                    }`}
+                    className={`px-2 py-1 rounded-lg mr-2.5 ${selectedSender.operator === 'Orange' ? 'bg-orange-500' : 'bg-yellow-500'
+                      }`}
                   >
                     <Text className="font-font-bold text-xs text-white">{selectedSender.operator}</Text>
                   </View>
@@ -307,7 +306,7 @@ export default function TransferScreen() {
                   <Text className="font-font-bold text-sm font-bold text-emerald-800 dark:text-emerald-300 mb-0.5">
                     {t('transfer.riskSafeTitle', 'Numéro vérifié et sûr')}
                   </Text>
-                  <Text className="font-font-regular text-xs text-emerald-700 dark:text-emerald-400">
+                  <Text className="font-font-regular text-xs text-brand-green dark:text-brand-green">
                     {t(
                       'transfer.riskSafeSub',
                       'Aucune menace ou comportement suspect associé à ce numéro.'
@@ -461,16 +460,14 @@ export default function TransferScreen() {
                   setSelectedSender(sender);
                   setSenderModalVisible(false);
                 }}
-                className={`flex-row items-center p-3.5 rounded-xl mb-2.5 border ${
-                  selectedSender.id === sender.id
-                    ? 'border-2 border-brand-green bg-emerald-50 dark:bg-emerald-950/30'
-                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark'
-                }`}
+                className={`flex-row items-center p-3.5 rounded-xl mb-2.5 border ${selectedSender.id === sender.id
+                  ? 'border-2 border-brand-green bg-emerald-50 dark:bg-emerald-950/30'
+                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark'
+                  }`}
               >
                 <View
-                  className={`px-2 py-1 rounded-lg ${
-                    sender.operator === 'Orange' ? 'bg-orange-500' : 'bg-yellow-500'
-                  }`}
+                  className={`px-2 py-1 rounded-lg ${sender.operator === 'Orange' ? 'bg-orange-500' : 'bg-yellow-500'
+                    }`}
                 >
                   <Text className="font-font-bold text-xs text-white">{sender.operator}</Text>
                 </View>
@@ -518,11 +515,10 @@ export default function TransferScreen() {
                   setSelectedAction(action);
                   setActionModalVisible(false);
                 }}
-                className={`flex-row items-center p-3.5 rounded-xl mb-2.5 border ${
-                  selectedAction.id === action.id
-                    ? 'border-2 border-brand-green bg-emerald-50 dark:bg-emerald-950/30'
-                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark'
-                }`}
+                className={`flex-row items-center p-3.5 rounded-xl mb-2.5 border ${selectedAction.id === action.id
+                  ? 'border-2 border-brand-green bg-emerald-50 dark:bg-emerald-950/30'
+                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark'
+                  }`}
               >
                 <Icon name="solar:card-transfer-bold" color="#25B876" size={24} className="mr-3" />
                 <View className="flex-1">
@@ -563,10 +559,10 @@ export default function TransferScreen() {
               {t(
                 'transfer.warningModalBody',
                 'Le numéro destinataire ' +
-                  selectedCountry.callingCode +
-                  ' ' +
-                  beneficiaryPhone +
-                  ' présente un risque élevé de fraude selon notre système. Continuer peut entraîner une perte définitive de vos fonds.'
+                selectedCountry.callingCode +
+                ' ' +
+                beneficiaryPhone +
+                ' présente un risque élevé de fraude selon notre système. Continuer peut entraîner une perte définitive de vos fonds.'
               )}
             </Text>
 

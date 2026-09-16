@@ -1,104 +1,199 @@
-import { useState } from 'react';
-import { Icon } from '@iconify/react';
-import { PERM_MODULES, MOCK_ROLES, type PermissionDTO } from '@/shared/mock';
-import { TableWrapper } from '@/shared/components/TableWrapper';
+import { useTranslation } from 'react-i18next';
+import { Button } from '@/shared/ui/button';
+import { usePermissions } from '@/shared/hooks/usePermissions';
+import type { RoleOut, AccessRightOut } from '../services/accessControl.api';
+import type { PermissionCode } from '@/shared/types/access';
 
-interface PermissionsMatrixProps {
-  permissions?: PermissionDTO[];
-  isLoading?: boolean;
+interface ModuleConfig {
+  id: string;
+  labelKey: string;
+  permissions: { code: PermissionCode; actionLabel: string }[];
 }
 
-export default function PermissionsMatrix({ isLoading = false }: PermissionsMatrixProps) {
-  const [activeRole, setActiveRole] = useState('Admin');
+const MODULE_PERMISSIONS: ModuleConfig[] = [
+  {
+    id: 'users',
+    labelKey: 'access.categories.users',
+    permissions: [
+      { code: 'users:read', actionLabel: 'Voir' },
+      { code: 'users:create', actionLabel: 'Créer' },
+      { code: 'users:update', actionLabel: 'Modifier' },
+      { code: 'users:delete', actionLabel: 'Supprimer' },
+      { code: 'users:export', actionLabel: 'Exporter' },
+    ],
+  },
+  {
+    id: 'numbers',
+    labelKey: 'access.categories.numbers',
+    permissions: [
+      { code: 'numbers:read', actionLabel: 'Voir' },
+      { code: 'numbers:create', actionLabel: 'Créer' },
+      { code: 'numbers:update', actionLabel: 'Modifier' },
+      { code: 'numbers:delete', actionLabel: 'Supprimer' },
+      { code: 'numbers:verify', actionLabel: 'Vérifier' },
+      { code: 'numbers:export', actionLabel: 'Exporter' },
+    ],
+  },
+  {
+    id: 'reports',
+    labelKey: 'access.categories.reports',
+    permissions: [
+      { code: 'reports:read', actionLabel: 'Voir' },
+      { code: 'reports:create', actionLabel: 'Signaler' },
+      { code: 'reports:verify', actionLabel: 'Valider/Rejeter' },
+      { code: 'reports:delete', actionLabel: 'Supprimer' },
+      { code: 'reports:export', actionLabel: 'Exporter' },
+    ],
+  },
+  {
+    id: 'partners',
+    labelKey: 'access.categories.partners',
+    permissions: [
+      { code: 'partners:read', actionLabel: 'Voir' },
+      { code: 'partners:create', actionLabel: 'Créer' },
+      { code: 'partners:update', actionLabel: 'Modifier' },
+      { code: 'partners:delete', actionLabel: 'Supprimer' },
+      { code: 'affiliation:update', actionLabel: 'Gérer l’affiliation' },
+      { code: 'partners:export', actionLabel: 'Exporter' },
+    ],
+  },
+  {
+    id: 'ussd',
+    labelKey: 'access.categories.ussd',
+    permissions: [
+      { code: 'ussd:read', actionLabel: 'Voir' },
+      { code: 'ussd:create', actionLabel: 'Créer' },
+      { code: 'ussd:update', actionLabel: 'Modifier' },
+      { code: 'ussd:delete', actionLabel: 'Supprimer' },
+      { code: 'ussd:export', actionLabel: 'Exporter' },
+    ],
+  },
+  {
+    id: 'roles',
+    labelKey: 'access.categories.roles',
+    permissions: [
+      { code: 'roles:read', actionLabel: 'Voir' },
+      { code: 'roles:create', actionLabel: 'Créer' },
+      { code: 'roles:update', actionLabel: 'Modifier' },
+      { code: 'roles:delete', actionLabel: 'Supprimer' },
+    ],
+  },
+  {
+    id: 'settings',
+    labelKey: 'access.categories.settings',
+    permissions: [
+      { code: 'analytics:read', actionLabel: 'Supervision API' },
+      { code: 'settings:read', actionLabel: 'Voir Paramètres' },
+      { code: 'settings:update', actionLabel: 'Modifier Paramètres' },
+      { code: 'system:configure', actionLabel: 'Configurer Système' },
+    ],
+  },
+];
 
-  if (isLoading) {
-    return (
-      <div className="flex flex-col gap-4 p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy shadow-sm animate-pulse font-body">
-        <div className="h-4 bg-slate-200 dark:bg-white/10 rounded w-48 mb-2" />
-        <div className="h-64 rounded-xl bg-slate-100 dark:bg-white/5 mt-4" />
-      </div>
-    );
-  }
+interface PermissionsMatrixProps {
+  role: RoleOut;
+  accessRights: AccessRightOut[];
+  onToggleRight: (roleId: string, permission: PermissionCode, grant: boolean) => Promise<void>;
+  onSave: () => void;
+  saving: boolean;
+}
+
+export function PermissionsMatrix({ role, accessRights, onToggleRight, onSave, saving }: PermissionsMatrixProps) {
+  const { t } = useTranslation('admin');
+  const { hasPermission } = usePermissions();
+  const canUpdatePermissions = hasPermission('roles:update');
+
+  const roleRights = accessRights.filter((ar) => ar.role_id === role.id);
+  const grantedPermissions = new Set(roleRights.map((ar) => ar.permission));
+
+  const isModuleFullyGranted = (mod: ModuleConfig) => {
+    return mod.permissions.every((p) => grantedPermissions.has(p.code));
+  };
+
+  const handleToggleModule = async (mod: ModuleConfig) => {
+    if (!canUpdatePermissions) return;
+    const fullyGranted = isModuleFullyGranted(mod);
+    for (const p of mod.permissions) {
+      if (fullyGranted && grantedPermissions.has(p.code)) {
+        await onToggleRight(role.id, p.code, false);
+      } else if (!fullyGranted && !grantedPermissions.has(p.code)) {
+        await onToggleRight(role.id, p.code, true);
+      }
+    }
+  };
 
   return (
-    <TableWrapper
-      title="Matrice Globale des Permissions & Privilèges"
-      subtitle="Affectation des droits d'accès par module système pour chaque rôle"
-    >
-      <div className="p-4 bg-slate-50/50 dark:bg-brand-darkBg/40 border-b border-slate-200 dark:border-white/10 flex items-center gap-2 overflow-x-auto">
-        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider px-2">
-          Rôle sélectionné:
-        </span>
-        {MOCK_ROLES.map((role) => (
-          <button
-            key={role.id}
-            onClick={() => setActiveRole(role.nomRole)}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
-              activeRole === role.nomRole
-                ? 'bg-brand-navy text-white dark:bg-brand-orange dark:text-brand-navy shadow-xs'
-                : 'bg-white dark:bg-brand-navy text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 hover:bg-slate-100'
-            }`}
-          >
-            <span
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: role.color || '#4D6AB1' }}
-            />
-            <span>{role.nomRole}</span>
-          </button>
-        ))}
+    <div className="p-6 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-4">
+        <div>
+          <h3 className="font-title text-lg font-bold text-slate-900 dark:text-white capitalize">
+            {t('access.matrix')} « {role.nom_role} »
+          </h3>
+          <p className="text-xs text-slate-400 mt-0.5">{role.description || t('access.subtitle')}</p>
+        </div>
+
+        {canUpdatePermissions && (
+          <Button variant="primary" onClick={onSave} isLoading={saving}>
+            {t('access.saveMatrix')}
+          </Button>
+        )}
       </div>
 
-      <table className="w-full text-left border-collapse font-body">
-        <thead>
-          <tr className="border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-darkBg/60 text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-            <th className="py-3.5 px-6">Module Système</th>
-            <th className="py-3.5 px-6">Description</th>
-            <th className="py-3.5 px-6">Actions Autorisées ({activeRole})</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-white/5 text-xs">
-          {PERM_MODULES.map((mod) => (
-            <tr key={mod.id} className="hover:bg-slate-50/80 dark:hover:bg-white/[0.02] transition">
-              <td className="py-4 px-6 font-title font-bold text-sm text-slate-900 dark:text-white">
-                <div className="flex items-center gap-2">
-                  <Icon icon="solar:shield-keyhole-bold-duotone" className="text-brand-orange text-base" />
-                  <span>{mod.label}</span>
+      <div className="space-y-4">
+        {MODULE_PERMISSIONS.map((mod) => {
+          const fullyGranted = isModuleFullyGranted(mod);
+          return (
+            <div
+              key={mod.id}
+              className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-white/[0.02]"
+            >
+              <div className="flex items-center justify-between border-b border-slate-200/60 dark:border-white/5 pb-3 mb-3">
+                <div>
+                  <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                    {t(mod.labelKey)}
+                  </h4>
                 </div>
-              </td>
-              <td className="py-4 px-6 text-slate-500 dark:text-slate-400">
-                {mod.desc}
-              </td>
-              <td className="py-4 px-6">
-                <div className="flex items-center gap-2 flex-wrap">
-                  {mod.actions.map((act) => {
-                    const isGranted = activeRole === 'Admin' || (activeRole === 'Partenaire' && act.id === 'view');
 
-                    return (
-                      <span
-                        key={act.id}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold border ${
-                          isGranted
-                            ? act.critique
-                              ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
-                              : 'bg-brand-green/10 text-brand-green border-brand-green/20'
-                            : 'bg-slate-100 text-slate-400 dark:bg-white/5 dark:text-slate-600 border-transparent opacity-60'
-                        }`}
-                      >
-                        <Icon
-                          icon={isGranted ? 'solar:check-circle-bold' : 'solar:close-circle-bold'}
-                          className="text-sm"
-                        />
-                        <span>{act.label}</span>
-                        {act.critique && <span className="text-[9px] uppercase font-bold text-rose-500">(Critique)</span>}
-                      </span>
-                    );
-                  })}
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </TableWrapper>
+                {canUpdatePermissions && (
+                  <button
+                    onClick={() => handleToggleModule(mod)}
+                    className="text-xs font-semibold text-brand-green hover:underline cursor-pointer"
+                  >
+                    {fullyGranted ? t('access.deselectAll') : t('access.selectAll')}
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                {mod.permissions.map((p) => {
+                  const isGranted = grantedPermissions.has(p.code);
+                  return (
+                    <label
+                      key={p.code}
+                      className={`flex items-center gap-2 p-2.5 rounded-xl border transition ${
+                        canUpdatePermissions ? 'cursor-pointer' : 'cursor-default opacity-80'
+                      } ${
+                        isGranted
+                          ? 'border-brand-green/40 bg-brand-green/10 text-brand-green font-bold'
+                          : 'border-slate-200 dark:border-white/10 bg-white dark:bg-[#0F1626] text-slate-600 dark:text-slate-400'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isGranted}
+                        disabled={!canUpdatePermissions}
+                        onChange={(e) => onToggleRight(role.id, p.code, e.target.checked)}
+                        className="rounded border-slate-300 text-brand-green focus:ring-brand-green h-4 w-4 cursor-pointer"
+                      />
+                      <span className="text-xs">{p.actionLabel}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }

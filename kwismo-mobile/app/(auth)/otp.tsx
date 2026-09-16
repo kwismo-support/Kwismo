@@ -166,7 +166,7 @@ export default function OtpScreen() {
                 {t('auth.secureAccountOtpSubtitle')}
               </Text>
 
-              <Text className="font-medium text-base text-slate-700 dark:text-slate-300 mb-6 text-center">
+              <Text className="font-medium text-base text-slate-700 dark:text-slate-200 mb-6 text-center">
                 {email}
               </Text>
 
@@ -174,13 +174,12 @@ export default function OtpScreen() {
                 {otpDigits.map((digit, index) => (
                   <View
                     key={`otp-${index}`}
-                    className={`flex-1 h-14 rounded-xl border-2 items-center justify-center bg-white dark:bg-brand-cardDark ${
-                      otpError
-                        ? 'border-red-500'
-                        : digit
+                    className={`flex-1 h-14 rounded-xl border-2 items-center justify-center bg-white dark:bg-brand-cardDark ${otpError
+                      ? 'border-red-500'
+                      : digit
                         ? 'border-emerald-500'
                         : 'border-slate-300 dark:border-slate-700'
-                    }`}
+                      }`}
                   >
                     <TextInput
                       ref={(el) => { inputRefs.current[index] = el; }}
@@ -211,9 +210,8 @@ export default function OtpScreen() {
                   disabled={resendTimer > 0}
                 >
                   <Text
-                    className={`font-semibold text-sm ${
-                      resendTimer > 0 ? 'text-slate-400 dark:text-slate-500' : 'text-emerald-700 dark:text-emerald-400 underline'
-                    }`}
+                    className={`font-semibold text-sm ${resendTimer > 0 ? 'text-slate-400 dark:text-slate-300' : 'text-brand-green dark:text-brand-green underline'
+                      }`}
                   >
                     {t('auth.alreadySentQuestion')} {t('auth.resendCode')}
                   </Text>

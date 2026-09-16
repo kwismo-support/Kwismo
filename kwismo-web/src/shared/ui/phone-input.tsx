@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
+import { parsePhoneNumber, type CountryCode } from 'libphonenumber-js';
 import { COUNTRY_LIST, validatePhone, formatE164, detectUserCountryCode, type CountryOption } from '@/shared/lib/phone';
-import type { CountryCode } from 'libphonenumber-js';
 
 interface PhoneInputProps {
   value: string;
@@ -18,12 +18,42 @@ export function PhoneInput({ value, onChange, label, required = false, disabled 
   const defaultCountryCode = detectUserCountryCode();
   const defaultCountry = COUNTRY_LIST.find((c) => c.code === defaultCountryCode) || COUNTRY_LIST[0];
   const [selectedCountry, setSelectedCountry] = useState<CountryOption>(defaultCountry);
-  const [rawInput, setRawInput] = useState(value);
+  const [rawInput, setRawInput] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const lang = i18n.language.startsWith('en') ? 'en' : 'fr';
+
+  useEffect(() => {
+    if (!value) {
+      setRawInput('');
+      return;
+    }
+    try {
+      const parsed = parsePhoneNumber(value.startsWith('+') ? value : `+${value}`);
+      if (parsed) {
+        if (parsed.country) {
+          const matchedCountry = COUNTRY_LIST.find((c) => c.code === parsed.country);
+          if (matchedCountry) {
+            setSelectedCountry(matchedCountry);
+          }
+        }
+        setRawInput(parsed.nationalNumber);
+        return;
+      }
+    } catch {}
+
+    const cleanVal = value.replace(/^\+/, '');
+    const matchedByDial = COUNTRY_LIST.find((c) => cleanVal.startsWith(c.dialCode.replace('+', '')));
+    if (matchedByDial) {
+      setSelectedCountry(matchedByDial);
+      const dialDigits = matchedByDial.dialCode.replace('+', '');
+      setRawInput(cleanVal.slice(dialDigits.length));
+    } else {
+      setRawInput(value);
+    }
+  }, [value]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -43,21 +73,38 @@ export function PhoneInput({ value, onChange, label, required = false, disabled 
   };
 
   const handleInputChange = (val: string) => {
+    if (val.startsWith('+')) {
+      try {
+        const parsed = parsePhoneNumber(val);
+        if (parsed) {
+          if (parsed.country) {
+            const matched = COUNTRY_LIST.find((c) => c.code === parsed.country);
+            if (matched) {
+              setSelectedCountry(matched);
+            }
+          }
+          const nat = parsed.nationalNumber;
+          setRawInput(nat);
+          validateAndUpdate(nat, selectedCountry);
+          return;
+        }
+      } catch {}
+    }
     setRawInput(val);
     validateAndUpdate(val, selectedCountry);
   };
 
   const validateAndUpdate = (val: string, country: CountryOption) => {
-    const fullString = val.startsWith('+') ? val : `${country.dialCode}${val.replace(/^0+/, '')}`;
+    const cleanDigits = val.replace(/^0+/, '');
+    const fullString = val.startsWith('+') ? val : `${country.dialCode}${cleanDigits}`;
     const isValid = validatePhone(fullString, country.code as CountryCode);
     const normalized = isValid ? formatE164(fullString, country.code as CountryCode) : fullString;
     onChange(normalized, isValid);
   };
 
-  const isValid = validatePhone(
-    rawInput.startsWith('+') ? rawInput : `${selectedCountry.dialCode}${rawInput.replace(/^0+/, '')}`,
-    selectedCountry.code as CountryCode,
-  );
+  const cleanDigits = rawInput.replace(/^0+/, '');
+  const checkString = rawInput.startsWith('+') ? rawInput : `${selectedCountry.dialCode}${cleanDigits}`;
+  const isValid = validatePhone(checkString, selectedCountry.code as CountryCode);
 
   const filteredCountries = COUNTRY_LIST.filter((country) => {
     const q = searchQuery.toLowerCase().trim();
@@ -77,7 +124,6 @@ export function PhoneInput({ value, onChange, label, required = false, disabled 
       )}
 
       <div className="flex items-center gap-2 relative">
-        {}
         <div className="relative" ref={dropdownRef}>
           <button
             type="button"
@@ -90,10 +136,8 @@ export function PhoneInput({ value, onChange, label, required = false, disabled 
             <Icon icon="solar:alt-arrow-down-linear" className={`text-xs transition-transform ${isOpen ? 'rotate-180' : ''}`} />
           </button>
 
-          {}
           {isOpen && (
             <div className="absolute top-12 left-0 z-50 w-72 max-h-80 overflow-hidden rounded-2xl bg-white dark:bg-brand-navy border border-slate-200 dark:border-white/15 shadow-2xl flex flex-col font-body animate-in fade-in zoom-in-95 duration-150">
-              {}
               <div className="p-2 border-b border-slate-100 dark:border-white/10 sticky top-0 bg-white dark:bg-brand-navy z-10">
                 <div className="relative flex items-center">
                   <Icon icon="solar:magnifer-linear" className="absolute left-3 text-slate-400 text-sm" />
@@ -108,7 +152,6 @@ export function PhoneInput({ value, onChange, label, required = false, disabled 
                 </div>
               </div>
 
-              {}
               <div className="overflow-y-auto p-1 max-h-64 divide-y divide-slate-50 dark:divide-white/5">
                 {filteredCountries.length === 0 ? (
                   <div className="p-4 text-center text-xs text-slate-500 dark:text-slate-400">
@@ -147,7 +190,6 @@ export function PhoneInput({ value, onChange, label, required = false, disabled 
           )}
         </div>
 
-        {}
         <div className="relative flex-1">
           <input
             type="tel"
@@ -177,4 +219,3 @@ export function PhoneInput({ value, onChange, label, required = false, disabled 
     </div>
   );
 }
-

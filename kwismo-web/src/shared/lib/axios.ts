@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { env } from '@/config/env';
+import { clearAuthTokens, setAuthTokens } from './token';
 
 export const apiClient = axios.create({
   baseURL: env.apiUrl,
@@ -15,6 +16,20 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+let isRefreshing = false;
+let failedQueue: Array<{ resolve: (token: string) => void; reject: (err: any) => void }> = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else if (token) {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -22,33 +37,48 @@ apiClient.interceptors.response.use(
     const status = error.response?.status;
     const message = error.response?.data?.detail ?? error.message ?? 'Une erreur est survenue';
 
-    if (status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+    // Seul le statut 401 sur des routes non-auth déclenche le rafraîchissement
+    if (status === 401 && !originalRequest._retry && !originalRequest.url?.includes('/auth/')) {
       const refreshToken = localStorage.getItem('kwismo_refresh_token');
 
       if (refreshToken) {
+        if (isRefreshing) {
+          return new Promise((resolve, reject) => {
+            failedQueue.push({ resolve, reject });
+          })
+            .then((token) => {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+              return apiClient(originalRequest);
+            })
+            .catch((err) => Promise.reject(err));
+        }
+
+        originalRequest._retry = true;
+        isRefreshing = true;
+
         try {
           const res = await axios.post(`${env.apiUrl}/auth/refresh`, {
             refresh_token: refreshToken,
           });
-          const newToken = res.data.access_token;
-          const newRefresh = res.data.refresh_token;
-          localStorage.setItem('kwismo_auth_token', newToken);
-          if (newRefresh) localStorage.setItem('kwismo_refresh_token', newRefresh);
-          if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${newToken}`;
-          }
+
+          const { access_token, refresh_token: newRefreshToken } = res.data;
+          setAuthTokens(access_token, newRefreshToken);
+          processQueue(null, access_token);
+          isRefreshing = false;
+
+          originalRequest.headers.Authorization = `Bearer ${access_token}`;
           return apiClient(originalRequest);
-        } catch {
-          localStorage.removeItem('kwismo_auth_token');
-          localStorage.removeItem('kwismo_refresh_token');
-          localStorage.removeItem('kwismo_user');
-          window.location.href = '/auth/login';
-          return Promise.reject(new Error('Session expirée'));
+        } catch (refreshErr) {
+          processQueue(refreshErr, null);
+          isRefreshing = false;
+          clearAuthTokens();
+          if (window.location.pathname.startsWith('/app')) {
+            window.location.href = '/auth/login';
+          }
+          return Promise.reject(refreshErr);
         }
       } else {
-        localStorage.removeItem('kwismo_auth_token');
-        localStorage.removeItem('kwismo_user');
+        clearAuthTokens();
         if (window.location.pathname.startsWith('/app')) {
           window.location.href = '/auth/login';
         }
@@ -75,3 +105,4 @@ export const api = {
   delete: <T>(url: string) =>
     apiClient.delete<T>(url).then((r) => r.data),
 };
+

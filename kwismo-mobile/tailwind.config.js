@@ -15,6 +15,7 @@ module.exports = {
         '50': '200px',
       },
       colors: {
+        transparent: 'transparent',
         brand: {
           navy: '#161E33',
           orange: '#FF9900',
@@ -82,6 +83,7 @@ module.exports = {
         'body-sm': ['12px', { lineHeight: '16px' }],
         caption: ['14px', { lineHeight: '21px' }],
         footnote: ['12px', { lineHeight: '16px' }],
+        '3xs': ['9px', { lineHeight: '12px' }],
         '2xs': ['11px', { lineHeight: '14px' }],
         xs: ['12px', { lineHeight: '16px' }],
         sm: ['14px', { lineHeight: '20px' }],

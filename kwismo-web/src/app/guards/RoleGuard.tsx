@@ -1,19 +1,28 @@
 import { Outlet } from 'react-router-dom';
-import { useAuthStore } from '@/shared/store/authStore';
-import type { Role } from '@/config/constants';
+import { usePermissions } from '@/shared/hooks/usePermissions';
+import type { UserRole, PermissionCode } from '@/shared/types/access';
 import { ForbiddenPage } from '@/shared/components/pages/ForbiddenPage';
 
 interface RoleGuardProps {
-  roles: Role[];
+  roles?: UserRole[];
+  permission?: PermissionCode;
 }
 
+export function RoleGuard({ roles, permission }: RoleGuardProps) {
+  const { user, role, hasPermission } = usePermissions();
 
-export function RoleGuard({ roles }: RoleGuardProps) {
-  const user = useAuthStore((s) => s.user);
+  if (!user) {
+    return <ForbiddenPage />;
+  }
 
-  if (!user || !roles.includes(user.role as Role)) {
+  if (roles && roles.length > 0 && !roles.includes(role)) {
+    return <ForbiddenPage />;
+  }
+
+  if (permission && !hasPermission(permission)) {
     return <ForbiddenPage />;
   }
 
   return <Outlet />;
 }
+
