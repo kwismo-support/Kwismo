@@ -320,7 +320,7 @@ export default function ManagementScreen() {
                           setOtpTimer(60);
                           setFullScreenOtpVisible(true);
                         }}
-                        className="px-5 py-2 rounded bg-orange-500"
+                        className="px-5 py-2 rounded bg-orange-400"
                       >
                         <Text className="font-bold text-xs text-white">
                           {t('common.validate')}
@@ -335,7 +335,7 @@ export default function ManagementScreen() {
                           setTargetActionNumber(item);
                           setRestoreSecurityModalVisible(true);
                         }}
-                        className="px-5 py-2 rounded-xl bg-red-500"
+                        className="px-5 py-2 rounded bg-red-500"
                       >
                         <Text className="font-bold text-xs text-white">
                           {t('common.statusCompromised')}
@@ -347,7 +347,7 @@ export default function ManagementScreen() {
                       <TouchableOpacity
                         activeOpacity={0.8}
                         onPress={() => handleDeclareCompromised(item)}
-                        className="px-5 py-2 rounded-xl bg-orange-500"
+                        className="px-5 py-2 rounded bg-brand-green"
                       >
                         <Text className="font-bold text-xs text-white">
                           {t('common.validate')}
