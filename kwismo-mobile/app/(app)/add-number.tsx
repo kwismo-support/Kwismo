@@ -66,26 +66,35 @@ export default function AddNumberScreen() {
           showsVerticalScrollIndicator={false}
           className="gap-y-4"
         >
-          <TextInput
-            className="h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-4 font-medium text-base text-slate-900 dark:text-white bg-white dark:bg-brand-cardDark"
-            placeholder={t('common.lastName')}
-            placeholderTextColor="#94A3B8"
-            value={addNom}
-            onChangeText={setAddNom}
-          />
+          {/* Nom Field */}
+          <View className="flex-row items-center h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
+            <Icon name="solar:user-linear" color="#94A3B8" size={20} className="mr-2.5" />
+            <TextInput
+              className="flex-1 font-medium text-base text-slate-900 dark:text-white"
+              placeholder={t('common.lastName')}
+              placeholderTextColor="#94A3B8"
+              value={addNom}
+              onChangeText={setAddNom}
+            />
+          </View>
 
-          <TextInput
-            className="h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-4 font-medium text-base text-slate-900 dark:text-white bg-white dark:bg-brand-cardDark"
-            placeholder={t('common.firstName')}
-            placeholderTextColor="#94A3B8"
-            value={addPrenom}
-            onChangeText={setAddPrenom}
-          />
+          {/* Prénom Field */}
+          <View className="flex-row items-center h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
+            <Icon name="solar:user-linear" color="#94A3B8" size={20} className="mr-2.5" />
+            <TextInput
+              className="flex-1 font-medium text-base text-slate-900 dark:text-white"
+              placeholder={t('common.firstName')}
+              placeholderTextColor="#94A3B8"
+              value={addPrenom}
+              onChangeText={setAddPrenom}
+            />
+          </View>
 
+          {/* Pays Field */}
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setCountryModalVisible(true)}
-            className="h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-4 flex-row items-center bg-white dark:bg-brand-cardDark"
+            className="h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 flex-row items-center bg-white dark:bg-brand-cardDark"
           >
             <CountryFlag countryCode={selectedCountry.code} size={22} className="mr-2.5" />
             <Text className="font-medium text-base text-slate-900 dark:text-white flex-1">
@@ -94,14 +103,18 @@ export default function AddNumberScreen() {
             <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={16} />
           </TouchableOpacity>
 
-          <TextInput
-            className="h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-4 font-medium text-base text-slate-900 dark:text-white bg-white dark:bg-brand-cardDark"
-            placeholder={t('common.phoneNumber')}
-            placeholderTextColor="#94A3B8"
-            keyboardType="phone-pad"
-            value={addPhone}
-            onChangeText={setAddPhone}
-          />
+          {/* Phone Field */}
+          <View className="flex-row items-center h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
+            <Icon name="solar:phone-linear" color="#94A3B8" size={20} className="mr-2.5" />
+            <TextInput
+              className="flex-1 font-medium text-base text-slate-900 dark:text-white"
+              placeholder={t('common.phoneNumber')}
+              placeholderTextColor="#94A3B8"
+              keyboardType="phone-pad"
+              value={addPhone}
+              onChangeText={setAddPhone}
+            />
+          </View>
 
           <TouchableOpacity
             activeOpacity={0.85}

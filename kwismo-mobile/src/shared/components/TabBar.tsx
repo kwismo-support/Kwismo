@@ -30,7 +30,7 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
 
   return (
     <View
-      className="absolute bottom-0 left-0 right-0 z-50 flex-row items-center justify-around pt-2.5 bg-white dark:bg-brand-cardDark border-t border-slate-200 dark:border-slate-700/60 shadow-md elevation-5"
+      className="absolute bottom-0 left-0 right-0 z-50 flex-row items-center justify-around pt-2.5 bg-white dark:bg-brand-cardDark border-0 border-slate-200 dark:border-slate-700/60 shadow-md elevation-5"
       style={{
         paddingBottom: Math.max(insets.bottom, 10),
       }}

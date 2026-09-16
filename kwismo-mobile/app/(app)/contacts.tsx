@@ -542,9 +542,15 @@ export default function ContactsScreen() {
       </TouchableOpacity>
 
       {/* Modal: Inviter sur Kwismo Confirmation */}
-      <Modal visible={inviteModalVisible} transparent animationType="fade">
-        <View className="flex-1 bg-black/60 justify-center items-center">
-          <View className="mx-6 rounded-2xl p-6 w-11/12 bg-white dark:bg-brand-cardDark">
+      <Modal visible={inviteModalVisible} transparent animationType="slide">
+        <Pressable
+          className="flex-1 bg-black/60 justify-end"
+          onPress={() => setInviteModalVisible(false)}
+        >
+          <Pressable
+            className="w-full bg-white dark:bg-brand-cardDark rounded-t-3xl p-6 pb-8"
+            onPress={(e) => e.stopPropagation()}
+          >
             <Text className="font-bold text-lg text-slate-900 dark:text-white mb-2">
               {t('common.inviteToKwismoTitle')}
             </Text>
@@ -558,7 +564,7 @@ export default function ContactsScreen() {
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setInviteModalVisible(false)}
-                className="px-3 py-1.5"
+                className="px-4 py-2"
               >
                 <Text className="font-bold text-base text-brand-green">{t('common.no')}</Text>
               </TouchableOpacity>
@@ -566,13 +572,13 @@ export default function ContactsScreen() {
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={handleConfirmInvite}
-                className="px-3 py-1.5"
+                className="px-4 py-2"
               >
                 <Text className="font-bold text-base text-brand-green">{t('common.yes')}</Text>
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
+          </Pressable>
+        </Pressable>
       </Modal>
 
       {/* Country Picker Modal */}

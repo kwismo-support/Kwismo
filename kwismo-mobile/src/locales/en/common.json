@@ -188,6 +188,15 @@
     "contactSubtitleSecured": "Secured",
     "contactSubtitleNotOnKwismo": "Not on Kwismo",
     "contactSubtitleSignalement": "Report",
-    "contactSubtitleTransfert": "Transfer"
+    "contactSubtitleTransfert": "Transfer",
+    "welcomeUser": "Welcome",
+    "preferenceSection": "Preferences",
+    "notificationItem": "Notification",
+    "themeItem": "Theme",
+    "changePassword": "Change password",
+    "twoFactorAuthItem": "2FA Authentication",
+    "activeSessionsItem": "Active sessions",
+    "deleteAccountItem": "Delete account",
+    "logoutAction": "Log out"
   }
 }

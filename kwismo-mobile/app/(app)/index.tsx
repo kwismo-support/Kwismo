@@ -142,7 +142,7 @@ export default function HomeScreen() {
   ];
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg relative">
+    <View className="flex-1 bg-white dark:bg-brand-darkBg relative">
       <StatusBar style="light" />
 
       <HeaderBar isHome={true} />
@@ -254,7 +254,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/(app)/verify')}
             className="flex-1 items-center"
           >
-            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-brand-navy/10 dark:bg-slate-800">
+            <View className="w-13 h-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800">
               <Icon name="mage:scan-user-fill"  color={isDark ? 'white' : '#161E33'} size={24} />
             </View>
             <Text className="text-2xs font-medium text-center text-brand-navy dark:text-white">
