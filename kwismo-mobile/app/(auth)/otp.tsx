@@ -210,7 +210,7 @@ export default function OtpScreen() {
                   disabled={resendTimer > 0}
                 >
                   <Text
-                    className={`font-semibold text-sm ${resendTimer > 0 ? 'text-slate-400 dark:text-slate-300' : 'text-brand-green dark:text-brand-green underline'
+                    className={`font-semibold text-sm ${resendTimer > 0 ? 'text-slate-500 dark:text-slate-300' : 'text-brand-green dark:text-brand-green underline'
                       }`}
                   >
                     {t('auth.alreadySentQuestion')} {t('auth.resendCode')}

@@ -24,9 +24,9 @@ export const CountryFlag: React.FC<CountryFlagProps> = ({
   if (!code || hasError || code.length !== 2) {
     return (
       <View
-        className={`overflow-hidden items-center justify-center bg-slate-200 dark:bg-slate-800 ${className}`}
+        className={`overflow-hidden rounded-xl items-center justify-center bg-slate-200 dark:bg-slate-800 ${className}`}
         style={[
-          { width: size, height: size, borderRadius: size / 2 },
+          { width: size, height: size },
           style,
         ]}
       >
@@ -37,15 +37,16 @@ export const CountryFlag: React.FC<CountryFlagProps> = ({
 
   return (
     <View
-      className={`overflow-hidden items-center justify-center bg-slate-200 dark:bg-slate-800 ${className}`}
+      className={`overflow-hidden rounded-xl items-center justify-center bg-slate-200 dark:bg-slate-800 ${className}`}
       style={[
-        { width: size, height: size, borderRadius: size / 2 },
+        { width: size, height: size },
         style,
       ]}
     >
       <Image
+        className="rounded-xl"
         source={{ uri: `https://flagcdn.com/w80/${code}.png` }}
-        style={{ width: size, height: size, borderRadius: size / 2 }}
+        style={{ width: size, height: size }}
         resizeMode="cover"
         onError={() => setHasError(true)}
       />

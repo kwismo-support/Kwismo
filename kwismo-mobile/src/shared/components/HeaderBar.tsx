@@ -53,7 +53,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
         <View className="absolute -top-10 -right-5 w-55 h-55 rounded-full border-[26px] border-white -rotate-25 scale-x-140" />
       </View>
 
-      <View className="flex-row items-center justify-between min-h-11">
+      <View className="flex-row items-center justify-between min-h-7">
         {showBack ? (
           <>
             <View className="w-10 flex-row items-center justify-start">
@@ -88,7 +88,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           </>
         ) : (
           <>
-            <View className="flex-1 justify-center ">
+            <View className="flex-1 justify-center">
               {isHome ? (
                 <Text style={{ color: textColor }} className="font-montserrat-bold text-2xl font-h1 tracking-wider">
                   KWISMO

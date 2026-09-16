@@ -115,7 +115,7 @@ export default function ManagementScreen() {
     const isValid = isValidPhoneNumber(fullNumber, selectedCountry.code as any);
 
     if (!isValid) {
-      setPhoneError(`Numéro invalide pour ${selectedCountry.name}`);
+      setPhoneError(t('common.invalidPhoneNumber'));
       return;
     }
 
@@ -124,7 +124,7 @@ export default function ManagementScreen() {
       (n) => n.id !== editingNumberId && n.phone.replace(/\s+/g, '') === cleanInput
     );
     if (duplicate) {
-      setPhoneError('Ce numéro est déjà rattaché à votre compte.');
+      setPhoneError(t('common.phoneAlreadyLinked'));
       return;
     }
 
@@ -141,7 +141,7 @@ export default function ManagementScreen() {
           phone: newPhoneNumber,
           operator: detectOperator(newPhoneNumber),
           status: 'pending',
-          addedDate: 'Modifié',
+          addedDate: t('common.modified'),
         };
         setNumbers((prev) =>
           prev.map((n) => (n.id === editingNumberId ? targetSim : n))
@@ -154,7 +154,7 @@ export default function ManagementScreen() {
           phone: newPhoneNumber,
           operator: detectOperator(newPhoneNumber),
           status: 'pending',
-          addedDate: "Aujourd'hui",
+          addedDate: t('common.today'),
         };
         setNumbers((prev) => [...prev, targetSim]);
       }
@@ -166,7 +166,7 @@ export default function ManagementScreen() {
       setOtpCode(['', '', '', '', '', '']);
       setOtpTimer(60);
       setFullScreenOtpVisible(true);
-      toast.success('Code OTP envoyé par SMS');
+      toast.success(t('common.otpSentBySms'));
     }, 800);
   };
 
@@ -184,7 +184,7 @@ export default function ManagementScreen() {
   const handleConfirmOtp = (codeString?: string) => {
     const entered = codeString || otpCode.join('');
     if (entered.length < 6) {
-      toast.error('Veuillez saisir les 6 chiffres du code SMS');
+      toast.error(t('common.enter6DigitOtp'));
       return;
     }
 
@@ -199,7 +199,7 @@ export default function ManagementScreen() {
         );
       }
       setFullScreenOtpVisible(false);
-      toast.success('Numéro vérifié et protégé avec succès !');
+      toast.success(t('common.numberVerifiedSuccess'));
     }, 900);
   };
 
@@ -207,7 +207,7 @@ export default function ManagementScreen() {
     setNumbers((prev) =>
       prev.map((n) => (n.id === item.id ? { ...n, status: 'compromised' } : n))
     );
-    toast.error(`Ligne ${item.phone} déclarée compromise`);
+    toast.error(t('common.lineDeclaredCompromised'));
     router.push('/(app)/alert-whatsapp');
   };
 
@@ -217,14 +217,14 @@ export default function ManagementScreen() {
       prev.map((n) => (n.id === targetActionNumber.id ? { ...n, status: 'verified' } : n))
     );
     setRestoreSecurityModalVisible(false);
-    toast.success('Sécurité rétablie avec succès.');
+    toast.success(t('common.securityRestoredSuccess'));
   };
 
   const handleConfirmDelete = () => {
     if (!targetActionNumber) return;
     setNumbers((prev) => prev.filter((n) => n.id !== targetActionNumber.id));
     setDeleteModalVisible(false);
-    toast.info('Numéro supprimé du compte.');
+    toast.info(t('common.numberDeletedSuccess'));
   };
 
   return (
@@ -289,10 +289,15 @@ export default function ManagementScreen() {
                 >
                   <View className="flex-row items-center justify-between mb-0.5">
                     <View className="flex-row items-center">
-                      <CountryFlag countryCode={item.countryCode} size={22} className="mr-2.5 rounded-md overflow-hidden" />
-                      <Text className="font-title text-base font-bold text-slate-900 dark:text-white">
-                        {item.phone}
-                      </Text>
+                      <CountryFlag countryCode={item.countryCode} size={24} className="mr-2.5 overflow-hidden" />
+                      <View>
+                        <Text className="font-title text-base font-bold text-slate-900 dark:text-white">
+                          {item.phone}
+                        </Text>
+                        <Text className="text-xs text-slate-400 dark:text-slate-500 font-medium">
+                          {item.operator}
+                        </Text>
+                      </View>
                     </View>
 
                     <TouchableOpacity
@@ -300,15 +305,11 @@ export default function ManagementScreen() {
                       onPress={() => handleOpenEditNumber(item)}
                       className="p-1"
                     >
-                      <Icon name="solar:pen-new-square-linear" color="#CBD5E1" size={20} />
+                      <Icon name="basil:edit-outline" color="#CBD5E1" size={24} />
                     </TouchableOpacity>
                   </View>
 
-                  <Text className="text-xs text-slate-400 dark:text-slate-500 font-medium mb-1 pl-8">
-                    {item.operator}
-                  </Text>
-
-                  <View className="my-3 border-t border-slate-100 dark:border-slate-800" />
+                  <View className="my-1 mt-2 border-t border-slate-100 dark:border-slate-800" />
 
                   <View className="flex-row items-center justify-between">
                     {isPending && (
@@ -320,7 +321,7 @@ export default function ManagementScreen() {
                           setOtpTimer(60);
                           setFullScreenOtpVisible(true);
                         }}
-                        className="px-5 py-2 rounded bg-orange-400"
+                        className="px-5 py-2 rounded bg-orange-500"
                       >
                         <Text className="font-bold text-xs text-white">
                           {t('common.validate')}
@@ -338,7 +339,7 @@ export default function ManagementScreen() {
                         className="px-5 py-2 rounded bg-red-500"
                       >
                         <Text className="font-bold text-xs text-white">
-                          {t('common.statusCompromised')}
+                          {t('common.declareAsSecured')}
                         </Text>
                       </TouchableOpacity>
                     )}
@@ -350,7 +351,7 @@ export default function ManagementScreen() {
                         className="px-5 py-2 rounded bg-brand-green"
                       >
                         <Text className="font-bold text-xs text-white">
-                          {t('common.validate')}
+                          {t('common.declareAsCompromised')}
                         </Text>
                       </TouchableOpacity>
                     )}
@@ -363,7 +364,7 @@ export default function ManagementScreen() {
                       }}
                       className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/40 items-center justify-center"
                     >
-                      <Icon name="solar:trash-bin-trash-linear" color="#FF3B30" size={18} />
+                      <Icon name="gravity-ui:trash-bin" color="#FF3B30" size={18} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -376,11 +377,11 @@ export default function ManagementScreen() {
           {t('common.others')}
         </Text>
 
-        <View className="bg-white dark:bg-brand-cardDark rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+        <View className="bg-white dark:bg-brand-cardDark overflow-hidden">
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => router.push('/(app)/contacts')}
-            className="flex-row items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800"
+            className="flex-row items-center justify-between py-4 border-b border-slate-200 dark:border-slate-800"
           >
             <View className="flex-row items-center gap-3">
               <Icon name="solar:users-group-two-rounded-bold" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
@@ -394,10 +395,10 @@ export default function ManagementScreen() {
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => router.push('/(app)/report')}
-            className="flex-row items-center justify-between p-4"
+            className="flex-row items-center justify-between py-4 border-b border-slate-200 dark:border-slate-800"
           >
             <View className="flex-row items-center gap-3">
-              <Icon name="heroicons:signal-16-solid" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
+              <Icon name="mage:megaphone-a-fill" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-semibold text-sm text-slate-900 dark:text-white">
                 {t('common.report')}
               </Text>
@@ -423,17 +424,17 @@ export default function ManagementScreen() {
           <StatusBar style="light" />
 
           <HeaderBar
-            title={editingNumberId ? 'Modifier le numéro' : 'Ajouter un numéro'}
+            title={editingNumberId ? t('common.editPhoneTitle') : t('common.addPhoneTitle')}
             showBack={true}
             onBack={() => setFullScreenAddVisible(false)}
           />
 
           <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg rounded-tl-3xl p-6">
             <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1.5">
-              Rattachement d'une ligne SIM
+              {t('common.simBindingTitle')}
             </Text>
             <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 leading-5 mb-7">
-              Un code de validation OTP par SMS sera envoyé sur ce numéro pour certifier votre détention de la ligne.
+              {t('common.simBindingSubtitle')}
             </Text>
 
             <View
@@ -482,7 +483,7 @@ export default function ManagementScreen() {
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text className="font-font-bold text-sm font-bold text-white">
-                  {editingNumberId ? 'Valider et envoyer OTP' : 'Continuer'}
+                  {editingNumberId ? t('common.validateAndSendOtp') : t('common.continue')}
                 </Text>
               )}
             </TouchableOpacity>
@@ -495,17 +496,17 @@ export default function ManagementScreen() {
           <StatusBar style="light" />
 
           <HeaderBar
-            title="Validation OTP"
+            title={t('common.otpVerify')}
             showBack={true}
             onBack={() => setFullScreenOtpVisible(false)}
           />
 
           <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg rounded-tl-3xl p-6">
             <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1.5">
-              Vérifiez votre numéro
+              {t('common.verifyYourNumberTitle')}
             </Text>
             <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 leading-5 mb-7">
-              Saisissez le code à 6 chiffres envoyé par SMS au{' '}
+              {t('common.enter6DigitCodeSentTo')}{' '}
               <Text className="font-bold text-slate-900 dark:text-white">
                 {otpTargetNumber?.callingCode} {otpTargetNumber?.phone}
               </Text>
@@ -530,12 +531,12 @@ export default function ManagementScreen() {
             <View className="items-center mb-2.5">
               {otpTimer > 0 ? (
                 <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
-                  Renvoyer le code dans {otpTimer}s
+                  {t('common.resendCodeIn')} {otpTimer}s
                 </Text>
               ) : (
                 <TouchableOpacity onPress={() => setOtpTimer(60)}>
                   <Text className="font-font-bold text-xs font-bold text-brand-green">
-                    Renvoyer un nouveau code
+                    {t('common.resendNewCode')}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -554,7 +555,7 @@ export default function ManagementScreen() {
               {isVerifyingOtp ? (
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
-                <Text className="font-font-bold text-sm font-bold text-white">Confirmer le numéro</Text>
+                <Text className="font-font-bold text-sm font-bold text-white">{t('common.confirmNumber')}</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -566,10 +567,10 @@ export default function ManagementScreen() {
           <View className="mx-6 rounded-3xl p-6 w-11/12 bg-white dark:bg-brand-cardDark">
             <Icon name="solar:shield-check-bold" color="#25B876" size={42} className="self-center mb-3" />
             <Text className="font-font-bold text-lg font-extrabold text-slate-900 dark:text-white text-center mb-2">
-              Rétablir la sécurité de la ligne ?
+              {t('common.restoreSecurityTitle')}
             </Text>
             <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 text-center leading-5 mb-5">
-              Confirmez que vous avez repris le contrôle total de la ligne {targetActionNumber?.callingCode} {targetActionNumber?.phone}.
+              {t('common.restoreSecurityMessage')} {targetActionNumber?.callingCode} {targetActionNumber?.phone}.
             </Text>
 
             <View className="flex-row gap-3">
@@ -577,14 +578,14 @@ export default function ManagementScreen() {
                 onPress={() => setRestoreSecurityModalVisible(false)}
                 className="flex-1 h-12 rounded-xl border border-slate-200 dark:border-slate-700 items-center justify-center"
               >
-                <Text className="font-font-bold text-sm text-slate-900 dark:text-white">Annuler</Text>
+                <Text className="font-font-bold text-sm text-slate-900 dark:text-white">{t('common.cancel')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={handleRestoreSecurity}
                 className="flex-1 h-12 rounded-xl bg-brand-green items-center justify-center"
               >
-                <Text className="font-font-bold text-sm font-bold text-white">Rétablir</Text>
+                <Text className="font-font-bold text-sm font-bold text-white">{t('common.restore')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -596,10 +597,10 @@ export default function ManagementScreen() {
           <View className="mx-6 rounded-3xl p-6 w-11/12 bg-white dark:bg-brand-cardDark">
             <Icon name="solar:trash-bin-trash-bold" color="#EF4444" size={40} className="self-center mb-3" />
             <Text className="font-font-bold text-lg font-extrabold text-slate-900 dark:text-white text-center mb-2">
-              Supprimer cette ligne ?
+              {t('common.deleteLineQuestion')}
             </Text>
             <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 text-center leading-5 mb-5">
-              Le numéro {targetActionNumber?.callingCode} {targetActionNumber?.phone} ne sera plus surveillé au titre de votre compte.
+              {t('common.deleteLineMessage')}
             </Text>
 
             <View className="flex-row gap-3">
@@ -607,14 +608,14 @@ export default function ManagementScreen() {
                 onPress={() => setDeleteModalVisible(false)}
                 className="flex-1 h-12 rounded-xl border border-slate-200 dark:border-slate-700 items-center justify-center"
               >
-                <Text className="font-font-bold text-sm text-slate-900 dark:text-white">Annuler</Text>
+                <Text className="font-font-bold text-sm text-slate-900 dark:text-white">{t('common.cancel')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={handleConfirmDelete}
                 className="flex-1 h-12 rounded-xl bg-red-500 items-center justify-center"
               >
-                <Text className="font-font-bold text-sm font-bold text-white">Supprimer</Text>
+                <Text className="font-font-bold text-sm font-bold text-white">{t('common.delete')}</Text>
               </TouchableOpacity>
             </View>
           </View>
