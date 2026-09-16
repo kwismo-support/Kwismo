@@ -8,6 +8,7 @@ import { colors } from '@/styles/tokens';
 
 interface HeaderBarProps {
   title?: string;
+  subtitle?: string;
   isHome?: boolean;
   showBack?: boolean;
   onBack?: () => void;
@@ -19,6 +20,7 @@ interface HeaderBarProps {
 
 export const HeaderBar: React.FC<HeaderBarProps> = ({
   title,
+  subtitle,
   isHome = false,
   showBack = false,
   onBack,
@@ -109,6 +111,14 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           </>
         )}
       </View>
+
+      {subtitle && (
+        <View className="items-center justify-center pt-2 pb-1">
+          <Text style={{ color: textColor }} className="font-montserrat-bold text-base font-semibold text-center">
+            {subtitle}
+          </Text>
+        </View>
+      )}
     </View>
   );
 };

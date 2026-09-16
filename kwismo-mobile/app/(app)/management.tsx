@@ -229,43 +229,50 @@ export default function ManagementScreen() {
 
   return (
     <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg">
-      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <StatusBar style="light" />
 
-      <HeaderBar title={t('common.management', 'Gestion')} showBack={false} />
+      <HeaderBar
+        title={t('common.management', 'Gestion')}
+        subtitle="Mes numéros"
+        showBack={false}
+      />
 
       <ScrollView
         contentContainerStyle={{ paddingBottom: insets.bottom + 110 }}
         showsVerticalScrollIndicator={false}
         className="px-4 pt-4"
       >
-        <View className="flex-row items-center justify-between mb-4">
-          <View className="flex-1">
-            <Text className="font-font-bold text-lg font-extrabold text-slate-900 dark:text-white">
-              {t('management.title', 'Mes numéros')} ({numbers.length})
-            </Text>
-            <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              {t('management.subtitle', 'Gérez et sécurisez vos cartes SIM et numéros associés')}
-            </Text>
-          </View>
-        </View>
-
         {loading ? (
           <SkeletonLoader>
-            <View className="flex-row flex-wrap justify-between gap-y-3">
-              <View className="w-[48.5%] rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-3 justify-between">
-                <Skeleton width={70} height={16} borderRadius={4} />
-                <Skeleton width={110} height={20} borderRadius={6} style={{ marginVertical: 10 }} />
-                <Skeleton width={80} height={14} borderRadius={4} />
+            <View className="gap-y-3">
+              <View className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark p-4 justify-between">
+                <View className="flex-row items-center justify-between mb-2">
+                  <Skeleton width={160} height={20} borderRadius={6} />
+                  <Skeleton width={20} height={20} borderRadius={4} />
+                </View>
+                <Skeleton width={70} height={14} borderRadius={4} />
+                <View className="my-3 border-t border-slate-100 dark:border-slate-800" />
+                <View className="flex-row items-center justify-between">
+                  <Skeleton width={80} height={28} borderRadius={8} />
+                  <Skeleton width={32} height={32} borderRadius={16} />
+                </View>
               </View>
-              <View className="w-[48.5%] rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-3 justify-between">
-                <Skeleton width={70} height={16} borderRadius={4} />
-                <Skeleton width={110} height={20} borderRadius={6} style={{ marginVertical: 10 }} />
-                <Skeleton width={80} height={14} borderRadius={4} />
+              <View className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark p-4 justify-between">
+                <View className="flex-row items-center justify-between mb-2">
+                  <Skeleton width={160} height={20} borderRadius={6} />
+                  <Skeleton width={20} height={20} borderRadius={4} />
+                </View>
+                <Skeleton width={70} height={14} borderRadius={4} />
+                <View className="my-3 border-t border-slate-100 dark:border-slate-800" />
+                <View className="flex-row items-center justify-between">
+                  <Skeleton width={80} height={28} borderRadius={8} />
+                  <Skeleton width={32} height={32} borderRadius={16} />
+                </View>
               </View>
             </View>
           </SkeletonLoader>
         ) : (
-          <View className="flex-row flex-wrap justify-between gap-y-3">
+          <View className="flex-col gap-y-3.5">
             {numbers.map((item) => {
               const isVerified = item.status === 'verified';
               const isPending = item.status === 'pending';
@@ -274,111 +281,73 @@ export default function ManagementScreen() {
               return (
                 <View
                   key={item.id}
-                  className={`w-[48.5%] rounded-2xl border bg-white dark:bg-brand-cardDark p-3 justify-between shadow-sm ${
-                    isCompromised ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
+                  className={`w-full rounded-2xl border bg-white dark:bg-brand-cardDark p-4 shadow-sm ${
+                    isCompromised
+                      ? 'border-red-500'
+                      : 'border-slate-100 dark:border-slate-800'
                   }`}
                 >
-                  <View className="flex-row items-center justify-between mb-2">
-                    <View className="flex-row items-center">
-                      <CountryFlag countryCode={item.countryCode} size={20} className="mr-1.5" />
-                      <Text className="font-font-bold text-xs font-bold text-slate-900 dark:text-white">
-                        {item.operator}
-                      </Text>
-                    </View>
+                  <View className="flex-row items-center justify-between mb-0.5">
+                    <Text className="font-montserrat-bold text-base font-bold text-slate-900 dark:text-white">
+                      {item.phone}
+                    </Text>
 
                     <TouchableOpacity
                       activeOpacity={0.7}
                       onPress={() => handleOpenEditNumber(item)}
-                      className="p-0.5"
+                      className="p-1"
                     >
-                      <Icon name="solar:pen-new-square-linear" color="#94A3B8" size={16} />
+                      <Icon name="solar:pen-new-square-linear" color="#CBD5E1" size={20} />
                     </TouchableOpacity>
                   </View>
 
-                  <Text
-                    numberOfLines={1}
-                    className="font-font-bold text-sm font-bold text-slate-900 dark:text-white mb-2"
-                  >
-                    {item.phone}
+                  <Text className="text-xs text-slate-400 dark:text-slate-500 font-medium mb-1">
+                    {item.operator}
                   </Text>
 
-                  <View className="flex-row items-center mb-3">
-                    <Icon
-                      name={
-                        isVerified
-                          ? 'solar:shield-check-bold'
-                          : isPending
-                          ? 'solar:clock-circle-bold'
-                          : 'solar:danger-triangle-bold'
-                      }
-                      size={15}
-                      color={
-                        isVerified
-                          ? '#25B876'
-                          : isPending
-                          ? '#F97316'
-                          : '#EF4444'
-                      }
-                      className="mr-1"
-                    />
-                    <Text
-                      className={`font-font-bold text-xs font-bold ${
-                        isVerified
-                          ? 'text-brand-green'
-                          : isPending
-                          ? 'text-orange-500'
-                          : 'text-red-500'
-                      }`}
-                    >
-                      {isVerified
-                        ? t('common.statusVerified', 'Vérifié')
-                        : isPending
-                        ? t('common.statusPending', 'En attente')
-                        : t('common.statusCompromised', 'Compromis')}
-                    </Text>
-                  </View>
+                  <View className="my-3 border-t border-slate-100 dark:border-slate-800" />
 
-                  <View className="flex-row items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <View className="flex-row items-center justify-between">
                     {isPending && (
                       <TouchableOpacity
-                        activeOpacity={0.75}
+                        activeOpacity={0.8}
                         onPress={() => {
                           setOtpTargetNumber(item);
                           setOtpCode(['', '', '', '', '', '']);
                           setOtpTimer(60);
                           setFullScreenOtpVisible(true);
                         }}
-                        className="px-2 py-1 rounded-lg bg-orange-500"
+                        className="px-5 py-2 rounded-xl bg-orange-500"
                       >
-                        <Text className="font-font-bold text-xs font-bold text-white">
-                          {t('common.validate', 'Valider OTP')}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-
-                    {isVerified && (
-                      <TouchableOpacity
-                        activeOpacity={0.75}
-                        onPress={() => handleDeclareCompromised(item)}
-                        className="px-2 py-1 rounded-lg border border-red-500"
-                      >
-                        <Text className="font-font-bold text-xs font-bold text-red-500">
-                          {t('common.statusCompromised', 'Compromis')}
+                        <Text className="font-montserrat-bold text-xs font-bold text-white">
+                          Valider
                         </Text>
                       </TouchableOpacity>
                     )}
 
                     {isCompromised && (
                       <TouchableOpacity
-                        activeOpacity={0.75}
+                        activeOpacity={0.8}
                         onPress={() => {
                           setTargetActionNumber(item);
                           setRestoreSecurityModalVisible(true);
                         }}
-                        className="px-2 py-1 rounded-lg bg-brand-green"
+                        className="px-5 py-2 rounded-xl bg-red-500"
                       >
-                        <Text className="font-font-bold text-xs font-bold text-white">
-                          {t('common.reset', 'Rétablir')}
+                        <Text className="font-montserrat-bold text-xs font-bold text-white">
+                          Compromis
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+
+                    {isVerified && (
+                      <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={() => handleDeclareCompromised(item)}
+                        className="px-5 py-2 rounded-xl bg-orange-500"
+                      >
+                        <Text className="font-montserrat-bold text-xs font-bold text-white">
+                          Valider
                         </Text>
                       </TouchableOpacity>
                     )}
@@ -389,9 +358,9 @@ export default function ManagementScreen() {
                         setTargetActionNumber(item);
                         setDeleteModalVisible(true);
                       }}
-                      className="p-1"
+                      className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/40 items-center justify-center"
                     >
-                      <Icon name="solar:trash-bin-trash-linear" color="#94A3B8" size={16} />
+                      <Icon name="solar:trash-bin-trash-linear" color="#FF3B30" size={18} />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -400,43 +369,37 @@ export default function ManagementScreen() {
           </View>
         )}
 
-        <Text className="font-font-bold text-lg font-extrabold text-slate-900 dark:text-white mt-7 mb-3">
-          Actions de sécurité
+        <Text className="text-sm font-semibold text-slate-400 dark:text-slate-500 mt-6 mb-2.5">
+          Autres
         </Text>
 
-        <View className="gap-2.5">
+        <View className="bg-white dark:bg-brand-cardDark rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
           <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => router.push('/(app)/report')}
-            className="flex-row items-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-4"
+            activeOpacity={0.7}
+            onPress={() => router.push('/(app)/contacts')}
+            className="flex-row items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800"
           >
-            <Icon name="heroicons:signal-16-solid" color="#F97316" size={24} className="mr-3.5" />
-            <View className="flex-1">
-              <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">
-                Signaler une fraude
-              </Text>
-              <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Signalez un numéro suspect vous ayant contacté
+            <View className="flex-row items-center gap-3">
+              <Icon name="solar:users-group-two-rounded-bold" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
+              <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white">
+                Mes contacts
               </Text>
             </View>
-            <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={18} />
+            <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={18} />
           </TouchableOpacity>
 
           <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => router.push('/(app)/contacts')}
-            className="flex-row items-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-4"
+            activeOpacity={0.7}
+            onPress={() => router.push('/(app)/report')}
+            className="flex-row items-center justify-between p-4"
           >
-            <Icon name="solar:users-group-two-rounded-bold" color="#25B876" size={24} className="mr-3.5" />
-            <View className="flex-1">
-              <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">
-                Répertoire de contacts
-              </Text>
-              <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Consultez vos contacts et leurs insignes de confiance
+            <View className="flex-row items-center gap-3">
+              <Icon name="heroicons:signal-16-solid" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
+              <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white">
+                Signaler
               </Text>
             </View>
-            <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={18} />
+            <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={18} />
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -445,9 +408,9 @@ export default function ManagementScreen() {
         activeOpacity={0.85}
         onPress={handleOpenAddNumber}
         style={{ bottom: Math.max(insets.bottom + 72, 84) }}
-        className="absolute right-5 w-14 h-14 rounded-full items-center justify-center bg-brand-green shadow-lg z-50"
+        className="absolute right-5 w-14 h-14 rounded-full items-center justify-center bg-orange-500 shadow-lg shadow-orange-500/40 z-50"
       >
-        <Icon name="solar:add-circle-bold" color="#FFFFFF" size={28} />
+        <Icon name="solar:add-linear" color="#FFFFFF" size={28} />
       </TouchableOpacity>
 
       <TabBar activeTab="management" />

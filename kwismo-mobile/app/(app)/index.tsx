@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
 import { TabBar } from '@/shared/components/TabBar';
+import { Skeleton, SkeletonLoader } from '@/shared/ui/Skeleton';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { useAuthStore } from '@/shared/store/authStore';
 import { useDashboard } from '@/features/dashboard/hooks/useDashboard';
@@ -29,8 +30,14 @@ export default function HomeScreen() {
   const { user } = useAuthStore();
   const { summary } = useDashboard();
 
+  const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('all');
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
@@ -141,73 +148,105 @@ export default function HomeScreen() {
       <HeaderBar isHome={true} />
 
       <View className="px-4 -mt-14 z-10">
-        <View className="rounded-xl p-4 mb-4 shadow-xl shadow-black elevation-4 bg-white dark:bg-brand-cardDark">
-          <View className="flex-row items-center mb-4">
-            <View className="mr-3">
-              {user?.avatarUrl ? (
-                <Image
-                  source={{ uri: user.avatarUrl }}
-                  className="w-13 h-13 rounded-full"
-                />
-              ) : (
-                <View className="w-13 h-13 rounded-full bg-emerald-100 dark:bg-emerald-900/40 justify-center items-center">
-                  <Icon name="solar:user-bold" color={colors.green} size={28} />
+        {loading ? (
+          <SkeletonLoader>
+            <View className="rounded-xl p-4 mb-4 shadow-xl elevation-4 bg-white dark:bg-brand-cardDark">
+              <View className="flex-row items-center mb-4">
+                <Skeleton width={52} height={52} borderRadius={26} style={{ marginRight: 12 }} />
+                <View className="flex-1 gap-1">
+                  <Skeleton width={80} height={14} borderRadius={4} />
+                  <Skeleton width={140} height={20} borderRadius={6} />
                 </View>
-              )}
+              </View>
+              <View className="flex-row justify-around pt-1 p-2 gap-4">
+                <View className="flex-1 items-start gap-1">
+                  <Skeleton width={40} height={22} borderRadius={4} />
+                  <Skeleton width={60} height={10} borderRadius={3} />
+                </View>
+                <View className="flex-1 items-start gap-1">
+                  <Skeleton width={40} height={22} borderRadius={4} />
+                  <Skeleton width={60} height={10} borderRadius={3} />
+                </View>
+                <View className="flex-1 items-start gap-1">
+                  <Skeleton width={40} height={22} borderRadius={4} />
+                  <Skeleton width={60} height={10} borderRadius={3} />
+                </View>
+                <View className="flex-1 items-start gap-1">
+                  <Skeleton width={40} height={22} borderRadius={4} />
+                  <Skeleton width={60} height={10} borderRadius={3} />
+                </View>
+              </View>
             </View>
-
-            <View className="flex-1">
-              <View className="flex-row items-center">
-                <Text className="text-xs font-medium text-slate-700 dark:text-slate-300 mr-1.5">
-                  {t('common.welcome')}
-                </Text>
-                <Icon name="reicon:verify-filled" color={colors.green} size={15} />
+          </SkeletonLoader>
+        ) : (
+          <View className="rounded-xl p-4 mb-4 shadow-xl shadow-black elevation-4 bg-white dark:bg-brand-cardDark">
+            <View className="flex-row items-center mb-4">
+              <View className="mr-3">
+                {user?.avatarUrl ? (
+                  <Image
+                    source={{ uri: user.avatarUrl }}
+                    className="w-13 h-13 rounded-full"
+                  />
+                ) : (
+                  <View className="w-13 h-13 rounded-full bg-emerald-100 dark:bg-emerald-900/40 justify-center items-center">
+                    <Icon name="solar:user-bold" color={colors.green} size={28} />
+                  </View>
+                )}
               </View>
 
-              <Text className="text-xl font-bold font-title text-slate-900 dark:text-white mt-0.5">
-                {userName}
-              </Text>
+              <View className="flex-1">
+                <View className="flex-row items-center">
+                  <Text className="text-xs font-medium text-slate-700 dark:text-slate-300 mr-1.5">
+                    {t('common.welcome')}
+                  </Text>
+                  <Icon name="reicon:verify-filled" color={colors.green} size={15} />
+                </View>
+
+                <Text className="text-xl font-bold font-title text-slate-900 dark:text-white mt-0.5">
+                  {userName}
+                </Text>
+              </View>
+            </View>
+
+            <View className="flex-row justify-around pt-1 p-2 gap-4">
+              <View className="flex-1 items-start">
+                <Text className="text-xl font-medium text-left text-black dark:text-white">
+                  {user?.kpi?.numeros_verifies ?? summary?.numeros_verifies ?? 127}
+                </Text>
+                <Text className="text-3xs font-medium text-left mt-0.5 text-black dark:text-white">
+                  {t('common.kpiVerified')}
+                </Text>
+              </View>
+
+              <View className="flex-1 items-start">
+                <Text className="text-xl font-medium text-left text-black dark:text-white">
+                  25
+                </Text>
+                <Text className="text-3xs font-medium text-left mt-0.5 text-black dark:text-white">
+                  {t('common.kpiThreats')}
+                </Text>
+              </View>
+
+              <View className="flex-1 items-start">
+                <Text className="text-xl font-medium text-left text-black dark:text-white">
+                  {user?.kpi?.signalements_effectues ?? summary?.signalements_effectues ?? 10}
+                </Text>
+                <Text className="text-3xs font-medium text-left mt-0.5 text-black dark:text-white">
+                  {t('common.kpiReports')}
+                </Text>
+              </View>
+
+              <View className="flex-1 items-start">
+                <Text className="text-xl font-medium text-left text-black dark:text-white">
+                  {user?.kpi?.transferts_proteges ?? summary?.transferts_proteges ?? 50}
+                </Text>
+                <Text className="text-3xs font-medium text-left mt-0.5 text-black dark:text-white">
+                  {t('common.kpiTransfers')}
+                </Text>
+              </View>
             </View>
           </View>
-
-          <View className="flex-row justify-around pt-1 p-2 gap-4">
-            <View className="flex-1 items-start">
-              <Text className="text-xl font-medium text-left text-black dark:text-white">
-                {user?.kpi?.numeros_verifies ?? summary?.numeros_verifies ?? 127}
-              </Text>
-              <Text className="text-3xs font-medium text-left mt-0.5 text-black dark:text-white">
-                {t('common.kpiVerified')}
-              </Text>
-            </View>
-
-            <View className="flex-1 items-start">
-              <Text className="text-xl font-medium text-left text-black dark:text-white">
-                25
-              </Text>
-              <Text className="text-3xs font-medium text-left mt-0.5 text-black dark:text-white">
-                {t('common.kpiThreats')}
-              </Text>
-            </View>
-
-            <View className="flex-1 items-start">
-              <Text className="text-xl font-medium text-left text-black dark:text-white">
-                {user?.kpi?.signalements_effectues ?? summary?.signalements_effectues ?? 10}
-              </Text>
-              <Text className="text-3xs font-medium text-left mt-0.5 text-black dark:text-white">
-                {t('common.kpiReports')}
-              </Text>
-            </View>
-
-            <View className="flex-1 items-start">
-              <Text className="text-xl font-medium text-left text-black dark:text-white">
-                {user?.kpi?.transferts_proteges ?? summary?.transferts_proteges ?? 50}
-              </Text>
-              <Text className="text-3xs font-medium text-left mt-0.5 text-black dark:text-white">
-                {t('common.kpiTransfers')}
-              </Text>
-            </View>
-          </View>
-        </View>
+        )}
 
         <View className="flex-row justify-between mb-8">
           <TouchableOpacity
