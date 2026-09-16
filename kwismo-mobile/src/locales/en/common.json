@@ -139,6 +139,9 @@
     "filterVerified": "Verified number",
     "filterThreats": "Avoided threats",
     "filterReports": "Reports made",
-    "filterTransfers": "Money transfers"
+    "filterTransfers": "Money transfers",
+    "others": "Others",
+    "myContacts": "My contacts",
+    "myNumbersSubtitle": "My numbers"
   }
 }

@@ -139,6 +139,9 @@
     "filterVerified": "Numéro vérifié",
     "filterThreats": "Ménaces évitées",
     "filterReports": "Signalements effectués",
-    "filterTransfers": "Transferts d'argent"
+    "filterTransfers": "Transferts d'argent",
+    "others": "Autres",
+    "myContacts": "Mes contacts",
+    "myNumbersSubtitle": "Mes numéros"
   }
 }

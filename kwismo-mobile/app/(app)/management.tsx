@@ -228,12 +228,12 @@ export default function ManagementScreen() {
   };
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg">
+    <View className="flex-1 bg-white dark:bg-brand-darkBg">
       <StatusBar style="light" />
 
       <HeaderBar
-        title={t('common.management', 'Gestion')}
-        subtitle="Mes numéros"
+        title={t('common.management')}
+        subtitle={t('common.myNumbersSubtitle')}
         showBack={false}
       />
 
@@ -288,9 +288,12 @@ export default function ManagementScreen() {
                   }`}
                 >
                   <View className="flex-row items-center justify-between mb-0.5">
-                    <Text className="font-montserrat-bold text-base font-bold text-slate-900 dark:text-white">
-                      {item.phone}
-                    </Text>
+                    <View className="flex-row items-center">
+                      <CountryFlag countryCode={item.countryCode} size={22} className="mr-2.5 rounded-md overflow-hidden" />
+                      <Text className="font-title text-base font-bold text-slate-900 dark:text-white">
+                        {item.phone}
+                      </Text>
+                    </View>
 
                     <TouchableOpacity
                       activeOpacity={0.7}
@@ -301,7 +304,7 @@ export default function ManagementScreen() {
                     </TouchableOpacity>
                   </View>
 
-                  <Text className="text-xs text-slate-400 dark:text-slate-500 font-medium mb-1">
+                  <Text className="text-xs text-slate-400 dark:text-slate-500 font-medium mb-1 pl-8">
                     {item.operator}
                   </Text>
 
@@ -319,8 +322,8 @@ export default function ManagementScreen() {
                         }}
                         className="px-5 py-2 rounded-xl bg-orange-500"
                       >
-                        <Text className="font-montserrat-bold text-xs font-bold text-white">
-                          Valider
+                        <Text className="font-bold text-xs text-white">
+                          {t('common.validate')}
                         </Text>
                       </TouchableOpacity>
                     )}
@@ -334,8 +337,8 @@ export default function ManagementScreen() {
                         }}
                         className="px-5 py-2 rounded-xl bg-red-500"
                       >
-                        <Text className="font-montserrat-bold text-xs font-bold text-white">
-                          Compromis
+                        <Text className="font-bold text-xs text-white">
+                          {t('common.statusCompromised')}
                         </Text>
                       </TouchableOpacity>
                     )}
@@ -346,8 +349,8 @@ export default function ManagementScreen() {
                         onPress={() => handleDeclareCompromised(item)}
                         className="px-5 py-2 rounded-xl bg-orange-500"
                       >
-                        <Text className="font-montserrat-bold text-xs font-bold text-white">
-                          Valider
+                        <Text className="font-bold text-xs text-white">
+                          {t('common.validate')}
                         </Text>
                       </TouchableOpacity>
                     )}
@@ -370,7 +373,7 @@ export default function ManagementScreen() {
         )}
 
         <Text className="text-sm font-semibold text-slate-400 dark:text-slate-500 mt-6 mb-2.5">
-          Autres
+          {t('common.others')}
         </Text>
 
         <View className="bg-white dark:bg-brand-cardDark rounded-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
@@ -381,8 +384,8 @@ export default function ManagementScreen() {
           >
             <View className="flex-row items-center gap-3">
               <Icon name="solar:users-group-two-rounded-bold" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
-              <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white">
-                Mes contacts
+              <Text className="font-semibold text-sm text-slate-900 dark:text-white">
+                {t('common.myContacts')}
               </Text>
             </View>
             <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={18} />
@@ -395,8 +398,8 @@ export default function ManagementScreen() {
           >
             <View className="flex-row items-center gap-3">
               <Icon name="heroicons:signal-16-solid" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
-              <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white">
-                Signaler
+              <Text className="font-semibold text-sm text-slate-900 dark:text-white">
+                {t('common.report')}
               </Text>
             </View>
             <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={18} />
