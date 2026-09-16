@@ -73,25 +73,37 @@ export function PhoneInput({ value, onChange, label, required = false, disabled 
   };
 
   const handleInputChange = (val: string) => {
-    if (val.startsWith('+')) {
+    let activeCountry = selectedCountry;
+    let cleanVal = val.trim();
+
+    if (cleanVal.startsWith('+')) {
       try {
-        const parsed = parsePhoneNumber(val);
-        if (parsed) {
-          if (parsed.country) {
-            const matched = COUNTRY_LIST.find((c) => c.code === parsed.country);
-            if (matched) {
-              setSelectedCountry(matched);
-            }
+        const parsed = parsePhoneNumber(cleanVal);
+        if (parsed && parsed.country) {
+          const matched = COUNTRY_LIST.find((c) => c.code === parsed.country);
+          if (matched) {
+            activeCountry = matched;
+            setSelectedCountry(matched);
           }
           const nat = parsed.nationalNumber;
           setRawInput(nat);
-          validateAndUpdate(nat, selectedCountry);
+          validateAndUpdate(nat, activeCountry);
           return;
         }
       } catch {}
     }
-    setRawInput(val);
-    validateAndUpdate(val, selectedCountry);
+
+    const digitsOnly = cleanVal.replace(/^\+/, '');
+    const matchedDial = COUNTRY_LIST.find((c) => digitsOnly.startsWith(c.dialCode.replace('+', '')));
+    if (matchedDial && digitsOnly.length > matchedDial.dialCode.length) {
+      activeCountry = matchedDial;
+      setSelectedCountry(matchedDial);
+      const dialDigits = matchedDial.dialCode.replace('+', '');
+      cleanVal = digitsOnly.slice(dialDigits.length);
+    }
+
+    setRawInput(cleanVal);
+    validateAndUpdate(cleanVal, activeCountry);
   };
 
   const validateAndUpdate = (val: string, country: CountryOption) => {

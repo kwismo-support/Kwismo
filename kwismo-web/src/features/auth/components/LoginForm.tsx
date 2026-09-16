@@ -7,6 +7,7 @@ import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { loginSchema, type LoginInput } from '../schemas/auth.schema';
 import { useLogin } from '../hooks/useLogin';
+import { useAuthStore } from '@/shared/store/authStore';
 import DeviceVerifyForm from './DeviceVerifyForm';
 
 interface LoginFormProps {
@@ -31,7 +32,8 @@ export default function LoginForm({ onForgotPassword, onRegisterPartner: _onRegi
     try {
       const result = await login(data);
       if (result && !result.requiresDeviceVerification) {
-        window.location.href = '/app/dashboard';
+        const role = result.user?.role || useAuthStore.getState().user?.role || 'user';
+        window.location.href = role === 'user' ? '/app/user' : '/app/dashboard';
       }
     } catch {}
   };

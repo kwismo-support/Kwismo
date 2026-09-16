@@ -8,6 +8,7 @@ import { AppLayout } from '@/shared/components/layout/AppLayout';
 import { ForbiddenPage } from '@/shared/components/pages/ForbiddenPage';
 import { NotFoundPage } from '@/shared/components/pages/NotFoundPage';
 import { ServerErrorPage } from '@/shared/components/pages/ServerErrorPage';
+import { useAuthStore } from '@/shared/store/authStore';
 
 const LandingPage          = lazy(() => import('@/features/landing'));
 const AuthPage             = lazy(() => import('@/features/auth'));
@@ -34,6 +35,14 @@ const PageRouteLoader = () => (
   </div>
 );
 
+function AppIndexRedirect() {
+  const user = useAuthStore((s) => s.user);
+  if (user?.role === 'user') {
+    return <Navigate to="/app/user" replace />;
+  }
+  return <Navigate to="/app/dashboard" replace />;
+}
+
 export function AppRouter() {
   return (
     <Suspense fallback={<PageRouteLoader />}>
@@ -54,18 +63,16 @@ export function AppRouter() {
         <Route element={<AuthGuard />}>
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
-              <Route path="/app" element={<Navigate to="/app/dashboard" replace />} />
+              <Route path="/app" element={<AppIndexRedirect />} />
               <Route path="/app/dashboard" element={<DashboardPage />} />
               <Route path="/app/profile"   element={<ProfilePage />} />
               <Route path="/app/settings"  element={<SettingsPage />} />
               <Route path="/app/notifications" element={<NotificationsPage />} />
 
-              {/* Route spécifique portail utilisateur */}
               <Route element={<RoleGuard roles={['user']} />}>
                 <Route path="/app/user" element={<UserPortalPage />} />
               </Route>
 
-              {/* Routes soumises à permissions granulaires */}
               <Route element={<RoleGuard permission="numbers:read" />}>
                 <Route path="/app/numbers" element={<NumbersPage />} />
                 <Route path="/app/numbers/:id" element={<NumberDetailPage />} />
@@ -75,7 +82,6 @@ export function AppRouter() {
                 <Route path="/app/reports" element={<ReportsPage />} />
               </Route>
 
-              {/* Routes réservées aux Administrateurs */}
               <Route element={<RoleGuard roles={['admin']} />}>
                 <Route path="/app/users"        element={<UsersPage />} />
                 <Route path="/app/users/:id"    element={<UserDetailPage />} />
@@ -98,4 +104,3 @@ export function AppRouter() {
     </Suspense>
   );
 }
-

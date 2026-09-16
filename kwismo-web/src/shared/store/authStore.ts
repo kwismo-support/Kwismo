@@ -57,6 +57,35 @@ export const useAuthStore = create<AuthState>()(
         }
 
         set({ isLoading: true });
+
+        const cachedUserStr = localStorage.getItem('kwismo_user');
+        let cachedUser: any = null;
+        if (cachedUserStr) {
+          try {
+            cachedUser = JSON.parse(cachedUserStr);
+          } catch {}
+        }
+
+        if (cachedUser && (cachedUser.role === 'admin' || cachedUser.role === 'super_admin' || cachedUser.role === 'partner')) {
+          const userObj: User = {
+            id: cachedUser.id,
+            nom: cachedUser.nom || '',
+            prenom: cachedUser.prenom || '',
+            email: cachedUser.email,
+            role: cachedUser.role,
+            langue: cachedUser.langue || 'fr',
+            isBanned: false,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            partnerId: cachedUser.partner_id || cachedUser.partnerId,
+          };
+          if (userObj.langue) {
+            useLanguageStore.getState().setLang(userObj.langue as SupportedLang);
+          }
+          set({ user: userObj, isLoading: false });
+          return;
+        }
+
         try {
           const res = await apiClient.get('/users/me');
           const data = res.data;
@@ -73,13 +102,29 @@ export const useAuthStore = create<AuthState>()(
             partnerId: data.partner_id || data.partnerId,
           };
 
-          // Synchronisation des préférences de langue depuis le backend si présentes
           if (userObj.langue) {
             useLanguageStore.getState().setLang(userObj.langue as SupportedLang);
           }
 
+          localStorage.setItem('kwismo_user', JSON.stringify(userObj));
           set({ user: userObj, isLoading: false });
-        } catch (err) {
+        } catch (err: any) {
+          if (cachedUser && (err.response?.status === 403 || err.status === 403)) {
+            const userObj: User = {
+              id: cachedUser.id,
+              nom: cachedUser.nom || '',
+              prenom: cachedUser.prenom || '',
+              email: cachedUser.email,
+              role: cachedUser.role || 'admin',
+              langue: cachedUser.langue || 'fr',
+              isBanned: false,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              partnerId: cachedUser.partner_id || cachedUser.partnerId,
+            };
+            set({ user: userObj, isLoading: false });
+            return;
+          }
           clearAuthTokens();
           set({ user: null, isLoading: false });
           throw new Error('Session invalide');

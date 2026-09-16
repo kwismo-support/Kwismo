@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Icon } from '@iconify/react';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
+import { useAuthStore } from '@/shared/store/authStore';
 import { deviceVerifySchema, type DeviceVerifyInput } from '../schemas/auth.schema';
 
 interface DeviceVerifyFormProps {
@@ -27,7 +28,8 @@ export default function DeviceVerifyForm({ email, onVerify, onCancel }: DeviceVe
     setLoading(true);
     try {
       await onVerify(data.code);
-      window.location.href = '/app/dashboard';
+      const role = useAuthStore.getState().user?.role || 'user';
+      window.location.href = role === 'user' ? '/app/user' : '/app/dashboard';
     } catch {
     } finally {
       setLoading(false);

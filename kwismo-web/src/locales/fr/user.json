@@ -9,51 +9,81 @@
     "report": "Signaler une fraude",
     "profile": "Mon profil"
   },
+  "myPhones": {
+    "title": "Mes numéros de téléphone",
+    "subtitle": "Gérez et sécurisez l'ensemble de vos lignes téléphoniques enregistrées",
+    "addBtn": "Ajouter un numéro",
+    "emptyTitle": "Aucun numéro enregistré",
+    "emptySubtitle": "Ajoutez dès maintenant votre numéro principal pour le protéger et suivre son statut de sécurité.",
+    "reportCompromise": "Déclarer compromis",
+    "status": {
+      "verified": "Vérifié",
+      "unverified": "En attente OTP",
+      "compromised": "Compromis"
+    }
+  },
+  "addPhoneModal": {
+    "title": "Ajouter un numéro de téléphone",
+    "subtitle": "Un code OTP SMS sera envoyé pour valider votre propriété.",
+    "phoneLabel": "Numéro de téléphone (E.164)"
+  },
+  "verifyOtpModal": {
+    "title": "Vérification OTP SMS",
+    "codeLabel": "Code à 6 chiffres",
+    "notReceived": "Vous n'avez pas reçu le code ?",
+    "resendBtn": "Renvoyer l'OTP"
+  },
   "compromisedModal": {
     "title": "Déclarer un numéro compromis",
     "subtitle": "Téléphone volé, SIM détournée, WhatsApp piraté",
-    "phoneLabel": "Numéro de téléphone concerné",
-    "reasonLabel": "Type d'incident",
-    "reasons": {
-      "stolen": "Téléphone volé",
-      "sim_swap": "SIM détournée / Swappée",
-      "whatsapp_hack": "Compte WhatsApp piraté",
-      "other": "Autre compromission"
-    },
-    "submit": "Déclarer en urgence",
-    "cancel": "Annuler"
+    "typeLabel": "Type d'incident",
+    "descLabel": "Description détaillée de l'incident",
+    "descPlaceholder": "Expliquez comment votre numéro ou appareil a été compromis...",
+    "types": {
+      "simSwap": "SIM détournée / Swappée",
+      "stolenPhone": "Téléphone volé / perdu",
+      "phishing": "Hameçonnage / Piratage",
+      "identityTheft": "Usurpation d'identité"
+    }
   },
-  "quickVerify": {
-    "title": "Vérification instantanée de numéro",
-    "subtitle": "Vérifiez si un numéro est signalé avant de lui envoyer de l'argent",
-    "placeholder": "Ex: +237 690 00 00 00",
-    "verify": "Vérifier",
-    "riskScore": "Score de risque"
+  "profile": {
+    "lastNameLabel": "Nom de famille",
+    "firstNameLabel": "Prénom",
+    "languageLabel": "Langue d'affichage",
+    "languages": {
+      "fr": "Français",
+      "en": "English"
+    }
   },
-  "emergency": {
-    "title": "Urgence Téléphone Volé ?",
-    "subtitle": "Bloquez instantanément vos numéros rattachés et prévenez la communauté si votre SIM a été volée ou swappée.",
-    "button": "Bloquer mes lignes"
+  "verifyTab": {
+    "title": "Vérifier un numéro public",
+    "subtitle": "Vérifiez si un numéro est réputé sûr avant d'effectuer un transfert d'argent.",
+    "phoneLabel": "Numéro à vérifier",
+    "trustScore": "Score de confiance",
+    "operator": "Opérateur télécom"
   },
-  "compromisedSuccess": {
-    "title": "Signalement de compromission envoyé !",
-    "subtitle": "Vos lignes sont en cours de mise sous surveillance prioritaire."
+  "reportTab": {
+    "title": "Signaler une fraude",
+    "subtitle": "Contribuez à la sécurité de la communauté en signalant un numéro suspect.",
+    "suspectPhoneLabel": "Numéro de l'arnaqueur",
+    "fraudTypeLabel": "Type de fraude",
+    "descLabel": "Détails du signalement",
+    "descPlaceholder": "Décrivez ce qui s'est passé, les montants demandés ou les messages reçus...",
+    "submitBtn": "Envoyer le signalement",
+    "types": {
+      "phishing": "Phishing / Faux SMS",
+      "scamCall": "Appel arnaque / Faux dépôt",
+      "impersonation": "Usurpation d'identité",
+      "spam": "Spam massif"
+    }
   },
-  "verifyView": {
-    "title": "Vérifier un numéro",
-    "subtitle": "Analysez la réputation d'un numéro avant d'effectuer un transfert",
-    "placeholder": "Entrez un numéro (ex: +237 6XX XX XX XX)",
-    "button": "Analyser",
-    "safe": "Numéro Vérifié - Sûr",
-    "warning": "Attention - Risque Modéré",
-    "danger": "Alerte - Numéro Frauduleux"
-  },
-  "reportView": {
-    "title": "Signaler une tentative de fraude",
-    "subtitle": "Contribuez à la protection communautaire en signalant des arnaques",
-    "targetPhone": "Numéro de l'arnaqueur",
-    "fraudType": "Type de fraude",
-    "details": "Détails du signalement",
-    "submit": "Envoyer le signalement"
+  "toast": {
+    "phoneAdded": "Numéro ajouté. Veuillez saisir l'OTP SMS envoyé.",
+    "phoneVerified": "Numéro vérifié avec succès !",
+    "otpResent": "Un nouvel OTP a été envoyé par SMS.",
+    "phoneRemoved": "Numéro supprimé de votre compte.",
+    "compromiseDeclared": "Alerte de compromission enregistrée avec succès.",
+    "profileUpdated": "Profil mis à jour avec succès !",
+    "reportSubmitted": "Signalement de fraude transmis aux autorités."
   }
 }
