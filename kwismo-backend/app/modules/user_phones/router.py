@@ -26,7 +26,7 @@ router = APIRouter(prefix="/users/me/phones", tags=["My Numbers"])
         "**EN** — The account's numbers with their status."
     ),
 )
-async def list_my_phones(user=Depends(require_roles("user"))) -> list[UserPhoneOut]:
+async def list_my_phones(user=Depends(require_roles("user", "admin", "partner", "superadmin"))) -> list[UserPhoneOut]:
     return await service.list_my_phones(user.id)
 
 
@@ -43,7 +43,7 @@ async def list_my_phones(user=Depends(require_roles("user"))) -> list[UserPhoneO
 )
 @limiter.limit(AUTH_RATE_LIMIT)
 async def add_my_phone(
-    request: Request, response: Response, payload: UserPhoneAddIn, user=Depends(require_roles("user"))
+    request: Request, response: Response, payload: UserPhoneAddIn, user=Depends(require_roles("user", "admin", "partner", "superadmin"))
 ) -> UserPhoneOut:
     return await service.add_my_phone(user.id, payload, user.langue)
 
@@ -57,7 +57,7 @@ async def add_my_phone(
 )
 @limiter.limit(OTP_RATE_LIMIT)
 async def verify_my_phone(
-    request: Request, response: Response, phone_id: str, payload: UserPhoneVerifyIn, user=Depends(require_roles("user"))
+    request: Request, response: Response, phone_id: str, payload: UserPhoneVerifyIn, user=Depends(require_roles("user", "admin", "partner", "superadmin"))
 ) -> Message:
     return await service.verify_my_phone(user.id, phone_id, payload, user.langue)
 
@@ -71,7 +71,7 @@ async def verify_my_phone(
 )
 @limiter.limit(OTP_RATE_LIMIT)
 async def resend_my_phone_otp(
-    request: Request, response: Response, phone_id: str, user=Depends(require_roles("user"))
+    request: Request, response: Response, phone_id: str, user=Depends(require_roles("user", "admin", "partner", "superadmin"))
 ) -> Message:
     return await service.resend_my_phone_otp(user.id, phone_id, user.langue)
 
@@ -86,7 +86,7 @@ async def resend_my_phone_otp(
         "**EN** — Removes a number from the account."
     ),
 )
-async def remove_my_phone(phone_id: str, user=Depends(require_roles("user"))) -> Message:
+async def remove_my_phone(phone_id: str, user=Depends(require_roles("user", "admin", "partner", "superadmin"))) -> Message:
     return await service.remove_my_phone(user.id, phone_id, user.langue)
 
 
@@ -102,6 +102,6 @@ async def remove_my_phone(phone_id: str, user=Depends(require_roles("user"))) ->
     ),
 )
 async def declare_my_phone_compromised(
-    phone_id: str, user=Depends(require_roles("user"))
+    phone_id: str, user=Depends(require_roles("user", "admin", "partner", "superadmin"))
 ) -> CompromiseIncidentOut:
     return await service.declare_my_phone_compromised(user.id, phone_id, user.langue)

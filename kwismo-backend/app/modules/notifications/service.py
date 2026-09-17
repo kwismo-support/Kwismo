@@ -32,6 +32,24 @@ async def list_notifications(user_id: str, page: int, page_size: int):
 
 
 # ---------------------------------------------------------------------------
+# mark_as_read & mark_all_read
+# ---------------------------------------------------------------------------
+
+async def mark_as_read(notif_id: str, user_id: str) -> None:
+    await db.notification.update_many(
+        where={"id": notif_id, "userId": user_id},
+        data={"lu": True},
+    )
+
+
+async def mark_all_read(user_id: str) -> None:
+    await db.notification.update_many(
+        where={"userId": user_id, "lu": False},
+        data={"lu": True},
+    )
+
+
+# ---------------------------------------------------------------------------
 # Utilitaire interne : creer une notification
 # ---------------------------------------------------------------------------
 

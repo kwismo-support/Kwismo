@@ -24,25 +24,24 @@ export const notificationsApi = {
       return res.data;
     } catch {
       return {
-        items: [
-          {
-            id: '1',
-            texte: 'Appel suspect détecté de +237690000005.',
-            lu: false,
-            date: new Date().toISOString(),
-          },
-          {
-            id: '2',
-            texte: 'Mise à jour de la grille des seuils de risque IA effectuée.',
-            lu: true,
-            date: new Date(Date.now() - 3600000 * 4).toISOString(),
-          },
-        ],
-        total: 2,
+        items: [],
+        total: 0,
         page: 1,
-        page_size: 20,
+        page_size: pageSize,
         pages: 1,
       };
     }
+  },
+
+  markAsRead: async (id: string): Promise<void> => {
+    try {
+      await apiClient.patch(`/notifications/${id}/read`);
+    } catch {}
+  },
+
+  markAllAsRead: async (): Promise<void> => {
+    try {
+      await apiClient.patch('/notifications/read-all');
+    } catch {}
   },
 };

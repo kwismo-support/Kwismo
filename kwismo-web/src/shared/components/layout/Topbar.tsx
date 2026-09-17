@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownItem, DropdownSeparator } from '@/shared/ui/dropd
 import { UserAvatar } from '@/shared/ui/avatar';
 import { useAuthStore } from '@/shared/store/authStore';
 import { toast } from '@/shared/store/toastStore';
+import { useNotifications } from '@/features/notifications/hooks/useNotifications';
 import { Breadcrumb } from './Breadcrumb';
 
 interface TopbarProps {
@@ -19,7 +20,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const [globalSearch, setGlobalSearch] = useState('');
-  const [notifCount, setNotifCount] = useState(3);
+  const { rawNotifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
 
   const handleLogout = async () => {
     await logout();
@@ -36,7 +37,6 @@ export function Topbar({ onMenuClick }: TopbarProps) {
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] px-4 sm:px-6 font-body shrink-0 gap-4">
-      {/* Left: Mobile Toggle & Breadcrumb */}
       <div className="flex items-center gap-3 shrink-0">
         <button
           onClick={onMenuClick}
@@ -48,7 +48,6 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         <Breadcrumb />
       </div>
 
-      {/* Middle: Central Search Bar */}
       <form onSubmit={handleSearchSubmit} className="hidden md:flex flex-1 max-w-md items-center">
         <div className="relative w-full">
           <Icon
@@ -65,12 +64,10 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         </div>
       </form>
 
-      {/* Right: Actions, Language, Theme, Notifications, User Menu */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <LanguageSwitcher />
         <ThemeToggle />
 
-        {/* Notifications Dropdown */}
         <DropdownMenu
           trigger={
             <button
@@ -78,42 +75,55 @@ export function Topbar({ onMenuClick }: TopbarProps) {
               className="relative p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
             >
               <Icon icon="solar:bell-bold" className="text-xl" />
-              {notifCount > 0 && (
+              {unreadCount > 0 && (
                 <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-brand-orange text-[10px] font-bold text-white shadow-sm">
-                  {notifCount}
+                  {unreadCount}
                 </span>
               )}
             </button>
           }
         >
-          <div className="px-4 py-3 border-b border-slate-200 dark:border-white/10 flex items-center justify-between min-w-[280px]">
+          <div className="px-4 py-3 border-b border-slate-200 dark:border-white/10 flex items-center justify-between min-w-[300px]">
             <h4 className="font-title text-xs font-bold text-slate-900 dark:text-white">Notifications</h4>
-            <button
-              onClick={() => setNotifCount(0)}
-              className="text-[10px] font-bold text-brand-green hover:underline"
-            >
-              Tout marquer comme lu
-            </button>
+            {unreadCount > 0 && (
+              <button
+                onClick={() => markAllAsRead()}
+                className="text-[10px] font-bold text-brand-green hover:underline"
+              >
+                Tout marquer comme lu
+              </button>
+            )}
           </div>
-          <div className="p-2 space-y-1">
-            <DropdownItem onClick={() => navigate('/app/notifications')}>
-              <div className="flex items-start gap-2.5">
-                <div className="h-2 w-2 rounded-full bg-brand-orange mt-1.5 shrink-0" />
-                <div>
-                  <p className="text-xs font-bold text-slate-900 dark:text-white">SIM Swap suspect décelé</p>
-                  <p className="text-[10px] text-slate-500 font-mono">+237 690 123 456 — Il y a 10 min</p>
-                </div>
-              </div>
-            </DropdownItem>
-            <DropdownItem onClick={() => navigate('/app/notifications')}>
-              <div className="flex items-start gap-2.5">
-                <div className="h-2 w-2 rounded-full bg-brand-green mt-1.5 shrink-0" />
-                <div>
-                  <p className="text-xs font-bold text-slate-900 dark:text-white">Demande partenaire approuvée</p>
-                  <p className="text-[10px] text-slate-500 font-mono">PaySecur CM — Il y a 1 heure</p>
-                </div>
-              </div>
-            </DropdownItem>
+          <div className="p-2 space-y-1 max-h-72 overflow-y-auto">
+            {rawNotifications.length === 0 ? (
+              <p className="py-6 text-center text-xs text-slate-400">Aucune notification</p>
+            ) : (
+              rawNotifications.slice(0, 4).map((notif) => (
+                <DropdownItem
+                  key={notif.id}
+                  onClick={() => {
+                    if (!notif.lu) markAsRead(notif.id);
+                    navigate('/app/notifications');
+                  }}
+                >
+                  <div className="flex items-start gap-2.5 w-full">
+                    <div
+                      className={`h-2 w-2 rounded-full mt-1.5 shrink-0 ${
+                        notif.lu ? 'bg-slate-300 dark:bg-white/20' : 'bg-brand-orange'
+                      }`}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-slate-900 dark:text-white leading-tight line-clamp-2">
+                        {notif.texte}
+                      </p>
+                      <p className="text-[10px] text-slate-400 font-mono mt-0.5">
+                        {new Date(notif.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </div>
+                </DropdownItem>
+              ))
+            )}
           </div>
           <DropdownSeparator />
           <div className="p-2 text-center">

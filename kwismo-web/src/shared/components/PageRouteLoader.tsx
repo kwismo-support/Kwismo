@@ -54,7 +54,7 @@ export function PageRouteLoader({ onFinished }: PageRouteLoaderProps) {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-gradient-to-b from-brand-navy via-[#0A0F1D] to-brand-navy text-white font-body transition-opacity duration-300 ${fadeOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white dark:bg-gradient-to-b dark:from-brand-navy dark:via-[#0A0F1D] dark:to-brand-navy text-slate-900 dark:text-white font-body transition-opacity duration-300 ${fadeOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
     >
       <style>{`
@@ -72,13 +72,13 @@ export function PageRouteLoader({ onFinished }: PageRouteLoaderProps) {
 
       <div className="relative flex flex-col items-center gap-6 text-center">
         <div className="relative flex items-center justify-center">
-          <div className="absolute inset-0 rounded-3xl bg-brand-green/25 blur-xl animate-heartbeat" />
-          <div className="bg-white dark:bg-brand-darkBg w-28 h-28 sm:w-32 sm:h-32 rounded-3xl p-4 shadow-2xl border-2 border-brand-navy dark:border-white/20 flex items-center justify-center animate-heartbeat relative z-10">
+          <div className="absolute inset-0 rounded-3xl bg-brand-green/20 dark:bg-brand-green/25 blur-xl animate-heartbeat" />
+          <div className="bg-white dark:bg-brand-darkBg w-28 h-28 sm:w-32 sm:h-32 rounded-3xl p-4 shadow-xl border-2 border-slate-200 dark:border-white/20 flex items-center justify-center animate-heartbeat relative z-10">
             <img src={Icon} alt="KWISMO Logo" className="w-full h-full object-contain" />
           </div>
         </div>
 
-        <div className="w-52 sm:w-64 h-2 bg-white/10 rounded-full overflow-hidden relative border border-white/10 shadow-inner mt-6">
+        <div className="w-52 sm:w-64 h-2 bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden relative border border-slate-200 dark:border-white/10 shadow-inner mt-6">
           <div
             className="h-full bg-gradient-to-r from-brand-green via-emerald-400 to-brand-orange rounded-full transition-all duration-150 ease-out shadow-lg"
             style={{ width: `${progress}%` }}

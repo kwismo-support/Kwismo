@@ -26,7 +26,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
         "**EN** — Current account profile (name, surname, email) and personal KPIs."
     ),
 )
-async def get_me(user=Depends(require_roles("user"))) -> UserMeOut:
+async def get_me(user=Depends(require_roles("user", "admin", "partner", "superadmin"))) -> UserMeOut:
     return await service.get_me(user.id)
 
 
@@ -40,7 +40,7 @@ async def get_me(user=Depends(require_roles("user"))) -> UserMeOut:
         "**EN** — Updates the current account's name, surname and/or language preference."
     ),
 )
-async def update_me(payload: UserUpdateIn, user=Depends(require_roles("user"))) -> UserMeOut:
+async def update_me(payload: UserUpdateIn, user=Depends(require_roles("user", "admin", "partner", "superadmin"))) -> UserMeOut:
     return await service.update_me(user.id, payload, user.langue)
 
 

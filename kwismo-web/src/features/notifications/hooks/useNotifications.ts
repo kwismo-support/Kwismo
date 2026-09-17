@@ -28,15 +28,17 @@ export function useNotifications() {
     fetchNotifications();
   }, [fetchNotifications]);
 
-  const markAsRead = (id: string) => {
+  const markAsRead = async (id: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, lu: true } : n))
     );
+    await notificationsApi.markAsRead(id);
     toast.success('Notification marquée comme lue');
   };
 
-  const markAllAsRead = () => {
+  const markAllAsRead = async () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, lu: true })));
+    await notificationsApi.markAllAsRead();
     toast.success('Toutes les notifications ont été marquées comme lues');
   };
 
