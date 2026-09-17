@@ -12,10 +12,12 @@ import FaqSection from './components/FaqSection';
 import ContactFormSection from './components/ContactFormSection';
 import Footer from './components/Footer';
 import ScrollToTopButton from '@/shared/components/ScrollToTopButton';
+import LandingLoader from '@/shared/components/LandingLoader';
 
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-white dark:bg-brand-navy font-body text-slate-900 dark:text-white transition-colors duration-200 relative">
+      <LandingLoader />
       <ContactBar />
       <Navbar />
       <main className="flex-1">

@@ -88,14 +88,14 @@ export default function Navbar() {
         <div className="hidden items-center gap-3 md:flex">
           <a
             href="/partner"
-            className="btn-brand-navy h-[38px] px-5 text-xs font-semibold"
+            className="btn-brand-navy h-[38px] px-5 text-xs font-semibold dark:shadow"
           >
             {t('landing:nav.partner')}
           </a>
 
           <a
             href="/auth/login"
-            className="btn-brand-orange h-[38px] px-5 text-xs font-semibold"
+            className="btn-brand-orange h-[38px] px-5 text-xs font-semibold dark:shadow"
           >
             {t('landing:nav.login')}
           </a>
@@ -146,7 +146,7 @@ export default function Navbar() {
                 <a
                   href="/partner"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="btn-brand-navy h-[40px] text-xs font-semibold"
+                  className="btn-brand-navy h-[40px] text-xs font-semibold dark:shadow"
                 >
                   {t('landing:nav.partner')}
                 </a>
@@ -154,7 +154,7 @@ export default function Navbar() {
                 <a
                   href="/auth/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="btn-brand-orange h-[40px] text-xs font-semibold"
+                  className="btn-brand-orange h-[40px] text-xs font-semibold dark:shadow"
                 >
                   {t('landing:nav.login')}
                 </a>
