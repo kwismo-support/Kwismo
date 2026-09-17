@@ -83,7 +83,25 @@ export default function SecurityScreen() {
     <View className="flex-1 bg-white dark:bg-brand-darkBg">
       <StatusBar style="light" />
 
-      <HeaderBar title={t('profile.security')} showBack={true} />
+      <HeaderBar
+        title={t('profile.security')}
+        showBack={true}
+        onBack={() => router.back()}
+        rightAction={
+          <TouchableOpacity
+            activeOpacity={0.7}
+            disabled={isUpdating}
+            onPress={handleUpdatePassword}
+            className="p-1"
+          >
+            {isUpdating ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <Icon name="gravity-ui:check" color="#FFFFFF" size={24} />
+            )}
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView
         contentContainerStyle={{
@@ -168,22 +186,6 @@ export default function SecurityScreen() {
             iconLeft="solar:key-bold"
           />
         </View>
-
-        <TouchableOpacity
-          activeOpacity={0.85}
-          disabled={isUpdating}
-          onPress={handleUpdatePassword}
-          className="h-13 rounded-2xl items-center justify-center bg-brand-green mt-6"
-          style={{ height: 52 }}
-        >
-          {isUpdating ? (
-            <ActivityIndicator color={colors.white} />
-          ) : (
-            <Text className="font-bold text-base text-white">
-              {t('common.saveChanges')}
-            </Text>
-          )}
-        </TouchableOpacity>
       </ScrollView>
     </View>
   );

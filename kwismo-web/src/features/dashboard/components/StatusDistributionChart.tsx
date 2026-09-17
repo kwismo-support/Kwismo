@@ -1,17 +1,24 @@
 import { useTranslation } from 'react-i18next';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
-interface StatusDistributionChartProps {
-  isLoading?: boolean;
+export interface StatusDataPoint {
+  name: string;
+  value: number;
+  color: string;
 }
 
-const statusData = [
-  { name: 'Sécurisé', value: 68420, color: '#56B039' },
-  { name: 'À signaler', value: 12340, color: '#F6A020' },
-  { name: 'Frauduleux', value: 3241, color: '#E4483B' },
+interface StatusDistributionChartProps {
+  isLoading?: boolean;
+  data?: StatusDataPoint[];
+}
+
+const defaultStatusData: StatusDataPoint[] = [
+  { name: 'Sécurisé', value: 0, color: '#56B039' },
+  { name: 'À signaler', value: 0, color: '#F6A020' },
+  { name: 'Frauduleux', value: 0, color: '#E4483B' },
 ];
 
-export default function StatusDistributionChart({ isLoading = false }: StatusDistributionChartProps) {
+export default function StatusDistributionChart({ isLoading = false, data }: StatusDistributionChartProps) {
   const { t } = useTranslation('admin');
 
   if (isLoading) {
@@ -23,6 +30,8 @@ export default function StatusDistributionChart({ isLoading = false }: StatusDis
       </div>
     );
   }
+
+  const chartData = data && data.length > 0 ? data : defaultStatusData;
 
   return (
     <div className="flex flex-col p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm font-body h-full">
@@ -41,7 +50,7 @@ export default function StatusDistributionChart({ isLoading = false }: StatusDis
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={statusData}
+              data={chartData}
               dataKey="value"
               cx="50%"
               cy="45%"
@@ -49,7 +58,7 @@ export default function StatusDistributionChart({ isLoading = false }: StatusDis
               outerRadius={82}
               paddingAngle={3}
             >
-              {statusData.map((s) => (
+              {chartData.map((s) => (
                 <Cell key={s.name} fill={s.color} stroke="none" />
               ))}
             </Pie>

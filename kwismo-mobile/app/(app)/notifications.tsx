@@ -13,6 +13,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
+import { CustomSwitch } from '@/shared/ui/CustomSwitch';
 import { toast } from '@/shared/store/toastStore';
 import { colors } from '@/styles/tokens';
 import { MOCK_NOTIFICATIONS, NotificationItem } from '@/shared/mock/notificationsMock';
@@ -193,10 +194,10 @@ export default function NotificationsScreen() {
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 Notifications Push
               </Text>
-              <Switch
+              <CustomSwitch
                 value={pushEnabled}
                 onValueChange={setPushEnabled}
-                trackColor={{ false: '#CBD5E1', true: colors.green }}
+                activeColor="#FF9500"
               />
             </View>
 
@@ -204,10 +205,10 @@ export default function NotificationsScreen() {
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 Alertes de sécurité SMS
               </Text>
-              <Switch
+              <CustomSwitch
                 value={smsAlertsEnabled}
                 onValueChange={setSmsAlertsEnabled}
-                trackColor={{ false: '#CBD5E1', true: colors.green }}
+                activeColor="#FF9500"
               />
             </View>
 
@@ -215,10 +216,10 @@ export default function NotificationsScreen() {
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 Alertes WhatsApp
               </Text>
-              <Switch
+              <CustomSwitch
                 value={whatsappAlertsEnabled}
                 onValueChange={setWhatsappAlertsEnabled}
-                trackColor={{ false: '#CBD5E1', true: colors.green }}
+                activeColor="#FF9500"
               />
             </View>
 

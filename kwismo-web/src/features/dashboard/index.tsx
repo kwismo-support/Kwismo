@@ -2,17 +2,21 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePermissions } from '@/shared/hooks/usePermissions';
 import { kpiApi, KpiItem } from './services/kpi.api';
+import { numbersApi, NumberItem } from '@/features/numbers/services/numbers.api';
+import { reportsApi, ReportItem } from '@/features/reports/services/reports.api';
 import { PageHeader, KpiCard } from '@/shared/components';
 import { CountrySelect } from '@/shared/ui/country-select';
-import TrendChart from './components/TrendChart';
-import FraudByOperatorChart from './components/FraudByOperatorChart';
-import StatusDistributionChart from './components/StatusDistributionChart';
+import TrendChart, { TrendDataPoint } from './components/TrendChart';
+import FraudByOperatorChart, { OperatorDataPoint } from './components/FraudByOperatorChart';
+import StatusDistributionChart, { StatusDataPoint } from './components/StatusDistributionChart';
 import RecentActivityLog from './components/RecentActivityLog';
 
 export default function DashboardPage() {
   const { t } = useTranslation('admin');
   const { isPartner, isUser } = usePermissions();
   const [kpiItems, setKpiItems] = useState<KpiItem[]>([]);
+  const [numbers, setNumbers] = useState<NumberItem[]>([]);
+  const [reports, setReports] = useState<ReportItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<'7 jours' | '30 jours' | '90 jours' | 'Cette année'>('30 jours');
   const [countryFilter, setCountryFilter] = useState('');
@@ -20,43 +24,85 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let mounted = true;
+    setLoading(true);
+
     const fetchKpis = isPartner ? kpiApi.getPartnerKpi() : kpiApi.getGlobalKpi();
-    fetchKpis
-      .then((data) => {
-        if (mounted) setKpiItems(data || []);
-      })
-      .catch(() => {
-        if (mounted) setKpiItems([]);
-      })
-      .finally(() => {
-        if (mounted) setLoading(false);
-      });
+
+    Promise.all([
+      fetchKpis.catch(() => []),
+      numbersApi.getNumbers(1, 100).catch(() => ({ items: [], total: 0 })),
+      reportsApi.getReports(1, 100).catch(() => ({ items: [], total: 0 })),
+    ]).then(([kpiRes, numbersRes, reportsRes]) => {
+      if (!mounted) return;
+      setKpiItems(kpiRes || []);
+      setNumbers(numbersRes.items || []);
+      setReports(reportsRes.items || []);
+    }).finally(() => {
+      if (mounted) setLoading(false);
+    });
+
     return () => { mounted = false; };
   }, [isPartner]);
 
   const findKpi = (key: string) => kpiItems.find((k) => k.nom_indicateur === key)?.valeur;
 
+  const totalNumbers = numbers.length;
+  const totalReports = reports.length;
+  const secureCount = numbers.filter((n) => n.statut === 'securise' || n.statut === 'active').length;
+  const warningCount = numbers.filter((n) => n.statut === 'a_signaler' || n.statut === 'suspect').length;
+  const fraudCount = numbers.filter((n) => n.statut === 'frauduleux' || n.statut === 'blocked').length;
+
+  const mtnCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('MTN')).length;
+  const orangeCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('ORANGE')).length;
+  const airtelCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('AIRTEL')).length;
+  const moovCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('MOOV')).length;
+  const waveCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('WAVE')).length;
+
+  const operatorData: OperatorDataPoint[] = [
+    { name: 'MTN', fraudes: mtnCount, color: '#32B07F' },
+    { name: 'Orange', fraudes: orangeCount, color: '#FF9900' },
+    { name: 'Airtel', fraudes: airtelCount, color: '#6B98FF' },
+    { name: 'Moov', fraudes: moovCount, color: '#161E33' },
+    { name: 'Wave', fraudes: waveCount, color: '#e53e3e' },
+  ];
+
+  const statusData: StatusDataPoint[] = [
+    { name: 'Sécurisé', value: secureCount, color: '#56B039' },
+    { name: 'À signaler', value: warningCount, color: '#F6A020' },
+    { name: 'Frauduleux', value: fraudCount, color: '#E4483B' },
+  ];
+
+  const trend7d: TrendDataPoint[] = [
+    { day: 'Lun', verifications: Math.round(totalNumbers * 0.1), fraudes: Math.round(fraudCount * 0.1) },
+    { day: 'Mar', verifications: Math.round(totalNumbers * 0.15), fraudes: Math.round(fraudCount * 0.15) },
+    { day: 'Mer', verifications: Math.round(totalNumbers * 0.2), fraudes: Math.round(fraudCount * 0.2) },
+    { day: 'Jeu', verifications: Math.round(totalNumbers * 0.15), fraudes: Math.round(fraudCount * 0.15) },
+    { day: 'Ven', verifications: Math.round(totalNumbers * 0.2), fraudes: Math.round(fraudCount * 0.2) },
+    { day: 'Sam', verifications: Math.round(totalNumbers * 0.1), fraudes: Math.round(fraudCount * 0.1) },
+    { day: 'Dim', verifications: Math.round(totalNumbers * 0.1), fraudes: Math.round(fraudCount * 0.1) },
+  ];
+
   const adminCards = [
     {
       title: t('dashboard.activeUsers', { defaultValue: 'Utilisateurs actifs' }),
       value: (findKpi('total_utilisateurs') ?? 0).toLocaleString('fr-FR'),
-      change: '+12,4 %',
+      change: '+0 %',
       isPositive: true,
       icon: 'solar:users-group-two-rounded-bold-duotone',
       iconBgColor: 'text-brand-navy bg-brand-navy/10 dark:bg-brand-navy/30 dark:text-blue-300',
     },
     {
       title: t('dashboard.verifiedNumbers', { defaultValue: 'Numéros vérifiés' }),
-      value: (findKpi('total_numeros_analyses') ?? 0).toLocaleString('fr-FR'),
-      change: '+8,7 %',
+      value: (findKpi('total_numeros_analyses') ?? totalNumbers).toLocaleString('fr-FR'),
+      change: '+0 %',
       isPositive: true,
       icon: 'solar:database-bold-duotone',
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
       title: t('dashboard.reports', { defaultValue: 'Signalements' }),
-      value: (findKpi('total_signalements') ?? 0).toLocaleString('fr-FR'),
-      change: '+23,1 %',
+      value: (findKpi('total_signalements') ?? totalReports).toLocaleString('fr-FR'),
+      change: '+0 %',
       isPositive: true,
       icon: 'solar:danger-triangle-bold-duotone',
       iconBgColor: 'text-brand-orange bg-brand-orange/10 dark:bg-brand-orange/20',
@@ -64,23 +110,23 @@ export default function DashboardPage() {
     {
       title: t('dashboard.blockedFrauds', { defaultValue: 'Taux de fraude bloquée' }),
       value: `${((findKpi('taux_fraude_detectee') ?? 0) * 100).toFixed(1)}%`,
-      change: '+5,6 %',
-      isPositive: false,
+      change: '0 %',
+      isPositive: true,
       icon: 'solar:shield-warning-bold-duotone',
       iconBgColor: 'text-rose-600 bg-rose-500/10 dark:text-rose-400 dark:bg-rose-500/20',
     },
     {
       title: t('dashboard.protectedTx', { defaultValue: 'Transferts protégés' }),
       value: (findKpi('total_transferts_proteges') ?? 0).toLocaleString('fr-FR'),
-      change: '+18,2 %',
+      change: '+0 %',
       isPositive: true,
       icon: 'solar:shield-check-bold-duotone',
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
       title: t('dashboard.apiCalls', { defaultValue: 'Appels API' }),
-      value: '4,1M',
-      change: '+31,5 %',
+      value: (findKpi('total_appels_api') ?? 0).toLocaleString('fr-FR'),
+      change: '+0 %',
       isPositive: true,
       icon: 'solar:server-bold-duotone',
       iconBgColor: 'text-brand-navy bg-brand-navy/10 dark:bg-brand-navy/30 dark:text-blue-300',
@@ -89,49 +135,49 @@ export default function DashboardPage() {
 
   const partnerCards = [
     {
-      title: 'Numéros du périmètre surveillés',
-      value: '28 430',
-      change: '+4,2 %',
+      title: 'Numéros surveillés',
+      value: totalNumbers.toLocaleString('fr-FR'),
+      change: '0 %',
       isPositive: true,
       icon: 'solar:hashtags-bold-duotone',
       iconBgColor: 'text-brand-navy bg-brand-navy/10 dark:bg-brand-navy/30 dark:text-blue-300',
     },
     {
-      title: 'Fraudes évitées sur le périmètre',
-      value: '1 204',
-      change: '+18,7 %',
+      title: 'Fraudes évitées',
+      value: fraudCount.toLocaleString('fr-FR'),
+      change: '0 %',
       isPositive: true,
       icon: 'solar:shield-check-bold-duotone',
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
       title: 'Signalements affiliés',
-      value: '3 812',
-      change: '+9,3 %',
+      value: totalReports.toLocaleString('fr-FR'),
+      change: '0 %',
       isPositive: true,
       icon: 'solar:danger-triangle-bold-duotone',
       iconBgColor: 'text-brand-orange bg-brand-orange/10 dark:bg-brand-orange/20',
     },
     {
-      title: 'Appels API (mois)',
-      value: '94 200',
-      change: '+31,5 %',
+      title: 'Appels API',
+      value: (findKpi('total_appels_api') ?? 0).toLocaleString('fr-FR'),
+      change: '0 %',
       isPositive: true,
       icon: 'solar:server-bold-duotone',
       iconBgColor: 'text-brand-navy bg-brand-navy/10 dark:bg-brand-navy/30 dark:text-blue-300',
     },
     {
-      title: 'Coût estimé (USD)',
-      value: '94,20 $',
-      change: '+31,5 %',
-      isPositive: false,
-      icon: 'solar:dollar-minimalistic-bold-duotone',
-      iconBgColor: 'text-brand-orange bg-brand-orange/10 dark:bg-brand-orange/20',
+      title: 'Numéros de réputation sûre',
+      value: secureCount.toLocaleString('fr-FR'),
+      change: '0 %',
+      isPositive: true,
+      icon: 'solar:shield-bold-duotone',
+      iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
       title: 'Score moyen de réputation',
-      value: '87 / 100',
-      change: '+2,1 %',
+      value: totalNumbers > 0 ? `${Math.round((secureCount / totalNumbers) * 100)} / 100` : '0 / 100',
+      change: '0 %',
       isPositive: true,
       icon: 'solar:graph-up-bold-duotone',
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
@@ -141,24 +187,24 @@ export default function DashboardPage() {
   const userCards = [
     {
       title: 'Mes cartes SIM vérifiées',
-      value: '3',
-      change: '+1',
+      value: secureCount.toString(),
+      change: '0',
       isPositive: true,
       icon: 'solar:shield-check-bold-duotone',
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
       title: 'Tentatives d\'arnaque évitées',
-      value: '12',
-      change: '+3',
+      value: fraudCount.toString(),
+      change: '0',
       isPositive: true,
       icon: 'solar:shield-bold-duotone',
       iconBgColor: 'text-brand-navy bg-brand-navy/10 dark:bg-brand-navy/30 dark:text-blue-300',
     },
     {
       title: 'Mes signalements effectués',
-      value: '5',
-      change: '+2',
+      value: totalReports.toString(),
+      change: '0',
       isPositive: true,
       icon: 'solar:danger-triangle-bold-duotone',
       iconBgColor: 'text-brand-orange bg-brand-orange/10 dark:bg-brand-orange/20',
@@ -175,7 +221,6 @@ export default function DashboardPage() {
         showBreadcrumb={false}
       />
 
-      {/* Period & Filter Controls */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white dark:bg-[#161E33] p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
         <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-xl">
           {(['7 jours', '30 jours', '90 jours', 'Cette année'] as const).map((p) => (
@@ -217,7 +262,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* KPI Cards */}
       <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${cardsToRender.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-3 xl:grid-cols-6'}`}>
         {cardsToRender.map((card, idx) => (
           <KpiCard
@@ -233,20 +277,18 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Charts Grid Row 1 */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <TrendChart isLoading={loading} />
+          <TrendChart isLoading={loading} data7d={trend7d} />
         </div>
         <div>
-          <StatusDistributionChart isLoading={loading} />
+          <StatusDistributionChart isLoading={loading} data={statusData} />
         </div>
       </div>
 
-      {/* Charts Grid Row 2 */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div>
-          <FraudByOperatorChart isLoading={loading} />
+          <FraudByOperatorChart isLoading={loading} data={operatorData} />
         </div>
         <div className="lg:col-span-2">
           <RecentActivityLog isLoading={loading} />
@@ -255,6 +297,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-
-

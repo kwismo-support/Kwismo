@@ -2,9 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { usersApi, type UserItem } from '../services/users.api';
 import { toast } from '@/shared/store/toastStore';
 import { useTranslation } from 'react-i18next';
+import { usePermissions } from '@/shared/hooks/usePermissions';
 
 export function useUsers() {
   const { t } = useTranslation('admin');
+  const { isPartner, partnerId } = usePermissions();
   const [users, setUsers] = useState<UserItem[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -55,6 +57,10 @@ export function useUsers() {
   };
 
   const filteredUsers = users.filter((u) => {
+    if (isPartner && partnerId && (u as any).partner_id && (u as any).partner_id !== partnerId) {
+      return false;
+    }
+
     const matchesSearch =
       !searchQuery ||
       u.nom.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -73,7 +79,7 @@ export function useUsers() {
   return {
     users: filteredUsers,
     rawUsers: users,
-    total,
+    total: isPartner ? filteredUsers.length : total,
     loading,
     page,
     setPage,

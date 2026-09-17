@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { accessControlApi, type RoleOut, type AccessRightOut } from '../services/accessControl.api';
 import { toast } from '@/shared/store/toastStore';
+import { usePermissions } from '@/shared/hooks/usePermissions';
 
 export function useAccessControl() {
+  const { isPartner, partnerId } = usePermissions();
   const [roles, setRoles] = useState<RoleOut[]>([]);
   const [accessRights, setAccessRights] = useState<AccessRightOut[]>([]);
   const [loading, setLoading] = useState(true);
@@ -78,8 +80,13 @@ export function useAccessControl() {
     }
   };
 
+  const filteredRoles = isPartner
+    ? roles.filter((r) => r.nom_role.toLowerCase().includes('partner') || r.nom_role.toLowerCase().includes('user') || (r as any).partner_id === partnerId)
+    : roles;
+
   return {
-    roles,
+    roles: filteredRoles,
+    rawRoles: roles,
     accessRights,
     loading,
     saving,

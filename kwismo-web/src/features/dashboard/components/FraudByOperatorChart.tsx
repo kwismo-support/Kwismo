@@ -1,19 +1,26 @@
 import { useTranslation } from 'react-i18next';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
-interface FraudByOperatorChartProps {
-  isLoading?: boolean;
+export interface OperatorDataPoint {
+  name: string;
+  fraudes: number;
+  color?: string;
 }
 
-const operatorData = [
-  { name: 'Orange', fraudes: 420, color: '#FF9900' },
-  { name: 'MTN', fraudes: 380, color: '#32B07F' },
-  { name: 'Moov', fraudes: 190, color: '#6B98FF' },
-  { name: 'Wave', fraudes: 120, color: '#161E33' },
-  { name: 'Free', fraudes: 85, color: '#e53e3e' },
+interface FraudByOperatorChartProps {
+  isLoading?: boolean;
+  data?: OperatorDataPoint[];
+}
+
+const defaultOperators: OperatorDataPoint[] = [
+  { name: 'MTN', fraudes: 0, color: '#32B07F' },
+  { name: 'Orange', fraudes: 0, color: '#FF9900' },
+  { name: 'Airtel', fraudes: 0, color: '#6B98FF' },
+  { name: 'Moov', fraudes: 0, color: '#161E33' },
+  { name: 'Wave', fraudes: 0, color: '#e53e3e' },
 ];
 
-export default function FraudByOperatorChart({ isLoading = false }: FraudByOperatorChartProps) {
+export default function FraudByOperatorChart({ isLoading = false, data }: FraudByOperatorChartProps) {
   const { t } = useTranslation('admin');
 
   if (isLoading) {
@@ -25,6 +32,8 @@ export default function FraudByOperatorChart({ isLoading = false }: FraudByOpera
       </div>
     );
   }
+
+  const chartData = data && data.length > 0 ? data : defaultOperators;
 
   return (
     <div className="flex flex-col p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy shadow-sm font-body">
@@ -41,7 +50,7 @@ export default function FraudByOperatorChart({ isLoading = false }: FraudByOpera
 
       <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={operatorData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
             <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
             <YAxis stroke="#94a3b8" fontSize={11} />
@@ -56,8 +65,8 @@ export default function FraudByOperatorChart({ isLoading = false }: FraudByOpera
               }}
             />
             <Bar dataKey="fraudes" radius={[8, 8, 0, 0]} name={t('dashboard.blockedFrauds')}>
-              {operatorData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color || '#32B07F'} />
               ))}
             </Bar>
           </BarChart>

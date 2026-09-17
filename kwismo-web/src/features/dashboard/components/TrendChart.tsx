@@ -3,29 +3,36 @@ import { useTranslation } from 'react-i18next';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { cn } from '@/shared/lib/utils';
 
-interface TrendChartProps {
-  isLoading?: boolean;
+export interface TrendDataPoint {
+  day: string;
+  verifications: number;
+  fraudes: number;
 }
 
-const mockDataMap = {
-  '7d': [
-    { day: 'Lun', verifications: 1200, fraudes: 45 },
-    { day: 'Mar', verifications: 1900, fraudes: 62 },
-    { day: 'Mer', verifications: 1600, fraudes: 38 },
-    { day: 'Jeu', verifications: 2100, fraudes: 85 },
-    { day: 'Ven', verifications: 2800, fraudes: 110 },
-    { day: 'Sam', verifications: 3400, fraudes: 140 },
-    { day: 'Dim', verifications: 2900, fraudes: 95 },
-  ],
-  '30d': [
-    { day: 'Sem 1', verifications: 8400, fraudes: 320 },
-    { day: 'Sem 2', verifications: 11200, fraudes: 410 },
-    { day: 'Sem 3', verifications: 14800, fraudes: 560 },
-    { day: 'Sem 4', verifications: 18900, fraudes: 680 },
-  ],
-};
+interface TrendChartProps {
+  isLoading?: boolean;
+  data7d?: TrendDataPoint[];
+  data30d?: TrendDataPoint[];
+}
 
-export default function TrendChart({ isLoading = false }: TrendChartProps) {
+const empty7d: TrendDataPoint[] = [
+  { day: 'Lun', verifications: 0, fraudes: 0 },
+  { day: 'Mar', verifications: 0, fraudes: 0 },
+  { day: 'Mer', verifications: 0, fraudes: 0 },
+  { day: 'Jeu', verifications: 0, fraudes: 0 },
+  { day: 'Ven', verifications: 0, fraudes: 0 },
+  { day: 'Sam', verifications: 0, fraudes: 0 },
+  { day: 'Dim', verifications: 0, fraudes: 0 },
+];
+
+const empty30d: TrendDataPoint[] = [
+  { day: 'Sem 1', verifications: 0, fraudes: 0 },
+  { day: 'Sem 2', verifications: 0, fraudes: 0 },
+  { day: 'Sem 3', verifications: 0, fraudes: 0 },
+  { day: 'Sem 4', verifications: 0, fraudes: 0 },
+];
+
+export default function TrendChart({ isLoading = false, data7d, data30d }: TrendChartProps) {
   const { t } = useTranslation('admin');
   const [period, setPeriod] = useState<'7d' | '30d'>('7d');
 
@@ -39,7 +46,7 @@ export default function TrendChart({ isLoading = false }: TrendChartProps) {
     );
   }
 
-  const currentData = mockDataMap[period];
+  const currentData = period === '7d' ? (data7d && data7d.length > 0 ? data7d : empty7d) : (data30d && data30d.length > 0 ? data30d : empty30d);
 
   return (
     <div className="flex flex-col p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy shadow-sm font-body">

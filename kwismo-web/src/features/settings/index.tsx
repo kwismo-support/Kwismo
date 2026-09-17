@@ -5,10 +5,12 @@ import { PageHeader } from '@/shared/components';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { toast } from '@/shared/store/toastStore';
+import { usePermissions } from '@/shared/hooks/usePermissions';
 import { settingsApi, RiskThresholdRule } from './services/settings.api';
 
 export default function SettingsPage() {
   const { t } = useTranslation(['admin', 'common']);
+  const { isSuperAdmin } = usePermissions();
 
   const [settings, setSettings] = useState({
     ussdTimeoutSec: 15,
@@ -42,6 +44,20 @@ export default function SettingsPage() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  if (!isSuperAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-center font-body min-h-[400px]">
+        <Icon icon="solar:shield-cross-bold-duotone" className="text-5xl text-rose-500 mb-4 opacity-80" />
+        <h2 className="font-title text-xl font-bold text-slate-900 dark:text-white">
+          {t('common:accessDeniedTitle', { defaultValue: 'Accès Restreint' })}
+        </h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-md">
+          Seul l'administrateur système principal (SuperAdmin) est autorisé à modifier la configuration globale et les seuils de risque IA de la plateforme.
+        </p>
+      </div>
+    );
+  }
 
   const validateCoverageClient = (ruleList: RiskThresholdRule[]): boolean => {
     for (let i = 0; i <= 100; i++) {

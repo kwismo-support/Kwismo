@@ -4,7 +4,7 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-  Switch,
+  TextInput,
   ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -13,14 +13,31 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
-import { Skeleton, SkeletonLoader } from '@/shared/ui/Skeleton';
-import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { toast } from '@/shared/store/toastStore';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
-const USER_REGISTERED_NUMBERS = [
-  { id: '1', phone: '+237 6 98 44 43 88', operator: 'Orange Cameroun', isProtected: true, countryCode: 'CM' },
-  { id: '2', phone: '+237 6 70 12 34 56', operator: 'MTN Cameroun', isProtected: false, countryCode: 'CM' },
+interface ContactItem {
+  id: string;
+  name: string;
+  phone: string;
+  badge?: string;
+  initialBg?: string;
+  initials?: string;
+}
+
+const MOCK_CONTACTS: ContactItem[] = [
+  { id: '1', name: 'Maxime', phone: '+237 6 98 00 40 12', initialBg: '#CBD5E1', initials: '' },
+  { id: '2', name: 'Lysette Orleanne', phone: '+237 6 98 00 40 12', badge: 'Alerte menace', initialBg: '#25B46E', initials: 'LO' },
+  { id: '3', name: 'Superviseur NJS', phone: '#150*1*695 12 34 36*1...', initialBg: '#F97316', initials: 'S' },
+  { id: '4', name: 'Billy', phone: '+221 233 16 71 88', initialBg: '#CBD5E1', initials: '' },
+  { id: '5', name: 'William', phone: '+237 6 98 00 40 12', initialBg: '#CBD5E1', initials: '' },
+  { id: '6', name: 'Leonnie Beyina', phone: '+237 6 40 43 01 00', initialBg: '#CBD5E1', initials: '' },
+  { id: '7', name: 'M. Gabin', phone: '+237 6 98 44 43 88', initialBg: '#CBD5E1', initials: '' },
+  { id: '8', name: 'Lysette Orleanne', phone: '+237 6 98 00 40 12', badge: 'Alerte menace', initialBg: '#25B46E', initials: 'LO' },
+  { id: '9', name: 'T. Sonia', phone: '+237 6 98 44 43 88', initialBg: '#CBD5E1', initials: '' },
 ];
+
+type Step = 'select_contacts' | 'configure_message' | 'broadcasting' | 'success' | 'failure';
 
 export default function AlertWhatsappScreen() {
   const router = useRouter();
@@ -28,194 +45,392 @@ export default function AlertWhatsappScreen() {
   const { t } = useTranslation();
   const { isDark } = useAppTheme();
 
-  const [loading, setLoading] = useState(true);
-  const [selectedNumberId, setSelectedNumberId] = useState('1');
-  const [protectionEnabled, setProtectionEnabled] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  const [step, setStep] = useState<Step>('select_contacts');
+  const [search, setSearch] = useState('');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [messageText, setMessageText] = useState(
+    'ALERTE : Mon compte WhatsApp sur le numéro +237 690 77 88 47 a été piraté. Ne répondez à aucun message et ne validez aucun transfert d’argent provenant de ce numéro.'
+  );
+  const [alertType, setAlertType] = useState('Piratage de compte');
+  const [progress, setProgress] = useState(0);
+
+  const filteredContacts = MOCK_CONTACTS.filter(
+    (c) =>
+      c.name.toLowerCase().includes(search.toLowerCase()) ||
+      c.phone.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const allSelected =
+    filteredContacts.length > 0 &&
+    filteredContacts.every((c) => selectedIds.has(c.id));
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredContacts.map((c) => c.id)));
+    }
+  };
+
+  const toggleSelectContact = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const startBroadcast = () => {
+    setStep('broadcasting');
+    setProgress(0);
+  };
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, []);
+    if (step === 'broadcasting') {
+      const interval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            setStep('success');
+            return 100;
+          }
+          return prev + 10;
+        });
+      }, 200);
+      return () => clearInterval(interval);
+    }
+  }, [step]);
 
-  const handleSelectNumber = (id: string, currentlyProtected: boolean) => {
-    setSelectedNumberId(id);
-    setProtectionEnabled(currentlyProtected);
+  const handleHeaderBack = () => {
+    if (step === 'configure_message') {
+      setStep('select_contacts');
+    } else if (step === 'broadcasting' || step === 'success' || step === 'failure') {
+      setStep('select_contacts');
+    } else {
+      router.back();
+    }
   };
 
-  const handleSaveSettings = () => {
-    setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
-      toast.success(
-        t('whatsapp.settingsSaved', 'Paramètres d’alerte WhatsApp enregistrés avec succès !')
-      );
-    }, 600);
-  };
-
-  const selectedNumberObj = USER_REGISTERED_NUMBERS.find((n) => n.id === selectedNumberId);
+  const selectedCount = selectedIds.size > 0 ? selectedIds.size : 120;
 
   return (
     <View className="flex-1 bg-brand-green">
       <StatusBar style="light" />
 
       <HeaderBar
-        title={t('whatsapp.title', 'Alerte WhatsApp')}
+        title={t('whatsapp.title', 'Alerte whatsapp')}
         showBack={true}
+        onBack={handleHeaderBack}
+        rightAction={
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => router.back()}
+            className="p-1"
+          >
+            <Icon name="gravity-ui:check" color="#FFFFFF" size={24} />
+          </TouchableOpacity>
+        }
       />
 
-      <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg rounded-tl-3xl overflow-hidden">
-        <ScrollView
-          contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
-          showsVerticalScrollIndicator={false}
-          className="px-4 pt-5"
-        >
-          <View className="flex-row items-start p-4 rounded-2xl border border-brand-green bg-emerald-50 dark:bg-emerald-950/40">
-            <Icon name="ic:baseline-whatsapp" color="#25D366" size={28} className="mr-3" />
-            <View className="flex-1">
-              <Text className="font-font-bold text-sm font-bold text-emerald-900 dark:text-emerald-300 mb-1">
-                {t('whatsapp.subtitle', 'Protection anti-piratage WhatsApp')}
-              </Text>
-              <Text className="font-font-regular text-xs text-brand-green dark:text-brand-green leading-4.5">
-                {t(
-                  'whatsapp.noticeText',
-                  'En activant cette protection, Kwismo surveillera automatiquement les tentatives d’usurpation de votre compte WhatsApp sur le numéro sélectionné.'
-                )}
-              </Text>
+      <View className="flex-1 bg-white dark:bg-brand-darkBg rounded-t-[28px] overflow-hidden pt-4 px-5">
+        {/* STEP 1: SELECT CONTACTS */}
+        {step === 'select_contacts' && (
+          <ScrollView
+            contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Search input */}
+            <View className="flex-row items-center hx-12 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark px-4 mb-4 shadow-sm">
+              <Icon name="solar:magnifer-linear" color="#94A3B8" size={20} className="mr-3" />
+              <TextInput
+                className="flex-1 text-sm font-medium text-slate-900 dark:text-white"
+                placeholder="Recherche de..."
+                placeholderTextColor="#94A3B8"
+                value={search}
+                onChangeText={setSearch}
+              />
             </View>
-          </View>
 
-          <Text className="font-font-bold text-base font-extrabold text-slate-900 dark:text-white mt-5">
-            {t('whatsapp.selectNumberLabel', 'Sélectionner le numéro à protéger')}
-          </Text>
+            {/* Header select row */}
+            <View className="flex-row items-center justify-between mb-3">
+              <Text className="text-sm font-semibold text-slate-400 dark:text-slate-500">
+                Mes contacts
+              </Text>
 
-          {loading ? (
-            <SkeletonLoader>
-              <View className="gap-2.5 mt-2.5">
-                <Skeleton width="100%" height={70} borderRadius={16} />
-                <Skeleton width="100%" height={70} borderRadius={16} />
-              </View>
-            </SkeletonLoader>
-          ) : (
-            <View className="gap-2.5 mt-2.5">
-              {USER_REGISTERED_NUMBERS.map((item) => {
-                const isSelected = selectedNumberId === item.id;
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={toggleSelectAll}
+                className="flex-row items-center gap-2"
+              >
+                <Text className="text-xs font-medium text-slate-400 dark:text-slate-500">
+                  Tout sélectionner
+                </Text>
+                <View
+                  className={`wx-5 hx-5 rounded-full border items-center justify-center ${
+                    allSelected
+                      ? 'border-brand-green bg-brand-green'
+                      : 'border-slate-300 dark:border-slate-600'
+                  }`}
+                >
+                  {allSelected && <Icon name="gravity-ui:check" color="#FFFFFF" size={14} />}
+                </View>
+              </TouchableOpacity>
+            </View>
+
+            {/* Contacts list */}
+            <View className="gap-y-1 mb-6">
+              {filteredContacts.map((contact) => {
+                const isSelected = selectedIds.has(contact.id);
                 return (
                   <TouchableOpacity
-                    key={item.id}
-                    activeOpacity={0.8}
-                    onPress={() => handleSelectNumber(item.id, item.isProtected)}
-                    className={`flex-row items-center justify-between p-3.5 rounded-2xl border-2 ${isSelected
-                      ? 'bg-emerald-50 dark:bg-emerald-950/40 border-brand-green'
-                      : 'bg-white dark:bg-brand-cardDark border-slate-200 dark:border-slate-700'
-                      }`}
+                    key={contact.id}
+                    activeOpacity={0.7}
+                    onPress={() => toggleSelectContact(contact.id)}
+                    className="flex-row items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800/60"
                   >
-                    <View className="flex-row items-center">
+                    <View className="flex-row items-center flex-1 pr-3">
                       <View
-                        className={`w-5 h-5 rounded-full border-2 items-center justify-center ${isSelected ? 'border-brand-green' : 'border-slate-300 dark:border-slate-600'
-                          }`}
+                        style={{ backgroundColor: contact.initialBg || '#CBD5E1' }}
+                        className="wx-11 hx-11 rounded-full items-center justify-center mr-3.5"
                       >
-                        {isSelected && <View className="w-2.5 h-2.5 rounded-full bg-brand-green" />}
+                        {contact.initials ? (
+                          <Text className="text-white font-bold text-sm">{contact.initials}</Text>
+                        ) : (
+                          <Icon name="solar:user-bold" color="#FFFFFF" size={22} />
+                        )}
                       </View>
 
-                      <View className="ml-3">
-                        <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">
-                          {item.phone}
+                      <View className="flex-1">
+                        <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white">
+                          {contact.name}
                         </Text>
-                        <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          {item.operator}
+                        <Text className="text-xs font-medium text-slate-400 dark:text-slate-400 mt-0.5">
+                          {contact.badge || contact.phone}
                         </Text>
                       </View>
                     </View>
 
                     <View
-                      className={`px-2.5 py-1 rounded-xl ${item.isProtected
-                        ? 'bg-emerald-100 dark:bg-emerald-950/50'
-                        : 'bg-slate-100 dark:bg-slate-800'
-                        }`}
+                      className={`wx-5 hx-5 rounded-full border items-center justify-center ${
+                        isSelected
+                          ? 'border-brand-green bg-brand-green'
+                          : 'border-slate-300 dark:border-slate-600'
+                      }`}
                     >
-                      <Text
-                        className={`font-font-bold text-xs font-bold ${item.isProtected ? 'text-brand-green' : 'text-slate-500 dark:text-slate-400'
-                          }`}
-                      >
-                        {item.isProtected
-                          ? t('whatsapp.statusProtected', 'Protégé')
-                          : t('whatsapp.statusNotProtected', 'Non protégé')}
-                      </Text>
+                      {isSelected && <Icon name="gravity-ui:check" color="#FFFFFF" size={14} />}
                     </View>
                   </TouchableOpacity>
                 );
               })}
             </View>
-          )}
 
-          <View className="flex-row items-center justify-between p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark mt-5">
-            <View className="flex-1 pr-3">
-              <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">
-                {t('whatsapp.enableProtection', 'Activer la détection de piratage')}
+            {/* Suivant Button */}
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => {
+                if (selectedIds.size === 0) {
+                  toast.info('Veuillez sélectionner au moins un contact.');
+                }
+                setStep('configure_message');
+              }}
+              className="h-13 rounded-2xl bg-brand-orange justify-center items-center mb-6 shadow-md shadow-brand-orange/30"
+            >
+              <Text className="font-montserrat-bold text-base font-bold text-white">
+                Suivant
               </Text>
-              <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                {selectedNumberObj ? selectedNumberObj.phone : ''}
+            </TouchableOpacity>
+          </ScrollView>
+        )}
+
+        {/* STEP 2: CONFIGURE MESSAGE */}
+        {step === 'configure_message' && (
+          <ScrollView
+            contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+            showsVerticalScrollIndicator={false}
+            className="pt-2"
+          >
+            <Text className="font-montserrat-bold text-xl font-bold text-slate-900 dark:text-white mb-1">
+              Message d’alerte
+            </Text>
+            <Text className="text-xs text-slate-500 dark:text-slate-400 leading-4.5 mb-6">
+              Sélectionnez ou modifiez le message à envoyer à vos contacts.
+            </Text>
+
+            <Text className="font-montserrat-bold text-base font-bold text-slate-900 dark:text-white mb-2">
+              Objet du message
+            </Text>
+
+            {/* Alert Type Selector */}
+            <View className="flex-row items-center justify-between p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark mb-6">
+              <Text className="text-sm font-medium text-slate-900 dark:text-white">
+                Type d’alerte
+              </Text>
+              <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={20} />
+            </View>
+
+            <Text className="font-montserrat-bold text-base font-bold text-slate-900 dark:text-white mb-2">
+              Modèle de message
+            </Text>
+
+            {/* Message Template Input Box */}
+            <View className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark mb-6">
+              <TextInput
+                multiline
+                numberOfLines={5}
+                textAlignVertical="top"
+                value={messageText}
+                onChangeText={setMessageText}
+                className="text-sm font-medium text-slate-900 dark:text-white leading-6 min-h-[110px]"
+              />
+            </View>
+
+            {/* Info Container */}
+            <View className="flex-row items-center p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40 mb-8">
+              <Icon name="solar:info-circle-bold" color="#6B98FF" size={22} className="mr-3" />
+              <Text className="flex-1 text-xs font-medium text-blue-900 dark:text-blue-200 leading-4.5">
+                Ce message alerte vos contacts sélectionnés que votre numéro est compromis.
               </Text>
             </View>
 
-            <Switch
-              value={protectionEnabled}
-              onValueChange={setProtectionEnabled}
-              trackColor={{ false: '#CBD5E1', true: '#25B876' }}
-              thumbColor="#FFFFFF"
-            />
-          </View>
+            {/* Envoyer Button */}
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={startBroadcast}
+              className="h-13 rounded-2xl bg-brand-orange justify-center items-center mb-6 shadow-md shadow-brand-orange/30"
+            >
+              <Text className="font-montserrat-bold text-base font-bold text-white">
+                Envoyer
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
+        )}
 
-          <View
-            className={`flex-row items-center p-4 rounded-2xl border mt-5 ${protectionEnabled
-              ? 'bg-emerald-50 dark:bg-emerald-950/40 border-brand-green'
-              : 'bg-red-50 dark:bg-red-950/40 border-red-500'
-              }`}
-          >
-            <Icon
-              name={protectionEnabled ? 'solar:shield-check-bold' : 'solar:shield-warning-bold'}
-              color={protectionEnabled ? '#25B876' : '#EF4444'}
-              size={24}
-              className="mr-3"
-            />
-            <View className="flex-1">
-              <Text
-                className={`font-font-bold text-sm font-bold ${protectionEnabled ? 'text-brand-green' : 'text-red-500'
-                  }`}
-              >
-                {protectionEnabled
-                  ? t('whatsapp.statusProtected', 'Protection WhatsApp Active')
-                  : t('whatsapp.statusNotProtected', 'Protection Désactivée')}
-              </Text>
-              <Text className="font-font-regular text-xs text-slate-600 dark:text-slate-300 mt-0.5">
-                {protectionEnabled
-                  ? 'Alerte instantanée en cas de connexion suspecte sur un autre appareil.'
-                  : 'Ce numéro ne recevra pas d’alertes préventives sur WhatsApp.'}
-              </Text>
+        {/* STEP 3: BROADCASTING LOADING STATE */}
+        {step === 'broadcasting' && (
+          <View className="flex-1 items-center justify-center px-4 pb-12">
+            <View className="wx-36 hx-36 rounded-full bg-emerald-50 dark:bg-emerald-950/30 items-center justify-center mb-8 relative">
+              <Icon name="solar:shield-warning-bold" color="#25B876" size={68} />
+              <ActivityIndicator
+                size="large"
+                color="#25B876"
+                className="absolute"
+              />
+            </View>
+
+            <Text className="font-montserrat-bold text-xl font-bold text-slate-900 dark:text-white text-center mb-2">
+              Alerte en cours de diffusion...
+            </Text>
+
+            <Text className="text-xs text-slate-400 dark:text-slate-400 text-center max-w-[280px] leading-5 mb-8">
+              {selectedCount} contacts ont été notifiés de la compromission de votre lignes.
+            </Text>
+
+            {/* Progress Bar */}
+            <View className="w-full max-w-[280px] h-2 bg-emerald-100 dark:bg-emerald-950 rounded-full overflow-hidden">
+              <View
+                style={{ width: `${progress}%` }}
+                className="h-full bg-brand-green rounded-full"
+              />
             </View>
           </View>
+        )}
 
-          <TouchableOpacity
-            activeOpacity={0.85}
-            disabled={isSaving}
-            onPress={handleSaveSettings}
-            className="flex-row items-center justify-center h-13 rounded-2xl bg-brand-green mt-7"
+        {/* STEP 4: SUCCESS STATE */}
+        {step === 'success' && (
+          <View className="flex-1 items-center justify-center px-4 pb-12">
+            <View className="wx-36 hx-36 rounded-full bg-emerald-50 dark:bg-emerald-950/30 items-center justify-center mb-8">
+              <View className="wx-20 hx-20 rounded-full bg-brand-green items-center justify-center shadow-lg shadow-emerald-500/30">
+                <Icon name="gravity-ui:check" color="#FFFFFF" size={40} />
+              </View>
+            </View>
+
+            <Text className="font-montserrat-bold text-xl font-bold text-slate-900 dark:text-white text-center mb-2">
+              L’alerte a bien été diffusion
+            </Text>
+
+            <Text className="text-xs text-slate-400 dark:text-slate-400 text-center max-w-[280px] leading-5 mb-8">
+              {selectedCount} contacts ont été notifiés de la compromission de votre lignes.
+            </Text>
+
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => router.back()}
+              className="w-full max-w-[280px] h-13 rounded-2xl bg-brand-green justify-center items-center shadow-md shadow-emerald-500/30"
+            >
+              <Text className="font-montserrat-bold text-base font-bold text-white">
+                Terminer
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => setStep('failure')}
+              className="mt-4"
+            >
+              <Text className="text-xs text-slate-400 underline">
+                Simuler échec partiel réseau
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* STEP 5: PARTIAL FAILURE STATE */}
+        {step === 'failure' && (
+          <ScrollView
+            contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+            showsVerticalScrollIndicator={false}
+            className="pt-2"
           >
-            {isSaving ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <>
-                <Icon name="solar:check-read-bold" color="#FFFFFF" size={20} className="mr-2" />
-                <Text className="font-font-bold text-base font-bold text-white">
-                  {t('whatsapp.saveSettings', 'Enregistrer la configuration')}
-                </Text>
-              </>
-            )}
-          </TouchableOpacity>
-        </ScrollView>
+            {/* Top Amber Warning Container */}
+            <View className="flex-row items-start p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 mb-8">
+              <Icon name="solar:info-circle-bold" color="#D97706" size={22} className="mr-3 mt-0.5" />
+              <Text className="flex-1 text-xs text-amber-900 dark:text-amber-200 leading-5">
+                L’alerte n’a pas été transmise à tous vos contacts. Vous pouvez relancer l’envoi pour sécuriser les destinataires manqués, ou ignorer.
+              </Text>
+            </View>
+
+            <View className="items-center justify-center my-4">
+              <View className="wx-36 hx-36 rounded-full bg-red-50 dark:bg-red-950/30 items-center justify-center mb-6">
+                <Icon name="solar:danger-triangle-bold" color="#EF4444" size={68} />
+              </View>
+
+              <Text className="font-montserrat-bold text-xl font-bold text-slate-900 dark:text-white text-center mb-2">
+                Diffusion partiellement interrompu
+              </Text>
+
+              <Text className="text-xs text-slate-400 dark:text-slate-400 text-center max-w-[280px] leading-5 mb-8">
+                95 messages envoyés, 5 échecs dus au réseau.
+              </Text>
+            </View>
+
+            {/* Ignorer Button */}
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => router.back()}
+              className="h-13 rounded-2xl bg-brand-orange justify-center items-center mb-3 shadow-md shadow-brand-orange/30"
+            >
+              <Text className="font-montserrat-bold text-base font-bold text-white">
+                Ignorer
+              </Text>
+            </TouchableOpacity>
+
+            {/* Réessayer Button */}
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={startBroadcast}
+              className="h-13 rounded-2xl bg-red-600 justify-center items-center mb-6 shadow-md shadow-red-600/30"
+            >
+              <Text className="font-montserrat-bold text-base font-bold text-white">
+                Réessayer
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
+        )}
       </View>
     </View>
   );
 }
-

@@ -200,24 +200,24 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           {/* Authentification à 2FA */}
-          <View className="flex-row items-center justify-between py-3.5 dark:bg-brand-darkBg border-b border-slate-100 dark:border-slate-800">
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => router.push('/(app)/two-factor')}
+            className="flex-row items-center justify-between py-3.5 dark:bg-brand-darkBg border-b border-slate-100 dark:border-slate-800"
+          >
             <View className="flex-row items-center gap-3 ml-1">
               <Icon name="dashicons:shield" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 {t('common.twoFactorAuthItem')}
               </Text>
             </View>
-            <CustomSwitch
-              value={twoFactorEnabled}
-              onValueChange={setTwoFactorEnabled}
-              activeColor="#FF9500"
-            />
-          </View>
+            <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={16} />
+          </TouchableOpacity>
 
           {/* Sessions actives */}
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => toast.info('Sessions actives')}
+            onPress={() => router.push('/(app)/active-sessions')}
             className="flex-row items-center justify-between py-3.5 dark:bg-brand-darkBg border-b border-slate-100 dark:border-slate-800"
           >
             <View className="flex-row items-center gap-3 ml-1">

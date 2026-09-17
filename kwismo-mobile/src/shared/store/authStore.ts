@@ -3,6 +3,8 @@ import i18next from 'i18next';
 import { env } from '../config/env';
 import { storage } from '../services/storage';
 
+import { deleteUserPin } from '../lib/secureStore';
+
 export interface User {
   id: string;
   email: string;
@@ -127,6 +129,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     await storage.removeItem(USER_STORAGE_KEY);
     await storage.removeItem(REFRESH_TOKEN_KEY);
     await storage.removeItem(REMEMBER_ME_KEY);
+    await deleteUserPin();
     set({
       isAuthenticated: false,
       token: null,

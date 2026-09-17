@@ -58,7 +58,23 @@ export default function EditProfileScreen() {
     <View className="flex-1 bg-white dark:bg-brand-darkBg">
       <StatusBar style="light" />
 
-      <HeaderBar title={t('profile.personalInfo')} showBack={true} />
+      <HeaderBar
+        title={t('profile.personalInfo')}
+        showBack={true}
+        rightAction={
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={handleSave}
+            className="p-1"
+          >
+            {isSaving ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <Icon name="gravity-ui:check" color="#FFFFFF" size={24} />
+            )}
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView
         contentContainerStyle={{
@@ -131,15 +147,6 @@ export default function EditProfileScreen() {
             }}
           />
         </View>
-
-        <Button
-          title={t('common.saveChanges', 'Enregistrer les modifications')}
-          onPress={handleSave}
-          loading={isSaving}
-          variant="primary"
-          size="md"
-          className="mt-8"
-        />
       </ScrollView>
 
       <ProfilePhotoPickerModal

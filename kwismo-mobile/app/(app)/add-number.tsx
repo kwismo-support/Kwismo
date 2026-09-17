@@ -58,10 +58,10 @@ export default function AddNumberScreen() {
         rightAction={
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => router.back()}
+            onPress={handleSaveNewNumber}
             className="p-1"
           >
-            <Icon name="solar:close-linear" color="#FFFFFF" size={24} />
+            <Icon name="gravity-ui:check" color="#FFFFFF" size={24} />
           </TouchableOpacity>
         }
       />
@@ -128,14 +128,6 @@ export default function AddNumberScreen() {
           {phoneError ? (
             <Text className="font-medium text-xs text-red-500 -mt-4 ml-1">{phoneError}</Text>
           ) : null}
-
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={handleSaveNewNumber}
-            className="hx-13 rounded-xl bg-orange-400 items-center justify-center mt-6 shadow-md shadow-orange-400/30"
-          >
-            <Text className="font-bold text-base text-white">{t('common.save')}</Text>
-          </TouchableOpacity>
         </ScrollView>
       </View>
 

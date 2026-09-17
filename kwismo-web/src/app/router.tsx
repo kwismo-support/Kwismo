@@ -61,8 +61,11 @@ export function AppRouter() {
               <Route path="/app" element={<AppIndexRedirect />} />
               <Route path="/app/dashboard" element={<DashboardPage />} />
               <Route path="/app/profile"   element={<ProfilePage />} />
-              <Route path="/app/settings"  element={<SettingsPage />} />
               <Route path="/app/notifications" element={<NotificationsPage />} />
+
+              <Route element={<RoleGuard permission="settings:read" />}>
+                <Route path="/app/settings" element={<SettingsPage />} />
+              </Route>
 
               <Route element={<RoleGuard roles={['user']} />}>
                 <Route path="/app/user" element={<UserPortalPage />} />
@@ -77,14 +80,23 @@ export function AppRouter() {
                 <Route path="/app/reports" element={<ReportsPage />} />
               </Route>
 
-              <Route element={<RoleGuard roles={['admin']} />}>
-                <Route path="/app/users"        element={<UsersPage />} />
-                <Route path="/app/users/:id"    element={<UserDetailPage />} />
-                <Route path="/app/partners"     element={<PartnersPage />} />
+              <Route element={<RoleGuard permission="users:read" />}>
+                <Route path="/app/users" element={<UsersPage />} />
+                <Route path="/app/users/:id" element={<UserDetailPage />} />
+              </Route>
+
+              <Route element={<RoleGuard permission="roles:read" />}>
+                <Route path="/app/access" element={<AccessControlPage />} />
+              </Route>
+
+              <Route element={<RoleGuard permission="partners:read" />}>
+                <Route path="/app/partners" element={<PartnersPage />} />
                 <Route path="/app/partners/:id" element={<PartnerDetailPage />} />
-                <Route path="/app/ussd"         element={<UssdPage />} />
-                <Route path="/app/ussd/:id"     element={<UssdDetailPage />} />
-                <Route path="/app/access"       element={<AccessControlPage />} />
+              </Route>
+
+              <Route element={<RoleGuard permission="ussd:read" />}>
+                <Route path="/app/ussd" element={<UssdPage />} />
+                <Route path="/app/ussd/:id" element={<UssdDetailPage />} />
               </Route>
 
               <Route path="/app/403" element={<ForbiddenPage />} />

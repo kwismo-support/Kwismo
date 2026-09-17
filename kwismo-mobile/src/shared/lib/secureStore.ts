@@ -29,8 +29,24 @@ async function setItem(key: string, val: string): Promise<void> {
   }
 }
 
+async function removeItem(key: string): Promise<void> {
+  try {
+    delete memoryStore[key];
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.removeItem(key);
+    }
+  } catch (err) {
+    console.error('Erreur suppression stockage:', err);
+  }
+}
+
 export async function saveUserPin(pin: string): Promise<void> {
   await setItem(PIN_STORAGE_KEY, pin);
+}
+
+export async function deleteUserPin(): Promise<void> {
+  await removeItem(PIN_STORAGE_KEY);
+  await setBiometricPreference(false);
 }
 
 export async function verifyUserPin(enteredPin: string): Promise<boolean> {
@@ -66,4 +82,5 @@ export async function getBiometricPreference(): Promise<boolean> {
     return false;
   }
 }
+
 

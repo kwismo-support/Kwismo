@@ -28,12 +28,12 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/app/dashboard', icon: 'solar:widget-bold-duotone', labelKey: 'nav.dashboard', fallbackLabel: 'Dashboard', iconColor: 'text-brand-blue' },
   { to: '/app/user', icon: 'solar:user-bold-duotone', labelKey: 'nav.myPortal', fallbackLabel: 'Portail Utilisateur', iconColor: 'text-emerald-500', roles: ['user'] },
   { to: '/app/numbers', icon: 'solar:hashtag-square-bold-duotone', labelKey: 'nav.numbers', fallbackLabel: 'Numéros', iconColor: 'text-brand-green', permission: 'numbers:read' },
-  { to: '/app/users', icon: 'solar:users-group-two-rounded-bold-duotone', labelKey: 'nav.users', fallbackLabel: 'Utilisateurs', iconColor: 'text-brand-navy dark:text-blue-400', roles: ['admin'] },
-  { to: '/app/partners', icon: 'solar:buildings-bold-duotone', labelKey: 'nav.partners', fallbackLabel: 'Partenaires', iconColor: 'text-brand-orange', roles: ['admin'] },
-  { to: '/app/ussd', icon: 'solar:global-bold-duotone', labelKey: 'nav.ussd', fallbackLabel: 'Pays & USSD', iconColor: 'text-purple-500', roles: ['admin'] },
-  { to: '/app/access', icon: 'solar:shield-keyhole-bold-duotone', labelKey: 'nav.access', fallbackLabel: "Droits d'accès", iconColor: 'text-amber-500', roles: ['admin'] },
+  { to: '/app/users', icon: 'solar:users-group-two-rounded-bold-duotone', labelKey: 'nav.users', fallbackLabel: 'Utilisateurs', iconColor: 'text-brand-navy dark:text-blue-400', permission: 'users:read' },
+  { to: '/app/partners', icon: 'solar:buildings-bold-duotone', labelKey: 'nav.partners', fallbackLabel: 'Partenaires', iconColor: 'text-brand-orange', permission: 'partners:read' },
+  { to: '/app/ussd', icon: 'solar:global-bold-duotone', labelKey: 'nav.ussd', fallbackLabel: 'Pays & USSD', iconColor: 'text-purple-500', permission: 'ussd:read' },
+  { to: '/app/access', icon: 'solar:shield-keyhole-bold-duotone', labelKey: 'nav.access', fallbackLabel: "Droits d'accès", iconColor: 'text-amber-500', permission: 'roles:read' },
   { to: '/app/reports', icon: 'solar:chart-bold-duotone', labelKey: 'nav.reports', fallbackLabel: 'Rapports', iconColor: 'text-emerald-500', permission: 'reports:read' },
-  { to: '/app/settings', icon: 'solar:settings-bold-duotone', labelKey: 'nav.settings', fallbackLabel: 'Paramètres', iconColor: 'text-slate-500' },
+  { to: '/app/settings', icon: 'solar:settings-bold-duotone', labelKey: 'nav.settings', fallbackLabel: 'Paramètres', iconColor: 'text-slate-500', permission: 'settings:read' },
 ];
 
 export function Sidebar({ open, onClose }: SidebarProps) {
@@ -69,12 +69,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           open ? 'translate-x-0 w-64' : '-translate-x-full w-64'
         )}
       >
-        {/* Brand Header */}
         <div className={cn(
           "relative flex h-16 items-center justify-between border-b border-slate-200 dark:border-white/10 shrink-0",
           isCollapsed ? "justify-center px-2" : "px-6"
         )}>
-          {/* Toggle Button */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-50 h-6 w-6 items-center justify-center rounded-full border border-slate-200 dark:border-white/15 bg-white dark:bg-[#161E33] text-slate-500 hover:text-slate-900 dark:hover:text-white shadow-md transition cursor-pointer"
@@ -113,7 +111,6 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </button>
         </div>
 
-        {/* Nav Menu */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5">
           {filteredNavItems.map((item) => {
             const label = t(item.labelKey, { defaultValue: item.fallbackLabel });
@@ -150,7 +147,6 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           })}
         </nav>
 
-        {/* Logout Footer Button */}
         <div className="p-3 border-t border-slate-200 dark:border-white/10 shrink-0">
           <button
             onClick={() => setShowLogoutModal(true)}
@@ -166,13 +162,12 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </div>
       </aside>
 
-      {/* Logout Confirmation Modal */}
       <ConfirmDialog
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
         onConfirm={handleConfirmLogout}
         title={t('dialogs.logoutTitle', { defaultValue: 'Confirmer la déconnexion ?' })}
-        description={t('dialogs.logoutDescription', { defaultValue: 'Êtes-vous sûr de vouloir vous déconnecter de la plateforme KWISMO ? Vous devrez vous réauthentifier pour accéder à nouveau à vos dossiers.' })}
+        description={t('dialogs.logoutDescription', { defaultValue: 'Êtes-vous sûr de vouloir vous déconnecter de la plateforme KWISMO ? vous devrez vous réauthentifier pour accéder à nouveau à vos dossiers.' })}
         confirmLabel={t('actions.logout', { defaultValue: 'Déconnexion' })}
         cancelLabel={t('actions.cancel', { defaultValue: 'Annuler' })}
         variant="danger"
@@ -180,5 +175,3 @@ export function Sidebar({ open, onClose }: SidebarProps) {
     </>
   );
 }
-
-

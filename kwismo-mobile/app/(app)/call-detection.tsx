@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, Switch, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useCallDetection } from '@/features/call-detection/hooks/useCallDetection';
 import { CallWarningModal } from '@/features/call-detection/components/CallWarningModal';
+import { CustomSwitch } from '@/shared/ui/CustomSwitch';
 
 export default function CallDetectionScreen() {
   const router = useRouter();
@@ -43,11 +44,10 @@ export default function CallDetectionScreen() {
               Analyse automatique des appels entrants contre la base de données KWISMO.
             </Text>
           </View>
-          <Switch
+          <CustomSwitch
             value={isEnabled}
             onValueChange={toggleProtection}
-            trackColor={{ false: '#374151', true: '#059669' }}
-            thumbColor={isEnabled ? '#10B981' : '#9CA3AF'}
+            activeColor="#FF9500"
           />
         </View>
       </View>
