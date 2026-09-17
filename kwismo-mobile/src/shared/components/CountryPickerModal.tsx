@@ -96,7 +96,7 @@ export const CountryPickerModal: React.FC<CountryPickerModalProps> = ({
         >
           <View className="flex-row items-center justify-between mb-4">
             <Text className="font-montserrat-bold text-xl text-slate-900 dark:text-white">
-              {t('common.selectCountry', 'Sélectionner un pays')}
+              {t('common.selectCountry')}
             </Text>
             <TouchableOpacity
               activeOpacity={0.7}
@@ -107,7 +107,7 @@ export const CountryPickerModal: React.FC<CountryPickerModalProps> = ({
             </TouchableOpacity>
           </View>
 
-          <View className="flex-row items-center h-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-brand-cardDark px-3.5 mb-3">
+          <View className="flex-row items-center hx-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-brand-cardDark px-3.5 mb-3">
             <Icon name="solar:magnifer-linear" color={themeColors.inputPlaceholder} size={20} className="mr-2.5" />
             <TextInput
               style={Platform.OS === 'web' ? ({ outline: 'none' } as any) : {}}

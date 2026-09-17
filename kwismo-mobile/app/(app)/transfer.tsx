@@ -219,7 +219,7 @@ export default function TransferScreen() {
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => setSenderModalVisible(true)}
-                className="flex-row items-center justify-between h-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-3.5"
+                className="flex-row items-center justify-between hx-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-3.5"
               >
                 <View className="flex-row items-center flex-1">
                   <View
@@ -243,7 +243,7 @@ export default function TransferScreen() {
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => setActionModalVisible(true)}
-                className="flex-row items-center justify-between h-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-3.5"
+                className="flex-row items-center justify-between hx-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-3.5"
               >
                 <View className="flex-row items-center flex-1">
                   <Icon name="solar:card-transfer-linear" color="#25B876" size={20} className="mr-2.5" />

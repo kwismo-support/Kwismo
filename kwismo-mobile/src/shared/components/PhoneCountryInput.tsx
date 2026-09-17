@@ -74,7 +74,7 @@ export const PhoneCountryInput: React.FC<PhoneCountryInputProps> = ({
       ) : null}
 
       <View
-        className={`flex-row items-center h-13 rounded-xl px-3.5 bg-white dark:bg-brand-cardDark border shadow-sm elevation-2 ${
+        className={`flex-row items-center hx-13 rounded-xl px-3.5 bg-white dark:bg-brand-cardDark border shadow-sm elevation-2 ${
           error || (isPhoneInvalid && (isFocused || Boolean(error)))
             ? 'border-red-500 border-2'
             : isPhoneValid || isFocused
