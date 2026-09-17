@@ -342,7 +342,25 @@
       "reject": "Reject Request",
       "confirmValidateTitle": "Validate partnership request?",
       "confirmValidateDesc": "An API key will be generated and sent to the primary contact."
-    }
+    },
+    "loginEmail": "Login Email Identifier",
+    "recipientEmailCredentials": "Credentials Recipient Email (Editable)",
+    "recipientEmailRegret": "Rejection Email Recipient",
+    "rejectModalTitle": "Reject Partnership Request",
+    "rejectionReasonLabel": "Rejection Reason / Message",
+    "confirmRejectAction": "Confirm Rejection & Preview Email",
+    "emailModalTitleApproval": "Preview & Send Approval Email",
+    "emailModalTitleRejection": "Preview & Send Rejection Email",
+    "previewTab": "HTML Email Preview",
+    "editorTab": "Edit HTML/Text Content",
+    "recipientEmail": "Recipient Email Address",
+    "emailSubject": "Email Subject",
+    "emailBody": "Email Body",
+    "emailPreviewHeader": "Visual Email Render Preview",
+    "sendApprovalEmail": "Validate Partner & Send Email",
+    "sendRejectionEmail": "Reject Request & Send Regret Email",
+    "requestValidatedEmailSent": "Partnership request validated and access credentials sent by email!",
+    "requestRejectedEmailSent": "Partnership request rejected and regret email sent!"
   },
   "settings": {
     "title": "System Settings & AI Config",

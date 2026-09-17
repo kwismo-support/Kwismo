@@ -328,7 +328,25 @@
       "reject": "Rejeter la demande",
       "confirmValidateTitle": "Valider la demande de partenariat ?",
       "confirmValidateDesc": "Une clé API sera générée et transmise au contact principal."
-    }
+    },
+    "loginEmail": "Identifiant Email de Connexion",
+    "recipientEmailCredentials": "Email de Réception des Identifiants (Modifiable)",
+    "recipientEmailRegret": "Email Destinataire du Mail de Regret",
+    "rejectModalTitle": "Rejeter la Demande de Partenariat",
+    "rejectionReasonLabel": "Message / Motif de Regret",
+    "confirmRejectAction": "Confirmer le Rejet & Prévisualiser le Mail",
+    "emailModalTitleApproval": "Prévisualisation & Envoi du Mail de Validation",
+    "emailModalTitleRejection": "Prévisualisation & Envoi du Mail de Regret",
+    "previewTab": "Aperçu Rendu Mail",
+    "editorTab": "Éditer le Contenu HTML/Texte",
+    "recipientEmail": "Email Destinataire du Message",
+    "emailSubject": "Objet du Message",
+    "emailBody": "Corps du Message",
+    "emailPreviewHeader": "Aperçu Rendu Visuel du Mail",
+    "sendApprovalEmail": "Valider le Partenaire & Envoyer le Mail",
+    "sendRejectionEmail": "Rejeter la Demande & Envoyer le Mail de Regret",
+    "requestValidatedEmailSent": "Demande de partenariat validée et accès envoyés par email !",
+    "requestRejectedEmailSent": "Demande de partenariat rejetée et email de regret envoyé !"
   },
   "notifications": {
     "title": "Notifications & Alertes",

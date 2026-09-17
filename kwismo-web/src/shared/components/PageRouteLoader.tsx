@@ -85,7 +85,8 @@ export function PageRouteLoader({ onFinished }: PageRouteLoaderProps) {
           />
         </div>
       </div>
+    </div>
+  );
 }
 
 export default PageRouteLoader;
-

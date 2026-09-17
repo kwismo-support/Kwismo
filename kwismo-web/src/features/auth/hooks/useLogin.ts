@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { authApi, type LoginResult } from '../services/auth.api';
 import type { LoginInput } from '../schemas/auth.schema';
 import { useAuthStore } from '@/shared/store/authStore';
+import { settingsApi } from '@/features/settings/services/settings.api';
 
 export function useLogin() {
   const [loading, setLoading] = useState(false);
@@ -15,6 +16,11 @@ export function useLogin() {
     try {
       const res = await authApi.login(data);
       if (res.requiresDeviceVerification && res.email && res.deviceId) {
+        const requireAdminOtp = settingsApi.getRequireAdminOtp();
+        if (!requireAdminOtp) {
+          await fetchMe();
+          return { ...res, requiresDeviceVerification: false };
+        }
         setDeviceVerifyData({ email: res.email, deviceId: res.deviceId });
         return res;
       }

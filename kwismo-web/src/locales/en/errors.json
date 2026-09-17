@@ -19,6 +19,10 @@
     "invalidEmail": "Invalid email address",
     "invalidPhone": "Invalid phone number (e.g. +237 6XX XX XX XX)",
     "minLength": "At least {{count}} characters required",
+    "minLength2": "At least 2 characters required",
+    "minLength5": "At least 5 characters required",
+    "minLength6": "At least 6 characters required",
+    "minLength8": "At least 8 characters required",
     "passwordMismatch": "Passwords do not match"
   },
   "http": {

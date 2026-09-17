@@ -12,6 +12,7 @@ export default function SettingsPage() {
     apiRateLimitPerMin: 1200,
     enableAutoBlockFraud: true,
     enableSmsAlerts: true,
+    requireAdminOtp: settingsApi.getRequireAdminOtp(),
     platformName: 'Kwismo Web Platform',
     supportEmail: 'support@kwismo.com',
   });
@@ -37,7 +38,6 @@ export default function SettingsPage() {
   }, []);
 
   const validateCoverageClient = (ruleList: RiskThresholdRule[]): boolean => {
-    // Tester l'échantillonnage de 0.0 à 1.0 par pas de 0.01
     for (let i = 0; i <= 100; i++) {
       const point = Number((i * 0.01).toFixed(2));
       let matched = false;
@@ -80,6 +80,7 @@ export default function SettingsPage() {
 
   const handleSaveGeneral = (e: React.FormEvent) => {
     e.preventDefault();
+    settingsApi.setRequireAdminOtp(settings.requireAdminOtp);
     toast.success('Paramètres généraux enregistrés avec succès !');
   };
 
@@ -233,6 +234,23 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-3 pt-3 border-t border-slate-200 dark:border-white/10">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={settings.requireAdminOtp}
+              onChange={(e) => setSettings({ ...settings, requireAdminOtp: e.target.checked })}
+              className="h-5 w-5 rounded border-slate-300 text-brand-orange focus:ring-brand-orange"
+            />
+            <div>
+              <span className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 block">
+                Exiger la validation par OTP pour les comptes Administrateurs et Partenaires (Défaut: Non)
+              </span>
+              <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                Lorsque désactivé, les comptes d'administration et partenaires accèdent directement sans saisie de code OTP.
+              </span>
+            </div>
+          </label>
+
           <label className="flex items-center gap-3 cursor-pointer">
             <input
               type="checkbox"
