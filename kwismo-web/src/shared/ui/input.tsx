@@ -99,10 +99,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               <Icon icon="solar:close-circle-bold" className="text-base" />
             </button>
           ) : rightIcon ? (
-            <span className="absolute right-3 text-slate-400 text-base flex items-center justify-center pointer-events-none">
-              {typeof rightIcon === 'string' ? <Icon icon={rightIcon} /> : rightIcon}
+            <span className="absolute right-3 text-slate-400 text-base flex items-center justify-center z-10">
+              {typeof rightIcon === 'string' ? <Icon icon={rightIcon} className="pointer-events-none" /> : rightIcon}
             </span>
           ) : null}
+
         </div>
 
         {displayError && (
