@@ -12,6 +12,5 @@ export * from './EmptyState';
 export * from './ErrorState';
 export * from './LoadingSkeleton';
 export * from './LanguageSwitcher';
+export * from './PageRouteLoader';
 export * from './ThemeToggle';
-
-

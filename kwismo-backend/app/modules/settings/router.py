@@ -33,3 +33,26 @@ async def update_thresholds(
     payload: SettingsThresholdsIn, user=Depends(require_roles("admin"))
 ) -> SettingsThresholdsOut:
     return await service.update_threshold_rules(payload)
+
+
+@router.get(
+    "/require-admin-otp",
+    responses=AUTH_RESPONSES,
+    summary="Get require admin OTP setting",
+)
+async def get_require_admin_otp() -> dict:
+    val = await service.get_require_admin_otp()
+    return {"require_admin_otp": val}
+
+
+@router.put(
+    "/require-admin-otp",
+    responses=AUTH_RESPONSES,
+    summary="Update require admin OTP setting",
+)
+async def update_require_admin_otp(
+    payload: dict, user=Depends(require_roles("admin"))
+) -> dict:
+    require_otp = bool(payload.get("require_admin_otp", False))
+    return await service.update_require_admin_otp(require_otp)
+

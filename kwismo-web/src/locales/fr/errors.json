@@ -19,6 +19,10 @@
     "invalidEmail": "Adresse e-mail invalide",
     "invalidPhone": "Numéro de téléphone invalide (ex: +237 6XX XX XX XX)",
     "minLength": "Au moins {{count}} caractères requis",
+    "minLength2": "Au moins 2 caractères requis",
+    "minLength5": "Au moins 5 caractères requis",
+    "minLength6": "Au moins 6 caractères requis",
+    "minLength8": "Au moins 8 caractères requis",
     "passwordMismatch": "Les mots de passe ne correspondent pas"
   },
   "http": {

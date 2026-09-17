@@ -212,7 +212,7 @@ export default function RegisterScreen() {
                   {[1, 2, 3, 4, 5].map((idx) => (
                     <View
                       key={`crit-bar-${idx}`}
-                      className={`flex-1 h-1 rounded-full ${passwordAnalysis.score >= idx
+                      className={`flex-1 hx-1 rounded-full ${passwordAnalysis.score >= idx
                         ? passwordAnalysis.score === 5
                           ? 'bg-emerald-500'
                           : 'bg-amber-500'
@@ -303,7 +303,7 @@ export default function RegisterScreen() {
                     setAcceptPrivacy(!acceptPrivacy);
                     if (privacyError) setPrivacyError('');
                   }}
-                  className={`w-5 h-5 rounded border-2 items-center justify-center mr-3 mt-0.5 ${acceptPrivacy ? 'bg-brand-green border-brand-green' : privacyError ? 'border-red-500' : 'border-slate-400 dark:border-slate-600'
+                  className={`wx-5 hx-5 rounded border-2 items-center justify-center mr-3 mt-0.5 ${acceptPrivacy ? 'bg-brand-green border-brand-green' : privacyError ? 'border-red-500' : 'border-slate-400 dark:border-slate-600'
                     }`}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
@@ -340,7 +340,7 @@ export default function RegisterScreen() {
                     setAcceptTerms(!acceptTerms);
                     if (termsError) setTermsError('');
                   }}
-                  className={`w-5 h-5 rounded border-2 items-center justify-center mr-3 mt-0.5 ${acceptTerms ? 'bg-brand-green border-brand-green' : termsError ? 'border-red-500' : 'border-slate-400 dark:border-slate-600'
+                  className={`wx-5 hx-5 rounded border-2 items-center justify-center mr-3 mt-0.5 ${acceptTerms ? 'bg-brand-green border-brand-green' : termsError ? 'border-red-500' : 'border-slate-400 dark:border-slate-600'
                     }`}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >

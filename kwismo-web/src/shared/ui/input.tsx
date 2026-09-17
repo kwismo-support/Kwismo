@@ -48,7 +48,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const { t } = useTranslation(['errors', 'common']);
     const inputId = id ?? `input-${Math.random().toString(36).slice(2, 7)}`;
 
-    const displayError = errorKey ? t(errorKey) : error;
+    const displayError = errorKey ? t(errorKey, { count: 6 }) : error;
     const hasValue = value !== undefined && value !== '';
 
     return (
@@ -73,9 +73,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             aria-invalid={!!displayError}
             aria-describedby={displayError ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined}
             className={cn(
-              'w-full bg-slate-50 dark:bg-brand-darkBg/60 border border-slate-200 dark:border-white/10',
+              'w-full bg-slate-50 dark:bg-brand-darkBg border border-slate-200 dark:border-white/10',
               'text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 font-body',
-              'focus:outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 transition-all duration-150',
+              'focus:outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green transition-all duration-150',
               'disabled:cursor-not-allowed disabled:opacity-50',
               displayError && 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/20',
               inputSizes[sizeVariant],

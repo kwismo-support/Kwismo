@@ -7,7 +7,7 @@ export const loginSchema = z.object({
     .email({ message: 'validation.invalidEmail' }),
   password: z
     .string()
-    .min(6, { message: 'validation.minLength' }),
+    .min(6, { message: 'validation.minLength6' }),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;
@@ -24,10 +24,10 @@ export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export const resetPasswordSchema = z.object({
   newPassword: z
     .string()
-    .min(8, { message: 'validation.minLength' }),
+    .min(8, { message: 'validation.minLength8' }),
   confirmPassword: z
     .string()
-    .min(8, { message: 'validation.minLength' }),
+    .min(8, { message: 'validation.minLength8' }),
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: 'validation.passwordMismatch',
   path: ['confirmPassword'],

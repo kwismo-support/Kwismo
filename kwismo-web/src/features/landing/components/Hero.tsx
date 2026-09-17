@@ -21,7 +21,7 @@ export default function Hero() {
             {t('landing:hero.titleLine2')}
             <br />
             {t('landing:hero.titleLine3')}{' '}
-            <span className="text-brand-green font-black inline-block drop-shadow-[0_4px_12px_rgba(46,175,125,0.5)] underline decoration-brand-green/60 decoration-wavy underline-offset-8">
+            <span className="text-brand-green font-black inline-block drop-shadow-[0_4px_12px_rgba(46,175,125,0.5)]">
               {t('landing:hero.titleHighlight')}
             </span>
           </h1>
@@ -33,7 +33,7 @@ export default function Hero() {
           <div className="mt-6 lg:mt-8 flex flex-wrap items-center gap-4 sm:gap-5">
             <a
               href="#download"
-              className="flex h-12 lg:h-14 xl:h-[56px] items-center gap-3 rounded-2xl bg-brand-green px-6 lg:px-8 text-sm lg:text-base xl:text-lg font-bold text-white no-underline transition-all duration-300 hover:bg-brand-green/90 shadow-xl hover:-translate-y-0.5"
+              className="flex h-12 lg:h-14 xl:h-[56px] items-center gap-3 rounded-2xl bg-brand-green px-6 lg:px-6 text-sm lg:text-base xl:text-lg font-bold text-white no-underline transition-all duration-300 hover:bg-brand-green/90 shadow-xl"
             >
               <Icon icon="basil:download-solid" className="text-xl lg:text-2xl shrink-0" />
               <span>{t('landing:hero.ctaApp')}</span>
@@ -41,12 +41,10 @@ export default function Hero() {
 
             <a
               href="#pricing"
-              className="flex h-12 lg:h-14 xl:h-[56px] items-center gap-3 rounded-2xl bg-brand-orange pl-6 pr-3 lg:pl-8 lg:pr-4 text-sm lg:text-base xl:text-lg font-bold text-white no-underline transition-all duration-300 hover:bg-brand-orange/90 shadow-xl hover:-translate-y-0.5"
+              className="flex h-12 lg:h-14 xl:h-[56px] items-center gap-3 rounded-2xl bg-brand-orange pl-6 pr-3 lg:pl-6 lg:pr-4 text-sm lg:text-base xl:text-lg font-bold text-white no-underline transition-all duration-300 hover:bg-brand-orange/90 shadow-xl"
             >
               <span>{t('landing:hero.ctaPartner')}</span>
-              <div className="flex h-7 w-7 lg:h-8 lg:w-8 items-center justify-center text-white rounded-full bg-white/20">
-                <Icon icon="solar:arrow-right-linear" className="text-xl lg:text-2xl stroke-[2.5]" />
-              </div>
+              <Icon icon="solar:arrow-right-linear" className="text-xl lg:text-2xl stroke-[2.5]" />
             </a>
           </div>
 
@@ -103,8 +101,9 @@ export default function Hero() {
               />
             ))}
           </div>
-
+          
           <div className="relative z-10 w-full max-w-[520px] lg:max-w-[620px] xl:max-w-[700px]">
+            {/*
             <div className="absolute top-2 -left-2 sm:left-2 z-20 flex items-center gap-3 rounded-2xl border border-white/20 bg-brand-navy/90 p-2.5 sm:p-3 text-xs sm:text-sm font-bold text-white shadow-2xl backdrop-blur-md">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-green/20 text-brand-green border border-brand-green/30">
                 <Icon icon="solar:shield-star-bold-duotone" className="text-xl" />
@@ -174,6 +173,7 @@ export default function Hero() {
                 </span>
               </div>
             </div>
+            */}
 
             <img
               src={ImgHero}

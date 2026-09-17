@@ -5,7 +5,6 @@ const percentScale = Array.from({ length: 100 }, (_, i) => i + 1).reduce((acc, v
 
 const plugin = require('tailwindcss/plugin');
 
-// Custom pixel spacing map for wx-* and hx-* classes (e.g. wx-13 = width: 52px, hx-13 = height: 52px)
 const pixelSpacingMap = {
   '13': '52px',
   '15': '60px',

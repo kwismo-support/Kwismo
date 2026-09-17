@@ -7,6 +7,8 @@ import PartnersTable from './components/PartnersTable';
 import PartnerForm from './components/PartnerForm';
 import PendingRequestsTable from './components/PendingRequestsTable';
 import ValidatePartnerModal from './components/ValidatePartnerModal';
+import RejectPartnerModal from './components/RejectPartnerModal';
+import EmailPreviewModal from './components/EmailPreviewModal';
 import { usePartners } from './hooks/usePartners';
 import { usePermissions } from '@/shared/hooks/usePermissions';
 import { partnerRequestsStore, type PartnerRequestItem } from './services/partnerRequestsStore';
@@ -35,6 +37,23 @@ export default function PartnersPage() {
   const [selectedPartner, setSelectedPartner] = useState<PartnerItem | null>(null);
   const [partnerToDelete, setPartnerToDelete] = useState<PartnerItem | null>(null);
   const [selectedRequestToValidate, setSelectedRequestToValidate] = useState<PartnerRequestItem | null>(null);
+  const [selectedRequestToReject, setSelectedRequestToReject] = useState<PartnerRequestItem | null>(null);
+  const [emailPreviewData, setEmailPreviewData] = useState<{
+    isOpen: boolean;
+    type: 'approval' | 'rejection';
+    defaultRecipient: string;
+    defaultSubject: string;
+    defaultBody: string;
+    companyName: string;
+    actionToComplete?: () => void;
+  }>({
+    isOpen: false,
+    type: 'approval',
+    defaultRecipient: '',
+    defaultSubject: '',
+    defaultBody: '',
+    companyName: '',
+  });
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
@@ -64,21 +83,53 @@ export default function PartnersPage() {
   const handleConfirmValidateRequest = (
     requestId: string,
     emailConnexion: string,
-    role: string
+    emailRecipient: string,
+    role: string,
+    initialPassword: string
   ) => {
-    const updatedReq = partnerRequestsStore.validateRequest(requestId, emailConnexion, role);
-    if (updatedReq) {
-      createPartner({
-        nom_entreprise: updatedReq.nomEntreprise,
-        type_partenariat: updatedReq.typePartenariat.toLowerCase().includes('telco') ? 'operateur' : 'banque',
-      });
-      toast.success(t('partners.toasts.requestValidated'));
-    }
+    const req = requests.find((r) => r.id === requestId);
+    if (!req) return;
+
+    setEmailPreviewData({
+      isOpen: true,
+      type: 'approval',
+      companyName: req.nomEntreprise,
+      defaultRecipient: emailRecipient,
+      defaultSubject: `KWISMO — Validation de votre partenariat & Accès Plateforme (${req.nomEntreprise})`,
+      defaultBody: `Bonjour ${req.prenomContact},\n\nFélicitations ! Votre demande de partenariat pour ${req.nomEntreprise} a été validée par l'administration KWISMO.\n\nVoici vos identifiants d'accès au portail de supervision Partenaire :\n- Identifiant de connexion : ${emailConnexion}\n- Mot de passe temporaire : ${initialPassword}\n- Rôle attribué : ${role}\n\nVous pouvez dès à présent vous connecter sur le portail https://kwismo.com/auth/login et configurer vos règles d'affiliation.\n\nCordialement,\nL'Équipe KWISMO.`,
+      actionToComplete: () => {
+        const updatedReq = partnerRequestsStore.validateRequest(requestId, emailConnexion, role);
+        if (updatedReq) {
+          createPartner({
+            nom_entreprise: updatedReq.nomEntreprise,
+            type_partenariat: updatedReq.typePartenariat.toLowerCase().includes('telco') ? 'operateur' : 'banque',
+          });
+          toast.success(t('admin:partners.requestValidatedEmailSent'));
+        }
+      },
+    });
   };
 
-  const handleRejectRequest = (request: PartnerRequestItem) => {
-    partnerRequestsStore.rejectRequest(request.id);
-    toast.info(t('partners.toasts.requestRejected'));
+  const handleConfirmRejectRequest = (
+    requestId: string,
+    recipientEmail: string,
+    reason: string
+  ) => {
+    const req = requests.find((r) => r.id === requestId);
+    if (!req) return;
+
+    setEmailPreviewData({
+      isOpen: true,
+      type: 'rejection',
+      companyName: req.nomEntreprise,
+      defaultRecipient: recipientEmail,
+      defaultSubject: `KWISMO — Suite donnée à votre demande de partenariat (${req.nomEntreprise})`,
+      defaultBody: reason,
+      actionToComplete: () => {
+        partnerRequestsStore.rejectRequest(requestId);
+        toast.info(t('admin:partners.requestRejectedEmailSent'));
+      },
+    });
   };
 
   return (
@@ -134,7 +185,7 @@ export default function PartnersPage() {
           <PendingRequestsTable
             requests={requests}
             onValidate={(req) => setSelectedRequestToValidate(req)}
-            onReject={handleRejectRequest}
+            onReject={(req) => setSelectedRequestToReject(req)}
           />
         </TabsContent>
       </Tabs>
@@ -151,6 +202,29 @@ export default function PartnersPage() {
         isOpen={!!selectedRequestToValidate}
         onClose={() => setSelectedRequestToValidate(null)}
         onConfirmValidate={handleConfirmValidateRequest}
+      />
+
+      <RejectPartnerModal
+        request={selectedRequestToReject}
+        isOpen={!!selectedRequestToReject}
+        onClose={() => setSelectedRequestToReject(null)}
+        onConfirmReject={handleConfirmRejectRequest}
+      />
+
+      <EmailPreviewModal
+        isOpen={emailPreviewData.isOpen}
+        onClose={() => setEmailPreviewData((prev) => ({ ...prev, isOpen: false }))}
+        type={emailPreviewData.type}
+        companyName={emailPreviewData.companyName}
+        defaultRecipient={emailPreviewData.defaultRecipient}
+        defaultSubject={emailPreviewData.defaultSubject}
+        defaultBody={emailPreviewData.defaultBody}
+        onSend={() => {
+          if (emailPreviewData.actionToComplete) {
+            emailPreviewData.actionToComplete();
+          }
+          setEmailPreviewData((prev) => ({ ...prev, isOpen: false }));
+        }}
       />
 
       <ConfirmDialog

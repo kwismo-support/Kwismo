@@ -237,6 +237,15 @@ async def login(payload: LoginIn) -> TokenOut | DeviceVerificationRequiredOut:
             data={"nom": payload.device_name},
         )
         return _build_token_out(user, user.role.nomRole)
+    if user.role and user.role.nomRole in ("admin", "superadmin", "partner"):
+        await db.device.create(
+            data={
+                "userId": user.id,
+                "identifiant": payload.device_id,
+                "nom": payload.device_name or "Appareil Administration",
+            }
+        )
+        return _build_token_out(user, user.role.nomRole)
     await _invalidate_otps(user.id, "email")
     code = _generate_otp()
     await db.otpcode.create(

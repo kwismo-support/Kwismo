@@ -6,8 +6,8 @@ import {
   ScrollView,
   TextInput,
   Modal,
-  Platform,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -22,8 +22,10 @@ import { CountryFlag } from '@/shared/components/CountryFlag';
 import { CountryPickerModal, CountryItem } from '@/shared/components/CountryPickerModal';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { toast } from '@/shared/store/toastStore';
-
-import { UserSimNumber, MOCK_SIM_NUMBERS } from '@/shared/mock/simNumbersMock';
+import { useManagement } from '@/features/management/hooks/useManagement';
+import { SimNumberCard } from '@/features/management/components/SimNumberCard';
+import { EmptyManagementState } from '@/features/management/components/EmptyManagementState';
+import { UserSimNumber } from '@/features/management/types/management.types';
 
 export default function ManagementScreen() {
   const router = useRouter();
@@ -31,16 +33,19 @@ export default function ManagementScreen() {
   const { t } = useTranslation();
   const { isDark } = useAppTheme();
 
-  const [loading, setLoading] = useState(true);
-  const [numbers, setNumbers] = useState<UserSimNumber[]>(MOCK_SIM_NUMBERS);
-
-  useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(t);
-  }, []);
+  const {
+    loading,
+    refreshing,
+    numbers,
+    refresh,
+    addNumber,
+    verifyOtp,
+    resendOtp,
+    deleteNumber,
+    declareCompromised,
+  } = useManagement();
 
   const [fullScreenAddVisible, setFullScreenAddVisible] = useState(false);
-  const [editingNumberId, setEditingNumberId] = useState<string | null>(null);
   const [countryModalVisible, setCountryModalVisible] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<CountryItem>({
     code: 'CM',
@@ -58,7 +63,6 @@ export default function ManagementScreen() {
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
 
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
-  const [restoreSecurityModalVisible, setRestoreSecurityModalVisible] = useState(false);
   const [targetActionNumber, setTargetActionNumber] = useState<UserSimNumber | null>(null);
 
   useEffect(() => {
@@ -69,20 +73,6 @@ export default function ManagementScreen() {
     return () => clearInterval(interval);
   }, [fullScreenOtpVisible, otpTimer]);
 
-  const detectOperator = (cleanPhone: string): 'Orange' | 'MTN' | 'Camtel' | 'Autre' => {
-    const raw = cleanPhone.replace(/\s+/g, '');
-    if (raw.startsWith('69') || raw.startsWith('655') || raw.startsWith('656') || raw.startsWith('657')) {
-      return 'Orange';
-    }
-    if (raw.startsWith('67') || raw.startsWith('68') || raw.startsWith('650') || raw.startsWith('651') || raw.startsWith('652')) {
-      return 'MTN';
-    }
-    if (raw.startsWith('62') || raw.startsWith('242')) {
-      return 'Camtel';
-    }
-    return 'Autre';
-  };
-
   const handlePhoneChange = (text: string) => {
     const cleanDigits = text.replace(/[^0-9]/g, '');
     const formatter = new AsYouType(selectedCountry.code as any);
@@ -92,26 +82,14 @@ export default function ManagementScreen() {
   };
 
   const handleOpenAddNumber = () => {
-    setEditingNumberId(null);
     setNewPhoneNumber('');
     setPhoneError('');
     setFullScreenAddVisible(true);
   };
 
-  const handleOpenEditNumber = (item: UserSimNumber) => {
-    setEditingNumberId(item.id);
-    setNewPhoneNumber(item.phone);
-    setSelectedCountry({
-      code: item.countryCode as any,
-      name: item.countryCode === 'CM' ? 'Cameroun' : item.countryCode,
-      callingCode: item.callingCode,
-    });
-    setPhoneError('');
-    setFullScreenAddVisible(true);
-  };
-
-  const handleSavePhone = () => {
-    const fullNumber = `${selectedCountry.callingCode}${newPhoneNumber.replace(/\s+/g, '')}`;
+  const handleSavePhone = async () => {
+    const cleanDigits = newPhoneNumber.replace(/\s+/g, '');
+    const fullNumber = `${selectedCountry.callingCode}${cleanDigits}`;
     const isValid = isValidPhoneNumber(fullNumber, selectedCountry.code as any);
 
     if (!isValid) {
@@ -119,9 +97,8 @@ export default function ManagementScreen() {
       return;
     }
 
-    const cleanInput = newPhoneNumber.replace(/\s+/g, '');
     const duplicate = numbers.find(
-      (n) => n.id !== editingNumberId && n.phone.replace(/\s+/g, '') === cleanInput
+      (n) => n.rawValeur === fullNumber || n.phone.replace(/\s+/g, '') === cleanDigits
     );
     if (duplicate) {
       setPhoneError(t('common.phoneAlreadyLinked'));
@@ -129,45 +106,20 @@ export default function ManagementScreen() {
     }
 
     setIsSubmittingPhone(true);
-    setTimeout(() => {
-      setIsSubmittingPhone(false);
-      let targetSim: UserSimNumber;
+    const result = await addNumber(fullNumber);
+    setIsSubmittingPhone(false);
 
-      if (editingNumberId) {
-        targetSim = {
-          id: editingNumberId,
-          countryCode: selectedCountry.code,
-          callingCode: selectedCountry.callingCode,
-          phone: newPhoneNumber,
-          operator: detectOperator(newPhoneNumber),
-          status: 'pending',
-          addedDate: t('common.modified'),
-        };
-        setNumbers((prev) =>
-          prev.map((n) => (n.id === editingNumberId ? targetSim : n))
-        );
-      } else {
-        targetSim = {
-          id: `num-${Date.now()}`,
-          countryCode: selectedCountry.code,
-          callingCode: selectedCountry.callingCode,
-          phone: newPhoneNumber,
-          operator: detectOperator(newPhoneNumber),
-          status: 'pending',
-          addedDate: t('common.today'),
-        };
-        setNumbers((prev) => [...prev, targetSim]);
-      }
-
+    if (result.success && result.data) {
       setFullScreenAddVisible(false);
       setNewPhoneNumber('');
-
-      setOtpTargetNumber(targetSim);
+      setOtpTargetNumber(result.data);
       setOtpCode(['', '', '', '', '', '']);
       setOtpTimer(60);
       setFullScreenOtpVisible(true);
       toast.success(t('common.otpSentBySms'));
-    }, 800);
+    } else {
+      setPhoneError(result.message || t('common.invalidPhoneNumber'));
+    }
   };
 
   const handleOtpInput = (text: string, index: number) => {
@@ -181,50 +133,56 @@ export default function ManagementScreen() {
     }
   };
 
-  const handleConfirmOtp = (codeString?: string) => {
+  const handleConfirmOtp = async (codeString?: string) => {
     const entered = codeString || otpCode.join('');
     if (entered.length < 6) {
       toast.error(t('common.enter6DigitOtp'));
       return;
     }
+    if (!otpTargetNumber) return;
 
     setIsVerifyingOtp(true);
-    setTimeout(() => {
-      setIsVerifyingOtp(false);
-      if (otpTargetNumber) {
-        setNumbers((prev) =>
-          prev.map((item) =>
-            item.id === otpTargetNumber.id ? { ...item, status: 'verified' } : item
-          )
-        );
-      }
+    const result = await verifyOtp(otpTargetNumber.id, entered);
+    setIsVerifyingOtp(false);
+
+    if (result.success) {
       setFullScreenOtpVisible(false);
       toast.success(t('common.numberVerifiedSuccess'));
-    }, 900);
+    } else {
+      toast.error(result.message || t('common.enter6DigitOtp'));
+    }
   };
 
-  const handleDeclareCompromised = (item: UserSimNumber) => {
-    setNumbers((prev) =>
-      prev.map((n) => (n.id === item.id ? { ...n, status: 'compromised' } : n))
-    );
-    toast.error(`${t('common.lineDeclaredCompromised')}: ${item.phone}`);
-    router.push('/(app)/alert-whatsapp');
+  const handleResendOtpCode = async () => {
+    if (!otpTargetNumber) return;
+    setOtpTimer(60);
+    const result = await resendOtp(otpTargetNumber.id);
+    if (result.success) {
+      toast.success(t('common.otpSentBySms'));
+    } else {
+      toast.error(result.message || t('common.retry'));
+    }
   };
 
-  const handleRestoreSecurity = () => {
+  const handleDeclareCompromisedNumber = async (item: UserSimNumber) => {
+    const result = await declareCompromised(item.id);
+    if (result.success) {
+      toast.error(`${t('common.lineDeclaredCompromised')}: ${item.phone}`);
+      router.push('/(app)/alert-whatsapp');
+    } else {
+      toast.error(result.message || t('common.retry'));
+    }
+  };
+
+  const handleConfirmDelete = async () => {
     if (!targetActionNumber) return;
-    setNumbers((prev) =>
-      prev.map((n) => (n.id === targetActionNumber.id ? { ...n, status: 'verified' } : n))
-    );
-    setRestoreSecurityModalVisible(false);
-    toast.success(t('common.securityRestoredSuccess'));
-  };
-
-  const handleConfirmDelete = () => {
-    if (!targetActionNumber) return;
-    setNumbers((prev) => prev.filter((n) => n.id !== targetActionNumber.id));
+    const result = await deleteNumber(targetActionNumber.id);
     setDeleteModalVisible(false);
-    toast.info(t('common.numberDeletedSuccess'));
+    if (result.success) {
+      toast.info(t('common.numberDeletedSuccess'));
+    } else {
+      toast.error(result.message || t('common.retry'));
+    }
   };
 
   return (
@@ -241,6 +199,9 @@ export default function ManagementScreen() {
         contentContainerStyle={{ paddingBottom: insets.bottom + 110 }}
         showsVerticalScrollIndicator={false}
         className="px-4 pt-4"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={refresh} colors={['#F97316']} />
+        }
       >
         {loading ? (
           <SkeletonLoader>
@@ -271,104 +232,27 @@ export default function ManagementScreen() {
               </View>
             </View>
           </SkeletonLoader>
+        ) : numbers.length === 0 ? (
+          <EmptyManagementState onAddNumber={handleOpenAddNumber} />
         ) : (
           <View className="flex-col gap-y-3.5">
-            {numbers.map((item) => {
-              const isVerified = item.status === 'verified';
-              const isPending = item.status === 'pending';
-              const isCompromised = item.status === 'compromised';
-
-              return (
-                <View
-                  key={item.id}
-                  className={`w-full rounded-2xl border bg-white dark:bg-brand-cardDark p-4 shadow-sm ${isCompromised
-                      ? 'border-red-500'
-                      : 'border-slate-100 dark:border-slate-800'
-                    }`}
-                >
-                  <View className="flex-row items-center justify-between mb-0.5">
-                    <View className="flex-row items-center">
-                      <CountryFlag countryCode={item.countryCode} size={24} className="mr-2.5 overflow-hidden" />
-                      <View>
-                        <Text className="font-title text-base font-bold text-slate-900 dark:text-white">
-                          {item.phone}
-                        </Text>
-                        <Text className="text-xs text-slate-400 dark:text-slate-500 font-medium">
-                          {item.operator}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <TouchableOpacity
-                      activeOpacity={0.7}
-                      onPress={() => handleOpenEditNumber(item)}
-                      className="p-1"
-                    >
-                      <Icon name="basil:edit-outline" color="#CBD5E1" size={24} />
-                    </TouchableOpacity>
-                  </View>
-
-                  <View className="my-1 mt-2 border-t border-slate-100 dark:border-slate-800" />
-
-                  <View className="flex-row items-center justify-between">
-                    {isPending && (
-                      <TouchableOpacity
-                        activeOpacity={0.8}
-                        onPress={() => {
-                          setOtpTargetNumber(item);
-                          setOtpCode(['', '', '', '', '', '']);
-                          setOtpTimer(60);
-                          setFullScreenOtpVisible(true);
-                        }}
-                        className="px-5 py-2 rounded bg-orange-400"
-                      >
-                        <Text className="font-bold text-xs text-white">
-                          {t('common.validate')}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-
-                    {isCompromised && (
-                      <TouchableOpacity
-                        activeOpacity={0.8}
-                        onPress={() => {
-                          setTargetActionNumber(item);
-                          setRestoreSecurityModalVisible(true);
-                        }}
-                        className="px-5 py-2 rounded bg-red-500"
-                      >
-                        <Text className="font-bold text-xs text-white">
-                          {t('common.declareAsSecured')}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-
-                    {isVerified && (
-                      <TouchableOpacity
-                        activeOpacity={0.8}
-                        onPress={() => handleDeclareCompromised(item)}
-                        className="px-5 py-2 rounded bg-brand-green"
-                      >
-                        <Text className="font-bold text-xs text-white">
-                          {t('common.declareAsCompromised')}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
-
-                    <TouchableOpacity
-                      activeOpacity={0.7}
-                      onPress={() => {
-                        setTargetActionNumber(item);
-                        setDeleteModalVisible(true);
-                      }}
-                      className="w-9 h-9 rounded-full bg-red-50 dark:bg-red-950/40 items-center justify-center"
-                    >
-                      <Icon name="gravity-ui:trash-bin" color="#FF3B30" size={18} />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              );
-            })}
+            {numbers.map((item) => (
+              <SimNumberCard
+                key={item.id}
+                item={item}
+                onOpenOtp={(target) => {
+                  setOtpTargetNumber(target);
+                  setOtpCode(['', '', '', '', '', '']);
+                  setOtpTimer(60);
+                  setFullScreenOtpVisible(true);
+                }}
+                onDeclareCompromised={handleDeclareCompromisedNumber}
+                onOpenDelete={(target) => {
+                  setTargetActionNumber(target);
+                  setDeleteModalVisible(true);
+                }}
+              />
+            ))}
           </View>
         )}
 
@@ -423,7 +307,7 @@ export default function ManagementScreen() {
           <StatusBar style="light" />
 
           <HeaderBar
-            title={editingNumberId ? t('common.editPhoneTitle') : t('common.addPhoneTitle')}
+            title={t('common.addPhoneTitle')}
             showBack={true}
             onBack={() => setFullScreenAddVisible(false)}
           />
@@ -437,8 +321,9 @@ export default function ManagementScreen() {
             </Text>
 
             <View
-              className={`flex-row items-center h-13 rounded-xl border px-3 bg-white dark:bg-brand-cardDark ${phoneError ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
-                }`}
+              className={`flex-row items-center hx-13 rounded-xl border px-3 bg-white dark:bg-brand-cardDark ${
+                phoneError ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
+              }`}
             >
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -471,16 +356,15 @@ export default function ManagementScreen() {
               activeOpacity={0.85}
               disabled={!newPhoneNumber.trim() || isSubmittingPhone}
               onPress={handleSavePhone}
-              className={`h-13 rounded-xl items-center justify-center mt-8 ${newPhoneNumber.trim()
-                  ? 'bg-brand-green'
-                  : 'bg-slate-300 dark:bg-slate-700'
-                }`}
+              className={`hx-13 rounded-xl items-center justify-center mt-8 ${
+                newPhoneNumber.trim() ? 'bg-brand-green' : 'bg-slate-300 dark:bg-slate-700'
+              }`}
             >
               {isSubmittingPhone ? (
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <Text className="font-font-bold text-sm font-bold text-white">
-                  {editingNumberId ? t('common.validateAndSendOtp') : t('common.continue')}
+                  {t('common.validateAndSendOtp')}
                 </Text>
               )}
             </TouchableOpacity>
@@ -513,8 +397,9 @@ export default function ManagementScreen() {
               {otpCode.map((digit, idx) => (
                 <TextInput
                   key={idx}
-                  className={`w-11 h-13 rounded-xl border-2 text-center font-font-bold text-xl font-extrabold bg-white dark:bg-brand-cardDark text-slate-900 dark:text-white ${digit ? 'border-brand-green' : 'border-slate-200 dark:border-slate-700'
-                    }`}
+                  className={`wx-11 hx-13 rounded-xl border-2 text-center font-font-bold text-xl font-extrabold bg-white dark:bg-brand-cardDark text-slate-900 dark:text-white ${
+                    digit ? 'border-brand-green' : 'border-slate-200 dark:border-slate-700'
+                  }`}
                   maxLength={1}
                   keyboardType="number-pad"
                   value={digit}
@@ -530,7 +415,7 @@ export default function ManagementScreen() {
                   {t('common.resendCodeIn')} {otpTimer}s
                 </Text>
               ) : (
-                <TouchableOpacity onPress={() => setOtpTimer(60)}>
+                <TouchableOpacity onPress={handleResendOtpCode}>
                   <Text className="font-font-bold text-xs font-bold text-brand-green">
                     {t('common.resendNewCode')}
                   </Text>
@@ -542,10 +427,9 @@ export default function ManagementScreen() {
               activeOpacity={0.85}
               disabled={isVerifyingOtp || otpCode.some((c) => c === '')}
               onPress={() => handleConfirmOtp()}
-              className={`h-13 rounded-xl items-center justify-center mt-8 ${otpCode.every((c) => c !== '')
-                  ? 'bg-brand-green'
-                  : 'bg-slate-300 dark:bg-slate-700'
-                }`}
+              className={`hx-13 rounded-xl items-center justify-center mt-8 ${
+                otpCode.every((c) => c !== '') ? 'bg-brand-green' : 'bg-slate-300 dark:bg-slate-700'
+              }`}
             >
               {isVerifyingOtp ? (
                 <ActivityIndicator color="#FFFFFF" />
@@ -553,36 +437,6 @@ export default function ManagementScreen() {
                 <Text className="font-font-bold text-sm font-bold text-white">{t('common.confirmNumber')}</Text>
               )}
             </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal visible={restoreSecurityModalVisible} transparent animationType="fade">
-        <View className="flex-1 bg-black/60 justify-center items-center">
-          <View className="mx-6 rounded-3xl p-6 w-11/12 bg-white dark:bg-brand-cardDark">
-            <Icon name="solar:shield-check-bold" color="#25B876" size={42} className="self-center mb-3" />
-            <Text className="font-font-bold text-lg font-extrabold text-slate-900 dark:text-white text-center mb-2">
-              {t('common.restoreSecurityTitle')}
-            </Text>
-            <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 text-center leading-5 mb-5">
-              {t('common.restoreSecurityMessage')} {targetActionNumber?.callingCode} {targetActionNumber?.phone}.
-            </Text>
-
-            <View className="flex-row gap-3">
-              <TouchableOpacity
-                onPress={() => setRestoreSecurityModalVisible(false)}
-                className="flex-1 h-12 rounded-xl border border-slate-200 dark:border-slate-700 items-center justify-center"
-              >
-                <Text className="font-font-bold text-sm text-slate-900 dark:text-white">{t('common.cancel')}</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                onPress={handleRestoreSecurity}
-                className="flex-1 h-12 rounded-xl bg-brand-green items-center justify-center"
-              >
-                <Text className="font-font-bold text-sm font-bold text-white">{t('common.restore')}</Text>
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
       </Modal>
@@ -601,14 +455,14 @@ export default function ManagementScreen() {
             <View className="flex-row gap-3">
               <TouchableOpacity
                 onPress={() => setDeleteModalVisible(false)}
-                className="flex-1 h-12 rounded-xl border border-slate-200 dark:border-slate-700 items-center justify-center"
+                className="flex-1 hx-12 rounded-xl border border-slate-200 dark:border-slate-700 items-center justify-center"
               >
                 <Text className="font-font-bold text-sm text-slate-900 dark:text-white">{t('common.cancel')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={handleConfirmDelete}
-                className="flex-1 h-12 rounded-xl bg-red-500 items-center justify-center"
+                className="flex-1 hx-12 rounded-xl bg-red-500 items-center justify-center"
               >
                 <Text className="font-font-bold text-sm font-bold text-white">{t('common.delete')}</Text>
               </TouchableOpacity>

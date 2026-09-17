@@ -227,13 +227,13 @@ export default function OnboardingScreen() {
           ))}
         </View>
 
-        <View className="w-full h-14 relative">
+        <View className="w-full hx-14 relative">
           <Animated.View
             className="absolute inset-0 w-full justify-center"
             style={{ opacity: navRowOpacity }}
             pointerEvents={isLastSlide ? 'none' : 'auto'}
           >
-            <View className="w-full h-14 flex-row items-center justify-between px-2">
+            <View className="w-full hx-14 flex-row items-center justify-between px-2">
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={handleSkip}
@@ -267,7 +267,7 @@ export default function OnboardingScreen() {
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={handleFinish}
-              className="w-full h-14 rounded-xl border-[1.5px] border-white/50 items-center justify-center bg-white/10"
+              className="w-full hx-14 rounded-xl border-[1.5px] border-white/50 items-center justify-center bg-white/10"
             >
               <Text className="font-semibold text-body-lg text-white">
                 {t('common.start')}
