@@ -1,4 +1,3 @@
-// Service API backend pour la gestion des contacts via FastAPI (/contacts et /contacts/sync)
 import { ApiClient } from '../../../shared/services/apiClient';
 
 export interface ContactItem {
@@ -31,4 +30,3 @@ export const contactsApi = {
     });
   },
 };
-

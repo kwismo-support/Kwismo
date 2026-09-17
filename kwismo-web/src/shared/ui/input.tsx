@@ -48,7 +48,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const { t } = useTranslation(['errors', 'common']);
     const inputId = id ?? `input-${Math.random().toString(36).slice(2, 7)}`;
 
-    const displayError = errorKey ? t(errorKey) : error;
+    const displayError = errorKey ? t(errorKey, { count: 6 }) : error;
     const hasValue = value !== undefined && value !== '';
 
     return (

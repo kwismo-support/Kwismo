@@ -15,13 +15,14 @@ export interface SettingsThresholdsOut {
   updated_at?: string;
 }
 
+const ADMIN_OTP_SETTING_KEY = 'kwismo_settings_require_admin_otp';
+
 export const settingsApi = {
   getThresholds: async (): Promise<SettingsThresholdsOut> => {
     try {
       const res = await apiClient.get<SettingsThresholdsOut>('/settings/thresholds');
       return res.data;
-    } catch (err) {
-      console.warn('Fallback local rules:', err);
+    } catch {
       return {
         rules: [
           { zone: 'securise', min_value: 0.0, min_operator: '>=', max_value: 0.3, max_operator: '<', label_fr: 'Sécurisé', label_en: 'Safe' },
@@ -35,5 +36,36 @@ export const settingsApi = {
   updateThresholds: async (rules: RiskThresholdRule[]): Promise<SettingsThresholdsOut> => {
     const res = await apiClient.put<SettingsThresholdsOut>('/settings/thresholds', { rules });
     return res.data;
+  },
+
+  getRequireAdminOtp: (): boolean => {
+    const stored = localStorage.getItem(ADMIN_OTP_SETTING_KEY);
+    return stored === 'true';
+  },
+
+  setRequireAdminOtp: (val: boolean): void => {
+    localStorage.setItem(ADMIN_OTP_SETTING_KEY, String(val));
+  },
+
+  getRequireAdminOtpRemote: async (): Promise<boolean> => {
+    try {
+      const res = await apiClient.get<{ require_admin_otp: boolean }>('/settings/require-admin-otp');
+      localStorage.setItem(ADMIN_OTP_SETTING_KEY, String(res.data.require_admin_otp));
+      return res.data.require_admin_otp;
+    } catch {
+      const stored = localStorage.getItem(ADMIN_OTP_SETTING_KEY);
+      return stored === 'true';
+    }
+  },
+
+  setRequireAdminOtpRemote: async (val: boolean): Promise<void> => {
+    localStorage.setItem(ADMIN_OTP_SETTING_KEY, String(val));
+    try {
+      await apiClient.put('/settings/require-admin-otp', { require_admin_otp: val });
+    } catch {
+      //
+    }
   }
 };
+
+
