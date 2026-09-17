@@ -36,6 +36,9 @@ VALID_STATUTS = {"securise", "a_signaler", "frauduleux", "unknown"}
 def _to_out(n) -> NumberOut:
     raw = n.scoreRisque or 0.0
     score = min(1.0, max(0.0, raw / 100.0 if raw > 1.0 else raw))
+    op_name = None
+    if hasattr(n, "operator") and n.operator:
+        op_name = n.operator.nom
     return NumberOut(
         id=n.id,
         valeur=n.valeur,
@@ -44,7 +47,9 @@ def _to_out(n) -> NumberOut:
         date_derniere_verification=n.dateDerniereVerification,
         country_id=n.countryId,
         operator_id=n.operatorId,
+        operator_name=op_name,
     )
+
 
 
 def _to_detail_out(n, nombre_signalements: int) -> NumberDetailOut:
@@ -228,8 +233,10 @@ async def list_numbers(
         where=where,
         skip=skip,
         take=page_size,
+        include={"operator": True},
         order={"updatedAt": "desc"},
     )
+
     return Page(items=[_to_out(n) for n in items], total=total, page=page, page_size=page_size)
 
 

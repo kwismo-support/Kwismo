@@ -30,6 +30,8 @@ class NumberOut(BaseModel):
     date_derniere_verification: datetime | None = None
     country_id: str | None = None
     operator_id: str | None = None
+    operator_name: str | None = None
+
 
 
 class NumberDetailOut(NumberOut):

@@ -36,7 +36,13 @@ const statusMap: Record<string, { label: string; variant: BadgeVariant; icon?: s
   PARTNER: { label: 'Partenaire', variant: 'secondary' },
   USER: { label: 'Utilisateur', variant: 'info' },
   SUPER_ADMIN: { label: 'Super Admin', variant: 'orange' },
+
+  A_SIGNALER: { label: 'À signaler', variant: 'warning' },
+  SECURISE: { label: 'Sécurisé', variant: 'mint' },
+  FRAUDULEUX: { label: 'Frauduleux', variant: 'danger' },
+  UNKNOWN: { label: 'Inconnu', variant: 'default' },
 };
+
 
 export function StatusBadge({
   status,

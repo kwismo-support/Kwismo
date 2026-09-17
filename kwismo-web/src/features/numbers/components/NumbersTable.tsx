@@ -124,15 +124,17 @@ export default function NumbersTable({
       sortable: true,
       cell: (numero) => {
         const flagCode = getCountryFlagCode(numero.country_id);
+        const opDisplay = numero.operator_name || (numero.operator_id && !numero.operator_id.startsWith('op_') ? numero.operator_id : 'Orange');
         return (
           <div className="flex items-center gap-2">
             <Icon icon={`circle-flags:${flagCode}`} className="text-xl shrink-0" />
             <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-              {numero.operator_id || 'MTN'}
+              {opDisplay}
             </span>
           </div>
         );
       },
+
     },
     {
       key: 'score_risque',
