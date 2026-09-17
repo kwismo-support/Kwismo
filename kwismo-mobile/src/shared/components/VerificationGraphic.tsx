@@ -103,7 +103,7 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
         <View className="wx-34 hx-34 items-center justify-center relative">
           <Icon
             name="solar:shield-minimalistic-bold"
-            size={138}
+            size={120}
             color={mainColor}
           />
 
@@ -111,28 +111,28 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
             {currentStatus === 'analyzing' && (
               <Icon
                 name="solar:user-bold-duotone"
-                size={62}
+                size={55}
                 color="#FFFFFF"
               />
             )}
             {currentStatus === 'secure' && (
               <Icon
                 name="solar:diploma-verified-bold-duotone"
-                size={62}
+                size={55}
                 color="#FFFFFF"
               />
             )}
             {currentStatus === 'warning' && (
               <Icon
                 name="solar:danger-triangle-bold"
-                size={58}
+                size={50}
                 color="#FFFFFF"
               />
             )}
             {currentStatus === 'danger' && (
               <Icon
                 name="ph:skull-bold"
-                size={58}
+                size={50}
                 color="#FFFFFF"
               />
             )}
