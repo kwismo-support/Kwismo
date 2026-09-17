@@ -85,7 +85,7 @@ export default function LoginForm({ onForgotPassword, onRegisterPartner: _onRegi
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 elevation-4"
             >
               <Icon icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
             </button>

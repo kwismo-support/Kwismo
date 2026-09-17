@@ -1,4 +1,3 @@
-// Composant représentant la carte d'un contact dans la liste
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { StatusBadge } from './StatusBadge';
@@ -24,7 +23,6 @@ export const ContactItem: React.FC<ContactItemProps> = ({ contact, onPress }) =>
     </TouchableOpacity>
   );
 };
-
 
 const styles = StyleSheet.create({
   card: {

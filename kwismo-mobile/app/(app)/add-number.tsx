@@ -10,6 +10,7 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { isValidPhoneNumber } from 'libphonenumber-js/min';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
 import { CountryFlag } from '@/shared/components/CountryFlag';
@@ -24,6 +25,7 @@ export default function AddNumberScreen() {
   const [addNom, setAddNom] = useState('');
   const [addPrenom, setAddPrenom] = useState('');
   const [addPhone, setAddPhone] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [countryModalVisible, setCountryModalVisible] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<CountryItem>({
     code: 'CM',
@@ -32,8 +34,12 @@ export default function AddNumberScreen() {
   });
 
   const handleSaveNewNumber = () => {
-    if (!addPhone.trim()) {
-      toast.error(t('common.invalidPhoneNumber'));
+    const cleanDigits = addPhone.replace(/\s+/g, '');
+    const fullNumber = `${selectedCountry.callingCode}${cleanDigits}`;
+    const isValid = isValidPhoneNumber(fullNumber, selectedCountry.code as any);
+
+    if (!cleanDigits || !isValid) {
+      setPhoneError(`${t('common.invalidPhoneNumber')} (${selectedCountry.name})`);
       return;
     }
 
@@ -64,10 +70,9 @@ export default function AddNumberScreen() {
         <ScrollView
           contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
           showsVerticalScrollIndicator={false}
-          className="gap-y-4"
+          className="gap-y-6"
         >
-          {/* Nom Field */}
-          <View className="flex-row items-center h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
+          <View className="flex-row items-center hx-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
             <Icon name="solar:user-linear" color="#94A3B8" size={20} className="mr-2.5" />
             <TextInput
               className="flex-1 font-medium text-base text-slate-900 dark:text-white"
@@ -78,8 +83,7 @@ export default function AddNumberScreen() {
             />
           </View>
 
-          {/* Prénom Field */}
-          <View className="flex-row items-center h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
+          <View className="flex-row items-center hx-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
             <Icon name="solar:user-linear" color="#94A3B8" size={20} className="mr-2.5" />
             <TextInput
               className="flex-1 font-medium text-base text-slate-900 dark:text-white"
@@ -90,21 +94,23 @@ export default function AddNumberScreen() {
             />
           </View>
 
-          {/* Pays Field */}
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setCountryModalVisible(true)}
-            className="h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 flex-row items-center bg-white dark:bg-brand-cardDark"
+            className="hx-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 flex-row items-center bg-white dark:bg-brand-cardDark"
           >
             <CountryFlag countryCode={selectedCountry.code} size={22} className="mr-2.5" />
             <Text className="font-medium text-base text-slate-900 dark:text-white flex-1">
-              {selectedCountry.name}
+              {selectedCountry.name} ({selectedCountry.callingCode})
             </Text>
             <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={16} />
           </TouchableOpacity>
 
-          {/* Phone Field */}
-          <View className="flex-row items-center h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
+          <View
+            className={`flex-row items-center hx-13 rounded-xl border px-3.5 bg-white dark:bg-brand-cardDark ${
+              phoneError ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
+            }`}
+          >
             <Icon name="solar:phone-linear" color="#94A3B8" size={20} className="mr-2.5" />
             <TextInput
               className="flex-1 font-medium text-base text-slate-900 dark:text-white"
@@ -112,14 +118,21 @@ export default function AddNumberScreen() {
               placeholderTextColor="#94A3B8"
               keyboardType="phone-pad"
               value={addPhone}
-              onChangeText={setAddPhone}
+              onChangeText={(txt) => {
+                setAddPhone(txt);
+                if (phoneError) setPhoneError('');
+              }}
             />
           </View>
+
+          {phoneError ? (
+            <Text className="font-medium text-xs text-red-500 -mt-4 ml-1">{phoneError}</Text>
+          ) : null}
 
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={handleSaveNewNumber}
-            className="h-13 rounded-xl bg-orange-400 items-center justify-center mt-6 shadow-md shadow-orange-400/30"
+            className="hx-13 rounded-xl bg-orange-400 items-center justify-center mt-6 shadow-md shadow-orange-400/30"
           >
             <Text className="font-bold text-base text-white">{t('common.save')}</Text>
           </TouchableOpacity>

@@ -199,6 +199,8 @@
     "twoFactorAuthItem": "2FA Authentication",
     "activeSessionsItem": "Active sessions",
     "deleteAccountItem": "Delete account",
-    "logoutAction": "Log out"
+    "logoutAction": "Log out",
+    "noRegisteredNumbersTitle": "No registered numbers",
+    "noRegisteredNumbersSubtitle": "You have not linked any SIM line to your Kwismo account yet. Add your first number to secure your operations."
   }
 }

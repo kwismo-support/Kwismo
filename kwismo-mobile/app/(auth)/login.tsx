@@ -138,9 +138,9 @@ export default function LoginScreen() {
               className="flex-row items-center mb-16"
             >
               <View
-                className={`w-5 h-5 rounded border-2 items-center justify-center mr-3 ${
+                className={`wx-5 hx-5 rounded border-2 items-center justify-center mr-3 ${
                   rememberMe
-                    ? 'bg-slate-900 dark:bg-brand-green border-slate-900 dark:border-brand-green'
+                    ? 'bg-brand-green dark:bg-brand-green border-brand-green dark:border-brand-green'
                     : 'border-slate-400 dark:border-slate-600'
                 }`}
               >

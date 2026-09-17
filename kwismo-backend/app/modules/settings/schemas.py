@@ -21,3 +21,13 @@ class SettingsThresholdsIn(BaseModel):
 class SettingsThresholdsOut(BaseModel):
     rules: list[RiskThresholdRule]
     updated_at: str | None = None
+
+
+class RequireAdminOtpIn(BaseModel):
+    require_admin_otp: bool = Field(False, description="Flag determining if admin/partner accounts require OTP validation")
+
+
+class RequireAdminOtpOut(BaseModel):
+    require_admin_otp: bool
+    updated_at: str | None = None
+

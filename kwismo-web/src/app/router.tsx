@@ -9,6 +9,7 @@ import { ForbiddenPage } from '@/shared/components/pages/ForbiddenPage';
 import { NotFoundPage } from '@/shared/components/pages/NotFoundPage';
 import { ServerErrorPage } from '@/shared/components/pages/ServerErrorPage';
 import { useAuthStore } from '@/shared/store/authStore';
+import { PageRouteLoader } from '@/shared/components/PageRouteLoader';
 
 const LandingPage          = lazy(() => import('@/features/landing'));
 const AuthPage             = lazy(() => import('@/features/auth'));
@@ -28,12 +29,6 @@ const UserPortalPage       = lazy(() => import('@/features/user'));
 const ProfilePage          = lazy(() => import('@/features/profile'));
 const SettingsPage         = lazy(() => import('@/features/settings'));
 const NotificationsPage    = lazy(() => import('@/features/notifications'));
-
-const PageRouteLoader = () => (
-  <div className="w-full h-1 bg-slate-100 dark:bg-white/5 overflow-hidden">
-    <div className="h-full bg-brand-green animate-pulse w-full" />
-  </div>
-);
 
 function AppIndexRedirect() {
   const user = useAuthStore((s) => s.user);

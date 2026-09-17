@@ -10,7 +10,7 @@ interface ValidatePartnerModalProps {
   request: PartnerRequestItem | null;
   isOpen: boolean;
   onClose: () => void;
-  onConfirmValidate: (requestId: string, emailConnexion: string, role: string, initialPassword: string) => void;
+  onConfirmValidate: (requestId: string, emailConnexion: string, emailRecipient: string, role: string, initialPassword: string) => void;
 }
 
 export default function ValidatePartnerModal({
@@ -21,6 +21,7 @@ export default function ValidatePartnerModal({
 }: ValidatePartnerModalProps) {
   const { t } = useTranslation(['admin', 'common']);
   const [emailConnexion, setEmailConnexion] = useState('');
+  const [emailRecipient, setEmailRecipient] = useState('');
   const [role] = useState('Partenaire Telco / Banque');
   const [password, setPassword] = useState('');
   const [sendEmailNotification, setSendEmailNotification] = useState(true);
@@ -28,6 +29,7 @@ export default function ValidatePartnerModal({
   useEffect(() => {
     if (request) {
       setEmailConnexion(request.email);
+      setEmailRecipient(request.email);
       setPassword(generatePassword());
     }
   }, [request]);
@@ -45,7 +47,7 @@ export default function ValidatePartnerModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onConfirmValidate(request.id, emailConnexion, role, password);
+    onConfirmValidate(request.id, emailConnexion, emailRecipient, role, password);
     onClose();
   };
 
@@ -91,9 +93,17 @@ export default function ValidatePartnerModal({
             </div>
 
             <Input
-              label={t('admin:users.email')}
+              label={t('admin:partners.loginEmail')}
               value={emailConnexion}
               onChange={(e) => setEmailConnexion(e.target.value)}
+              leftIcon="solar:user-bold"
+              required
+            />
+
+            <Input
+              label={t('admin:partners.recipientEmailCredentials')}
+              value={emailRecipient}
+              onChange={(e) => setEmailRecipient(e.target.value)}
               leftIcon="solar:letter-bold"
               required
             />

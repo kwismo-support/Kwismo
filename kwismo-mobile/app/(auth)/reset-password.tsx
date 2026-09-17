@@ -116,7 +116,7 @@ export default function ResetPasswordScreen() {
                 {[1, 2, 3, 4, 5].map((idx) => (
                   <View
                     key={`crit-bar-${idx}`}
-                    className={`flex-1 h-1 rounded-full ${passwordAnalysis.score >= idx
+                    className={`flex-1 hx-1 rounded-full ${passwordAnalysis.score >= idx
                         ? passwordAnalysis.score === 5
                           ? 'bg-emerald-500'
                           : 'bg-amber-500'

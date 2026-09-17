@@ -43,3 +43,16 @@ def test_evaluate_risk_status_with_custom_rules() -> None:
     assert evaluate_risk_status_with_rules(0.2, rules) == "securise"
     assert evaluate_risk_status_with_rules(0.5, rules) == "suspect"
     assert evaluate_risk_status_with_rules(0.85, rules) == "frauduleux"
+
+
+def test_get_require_admin_otp_public(client: TestClient) -> None:
+    response = client.get("/settings/require-admin-otp")
+    assert response.status_code == 200
+    assert "require_admin_otp" in response.json()
+
+
+def test_update_require_admin_otp_requires_auth(client: TestClient) -> None:
+    response = client.put("/settings/require-admin-otp", json={"require_admin_otp": True})
+    assert response.status_code == 401
+
+
