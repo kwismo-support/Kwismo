@@ -8,6 +8,7 @@ export interface NumberItem {
   date_derniere_verification?: string;
   country_id?: string;
   operator_id?: string;
+  operator_name?: string;
   nombre_signalements?: number;
   created_at?: string;
   updated_at?: string;
