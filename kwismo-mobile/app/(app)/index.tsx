@@ -122,15 +122,15 @@ export default function HomeScreen() {
 
   const getBadgeStyle = (badgeType: string, statusText: string) => {
     if (badgeType === 'blue' || statusText.toLowerCase().includes('faible')) {
-      return { bgClass: 'bg-blue-50 dark:bg-blue-950/40', textClass: 'text-blue-600 dark:text-blue-400' };
+      return { bgClass: 'bg-blue-50 dark:bg-blue-950/100', textClass: 'text-blue-600 dark:text-blue-400' };
     }
     if (badgeType === 'red' || statusText.toLowerCase().includes('détecté') || statusText.toLowerCase().includes('detecte')) {
-      return { bgClass: 'bg-red-50 dark:bg-red-950/40', textClass: 'text-red-500 dark:text-red-400' };
+      return { bgClass: 'bg-red-50 dark:bg-red-950/100', textClass: 'text-red-500 dark:text-red-400' };
     }
     if (statusText.toLowerCase().includes('cours') || badgeType === 'yellow') {
-      return { bgClass: 'bg-amber-50 dark:bg-amber-950/40', textClass: 'text-amber-600 dark:text-amber-400' };
+      return { bgClass: 'bg-amber-50 dark:bg-amber-950/100', textClass: 'text-amber-600 dark:text-amber-400' };
     }
-    return { bgClass: 'bg-emerald-50 dark:bg-emerald-950/40', textClass: 'text-brand-green' };
+    return { bgClass: 'bg-emerald-50 dark:bg-emerald-950/100', textClass: 'text-brand-green' };
   };
 
   const filterOptions: { key: FilterCategory; labelKey: string }[] = [
@@ -255,7 +255,7 @@ export default function HomeScreen() {
             className="flex-1 items-center"
           >
             <View className="wx-13 hx-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800">
-              <Icon name="mage:scan-user-fill"  color={isDark ? 'white' : '#161E33'} size={24} />
+              <Icon name="mage:scan-user-fill" color={isDark ? 'white' : '#161E33'} size={24} />
             </View>
             <Text className="text-2xs font-medium text-center text-brand-navy dark:text-white">
               {t('common.actionVerify')}
@@ -268,7 +268,7 @@ export default function HomeScreen() {
             className="flex-1 items-center"
           >
             <View className="wx-13 hx-13 rounded-full justify-center items-center mb-1.5 bg-blue-50 dark:bg-slate-800">
-              <Icon name="solar:square-transfer-horizontal-linear"  color={isDark ? 'white' : '#161E33'} size={24} />
+              <Icon name="solar:square-transfer-horizontal-linear" color={isDark ? 'white' : '#161E33'} size={24} />
             </View>
             <Text className="text-2xs font-medium text-center text-brand-navy dark:text-white">
               {t('common.actionTransfer')}
@@ -336,14 +336,14 @@ export default function HomeScreen() {
                     activeOpacity={0.8}
                     onPress={() => setActiveFilter(opt.key)}
                     className={`px-3 py-1.5 rounded-full border ${isSelected
-                        ? 'bg-emerald-50 dark:bg-emerald-950/50 border-brand-green'
-                        : 'bg-transparent dark:bg-trnasparent border-slate-300 dark:border-slate-700'
+                      ? 'bg-emerald-50 dark:bg-emerald-950/50 border-brand-green'
+                      : 'bg-transparent dark:bg-trnasparent border-slate-300 dark:border-slate-700'
                       }`}
                   >
                     <Text
                       className={`text-2xs font-medium ${isSelected
-                          ? 'text-brand-green'
-                          : 'text-slate-400 dark:text-slate-400'
+                        ? 'text-brand-green'
+                        : 'text-slate-400 dark:text-slate-400'
                         }`}
                     >
                       {t(opt.labelKey)}

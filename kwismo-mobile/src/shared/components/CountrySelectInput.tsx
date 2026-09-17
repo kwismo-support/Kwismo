@@ -55,7 +55,7 @@ export const CountrySelectInput: React.FC<CountrySelectInputProps> = ({
           setIsFocused(true);
           setModalVisible(true);
         }}
-        className={`flex-row items-center justify-between h-13 rounded-xl px-3.5 bg-white dark:bg-brand-cardDark border ${
+        className={`flex-row items-center justify-between hx-13 rounded-xl px-3.5 bg-white dark:bg-brand-cardDark border ${
           hasError
             ? 'border-red-500 border-2'
             : isFocused || modalVisible

@@ -411,7 +411,7 @@ export default function ManagementScreen() {
         activeOpacity={0.85}
         onPress={handleOpenAddNumber}
         style={{ bottom: Math.max(insets.bottom + 72, 84) }}
-        className="absolute right-5 w-14 h-14 rounded-full items-center justify-center bg-orange-500 shadow-lg shadow-orange-500/40 z-50"
+        className="absolute right-5 wx-14 hx-14 rounded-full items-center justify-center bg-orange-500 shadow-lg shadow-orange-500/40 z-50"
       >
         <Icon name="solar:add-linear" color="#FFFFFF" size={28} />
       </TouchableOpacity>

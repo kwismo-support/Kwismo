@@ -102,7 +102,7 @@ export const Input: React.FC<InputProps> = ({
       ) : null}
 
       <View
-        className={`flex-row items-center h-13 rounded-xl px-4 bg-white dark:bg-brand-cardDark border ${
+        className={`flex-row items-center hx-13 rounded-xl px-4 bg-white dark:bg-brand-cardDark border ${
           error
             ? 'border-red-500 border-2'
             : isFocused

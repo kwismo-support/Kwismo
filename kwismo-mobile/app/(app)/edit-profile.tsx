@@ -58,7 +58,7 @@ export default function EditProfileScreen() {
     <View className="flex-1 bg-white dark:bg-brand-darkBg">
       <StatusBar style="light" />
 
-      <HeaderBar title={t('profile.personalInfo', 'Éditer le profil')} showBack={true} />
+      <HeaderBar title={t('profile.personalInfo')} showBack={true} />
 
       <ScrollView
         contentContainerStyle={{
@@ -69,7 +69,7 @@ export default function EditProfileScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View className="self-center relative mb-6">
-          <View className="w-24 h-24 rounded-full items-center justify-center bg-slate-200 dark:bg-slate-700">
+          <View className="wx-24 hx-24 rounded-full items-center justify-center bg-slate-200 dark:bg-slate-700">
             <Text className="font-extrabold text-3xl text-slate-900 dark:text-white">
               {(firstName || lastName || 'K').charAt(0).toUpperCase()}
             </Text>
@@ -78,7 +78,7 @@ export default function EditProfileScreen() {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => setIsPhotoPickerOpen(true)}
-            className="absolute bottom-0.5 right-0.5 w-7 h-7 rounded-full bg-brand-green items-center justify-center border-2 border-white dark:border-slate-800"
+            className="absolute bottom-0.5 right-0.5 wx-7 hx-7 rounded-full bg-brand-green items-center justify-center border-2 border-white dark:border-slate-800"
           >
             <Icon name="solar:camera-bold" color={colors.white} size={16} />
           </TouchableOpacity>

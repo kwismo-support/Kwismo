@@ -104,12 +104,12 @@ export const Button: React.FC<ButtonProps> = ({
   const getSizeClasses = () => {
     switch (size) {
       case 'sm':
-        return 'h-10 px-4 rounded-xl';
+        return 'hx-10 px-4 rounded-xl';
       case 'lg':
-        return 'h-14 px-7 rounded-2xl';
+        return 'hx-14 px-7 rounded-2xl';
       case 'md':
       default:
-        return 'h-13 px-6 rounded-xl';
+        return 'hx-13 px-6 rounded-xl';
     }
   };
 

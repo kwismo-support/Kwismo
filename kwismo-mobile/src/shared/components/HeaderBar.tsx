@@ -52,13 +52,13 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
       className="px-4 pb-3 relative overflow-hidden"
     >
       <View className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
-        <View className="absolute -top-10 -right-5 w-55 h-55 rounded-full border-[26px] border-white -rotate-25 scale-x-140" />
+        <View className="absolute -top-10 -right-5 wx-55 hx-55 rounded-full border-[26px] border-white -rotate-25 scale-x-140" />
       </View>
 
       <View className="flex-row items-center justify-between min-h-7 mb-10">
         {showBack ? (
           <>
-            <View className="w-10 flex-row items-center justify-start">
+            <View className="wx-10 flex-row items-center justify-start">
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={handleBack}
@@ -70,7 +70,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
 
             <View className="flex-1" />
 
-            <View className="w-10 flex-row items-center justify-end">
+            <View className="wx-10 flex-row items-center justify-end">
               {rightAction ? (
                 rightAction
               ) : (
@@ -97,7 +97,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
               )}
             </View>
 
-            <View className="w-18 flex-row items-center justify-end">
+            <View className="wx-18 flex-row items-center justify-end">
               <HeaderActions
                 unreadNotificationsCount={unreadNotificationsCount}
                 iconColor={textColor}

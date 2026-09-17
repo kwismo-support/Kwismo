@@ -72,7 +72,7 @@ export default function ProfileScreen() {
         {/* User Card (Floating Overlap style matching mockup) */}
         {loading ? (
           <SkeletonLoader>
-            <View className="flex-row items-center p-4 rounded-2xl shadow-xl shadow-black elevation-4 border border-slate-100 dark:border-slate-800 bg-white dark:bg-brand-cardDark -mt-6 mb-4">
+            <View className="flex-row items-center p-4 rounded-2xl shadow-xl shadow-black elevation-4 border border-slate-100 dark:border-slate-800 bg-white dark:bg-brand-cardDark -mt-10 mb-4">
               <SkeletonCircle size={56} />
               <View className="flex-1 ml-3.5">
                 <Skeleton width={100} height={14} borderRadius={4} />
@@ -81,9 +81,9 @@ export default function ProfileScreen() {
             </View>
           </SkeletonLoader>
         ) : (
-          <View className="flex-row items-center p-4 rounded-2xl shadow-xl shadow-black elevation-4 border border-slate-100 dark:border-slate-800 bg-white dark:bg-brand-cardDark -mt-6 mb-4">
+          <View className="flex-row items-center p-4 rounded-2xl shadow-xl shadow-black elevation-4 border border-slate-100 dark:border-slate-800 bg-white dark:bg-brand-cardDark -mt-10 mb-4">
             {/* Avatar Circle */}
-            <View className="w-16 h-16 rounded-full bg-emerald-500 items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800">
+            <View className="wx-13 hx-13 rounded-full bg-emerald-500 items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800">
               <Text className="font-bold text-2xl text-white">
                 {userName.charAt(0).toUpperCase()}
               </Text>
@@ -127,7 +127,7 @@ export default function ProfileScreen() {
 
         <View className="bg-white dark:bg-brand-cardDark">
           {/* Notification */}
-          <View className="flex-row items-center justify-between py-3.5 border-b border-slate-100 dark:border-slate-800">
+          <View className="flex-row items-center justify-between py-3.5 dark:bg-brand-darkBg border-b border-slate-100 dark:border-slate-800">
             <View className="flex-row items-center gap-3 ml-1">
               <Icon name="ph:bell-ringing" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
@@ -145,7 +145,7 @@ export default function ProfileScreen() {
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setLanguageModalVisible(true)}
-            className="flex-row items-center justify-between py-3.5 border-b border-slate-100 dark:border-slate-800"
+            className="flex-row items-center justify-between py-3.5 dark:bg-brand-darkBg border-b border-slate-100 dark:border-slate-800"
           >
             <View className="flex-row items-center gap-3 ml-1">
               <Icon name="fontisto:world-o" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
@@ -163,7 +163,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           {/* Thème */}
-          <View className="flex-row items-center justify-between py-3.5">
+          <View className="flex-row items-center justify-between py-3.5 dark:bg-brand-darkBg">
             <View className="flex-row items-center gap-3 ml-1">
               <Icon name="ant-design:moon-outlined" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
@@ -173,7 +173,7 @@ export default function ProfileScreen() {
             <CustomSwitch
               value={userThemePreference === 'dark' || isDark}
               onValueChange={(val) => setTheme(val ? 'dark' : 'light')}
-              activeColor="#CBD5E1"
+              activeColor="#FF9500"
             />
           </View>
         </View>
@@ -188,10 +188,10 @@ export default function ProfileScreen() {
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => router.push('/(app)/security')}
-            className="flex-row items-center justify-between py-3.5 border-b border-slate-100 dark:border-slate-800"
+            className="flex-row items-center justify-between py-3.5 dark:bg-brand-darkBg border-b border-slate-100 dark:border-slate-800"
           >
             <View className="flex-row items-center gap-3 ml-1">
-              <Icon name="solar:lock-keyhole-linear" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
+              <Icon name="basil:lock-outline" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 {t('common.changePassword')}
               </Text>
@@ -200,9 +200,9 @@ export default function ProfileScreen() {
           </TouchableOpacity>
 
           {/* Authentification à 2FA */}
-          <View className="flex-row items-center justify-between py-3.5 border-b border-slate-100 dark:border-slate-800">
+          <View className="flex-row items-center justify-between py-3.5 dark:bg-brand-darkBg border-b border-slate-100 dark:border-slate-800">
             <View className="flex-row items-center gap-3 ml-1">
-              <Icon name="solar:shield-keyhole-linear" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
+              <Icon name="dashicons:shield" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 {t('common.twoFactorAuthItem')}
               </Text>
@@ -218,10 +218,10 @@ export default function ProfileScreen() {
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => toast.info('Sessions actives')}
-            className="flex-row items-center justify-between py-3.5 border-b border-slate-100 dark:border-slate-800"
+            className="flex-row items-center justify-between py-3.5 dark:bg-brand-darkBg border-b border-slate-100 dark:border-slate-800"
           >
             <View className="flex-row items-center gap-3 ml-1">
-              <Icon name="solar:devices-linear" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
+              <Icon name="fluent:phone-desktop-24-regular" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 {t('common.activeSessionsItem')}
               </Text>
@@ -233,10 +233,10 @@ export default function ProfileScreen() {
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => toast.info('Suppression du compte')}
-            className="flex-row items-center justify-between py-3.5"
+            className="flex-row items-center justify-between py-3.5 dark:bg-brand-darkBg"
           >
             <View className="flex-row items-center gap-3 ml-1">
-              <Icon name="solar:trash-bin-trash-linear" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
+              <Icon name="si:bin-line" color={isDark ? '#FFFFFF' : '#161E33'} size={22} />
               <Text className="font-medium text-sm text-slate-900 dark:text-white">
                 {t('common.deleteAccountItem')}
               </Text>
@@ -248,7 +248,7 @@ export default function ProfileScreen() {
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={handleLogout}
-          className="items-center justify-center py-6 mb-2"
+          className="items-center justify-center py-8 mb-2"
         >
           <Text className="font-bold text-base text-slate-900 dark:text-white">
             {t('common.logoutAction')}
@@ -258,7 +258,7 @@ export default function ProfileScreen() {
 
       {/* Language Picker Modal */}
       <Modal visible={languageModalVisible} transparent animationType="slide">
-        <Pressable className="flex-1 bg-black/50 justify-end" onPress={() => setLanguageModalVisible(false)}>
+        <Pressable className="flex-1 justify-end" onPress={() => setLanguageModalVisible(false)}>
           <Pressable className="rounded-t-3xl p-5 pb-8 bg-white dark:bg-brand-cardDark">
             <Text className="font-bold text-base text-slate-900 dark:text-white mb-4">
               {t('common.selectLanguage')}

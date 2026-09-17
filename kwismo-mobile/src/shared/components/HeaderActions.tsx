@@ -36,7 +36,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={handleNotificationsPress}
-          className="w-9 h-9 items-center justify-center relative"
+          className="wx-9 hx-9 items-center justify-center relative"
         >
           <Icon
             name={hasUnread ? 'solar:bell-bold' : 'f7:bell'}
@@ -56,7 +56,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => setSearchModalVisible(true)}
-        className="w-9 h-9 items-center justify-center relative"
+        className="wx-9 hx-9 items-center justify-center relative"
       >
         <Icon name="bitcoin-icons:search-filled" size={24} color={iconColor} />
       </TouchableOpacity>

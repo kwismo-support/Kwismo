@@ -4,7 +4,8 @@ import Svg, { Path } from 'react-native-svg';
 import { Icon } from '@/shared/ui/Icon';
 
 interface VerificationGraphicProps {
-  state: 'analyzing' | 'result';
+  state?: 'analyzing' | 'result';
+  status?: 'analyzing' | 'secure' | 'warning' | 'danger';
   isDark?: boolean;
 }
 
@@ -18,9 +19,11 @@ const FourPointStar = ({ size, color }: { size: number; color: string }) => (
 );
 
 export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
-  state,
+  state = 'result',
+  status,
   isDark = false,
 }) => {
+  const currentStatus = status || (state === 'analyzing' ? 'analyzing' : 'secure');
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -46,13 +49,24 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
     outputRange: ['360deg', '0deg'],
   });
 
-  const sparkleColor = '#25B46E';
+  let mainColor = '#25B46E'; // Green
+  let bgCircleColorClass = 'bg-emerald-50 dark:bg-slate-800';
+
+  if (currentStatus === 'warning') {
+    mainColor = '#F59E0B'; // Orange / Yellow
+    bgCircleColorClass = 'bg-amber-50 dark:bg-slate-800';
+  } else if (currentStatus === 'danger') {
+    mainColor = '#EF4444'; // Red
+    bgCircleColorClass = 'bg-red-50 dark:bg-slate-800';
+  }
+
+  const sparkleColor = mainColor;
 
   return (
     <View className="items-center justify-center my-4.5">
-      <View className="w-55 h-55 rounded-full items-center justify-center relative bg-emerald-50 dark:bg-slate-800">
+      <View className={`wx-55 hx-55 rounded-full items-center justify-center relative ${bgCircleColorClass}`}>
         <Animated.View
-          className="absolute w-55 h-55 rounded-full"
+          className="absolute wx-55 hx-55 rounded-full"
           style={{ transform: [{ rotate: spinInterpolate }] }}
         >
           <View className="absolute top-4.5 left-8">
@@ -69,9 +83,9 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
           </View>
         </Animated.View>
 
-        {state === 'result' && (
+        {currentStatus !== 'analyzing' && (
           <Animated.View
-            className="absolute w-55 h-55 rounded-full"
+            className="absolute wx-55 hx-55 rounded-full"
             style={{ transform: [{ rotate: reverseSpinInterpolate }] }}
           >
             <View className="absolute top-6.5 right-12">
@@ -86,24 +100,39 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
           </Animated.View>
         )}
 
-        <View className="w-34 h-34 items-center justify-center relative">
+        <View className="wx-34 hx-34 items-center justify-center relative">
           <Icon
             name="solar:shield-minimalistic-bold"
             size={138}
-            color="#25B46E"
+            color={mainColor}
           />
 
           <View className="absolute inset-0 items-center justify-center pb-1.5">
-            {state === 'analyzing' ? (
+            {currentStatus === 'analyzing' && (
               <Icon
                 name="solar:user-bold-duotone"
                 size={62}
                 color="#FFFFFF"
               />
-            ) : (
+            )}
+            {currentStatus === 'secure' && (
               <Icon
                 name="solar:diploma-verified-bold-duotone"
                 size={62}
+                color="#FFFFFF"
+              />
+            )}
+            {currentStatus === 'warning' && (
+              <Icon
+                name="solar:danger-triangle-bold"
+                size={58}
+                color="#FFFFFF"
+              />
+            )}
+            {currentStatus === 'danger' && (
+              <Icon
+                name="ph:skull-bold"
+                size={58}
                 color="#FFFFFF"
               />
             )}
