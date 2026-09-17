@@ -65,7 +65,21 @@ async def _send_firebase_otp(phone: str, code: str) -> bool:
                 logger.info("[FIREBASE] Code OTP envoyé par SMS à %s via Firebase Identity Toolkit", phone)
                 return True
             else:
-                logger.warning("[FIREBASE] Réponse API Firebase (%s): %s", resp.status_code, resp.text)
+                err_body = resp.text
+                if "BILLING_NOT_ENABLED" in err_body:
+                    logger.warning(
+                        "[FIREBASE] BILLING_NOT_ENABLED pour %s sur le projet %s. "
+                        "Firebase exige le plan Blaze pour l'envoi de SMS réels. "
+                        "Pour tester GRATUITEMENT sans CB, ajoutez ce numéro sous Firebase Console -> Authentication -> Phone numbers for testing.",
+                        phone, s.firebase_project_id
+                    )
+                elif "OPERATION_NOT_ALLOWED" in err_body:
+                    logger.warning(
+                        "[FIREBASE] OPERATION_NOT_ALLOWED pour %s. Activez la méthode Téléphone et la politique régionale SMS dans Firebase Console -> Authentication -> Settings.",
+                        phone
+                    )
+                else:
+                    logger.warning("[FIREBASE] Réponse API Firebase (%s): %s", resp.status_code, err_body)
                 return False
     elif s.firebase_project_id or s.firebase_credentials_path or s.firebase_credentials_json:
         logger.info("[FIREBASE] Utilisation du projet Firebase %s pour la vérification de %s", s.firebase_project_id or "local", phone)
