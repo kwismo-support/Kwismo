@@ -143,7 +143,7 @@ kwismo-backend/
 │  │  ├─ __init__.py
 │  │  ├─ audit_log.py                # Logging d'audit et AuditLogMiddleware
 │  │  ├─ cache.py                    # Gestion du cache Redis et helpers d'invalidation
-│  │  ├─ config.py                   # Settings Pydantic (lecture des variables .env, SMTP, Twilio)
+│  │  ├─ config.py                   # Settings Pydantic (lecture des variables .env, Firebase, SMTP, Twilio)
 │  │  ├─ exceptions.py               # ★ not_implemented() + gestionnaires globaux (anti-crash)
 │  │  ├─ i18n.py                     # Chargement des traductions, résolution de la langue
 │  │  ├─ lang.py                     # Dépendance d'extraction de la langue (Accept-Language)
@@ -173,9 +173,9 @@ kwismo-backend/
 │  │  │
 │  │  ├─ auth/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ router.py                # ★ 9 routes /auth/* (register, login, otp, refresh, reset)
-│  │  │  ├─ schemas.py               # RegisterIn, LoginIn, TokenOut, DeviceVerificationRequiredOut…
-│  │  │  ├─ service.py               # Logique : login, génération/vérif OTP, refresh, reset
+│  │  │  ├─ router.py                # ★ 10 routes /auth/* (register, login, otp, firebase, refresh, reset)
+│  │  │  ├─ schemas.py               # RegisterIn, LoginIn, TokenOut, FirebasePhoneVerifyIn…
+│  │  │  ├─ service.py               # Logique : login, vérif OTP Firebase/Twilio, refresh, reset
 │  │  │  └─ dependencies.py          # Dépendances spécifiques à l'auth
 │  │  │
 │  │  ├─ users/
@@ -288,7 +288,7 @@ kwismo-backend/
 │     ├─ email.py                    # ★ Envoi d'emails avec chaîne de secours : Resend -> Google SMTP -> Console
 │     ├─ feedback.py                 # File d'attente d'apprentissage continu des signalements
 │     ├─ i18n.py                     # Dictionnaire de clés et messages bilingues
-│     ├─ otp.py                      # ★ Centralisation unique OTP (SMS Twilio -> Email Resend -> Google SMTP -> Console)
+│     ├─ otp.py                      # ★ Centralisation unique OTP (Firebase SMS -> Twilio SMS -> Email Resend -> Google SMTP -> Console)
 │     ├─ pagination.py               # Helpers de pagination
 │     └─ phone.py                    # Normalisation E.164 et validation des numéros
 │

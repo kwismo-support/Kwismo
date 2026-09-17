@@ -10,6 +10,7 @@ from app.modules.auth.schemas import (
     DeviceVerifyIn,
     EmailResendIn,
     EmailVerifyIn,
+    FirebasePhoneVerifyIn,
     LoginIn,
     LogoutIn,
     PasswordForgotIn,
@@ -110,3 +111,15 @@ async def reset_password(request: Request, response: Response, payload: Password
 )
 async def logout(payload: LogoutIn) -> Message:
     return await service.logout(payload)
+
+
+@router.post(
+    "/phone/verify-firebase",
+    response_model=Message,
+    summary="Verify Firebase OTP code / Vérifier le code OTP Firebase (Priorité 1)",
+    description="FR — Vérifie un code OTP reçu par SMS via Firebase Phone Auth (avec secours automatique vers Twilio/Email/Dev Log).\nEN — Verifies an OTP code received via Firebase Phone Auth (with automatic fallback to Twilio/Email/Dev Log).",
+)
+@limiter.limit(OTP_RATE_LIMIT)
+async def verify_firebase_phone(request: Request, response: Response, payload: FirebasePhoneVerifyIn) -> Message:
+    return await service.verify_firebase_phone_otp(payload)
+

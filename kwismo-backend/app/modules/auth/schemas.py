@@ -77,3 +77,13 @@ class DeviceVerificationRequiredOut(BaseModel):
     requires_device_verification: bool = True
     message_fr: str = "Nouvel appareil détecté : code envoyé par email."
     message_en: str = "New device detected: code sent by email."
+
+
+class FirebasePhoneVerifyIn(BaseModel):
+    """FR — Schema pour la vérification OTP via Firebase Phone Auth.
+    EN — Schema for OTP verification via Firebase Phone Auth."""
+
+    phone: str = Field(..., examples=["+237690000000"])
+    code: str = Field(..., min_length=4, max_length=8)
+    session_info: str | None = Field(default=None, description="Session Firebase (optionnel)")
+

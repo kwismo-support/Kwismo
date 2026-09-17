@@ -67,6 +67,12 @@ class Settings(BaseSettings):
     smtp_from: str = ""
     smtp_use_tls: bool = True
 
+    # Firebase Auth & SMS
+    firebase_project_id: str = ""
+    firebase_api_key: str = ""
+    firebase_credentials_json: str = ""
+    firebase_credentials_path: str = ""
+
     # SMS (Twilio Verify)
     twilio_account_sid: str = ""
     twilio_auth_token: str = ""

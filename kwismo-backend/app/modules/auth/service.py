@@ -362,3 +362,18 @@ async def logout(payload: LogoutIn) -> Message:
         message_fr="Deconnexion reussie.",
         message_en="Logged out successfully.",
     )
+
+
+async def verify_firebase_phone_otp(payload: "FirebasePhoneVerifyIn") -> Message:
+    from app.utils.otp import check_sms_otp
+    valid = await check_sms_otp(payload.phone, payload.code, payload.session_info)
+    if not valid:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Code OTP Firebase invalide ou expiré / Invalid or expired Firebase OTP code.",
+        )
+    return Message(
+        message_fr="Numéro de téléphone vérifié avec succès via Firebase.",
+        message_en="Phone number successfully verified via Firebase.",
+    )
+
