@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
   Image,
+  RefreshControl,
 } from 'react-native';
 import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
@@ -26,108 +27,46 @@ export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { isDark, colors: themeColors } = useAppTheme();
+  const { isDark } = useAppTheme();
   const { user } = useAuthStore();
-  const { summary } = useDashboard();
+  const { summary, loading, refreshing, refresh } = useDashboard();
 
-  const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('all');
-
-  React.useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, []);
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
 
-  const userName = user?.firstName
-    ? `${user.firstName} ${user.lastName || ''}`.trim()
-    : user?.email
-      ? user.email.split('@')[0]
-      : 'LOREM Ipsum';
+  const userName = useMemo(() => {
+    if (user?.firstName || user?.lastName) {
+      return `${user.firstName || ''} ${user.lastName || ''}`.trim();
+    }
+    if (user?.email) {
+      return user.email.split('@')[0];
+    }
+    return '';
+  }, [user]);
 
-  const rawActivities = summary?.recentActivities && summary.recentActivities.length > 0
-    ? summary.recentActivities
-    : [
-      {
-        id: 'act-1',
-        phone: '+237 6 98 00 40 12',
-        type: 'Verification de numero',
-        category: 'verified',
-        status: 'Faible',
-        badgeType: 'blue',
-        date: "Aujourd'hui",
-        initials: '',
-      },
-      {
-        id: 'act-2',
-        phone: 'Lysette Orleanne',
-        type: 'Alerte menace',
-        category: 'threats',
-        status: 'Détecté',
-        badgeType: 'red',
-        date: 'hier, 07h30',
-        initials: 'LO',
-      },
-      {
-        id: 'act-3',
-        phone: 'Superviseur NJS',
-        type: '#150*1*695 12 34 36*1...',
-        category: 'transfers',
-        status: 'Protégé',
-        badgeType: 'green',
-        date: "il y'a deux j...",
-        initials: 'S',
-        initialBg: '#F97316',
-      },
-      {
-        id: 'act-4',
-        phone: '+221 233 16 71 88',
-        type: 'Verification de numero',
-        category: 'verified',
-        status: 'Protégé',
-        badgeType: 'green',
-        date: "il y'a deux j...",
-        initials: '',
-      },
-      {
-        id: 'act-5',
-        phone: '+237 6 40 43 01 00',
-        type: 'Signalement',
-        category: 'reports',
-        status: 'En cours...',
-        badgeType: 'yellow',
-        date: "il y'a une s...",
-        initials: '',
-      },
-      {
-        id: 'act-6',
-        phone: '+237 6 98 44 43 88',
-        type: 'Verification de numero',
-        category: 'verified',
-        status: 'Protégé',
-        badgeType: 'green',
-        date: "il y'a un mois",
-        initials: '',
-      },
-    ];
+  const activities = useMemo(() => {
+    return summary?.recentActivities || [];
+  }, [summary]);
 
-  const filteredActivities = rawActivities.filter((item: any) => {
-    if (activeFilter === 'all') return true;
-    return item.category === activeFilter;
-  });
+  const filteredActivities = useMemo(() => {
+    return activities.filter((item) => {
+      if (activeFilter === 'all') return true;
+      return item.category === activeFilter;
+    });
+  }, [activities, activeFilter]);
 
-  const getBadgeStyle = (badgeType: string, statusText: string) => {
-    if (badgeType === 'blue' || statusText.toLowerCase().includes('faible')) {
+  const getBadgeStyle = (badgeType: string) => {
+    if (badgeType === 'blue') {
       return { bgClass: 'bg-blue-50 dark:bg-blue-950/100', textClass: 'text-blue-600 dark:text-blue-400' };
     }
-    if (badgeType === 'red' || statusText.toLowerCase().includes('détecté') || statusText.toLowerCase().includes('detecte')) {
+    if (badgeType === 'red') {
       return { bgClass: 'bg-red-50 dark:bg-red-950/100', textClass: 'text-red-500 dark:text-red-400' };
     }
-    if (statusText.toLowerCase().includes('cours') || badgeType === 'yellow') {
+    if (badgeType === 'yellow') {
       return { bgClass: 'bg-amber-50 dark:bg-amber-950/100', textClass: 'text-amber-600 dark:text-amber-400' };
     }
     return { bgClass: 'bg-emerald-50 dark:bg-emerald-950/100', textClass: 'text-brand-green' };
@@ -211,7 +150,7 @@ export default function HomeScreen() {
             <View className="flex-row justify-around pt-1 p-2 gap-4">
               <View className="flex-1 items-start">
                 <Text className="text-xl font-medium text-left text-black dark:text-white">
-                  {user?.kpi?.numeros_verifies ?? summary?.numeros_verifies ?? 127}
+                  {summary?.numeros_verifies ?? user?.kpi?.numeros_verifies ?? 0}
                 </Text>
                 <Text className="text-3xs font-medium text-left mt-0.5 text-black dark:text-white">
                   {t('common.kpiVerified')}
@@ -220,7 +159,7 @@ export default function HomeScreen() {
 
               <View className="flex-1 items-start">
                 <Text className="text-xl font-medium text-left text-black dark:text-white">
-                  25
+                  {summary?.threats_avoided ?? 0}
                 </Text>
                 <Text className="text-3xs font-medium text-left mt-0.5 text-black dark:text-white">
                   {t('common.kpiThreats')}
@@ -229,7 +168,7 @@ export default function HomeScreen() {
 
               <View className="flex-1 items-start">
                 <Text className="text-xl font-medium text-left text-black dark:text-white">
-                  {user?.kpi?.signalements_effectues ?? summary?.signalements_effectues ?? 10}
+                  {summary?.signalements_effectues ?? user?.kpi?.signalements_effectues ?? 0}
                 </Text>
                 <Text className="text-3xs font-medium text-left mt-0.5 text-black dark:text-white">
                   {t('common.kpiReports')}
@@ -238,7 +177,7 @@ export default function HomeScreen() {
 
               <View className="flex-1 items-start">
                 <Text className="text-xl font-medium text-left text-black dark:text-white">
-                  {user?.kpi?.transferts_proteges ?? summary?.transferts_proteges ?? 50}
+                  {summary?.transferts_proteges ?? user?.kpi?.transferts_proteges ?? 0}
                 </Text>
                 <Text className="text-3xs font-medium text-left mt-0.5 text-black dark:text-white">
                   {t('common.kpiTransfers')}
@@ -337,7 +276,7 @@ export default function HomeScreen() {
                     onPress={() => setActiveFilter(opt.key)}
                     className={`px-3 py-1.5 rounded-full border ${isSelected
                       ? 'bg-emerald-50 dark:bg-emerald-950/50 border-brand-green'
-                      : 'bg-transparent dark:bg-trnasparent border-slate-300 dark:border-slate-700'
+                      : 'bg-transparent dark:bg-transparent border-slate-300 dark:border-slate-700'
                       }`}
                   >
                     <Text
@@ -364,58 +303,94 @@ export default function HomeScreen() {
           paddingBottom: insets.bottom + 100,
         }}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refresh}
+            tintColor={colors.green}
+            colors={[colors.green]}
+          />
+        }
       >
-        <View className="gap-1">
-          {filteredActivities.map((item: any) => {
-            const badgeStyle = getBadgeStyle(item.badgeType, item.status);
-            return (
-              <TouchableOpacity
-                key={item.id}
-                activeOpacity={0.75}
-                onPress={() => router.push({ pathname: '/(app)/verify', params: { phone: item.phone } })}
-                className="flex-row items-center py-2.5"
-              >
-                <View
-                  className="wx-10 hx-10 rounded-full bg-slate-100 dark:bg-slate-800 justify-center items-center mr-2.5"
-                  style={item.initialBg ? { backgroundColor: item.initialBg } : item.initials ? { backgroundColor: colors.green } : {}}
+        {loading ? (
+          <SkeletonLoader>
+            <View className="gap-3 py-2">
+              {[1, 2, 3, 4].map((key) => (
+                <View key={key} className="flex-row items-center py-2">
+                  <Skeleton width={40} height={40} borderRadius={20} style={{ marginRight: 10 }} />
+                  <View className="flex-1 gap-1">
+                    <Skeleton width={130} height={14} borderRadius={4} />
+                    <Skeleton width={90} height={10} borderRadius={3} />
+                  </View>
+                  <Skeleton width={60} height={20} borderRadius={10} />
+                </View>
+              ))}
+            </View>
+          </SkeletonLoader>
+        ) : filteredActivities.length === 0 ? (
+          <View className="py-12 items-center justify-center">
+            <Icon name="solar:clock-circle-linear" color="#94A3B8" size={36} />
+            <Text className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-2 text-center">
+              {activeFilter === 'all'
+                ? t('common.noRecentActivity')
+                : t('common.noActivityForFilter')}
+            </Text>
+          </View>
+        ) : (
+          <View className="gap-1">
+            {filteredActivities.map((item) => {
+              const badgeStyle = getBadgeStyle(item.badgeType);
+              const displayType = item.type.includes('.') ? t(item.type) : item.type;
+              const displayStatus = item.status.includes('.') ? t(item.status) : item.status;
+
+              return (
+                <TouchableOpacity
+                  key={item.id}
+                  activeOpacity={0.75}
+                  onPress={() => router.push({ pathname: '/(app)/verify', params: { phone: item.phone } })}
+                  className="flex-row items-center py-2.5"
                 >
-                  {item.initials ? (
-                    <Text className="text-white font-bold text-2xs">{item.initials}</Text>
-                  ) : (
-                    <Icon name="solar:user-bold" color="#94A3B8" size={20} />
-                  )}
-                </View>
+                  <View
+                    className="wx-10 hx-10 rounded-full bg-slate-100 dark:bg-slate-800 justify-center items-center mr-2.5"
+                    style={item.initialBg ? { backgroundColor: item.initialBg } : item.initials ? { backgroundColor: colors.green } : {}}
+                  >
+                    {item.initials ? (
+                      <Text className="text-white font-bold text-2xs">{item.initials}</Text>
+                    ) : (
+                      <Icon name="solar:user-bold" color="#94A3B8" size={20} />
+                    )}
+                  </View>
 
-                <View className="flex-1 pr-1">
-                  <Text numberOfLines={1} className="text-2xs font-bold text-slate-900 dark:text-white">
-                    {item.phone}
-                  </Text>
-                  <Text numberOfLines={1} className="text-2xs text-slate-400 dark:text-slate-400 mt-0.5">
-                    {item.type}
-                  </Text>
-                </View>
-
-                <View className="w-24 items-center justify-center">
-                  <View className={`px-2.5 py-0.5 rounded-full ${badgeStyle.bgClass}`}>
-                    <Text className={`text-2xs font-semibold ${badgeStyle.textClass}`}>
-                      {item.status}
+                  <View className="flex-1 pr-1">
+                    <Text numberOfLines={1} className="text-2xs font-bold text-slate-900 dark:text-white">
+                      {item.phone}
+                    </Text>
+                    <Text numberOfLines={1} className="text-2xs text-slate-400 dark:text-slate-400 mt-0.5">
+                      {displayType}
                     </Text>
                   </View>
-                </View>
 
-                <View className="flex-row items-center justify-end w-24">
-                  <Text numberOfLines={1} className="text-2xs text-slate-400 dark:text-slate-500">
-                    {item.date}
-                  </Text>
-                  <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={14} style={{ marginLeft: 3 }} />
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
+                  <View className="w-24 items-center justify-center">
+                    <View className={`px-2.5 py-0.5 rounded-full ${badgeStyle.bgClass}`}>
+                      <Text className={`text-2xs font-semibold ${badgeStyle.textClass}`}>
+                        {displayStatus}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View className="flex-row items-center justify-end w-24">
+                    <Text numberOfLines={1} className="text-2xs text-slate-400 dark:text-slate-500">
+                      {item.date}
+                    </Text>
+                    <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={14} style={{ marginLeft: 3 }} />
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        )}
       </ScrollView>
 
-      {/* Floating Action Button (FAB) */}
       <TouchableOpacity
         activeOpacity={0.88}
         onPress={() => router.push('/(app)/report')}

@@ -68,6 +68,8 @@
     "selectCountry": "Select a country",
     "verificationHistory": "Verification history",
     "noVerificationHistory": "No recent verification yet.",
+    "noRecentActivity": "No recent activity",
+    "noActivityForFilter": "No activity found for this filter",
     "currentPassword": "Current password",
     "saveChanges": "Save changes",
     "cancel": "Cancel",

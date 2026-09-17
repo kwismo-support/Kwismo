@@ -1,4 +1,3 @@
-// Composant d'affichage d'un indicateur clé (KPI) sur l'accueil
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 

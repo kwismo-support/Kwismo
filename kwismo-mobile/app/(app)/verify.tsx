@@ -444,7 +444,7 @@ export default function VerifyScreen() {
 
             {/* Status Banner */}
             <View
-              className={`w-full py-3 rounded-xl items-center justify-center mb-4 ${
+              className={`w-full py-1 rounded-xl items-center justify-center mt-8 mb-4 ${
                 testResultType === 'secure'
                   ? 'bg-emerald-50 dark:bg-emerald-950/40'
                   : testResultType === 'warning'
@@ -453,7 +453,7 @@ export default function VerifyScreen() {
               }`}
             >
               <Text
-                className={`text-xl font-bold ${
+                className={`text-xl font-h1 ${
                   testResultType === 'secure'
                     ? 'text-brand-green'
                     : testResultType === 'warning'
@@ -470,7 +470,7 @@ export default function VerifyScreen() {
             </View>
 
             {/* Dark Green Risk Score Card */}
-            <View className="bg-[#0A5F43] dark:bg-[#084B35] rounded-2xl p-4 mb-5">
+            <View className="bg-brand-green dark:bg-brand-darkBg rounded-2xl p-4 mb-5">
               <View className="flex-row justify-between items-center mb-3">
                 <View className="flex-row items-center">
                   <Text className="text-white text-sm font-bold mr-1">Score de risque</Text>
@@ -519,7 +519,7 @@ export default function VerifyScreen() {
 
               <View className="flex-row justify-between items-center py-3 border-b border-slate-100 dark:border-slate-800">
                 <View className="flex-row items-center">
-                  <Icon name="ph:alarm" color={isDark ? '#94A3B8' : '#0F172A'} size={22} className="mr-3" />
+                  <Icon name="solar:alarm-sleep-bold" color={isDark ? '#94A3B8' : '#0F172A'} size={22} className="mr-1" />
                   <Text className="text-sm font-medium text-slate-900 dark:text-white ml-2">
                     Signalements
                   </Text>
@@ -531,7 +531,7 @@ export default function VerifyScreen() {
 
               <View className="flex-row justify-between items-center py-3 border-b border-slate-100 dark:border-slate-800">
                 <View className="flex-row items-center">
-                  <Icon name="solar:chat-round-line-bold" color={isDark ? '#94A3B8' : '#0F172A'} size={22} className="mr-3" />
+                  <Icon name="solar:chat-round-line-bold" color={isDark ? '#94A3B8' : '#0F172A'} size={22} className="mr-1" />
                   <Text className="text-sm font-medium text-slate-900 dark:text-white ml-2">
                     Commentaires positifs
                   </Text>

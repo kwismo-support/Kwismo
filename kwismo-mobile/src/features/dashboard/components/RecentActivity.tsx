@@ -1,6 +1,6 @@
-// Composant d'affichage des activités récentes du tableau de bord
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface Activity {
   id: string;
@@ -14,11 +14,13 @@ interface RecentActivityProps {
 }
 
 export const RecentActivity: React.FC<RecentActivityProps> = ({ activities }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.headerTitle}>Activités récents</Text>
+      <Text style={styles.headerTitle}>{t('common.recentActivity')}</Text>
       {activities.length === 0 ? (
-        <Text style={styles.emptyText}>Aucune activité récente</Text>
+        <Text style={styles.emptyText}>{t('common.noRecentActivity')}</Text>
       ) : (
         activities.map((act) => (
           <View key={act.id} style={styles.item}>

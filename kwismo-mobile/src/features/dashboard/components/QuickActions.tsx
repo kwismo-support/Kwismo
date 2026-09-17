@@ -1,4 +1,3 @@
-// Composant d'actions rapides sur l'écran d'accueil
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
