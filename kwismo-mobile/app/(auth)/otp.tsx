@@ -174,7 +174,7 @@ export default function OtpScreen() {
                 {otpDigits.map((digit, index) => (
                   <View
                     key={`otp-${index}`}
-                    className={`flex-1 h-14 rounded-xl border-2 items-center justify-center bg-white dark:bg-brand-cardDark ${otpError
+                    className={`flex-1 hx-14 rounded-xl border-2 items-center justify-center bg-white dark:bg-brand-cardDark ${otpError
                       ? 'border-red-500'
                       : digit
                         ? 'border-emerald-500'

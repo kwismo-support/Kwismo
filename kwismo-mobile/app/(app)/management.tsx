@@ -295,7 +295,7 @@ export default function ManagementScreen() {
         activeOpacity={0.85}
         onPress={handleOpenAddNumber}
         style={{ bottom: Math.max(insets.bottom + 72, 84) }}
-        className="absolute right-5 w-14 h-14 rounded-full items-center justify-center bg-orange-500 shadow-lg shadow-orange-500/40 z-50"
+        className="absolute right-5 wx-14 hx-14 rounded-full items-center justify-center bg-orange-500 shadow-lg shadow-orange-500/40 z-50"
       >
         <Icon name="solar:add-linear" color="#FFFFFF" size={28} />
       </TouchableOpacity>
@@ -321,7 +321,7 @@ export default function ManagementScreen() {
             </Text>
 
             <View
-              className={`flex-row items-center h-13 rounded-xl border px-3 bg-white dark:bg-brand-cardDark ${
+              className={`flex-row items-center hx-13 rounded-xl border px-3 bg-white dark:bg-brand-cardDark ${
                 phoneError ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
               }`}
             >
@@ -356,7 +356,7 @@ export default function ManagementScreen() {
               activeOpacity={0.85}
               disabled={!newPhoneNumber.trim() || isSubmittingPhone}
               onPress={handleSavePhone}
-              className={`h-13 rounded-xl items-center justify-center mt-8 ${
+              className={`hx-13 rounded-xl items-center justify-center mt-8 ${
                 newPhoneNumber.trim() ? 'bg-brand-green' : 'bg-slate-300 dark:bg-slate-700'
               }`}
             >
@@ -397,7 +397,7 @@ export default function ManagementScreen() {
               {otpCode.map((digit, idx) => (
                 <TextInput
                   key={idx}
-                  className={`w-11 h-13 rounded-xl border-2 text-center font-font-bold text-xl font-extrabold bg-white dark:bg-brand-cardDark text-slate-900 dark:text-white ${
+                  className={`wx-11 hx-13 rounded-xl border-2 text-center font-font-bold text-xl font-extrabold bg-white dark:bg-brand-cardDark text-slate-900 dark:text-white ${
                     digit ? 'border-brand-green' : 'border-slate-200 dark:border-slate-700'
                   }`}
                   maxLength={1}
@@ -427,7 +427,7 @@ export default function ManagementScreen() {
               activeOpacity={0.85}
               disabled={isVerifyingOtp || otpCode.some((c) => c === '')}
               onPress={() => handleConfirmOtp()}
-              className={`h-13 rounded-xl items-center justify-center mt-8 ${
+              className={`hx-13 rounded-xl items-center justify-center mt-8 ${
                 otpCode.every((c) => c !== '') ? 'bg-brand-green' : 'bg-slate-300 dark:bg-slate-700'
               }`}
             >
@@ -455,14 +455,14 @@ export default function ManagementScreen() {
             <View className="flex-row gap-3">
               <TouchableOpacity
                 onPress={() => setDeleteModalVisible(false)}
-                className="flex-1 h-12 rounded-xl border border-slate-200 dark:border-slate-700 items-center justify-center"
+                className="flex-1 hx-12 rounded-xl border border-slate-200 dark:border-slate-700 items-center justify-center"
               >
                 <Text className="font-font-bold text-sm text-slate-900 dark:text-white">{t('common.cancel')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={handleConfirmDelete}
-                className="flex-1 h-12 rounded-xl bg-red-500 items-center justify-center"
+                className="flex-1 hx-12 rounded-xl bg-red-500 items-center justify-center"
               >
                 <Text className="font-font-bold text-sm font-bold text-white">{t('common.delete')}</Text>
               </TouchableOpacity>

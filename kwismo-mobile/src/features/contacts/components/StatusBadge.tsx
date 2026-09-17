@@ -1,4 +1,3 @@
-// Composant de badge pour afficher l'état de sécurité d'un contact ou d'un numéro
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 

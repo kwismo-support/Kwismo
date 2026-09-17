@@ -28,7 +28,7 @@ export default function AuthWelcomeScreen() {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => router.push('/(auth)/login')}
-            className="w-full h-13 bg-orange-500 rounded-xl items-center justify-center shadow-md"
+            className="w-full hx-13 bg-orange-500 rounded-xl items-center justify-center shadow-md"
           >
             <Text className="font-font-bold text-base font-bold text-white">
               {t('common.login')}
@@ -38,7 +38,7 @@ export default function AuthWelcomeScreen() {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={() => router.push('/(auth)/register')}
-            className="w-full h-13 bg-transparent dark:bg-transparent rounded-xl border-2 border-brand-navy dark:border-white/70 items-center justify-center"
+            className="w-full hx-13 bg-transparent dark:bg-transparent rounded-xl border-2 border-brand-navy dark:border-white/70 items-center justify-center"
           >
             <Text className="font-font-bold text-base font-bold text-brand-navy dark:text-white">
               {t('common.register')}
