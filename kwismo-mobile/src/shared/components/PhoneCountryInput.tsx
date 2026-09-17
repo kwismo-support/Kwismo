@@ -20,9 +20,12 @@ export interface PhoneCountryInputProps {
   error?: string;
   hint?: string;
   phoneNumber: string;
-  onPhoneNumberChange: (phone: string) => void;
+  onPhoneNumberChange?: (phone: string) => void;
+  onChangePhoneNumber?: (phone: string) => void;
   selectedCountry: CountryItem;
-  onCountryChange: (country: CountryItem) => void;
+  onCountryChange?: (country: CountryItem) => void;
+  onSelectCountry?: (country: CountryItem) => void;
+  onSelectContactFromPicker?: (phone: string, name?: string) => void;
   containerStyle?: ViewStyle;
   placeholder?: string;
   showContactPicker?: boolean;
@@ -34,8 +37,11 @@ export const PhoneCountryInput: React.FC<PhoneCountryInputProps> = ({
   hint,
   phoneNumber,
   onPhoneNumberChange,
+  onChangePhoneNumber,
   selectedCountry,
   onCountryChange,
+  onSelectCountry,
+  onSelectContactFromPicker,
   containerStyle,
   placeholder,
   showContactPicker = true,
@@ -47,15 +53,26 @@ export const PhoneCountryInput: React.FC<PhoneCountryInputProps> = ({
   const [countryModalVisible, setCountryModalVisible] = useState(false);
   const [contactModalVisible, setContactModalVisible] = useState(false);
 
+  const handlePhoneChange = (val: string) => {
+    onPhoneNumberChange?.(val);
+    onChangePhoneNumber?.(val);
+  };
+
+  const handleCountrySelect = (c: CountryItem) => {
+    onCountryChange?.(c);
+    onSelectCountry?.(c);
+  };
+
   const parsedPhone = parsePhoneNumberFromString(phoneNumber.trim(), selectedCountry.code);
   const isPhoneValid = Boolean(parsedPhone && parsedPhone.isValid());
   const isPhoneInvalid = Boolean(phoneNumber.trim().length > 0 && !isPhoneValid);
 
   const handleSelectContact = (phone: string, country?: CountryItem) => {
-    onPhoneNumberChange(phone);
+    handlePhoneChange(phone);
     if (country) {
-      onCountryChange(country);
+      handleCountrySelect(country);
     }
+    onSelectContactFromPicker?.(phone);
   };
 
   let activeIconColor = themeColors.inputPlaceholder;
@@ -118,7 +135,7 @@ export const PhoneCountryInput: React.FC<PhoneCountryInputProps> = ({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           onChangeText={(val) => {
-            onPhoneNumberChange(val);
+            handlePhoneChange(val);
           }}
         />
 
@@ -150,7 +167,7 @@ export const PhoneCountryInput: React.FC<PhoneCountryInputProps> = ({
       <CountryPickerModal
         visible={countryModalVisible}
         onClose={() => setCountryModalVisible(false)}
-        onSelect={onCountryChange}
+        onSelect={handleCountrySelect}
         selectedCode={selectedCountry.code}
       />
 

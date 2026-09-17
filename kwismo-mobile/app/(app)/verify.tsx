@@ -258,7 +258,6 @@ export default function VerifyScreen() {
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}>
             {/* Country & Phone Input using PhoneCountryInput Component */}
             <PhoneCountryInput
-              label={t('verify.enterNumberOrNameLabel', 'Entrer le numéro ou le nom')}
               phoneNumber={inputPhone}
               onChangePhoneNumber={(val) => {
                 setInputPhone(val);
@@ -266,8 +265,8 @@ export default function VerifyScreen() {
               }}
               selectedCountry={selectedCountry}
               onSelectCountry={(c) => setSelectedCountry(c)}
-              showContactPicker={true}
-              placeholder="Entrez le numéro ou le nom"
+              showContactPicker={false}
+              placeholder={t('verify.enterNumberOrNameLabel')}
               onSelectContactFromPicker={(contactPhone, contactName) => {
                 handleSelectContact(contactPhone, contactName);
               }}
