@@ -9,8 +9,8 @@ import { ForbiddenPage } from '@/shared/components/pages/ForbiddenPage';
 import { NotFoundPage } from '@/shared/components/pages/NotFoundPage';
 import { ServerErrorPage } from '@/shared/components/pages/ServerErrorPage';
 import { useAuthStore } from '@/shared/store/authStore';
+import { PageRouteLoader } from '@/shared/components/PageRouteLoader';
 
-const PageRouteLoader      = lazy(() => import('@/shared/components/PageRouteLoader'));
 const LandingPage          = lazy(() => import('@/features/landing'));
 const AuthPage             = lazy(() => import('@/features/auth'));
 const PartnerRequestPage   = lazy(() => import('@/features/partner-request'));

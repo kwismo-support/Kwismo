@@ -199,6 +199,8 @@
     "twoFactorAuthItem": "Authentification à 2FA",
     "activeSessionsItem": "Sessions actives",
     "deleteAccountItem": "Supprimer le compte",
-    "logoutAction": "Se déconnecter"
+    "logoutAction": "Se déconnecter",
+    "noRegisteredNumbersTitle": "Aucun numéro enregistré",
+    "noRegisteredNumbersSubtitle": "Vous n'avez pas encore rattaché de ligne SIM à votre compte Kwismo. Ajoutez votre premier numéro pour sécuriser vos opérations."
   }
 }
