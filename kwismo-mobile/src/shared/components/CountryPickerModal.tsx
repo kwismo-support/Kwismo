@@ -48,6 +48,8 @@ export const getAllCountries = (lang: string = 'fr'): CountryItem[] => {
     .sort((a, b) => a.name.localeCompare(b.name));
 };
 
+export const COUNTRIES_DATA: CountryItem[] = getAllCountries('fr');
+
 interface CountryPickerModalProps {
   visible: boolean;
   onClose: () => void;

@@ -64,9 +64,9 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
 
   return (
     <View className="items-center justify-center my-4.5">
-      <View className={`wx-55 hx-55 rounded-full items-center justify-center relative ${bgCircleColorClass}`}>
+      <View className={`wx-40 hx-40 rounded-full items-center justify-center relative ${bgCircleColorClass}`}>
         <Animated.View
-          className="absolute wx-55 hx-55 rounded-full"
+          className="absolute wx-40 hx-40 rounded-full"
           style={{ transform: [{ rotate: spinInterpolate }] }}
         >
           <View className="absolute top-4.5 left-8">
@@ -85,7 +85,7 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
 
         {currentStatus !== 'analyzing' && (
           <Animated.View
-            className="absolute wx-55 hx-55 rounded-full"
+            className="absolute wx-40 hx-40 rounded-full"
             style={{ transform: [{ rotate: reverseSpinInterpolate }] }}
           >
             <View className="absolute top-6.5 right-12">

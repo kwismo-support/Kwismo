@@ -145,7 +145,8 @@ export default function VerifyScreen() {
   const updateCountryFromPhone = (phoneNumber: string) => {
     const parsed = parsePhoneNumberFromString(phoneNumber);
     if (parsed && parsed.country) {
-      const matched = COUNTRIES_DATA.find((c) => c.code === parsed.country);
+      const countryList = COUNTRIES_DATA && COUNTRIES_DATA.length > 0 ? COUNTRIES_DATA : COUNTRIES_DATA || [];
+      const matched = countryList.find((c) => c.code === parsed.country);
       if (matched) {
         setSelectedCountry(matched);
       }
@@ -277,10 +278,10 @@ export default function VerifyScreen() {
               <TouchableOpacity
                 activeOpacity={0.85}
                 onPress={handleSearch}
-                className="hx-12 rounded-xl bg-brand-green justify-center items-center mb-5 shadow-sm"
+                className="hx-12 rounded-xl bg-brand-orange justify-center items-center mb-5 shadow-sm"
               >
                 <Text className="text-white font-bold text-base">
-                  {t('common.actionVerify', 'Vérifier')}
+                  {t('common.actionVerify')}
                 </Text>
               </TouchableOpacity>
             )}
