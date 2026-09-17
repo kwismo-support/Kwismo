@@ -346,7 +346,46 @@
     "sendApprovalEmail": "Valider le Partenaire & Envoyer le Mail",
     "sendRejectionEmail": "Rejeter la Demande & Envoyer le Mail de Regret",
     "requestValidatedEmailSent": "Demande de partenariat validée et accès envoyés par email !",
-    "requestRejectedEmailSent": "Demande de partenariat rejetée et email de regret envoyé !"
+    "requestRejectedEmailSent": "Demande de partenariat rejetée et email de regret envoyé !",
+    "contactPerson": "Personne Contact",
+    "generatedPassword": "Mot de passe généré",
+    "regenerate": "Régénérer",
+    "autoSendEmail": "Envoyer automatiquement le mail avec les identifiants au partenaire",
+    "activatePartner": "Activer & Créer le Compte",
+    "defaultRejectionReason": "Bonjour {{prenom}},\n\nNous avons étudié avec attention votre demande de partenariat pour {{entreprise}}. Malheureusement, nous ne sommes pas en mesure d'y donner une suite favorable pour le moment.\n\nCordialement,\nL'Équipe KWISMO."
+  },
+  "settings": {
+    "title": "Paramètres Système & Config IA",
+    "subtitle": "Configuration globale des seuils de détection de fraude SuperAdmin (plage 0.0 à 1.0) et quotas système.",
+    "thresholdsTitle": "SuperAdmin — Configuration des Seuils de Risque IA",
+    "thresholdsSubtitle": "Fixez les règles de conversion des scores bruts (0.0 à 1.0) en statuts. Toute la plage [0.0, 1.0] doit être couverte.",
+    "saveGrid": "Sauvegarder la grille",
+    "loadingRules": "Chargement de la grille...",
+    "zone": "Zone",
+    "labelFrPlaceholder": "Libellé FR",
+    "minScore": "Score Min",
+    "minOperator": "Opérateur Min",
+    "maxScore": "Score Max",
+    "maxOperator": "Opérateur Max",
+    "opGte": ">= (Supérieur ou égal)",
+    "opGt": "> (Strictement supérieur)",
+    "opEq": "= (Égal)",
+    "opLte": "<= (Inférieur ou égal)",
+    "opLt": "< (Strictement inférieur)",
+    "generalTitle": "Paramètres Généraux Système",
+    "platformName": "Nom de la plateforme",
+    "supportEmail": "Email du support technique",
+    "ussdTimeout": "Timeout requêtes USSD (secondes)",
+    "apiQuota": "Quota d'appels API par minute",
+    "requireAdminOtpLabel": "Exiger la validation par OTP pour les comptes Administrateurs et Partenaires (Défaut: Non)",
+    "requireAdminOtpDesc": "Lorsque désactivé, les comptes d'administration et partenaires accèdent directement sans saisie de code OTP.",
+    "enableAutoBlock": "Blocage automatique des numéros ayant un score de risque IA > 90%",
+    "enableSmsAlerts": "Envoi d'alertes SMS automatiques en cas de suspicion de SIM Swap",
+    "saveGeneral": "Enregistrer les paramètres généraux",
+    "generalSaveSuccess": "Paramètres généraux enregistrés avec succès !",
+    "thresholdsSaveSuccess": "Configuration des seuils de risque enregistrée et appliquée à l'IA !",
+    "thresholdsGapError": "Zone creuse non couverte : le score {{point}} n'est associé à aucun statut (plage 0.0 à 1.0).",
+    "thresholdsSaveError": "Erreur lors de la sauvegarde des seuils."
   },
   "notifications": {
     "title": "Notifications & Alertes",
@@ -372,3 +411,4 @@
     "deviceActive": "Actif"
   }
 }
+

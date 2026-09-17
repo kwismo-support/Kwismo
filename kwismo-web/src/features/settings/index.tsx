@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { PageHeader } from '@/shared/components';
 import { Button } from '@/shared/ui/button';
@@ -7,6 +8,8 @@ import { toast } from '@/shared/store/toastStore';
 import { settingsApi, RiskThresholdRule } from './services/settings.api';
 
 export default function SettingsPage() {
+  const { t } = useTranslation(['admin', 'common']);
+
   const [settings, setSettings] = useState({
     ussdTimeoutSec: 15,
     apiRateLimitPerMin: 1200,
@@ -28,6 +31,9 @@ export default function SettingsPage() {
 
   useEffect(() => {
     setLoading(true);
+    settingsApi.getRequireAdminOtpRemote().then((val) => {
+      setSettings((prev) => ({ ...prev, requireAdminOtp: val }));
+    });
     settingsApi.getThresholds()
       .then((data) => {
         if (data.rules && data.rules.length > 0) {
@@ -50,7 +56,7 @@ export default function SettingsPage() {
         }
       }
       if (!matched) {
-        toast.error(`Zone creuse non couverte : le score ${point} n'est associé à aucun statut (plage 0.0 à 1.0).`);
+        toast.error(t('admin:settings.thresholdsGapError', { point }));
         return false;
       }
     }
@@ -70,38 +76,37 @@ export default function SettingsPage() {
     setSavingRules(true);
     try {
       await settingsApi.updateThresholds(rules);
-      toast.success('Configuration des seuils de risque enregistrée et appliquée à l\'IA !');
+      toast.success(t('admin:settings.thresholdsSaveSuccess'));
     } catch (err: any) {
-      toast.error(err?.response?.data?.detail || 'Erreur lors de la sauvegarde des seuils.');
+      toast.error(err?.response?.data?.detail || t('admin:settings.thresholdsSaveError'));
     } finally {
       setSavingRules(false);
     }
   };
 
-  const handleSaveGeneral = (e: React.FormEvent) => {
+  const handleSaveGeneral = async (e: React.FormEvent) => {
     e.preventDefault();
-    settingsApi.setRequireAdminOtp(settings.requireAdminOtp);
-    toast.success('Paramètres généraux enregistrés avec succès !');
+    await settingsApi.setRequireAdminOtpRemote(settings.requireAdminOtp);
+    toast.success(t('admin:settings.generalSaveSuccess'));
   };
 
   return (
-    <div className="flex flex-col gap-6 p-6 font-body max-w-5xl mx-auto">
+    <div className="flex flex-col gap-6 p-6 font-body max-w-5xl mx-auto text-slate-900 dark:text-white">
       <PageHeader
-        title="Paramètres Système & Config IA"
-        subtitle="Configuration globale des seuils de détection de fraude SuperAdmin (plage 0.0 à 1.0) et quotas système."
+        title={t('admin:settings.title')}
+        subtitle={t('admin:settings.subtitle')}
         showBreadcrumb={true}
       />
 
-      {/* Section 1: Dynamic Risk Threshold Configuration */}
       <div className="p-6 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-4">
           <div>
             <h3 className="font-title text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Icon icon="solar:shield-warning-bold-duotone" className="text-amber-500 text-xl" />
-              SuperAdmin — Configuration des Seuils de Risque IA
+              {t('admin:settings.thresholdsTitle')}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Fixez les règles de conversion des scores bruts (0.0 à 1.0) en statuts. Toute la plage [0.0, 1.0] doit être couverte.
+              {t('admin:settings.thresholdsSubtitle')}
             </p>
           </div>
           <Button
@@ -111,12 +116,14 @@ export default function SettingsPage() {
             isLoading={savingRules}
             onClick={handleSaveThresholds}
           >
-            Sauvegarder la grille
+            {t('admin:settings.saveGrid')}
           </Button>
         </div>
 
         {loading ? (
-          <div className="text-center py-6 text-sm text-slate-500">Chargement de la grille...</div>
+          <div className="text-center py-6 text-sm text-slate-500 dark:text-slate-400">
+            {t('admin:settings.loadingRules')}
+          </div>
         ) : (
           <div className="space-y-4">
             {rules.map((rule, idx) => (
@@ -126,24 +133,26 @@ export default function SettingsPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className={`text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider ${
-                    rule.zone === 'securise' ? 'bg-emerald-500/10 text-emerald-600' :
-                    rule.zone === 'suspect' ? 'bg-amber-500/10 text-amber-600' : 'bg-red-500/10 text-red-600'
+                    rule.zone === 'securise' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' :
+                    rule.zone === 'suspect' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' : 'bg-red-500/10 text-red-600 dark:text-red-400'
                   }`}>
-                    Zone : {rule.zone}
+                    {t('admin:settings.zone')} : {rule.zone}
                   </span>
                   <div className="w-48">
                     <Input
                       label=""
                       value={rule.label_fr}
                       onChange={(e) => handleRuleChange(idx, 'label_fr', e.target.value)}
-                      placeholder="Libellé FR"
+                      placeholder={t('admin:settings.labelFrPlaceholder')}
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
                   <div>
-                    <label className="block text-slate-600 dark:text-slate-300 font-semibold mb-1">Score Min</label>
+                    <label className="block text-slate-600 dark:text-slate-300 font-semibold mb-1">
+                      {t('admin:settings.minScore')}
+                    </label>
                     <input
                       type="number"
                       step="0.05"
@@ -156,20 +165,24 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-slate-600 dark:text-slate-300 font-semibold mb-1">Opérateur Min</label>
+                    <label className="block text-slate-600 dark:text-slate-300 font-semibold mb-1">
+                      {t('admin:settings.minOperator')}
+                    </label>
                     <select
                       value={rule.min_operator}
                       onChange={(e) => handleRuleChange(idx, 'min_operator', e.target.value)}
                       className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
                     >
-                      <option value=">=">&gt;= (Supérieur ou égal)</option>
-                      <option value=">">&gt; (Strictement supérieur)</option>
-                      <option value="=">= (Égal)</option>
+                      <option value=">=">{t('admin:settings.opGte')}</option>
+                      <option value=">">{t('admin:settings.opGt')}</option>
+                      <option value="=">{t('admin:settings.opEq')}</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block text-slate-600 dark:text-slate-300 font-semibold mb-1">Score Max</label>
+                    <label className="block text-slate-600 dark:text-slate-300 font-semibold mb-1">
+                      {t('admin:settings.maxScore')}
+                    </label>
                     <input
                       type="number"
                       step="0.05"
@@ -182,15 +195,17 @@ export default function SettingsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-slate-600 dark:text-slate-300 font-semibold mb-1">Opérateur Max</label>
+                    <label className="block text-slate-600 dark:text-slate-300 font-semibold mb-1">
+                      {t('admin:settings.maxOperator')}
+                    </label>
                     <select
                       value={rule.max_operator}
                       onChange={(e) => handleRuleChange(idx, 'max_operator', e.target.value)}
                       className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-white/10 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
                     >
-                      <option value="<=">&lt;= (Inférieur ou égal)</option>
-                      <option value="<">&lt; (Strictement inférieur)</option>
-                      <option value="=">= (Égal)</option>
+                      <option value="<=">{t('admin:settings.opLte')}</option>
+                      <option value="<">{t('admin:settings.opLt')}</option>
+                      <option value="=">{t('admin:settings.opEq')}</option>
                     </select>
                   </div>
                 </div>
@@ -200,33 +215,32 @@ export default function SettingsPage() {
         )}
       </div>
 
-      {/* Section 2: General System Settings */}
       <form onSubmit={handleSaveGeneral} className="p-6 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm space-y-6">
         <h3 className="font-title text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b border-slate-200 dark:border-white/10 pb-3">
           <Icon icon="solar:settings-bold-duotone" className="text-brand-blue text-xl" />
-          Paramètres Généraux Système
+          {t('admin:settings.generalTitle')}
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <Input
-            label="Nom de la plateforme"
+            label={t('admin:settings.platformName')}
             value={settings.platformName}
             onChange={(e) => setSettings({ ...settings, platformName: e.target.value })}
           />
           <Input
-            label="Email du support technique"
+            label={t('admin:settings.supportEmail')}
             type="email"
             value={settings.supportEmail}
             onChange={(e) => setSettings({ ...settings, supportEmail: e.target.value })}
           />
           <Input
-            label="Timeout requêtes USSD (secondes)"
+            label={t('admin:settings.ussdTimeout')}
             type="number"
             value={settings.ussdTimeoutSec}
             onChange={(e) => setSettings({ ...settings, ussdTimeoutSec: Number(e.target.value) })}
           />
           <Input
-            label="Quota d'appels API par minute"
+            label={t('admin:settings.apiQuota')}
             type="number"
             value={settings.apiRateLimitPerMin}
             onChange={(e) => setSettings({ ...settings, apiRateLimitPerMin: Number(e.target.value) })}
@@ -239,14 +253,14 @@ export default function SettingsPage() {
               type="checkbox"
               checked={settings.requireAdminOtp}
               onChange={(e) => setSettings({ ...settings, requireAdminOtp: e.target.checked })}
-              className="h-5 w-5 rounded border-slate-300 text-brand-orange focus:ring-brand-orange"
+              className="h-5 w-5 rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-brand-orange focus:ring-brand-orange"
             />
             <div>
               <span className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 block">
-                Exiger la validation par OTP pour les comptes Administrateurs et Partenaires (Défaut: Non)
+                {t('admin:settings.requireAdminOtpLabel')}
               </span>
               <span className="text-[11px] text-slate-500 dark:text-slate-400">
-                Lorsque désactivé, les comptes d'administration et partenaires accèdent directement sans saisie de code OTP.
+                {t('admin:settings.requireAdminOtpDesc')}
               </span>
             </div>
           </label>
@@ -256,10 +270,10 @@ export default function SettingsPage() {
               type="checkbox"
               checked={settings.enableAutoBlockFraud}
               onChange={(e) => setSettings({ ...settings, enableAutoBlockFraud: e.target.checked })}
-              className="h-5 w-5 rounded border-slate-300 text-brand-green focus:ring-brand-green"
+              className="h-5 w-5 rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-brand-green focus:ring-brand-green"
             />
             <span className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
-              Blocage automatique des numéros ayant un score de risque IA &gt; 90%
+              {t('admin:settings.enableAutoBlock')}
             </span>
           </label>
 
@@ -268,17 +282,17 @@ export default function SettingsPage() {
               type="checkbox"
               checked={settings.enableSmsAlerts}
               onChange={(e) => setSettings({ ...settings, enableSmsAlerts: e.target.checked })}
-              className="h-5 w-5 rounded border-slate-300 text-brand-green focus:ring-brand-green"
+              className="h-5 w-5 rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-brand-green focus:ring-brand-green"
             />
             <span className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
-              Envoi d'alertes SMS automatiques en cas de suspicion de SIM Swap
+              {t('admin:settings.enableSmsAlerts')}
             </span>
           </label>
         </div>
 
         <div className="flex justify-end pt-4 border-t border-slate-200 dark:border-white/10">
           <Button type="submit" variant="primary" leftIcon="solar:diskette-bold">
-            Enregistrer les paramètres généraux
+            {t('admin:settings.saveGeneral')}
           </Button>
         </div>
       </form>

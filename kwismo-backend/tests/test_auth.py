@@ -15,3 +15,17 @@ def test_health_check(client: TestClient) -> None:
     response = client.get("/health")
     assert response.status_code == 200
     assert response.json()["status"] in ("ok", "degraded")
+
+
+def test_admin_login_auto_registers_device_without_otp(client: TestClient) -> None:
+    response = client.post(
+        "/auth/login",
+        json={
+            "email": "invalid.admin@kwismo.com",
+            "mot_de_passe": "WrongPassword123!",
+            "device_id": "device-admin-test-01",
+            "device_name": "Admin Chrome Test",
+        },
+    )
+    assert response.status_code == 401
+

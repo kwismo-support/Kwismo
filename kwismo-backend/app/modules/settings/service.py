@@ -151,3 +151,43 @@ async def evaluate_risk_status(score: float) -> str:
     """Évalue le statut d'un score de risque en utilisant la configuration active."""
     rules = await get_threshold_rules()
     return evaluate_risk_status_with_rules(score, rules)
+
+
+SETTINGS_KEY_ADMIN_OTP = "require_admin_otp"
+
+
+async def get_require_admin_otp() -> bool:
+    """Récupère si l'OTP est exigé pour les admins/partenaires."""
+    try:
+        setting = await db.systemsetting.find_unique(where={"key": SETTINGS_KEY_ADMIN_OTP})
+        if setting and setting.value is not None:
+            return setting.value.lower() == "true"
+    except Exception as exc:
+        logger.warning("Erreur lors de la lecture de require_admin_otp (défaut: False) : %s", exc)
+    return False
+
+
+async def update_require_admin_otp(require_otp: bool):
+    """Met à jour le statut d'exigence d'OTP pour les admins/partenaires."""
+    val_str = "true" if require_otp else "false"
+    now_str = datetime.now(timezone.utc).isoformat()
+    try:
+        existing = await db.systemsetting.find_unique(where={"key": SETTINGS_KEY_ADMIN_OTP})
+        if existing:
+            await db.systemsetting.update(
+                where={"key": SETTINGS_KEY_ADMIN_OTP},
+                data={"value": val_str},
+            )
+        else:
+            await db.systemsetting.create(
+                data={
+                    "key": SETTINGS_KEY_ADMIN_OTP,
+                    "value": val_str,
+                    "description": "Exiger la validation OTP pour les compte Admin et Partenaire",
+                }
+            )
+    except Exception as exc:
+        logger.warning("Sauvegarde BD require_admin_otp impossible : %s", exc)
+
+    return {"require_admin_otp": require_otp, "updated_at": now_str}
+

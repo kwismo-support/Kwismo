@@ -360,28 +360,46 @@
     "sendApprovalEmail": "Validate Partner & Send Email",
     "sendRejectionEmail": "Reject Request & Send Regret Email",
     "requestValidatedEmailSent": "Partnership request validated and access credentials sent by email!",
-    "requestRejectedEmailSent": "Partnership request rejected and regret email sent!"
+    "requestRejectedEmailSent": "Partnership request rejected and regret email sent!",
+    "contactPerson": "Contact Person",
+    "generatedPassword": "Generated password",
+    "regenerate": "Regenerate",
+    "autoSendEmail": "Automatically send email with credentials to partner",
+    "activatePartner": "Activate & Create Account",
+    "defaultRejectionReason": "Hello {{prenom}},\n\nWe have carefully reviewed your partnership request for {{entreprise}}. Unfortunately, we are unable to accept your request at this time.\n\nBest regards,\nThe KWISMO Team."
   },
   "settings": {
     "title": "System Settings & AI Config",
     "subtitle": "Global configuration of SuperAdmin risk thresholds (range 0.0 to 1.0) and system quotas.",
     "thresholdsTitle": "SuperAdmin — AI Risk Thresholds Configuration",
     "thresholdsSubtitle": "Set conversion rules for raw scores (0.0 to 1.0) to status levels. Full range [0.0, 1.0] must be covered.",
+    "saveGrid": "Save threshold grid",
     "loadingRules": "Loading threshold rules...",
+    "zone": "Zone",
     "labelFrPlaceholder": "FR Label",
     "minScore": "Min Score",
     "minOperator": "Min Operator",
     "maxScore": "Max Score",
     "maxOperator": "Max Operator",
+    "opGte": ">= (Greater than or equal)",
+    "opGt": "> (Strictly greater than)",
+    "opEq": "= (Equal)",
+    "opLte": "<= (Less than or equal)",
+    "opLt": "< (Strictly less than)",
     "generalTitle": "General System Settings",
     "platformName": "Platform Name",
     "supportEmail": "Technical Support Email",
     "ussdTimeout": "USSD Request Timeout (seconds)",
     "apiQuota": "API Call Quota Per Minute",
+    "requireAdminOtpLabel": "Require OTP verification for Administrator and Partner accounts (Default: No)",
+    "requireAdminOtpDesc": "When disabled, administrator and partner accounts login directly without OTP entry.",
     "enableAutoBlock": "Auto-block numbers with AI risk score > 90%",
     "enableSmsAlerts": "Auto-send SMS alerts upon SIM Swap suspicion",
     "saveGeneral": "Save General Settings",
-    "generalSaveSuccess": "General settings saved successfully!"
+    "generalSaveSuccess": "General settings saved successfully!",
+    "thresholdsSaveSuccess": "Risk threshold configuration saved and applied to AI!",
+    "thresholdsGapError": "Uncovered gap detected: score {{point}} is not mapped to any status (range 0.0 to 1.0).",
+    "thresholdsSaveError": "Error saving threshold configuration."
   },
   "notifications": {
     "title": "Notifications & Alerts",
@@ -407,3 +425,4 @@
     "deviceActive": "Active"
   }
 }
+

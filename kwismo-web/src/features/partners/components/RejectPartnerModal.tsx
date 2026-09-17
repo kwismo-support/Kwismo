@@ -26,10 +26,14 @@ export default function RejectPartnerModal({
     if (request) {
       setRecipientEmail(request.email);
       setReason(
-        `Bonjour ${request.prenomContact},\n\nNous avons étudié avec attention votre demande de partenariat pour ${request.nomEntreprise}. Malheureusement, nous ne sommes pas en mesure d'y donner une suite favorable pour le moment.\n\nCordialement,\nL'Équipe KWISMO.`
+        t('admin:partners.defaultRejectionReason', {
+          prenom: request.prenomContact,
+          entreprise: request.nomEntreprise,
+        })
       );
     }
-  }, [request]);
+  }, [request, t]);
+
 
   if (!isOpen || !request) return null;
 
