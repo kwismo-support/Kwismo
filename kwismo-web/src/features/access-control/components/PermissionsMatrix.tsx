@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { Icon } from '@iconify/react';
 import { Button } from '@/shared/ui/button';
 import { usePermissions } from '@/shared/hooks/usePermissions';
 import type { RoleOut, AccessRightOut } from '../services/accessControl.api';
@@ -103,15 +104,22 @@ export function PermissionsMatrix({ role, accessRights, onToggleRight, onSave, s
   const { hasPermission } = usePermissions();
   const canUpdatePermissions = hasPermission('roles:update');
 
+  const isSuperAdminRole =
+    role.nom_role.toLowerCase().includes('super') ||
+    role.id.toLowerCase().includes('super');
+
+  const canModify = !isSuperAdminRole && canUpdatePermissions;
+
   const roleRights = accessRights.filter((ar) => ar.role_id === role.id);
   const grantedPermissions = new Set(roleRights.map((ar) => ar.permission));
 
   const isModuleFullyGranted = (mod: ModuleConfig) => {
+    if (isSuperAdminRole) return true;
     return mod.permissions.every((p) => grantedPermissions.has(p.code));
   };
 
   const handleToggleModule = async (mod: ModuleConfig) => {
-    if (!canUpdatePermissions) return;
+    if (!canModify) return;
     const fullyGranted = isModuleFullyGranted(mod);
     for (const p of mod.permissions) {
       if (fullyGranted && grantedPermissions.has(p.code)) {
@@ -132,12 +140,21 @@ export function PermissionsMatrix({ role, accessRights, onToggleRight, onSave, s
           <p className="text-xs text-slate-400 mt-0.5">{role.description || t('access.subtitle')}</p>
         </div>
 
-        {canUpdatePermissions && (
+        {canModify && (
           <Button variant="primary" onClick={onSave} isLoading={saving}>
             {t('access.saveMatrix')}
           </Button>
         )}
       </div>
+
+      {isSuperAdminRole && (
+        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs font-semibold flex items-center gap-2">
+          <Icon icon="solar:info-circle-bold" className="text-lg shrink-0 text-amber-500" />
+          <span>
+            Le rôle Super-Admin possède de plein droit la totalité des autorisations système. Ses permissions sont toutes actives et ne peuvent pas être modifiées.
+          </span>
+        </div>
+      )}
 
       <div className="space-y-4">
         {MODULE_PERMISSIONS.map((mod) => {
@@ -154,7 +171,7 @@ export function PermissionsMatrix({ role, accessRights, onToggleRight, onSave, s
                   </h4>
                 </div>
 
-                {canUpdatePermissions && (
+                {canModify && (
                   <button
                     onClick={() => handleToggleModule(mod)}
                     className="text-xs font-semibold text-brand-green hover:underline cursor-pointer"
@@ -166,12 +183,12 @@ export function PermissionsMatrix({ role, accessRights, onToggleRight, onSave, s
 
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
                 {mod.permissions.map((p) => {
-                  const isGranted = grantedPermissions.has(p.code);
+                  const isGranted = isSuperAdminRole || grantedPermissions.has(p.code);
                   return (
                     <label
                       key={p.code}
                       className={`flex items-center gap-2 p-2.5 rounded-xl border transition ${
-                        canUpdatePermissions ? 'cursor-pointer' : 'cursor-default opacity-80'
+                        canModify ? 'cursor-pointer' : 'cursor-default opacity-85'
                       } ${
                         isGranted
                           ? 'border-brand-green/40 bg-brand-green/10 text-brand-green font-bold'
@@ -181,9 +198,9 @@ export function PermissionsMatrix({ role, accessRights, onToggleRight, onSave, s
                       <input
                         type="checkbox"
                         checked={isGranted}
-                        disabled={!canUpdatePermissions}
-                        onChange={(e) => onToggleRight(role.id, p.code, e.target.checked)}
-                        className="rounded border-slate-300 text-brand-green focus:ring-brand-green h-4 w-4 cursor-pointer"
+                        disabled={!canModify}
+                        onChange={(e) => canModify && onToggleRight(role.id, p.code, e.target.checked)}
+                        className="rounded border-slate-300 text-brand-green focus:ring-brand-green h-4 w-4 cursor-pointer disabled:cursor-not-allowed"
                       />
                       <span className="text-xs">{p.actionLabel}</span>
                     </label>
