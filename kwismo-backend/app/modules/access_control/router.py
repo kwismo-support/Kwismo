@@ -15,9 +15,9 @@ router = APIRouter(tags=["Access Control"])
     response_model=list[RoleOut],
     responses=AUTH_RESPONSES,
     summary="List roles / Lister les rôles",
-    description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
+    description="**FR** — Réservé admin et partner.\n\n**EN** — Admin and partner.",
 )
-async def list_roles(user=Depends(require_roles("admin"))) -> list[RoleOut]:
+async def list_roles(user=Depends(require_roles("admin", "partner"))) -> list[RoleOut]:
     return await service.list_roles()
 
 
@@ -27,9 +27,9 @@ async def list_roles(user=Depends(require_roles("admin"))) -> list[RoleOut]:
     status_code=status.HTTP_201_CREATED,
     responses=AUTH_RESPONSES,
     summary="Create a role / Créer un rôle",
-    description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
+    description="**FR** — Réservé admin et partner.\n\n**EN** — Admin and partner.",
 )
-async def create_role(payload: RoleIn, user=Depends(require_roles("admin"))) -> RoleOut:
+async def create_role(payload: RoleIn, user=Depends(require_roles("admin", "partner"))) -> RoleOut:
     return await service.create_role(payload, user.langue)
 
 
@@ -38,9 +38,9 @@ async def create_role(payload: RoleIn, user=Depends(require_roles("admin"))) -> 
     response_model=Message,
     responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
     summary="Delete a role / Supprimer un rôle",
-    description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
+    description="**FR** — Réservé admin et partner.\n\n**EN** — Admin and partner.",
 )
-async def delete_role(role_id: str, user=Depends(require_roles("admin"))) -> Message:
+async def delete_role(role_id: str, user=Depends(require_roles("admin", "partner"))) -> Message:
     return await service.delete_role(role_id, user.langue)
 
 
@@ -49,9 +49,9 @@ async def delete_role(role_id: str, user=Depends(require_roles("admin"))) -> Mes
     response_model=list[AccessRightOut],
     responses=AUTH_RESPONSES,
     summary="List access rights / Lister les droits d'accès",
-    description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
+    description="**FR** — Réservé admin et partner.\n\n**EN** — Admin and partner.",
 )
-async def list_access_rights(user=Depends(require_roles("admin"))) -> list[AccessRightOut]:
+async def list_access_rights(user=Depends(require_roles("admin", "partner"))) -> list[AccessRightOut]:
     return await service.list_access_rights()
 
 
@@ -61,10 +61,10 @@ async def list_access_rights(user=Depends(require_roles("admin"))) -> list[Acces
     status_code=status.HTTP_201_CREATED,
     responses=AUTH_RESPONSES,
     summary="Create an access right / Créer un droit d'accès",
-    description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
+    description="**FR** — Réservé admin et partner.\n\n**EN** — Admin and partner.",
 )
 async def create_access_right(
-    payload: AccessRightIn, user=Depends(require_roles("admin"))
+    payload: AccessRightIn, user=Depends(require_roles("admin", "partner"))
 ) -> AccessRightOut:
     return await service.create_access_right(payload, user.langue)
 
@@ -74,7 +74,7 @@ async def create_access_right(
     response_model=Message,
     responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
     summary="Delete an access right / Supprimer un droit d'accès",
-    description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
+    description="**FR** — Réservé admin et partner.\n\n**EN** — Admin and partner.",
 )
-async def delete_access_right(right_id: str, user=Depends(require_roles("admin"))) -> Message:
+async def delete_access_right(right_id: str, user=Depends(require_roles("admin", "partner"))) -> Message:
     return await service.delete_access_right(right_id, user.langue)

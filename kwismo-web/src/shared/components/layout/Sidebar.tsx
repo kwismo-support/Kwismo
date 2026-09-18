@@ -7,6 +7,8 @@ import { usePermissions } from '@/shared/hooks/usePermissions';
 import { ConfirmDialog } from '@/shared/components/ConfirmDialog';
 import { cn } from '@/shared/lib/utils';
 import type { PermissionCode, UserRole } from '@/shared/types/access';
+import IconColor from '@/assets/logo/Color_Icon.png';
+import IconWhite from '@/assets/logo/White_Icon.png';
 
 interface SidebarProps {
   open: boolean;
@@ -82,12 +84,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             />
           </button>
           <div className="flex items-center gap-3">
-            <img
-              src="/favicon.svg"
-              alt="KWISMO Logo"
-              className="h-9 w-9 shrink-0 object-contain"
-              title="KWISMO Anti-Fraud Platform"
-            />
+            <img src={IconColor} alt="KWISMO Logo" className="h-6 w-auto object-contain dark:hidden" />
+            <img src={IconWhite} alt="KWISMO Logo" className="h-6 w-auto object-contain hidden dark:block" />
             {!isCollapsed && (
               <span className="font-title text-xl font-bold tracking-tight text-brand-navy dark:text-white transition-opacity">
                 KWISMO
@@ -159,10 +157,10 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
         onConfirm={handleConfirmLogout}
-        title={t('dialogs.logoutTitle', { defaultValue: 'Confirmer la déconnexion ?' })}
-        description={t('dialogs.logoutDescription', { defaultValue: 'Êtes-vous sûr de vouloir vous déconnecter de la plateforme KWISMO ? vous devrez vous réauthentifier pour accéder à nouveau à vos dossiers.' })}
-        confirmLabel={t('actions.logout', { defaultValue: 'Déconnexion' })}
-        cancelLabel={t('actions.cancel', { defaultValue: 'Annuler' })}
+        title={t('dialogs.logoutTitle')}
+        description={t('dialogs.logoutDescription')}
+        confirmLabel={t('actions.logout')}
+        cancelLabel={t('actions.cancel')}
         variant="danger"
       />
     </>

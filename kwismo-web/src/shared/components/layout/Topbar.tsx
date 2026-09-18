@@ -19,6 +19,8 @@ export function Topbar({ onMenuClick }: TopbarProps) {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
+  const userRoleStr = typeof user?.role === 'string' ? user.role : '';
+  const isSuperAdmin = userRoleStr.toLowerCase().includes('super');
   const [globalSearch, setGlobalSearch] = useState('');
   const { rawNotifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
 
@@ -168,10 +170,12 @@ export function Topbar({ onMenuClick }: TopbarProps) {
               <Icon icon="solar:user-bold" className="text-base" />
               Mon Profil
             </DropdownItem>
-            <DropdownItem onClick={() => navigate('/app/settings')}>
-              <Icon icon="solar:settings-bold" className="text-base" />
-              Paramètres Système
-            </DropdownItem>
+            {isSuperAdmin && (
+              <DropdownItem onClick={() => navigate('/app/settings')}>
+                <Icon icon="solar:settings-bold" className="text-base" />
+                Paramètres Système
+              </DropdownItem>
+            )}
             <DropdownSeparator />
             <DropdownItem onClick={handleLogout}>
               <Icon icon="solar:logout-2-bold" className="text-base text-red-500" />
