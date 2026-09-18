@@ -56,6 +56,7 @@ class UserListItemOut(BaseModel):
     role_id: str | None = None
     partner_id: str | None = None
     partner_name: str | None = None
+    date_inscription: datetime
     nombre_numeros: int = Field(..., description="Numéros rattachés au compte / Numbers attached to the account.")
 
 

@@ -135,6 +135,7 @@ async def list_users(page: int, page_size: int, partner_id: str | None = None):
                 role_id=u.roleId,
                 partner_id=u.partnerId,
                 partner_name=p_name,
+                date_inscription=u.dateInscription,
                 nombre_numeros=phones_count,
             )
         )
