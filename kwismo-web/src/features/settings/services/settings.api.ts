@@ -63,7 +63,6 @@ export const settingsApi = {
     try {
       await apiClient.put('/settings/require-admin-otp', { require_admin_otp: val });
     } catch {
-      //
     }
   }
 };

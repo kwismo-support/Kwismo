@@ -4,13 +4,13 @@ import { usePermissions } from '@/shared/hooks/usePermissions';
 import type { RoleOut, AccessRightOut } from '../services/accessControl.api';
 import type { PermissionCode } from '@/shared/types/access';
 
-interface ModuleConfig {
+export interface ModuleConfig {
   id: string;
   labelKey: string;
   permissions: { code: PermissionCode; actionLabel: string }[];
 }
 
-const MODULE_PERMISSIONS: ModuleConfig[] = [
+export const MODULE_PERMISSIONS: ModuleConfig[] = [
   {
     id: 'users',
     labelKey: 'access.categories.users',

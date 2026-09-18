@@ -308,51 +308,177 @@ export default function UserDetailPage() {
       </div>
 
       <div className="p-6 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-white/10 pb-4">
           <div>
             <h3 className="font-title text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Icon icon="solar:shield-keyhole-bold-duotone" className="text-brand-orange text-xl" />
               Permissions & Droits Spécifiques de l'Utilisateur
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Conserve son rôle principal ({user.role || 'user'}) tout en accordant des accès personnalisés.
+              Rôle principal : <strong className="uppercase font-mono text-brand-navy dark:text-brand-orange">{roleNameStr}</strong>
             </p>
           </div>
+
+          {roleNameStr.toLowerCase().includes('super') && (
+            <span className="px-3 py-1 rounded-full bg-brand-orange/20 text-brand-orange border border-brand-orange/30 text-xs font-bold font-mono">
+              Super-Admin (Toutes autorisations actives)
+            </span>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {roleNameStr.toLowerCase().includes('super') && (
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs font-semibold flex items-center gap-2">
+            <Icon icon="solar:info-circle-bold" className="text-lg shrink-0 text-amber-500" />
+            <span>
+              Le rôle Super-Admin possède de plein droit la totalité des autorisations système. Ses permissions ne peuvent pas être restreintes ou modifiées.
+            </span>
+          </div>
+        )}
+
+        <div className="space-y-6">
           {[
-            { code: 'users:read', label: 'Consulter la liste des utilisateurs' },
-            { code: 'users:create', label: 'Créer de nouveaux utilisateurs' },
-            { code: 'users:update', label: 'Modifier les utilisateurs' },
-            { code: 'users:delete', label: 'Supprimer des utilisateurs' },
-            { code: 'users:export', label: 'Exporter la liste des utilisateurs' },
-            { code: 'numbers:read', label: 'Consulter le registre des numéros' },
-            { code: 'numbers:verify', label: 'Vérifier la réputation des numéros' },
-            { code: 'numbers:export', label: 'Exporter le registre des numéros' },
-            { code: 'reports:read', label: 'Consulter les signalements de fraude' },
-            { code: 'reports:verify', label: 'Valider ou rejeter des signalements' },
-            { code: 'reports:export', label: 'Exporter les rapports PDF/CSV' },
-            { code: 'partners:read', label: 'Consulter les partenaires' },
-            { code: 'roles:read', label: 'Consulter les rôles et autorisations' },
-            { code: 'settings:read', label: 'Consulter la configuration système' },
-          ].map((perm) => (
-            <label
-              key={perm.code}
-              className="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] cursor-pointer hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
-            >
-              <input
-                type="checkbox"
-                disabled={!isEditing}
-                defaultChecked={true}
-                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-green focus:ring-brand-green"
-              />
-              <div>
-                <p className="text-xs font-bold text-slate-900 dark:text-white">{perm.label}</p>
-                <p className="text-[10px] font-mono text-slate-400 mt-0.5">{perm.code}</p>
+            {
+              id: 'users',
+              title: 'Gestion des Utilisateurs',
+              permissions: [
+                { code: 'users:read', label: 'Consulter les utilisateurs' },
+                { code: 'users:create', label: 'Créer des utilisateurs' },
+                { code: 'users:update', label: 'Modifier les utilisateurs' },
+                { code: 'users:delete', label: 'Supprimer des utilisateurs' },
+                { code: 'users:export', label: 'Exporter les utilisateurs' },
+              ],
+            },
+            {
+              id: 'numbers',
+              title: 'Registre des Numéros',
+              permissions: [
+                { code: 'numbers:read', label: 'Consulter les numéros' },
+                { code: 'numbers:create', label: 'Ajouter des numéros' },
+                { code: 'numbers:update', label: 'Modifier des numéros' },
+                { code: 'numbers:delete', label: 'Supprimer des numéros' },
+                { code: 'numbers:verify', label: 'Vérifier la réputation' },
+                { code: 'numbers:export', label: 'Exporter le registre' },
+              ],
+            },
+            {
+              id: 'reports',
+              title: 'Signalements de Fraude',
+              permissions: [
+                { code: 'reports:read', label: 'Consulter les signalements' },
+                { code: 'reports:create', label: 'Signaler un numéro' },
+                { code: 'reports:verify', label: 'Valider/Rejeter les signalements' },
+                { code: 'reports:delete', label: 'Supprimer des signalements' },
+                { code: 'reports:export', label: 'Exporter les rapports PDF/CSV' },
+              ],
+            },
+            {
+              id: 'partners',
+              title: 'Partenaires & Affiliation',
+              permissions: [
+                { code: 'partners:read', label: 'Consulter les partenaires' },
+                { code: 'partners:create', label: 'Créer un partenaire' },
+                { code: 'partners:update', label: 'Modifier un partenaire' },
+                { code: 'partners:delete', label: 'Supprimer un partenaire' },
+                { code: 'affiliation:update', label: 'Gérer l’affiliation' },
+                { code: 'partners:export', label: 'Exporter les partenaires' },
+              ],
+            },
+            {
+              id: 'ussd',
+              title: 'Pays, Opérateurs & Actions USSD',
+              permissions: [
+                { code: 'ussd:read', label: 'Consulter les pays & USSD' },
+                { code: 'ussd:create', label: 'Créer pays / opérateur / USSD' },
+                { code: 'ussd:update', label: 'Modifier pays / opérateur / USSD' },
+                { code: 'ussd:delete', label: 'Supprimer pays / opérateur / USSD' },
+                { code: 'ussd:export', label: 'Exporter la configuration USSD' },
+              ],
+            },
+            {
+              id: 'roles',
+              title: 'Rôles & Matrice d’Accès',
+              permissions: [
+                { code: 'roles:read', label: 'Consulter les rôles' },
+                { code: 'roles:create', label: 'Créer un rôle' },
+                { code: 'roles:update', label: 'Modifier la matrice de rôle' },
+                { code: 'roles:delete', label: 'Supprimer un rôle' },
+              ],
+            },
+            {
+              id: 'settings',
+              title: 'Paramètres Système & Supervision',
+              permissions: [
+                { code: 'analytics:read', label: 'Supervision des KPI & API' },
+                { code: 'settings:read', label: 'Consulter les paramètres' },
+                { code: 'settings:update', label: 'Modifier les paramètres' },
+                { code: 'system:configure', label: 'Configurer les seuils de risque IA' },
+              ],
+            },
+          ].map((mod) => {
+            const isSuperAdminUser = roleNameStr.toLowerCase().includes('super');
+            const defaultRolePerms: Record<string, string[]> = {
+              admin: [
+                'users:read', 'users:create', 'users:update', 'users:delete', 'users:export',
+                'numbers:read', 'numbers:create', 'numbers:update', 'numbers:delete', 'numbers:verify', 'numbers:export',
+                'reports:read', 'reports:create', 'reports:verify', 'reports:delete', 'reports:export',
+                'partners:read', 'partners:create', 'partners:update', 'partners:delete', 'partners:export',
+                'affiliation:update', 'ussd:read', 'ussd:create', 'ussd:update', 'ussd:delete', 'ussd:export',
+                'roles:read', 'roles:create', 'roles:update', 'roles:delete', 'analytics:read', 'settings:read'
+              ],
+              partner: [
+                'users:read', 'users:create', 'users:update', 'users:delete',
+                'roles:read', 'roles:create', 'roles:update', 'roles:delete',
+                'reports:read', 'reports:create', 'reports:export',
+                'numbers:read', 'numbers:verify', 'numbers:export', 'analytics:read'
+              ],
+              user: ['reports:read', 'reports:create', 'numbers:read', 'numbers:verify']
+            };
+
+            const roleDefaults = defaultRolePerms[roleNameStr.toLowerCase()] || defaultRolePerms.user;
+            const activeCustomPerms = user.custom_permissions || [];
+
+            return (
+              <div
+                key={mod.id}
+                className="p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-white/[0.02] space-y-3"
+              >
+                <h4 className="font-bold text-xs text-slate-900 dark:text-white uppercase tracking-wider">
+                  {mod.title}
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {mod.permissions.map((p) => {
+                    const isGranted = isSuperAdminUser || roleDefaults.includes(p.code) || activeCustomPerms.includes(p.code);
+                    const canCheck = !isSuperAdminUser && isEditing;
+
+                    return (
+                      <label
+                        key={p.code}
+                        className={`flex items-start gap-2.5 p-3 rounded-xl border transition ${
+                          canCheck ? 'cursor-pointer' : 'cursor-default opacity-85'
+                        } ${
+                          isGranted
+                            ? 'border-brand-green/40 bg-brand-green/10 text-slate-900 dark:text-white'
+                            : 'border-slate-200 dark:border-white/10 bg-white dark:bg-[#0F1626] text-slate-500'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isGranted}
+                          disabled={!canCheck}
+                          onChange={() => {}}
+                          className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-green focus:ring-brand-green cursor-pointer disabled:cursor-not-allowed"
+                        />
+                        <div>
+                          <p className="text-xs font-bold leading-snug">{p.label}</p>
+                          <p className="text-[10px] font-mono text-slate-400 mt-0.5">{p.code}</p>
+                        </div>
+                      </label>
+                    );
+                  })}
+                </div>
               </div>
-            </label>
-          ))}
+            );
+          })}
         </div>
       </div>
 

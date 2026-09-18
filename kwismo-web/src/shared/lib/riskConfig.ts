@@ -13,7 +13,6 @@ export async function fetchRiskThresholdsFromDb(): Promise<RiskThresholdRule[]> 
       cachedRules = res.rules;
     }
   } catch {
-    //
   }
   return cachedRules;
 }
