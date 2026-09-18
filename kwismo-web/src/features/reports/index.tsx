@@ -79,19 +79,25 @@ export default function ReportsPage() {
   const totalReports = reports.length;
   const validatedReports = reports.filter((r) => r.statut === 'validated' || r.statut === 'frauduleux').length;
 
-  const mtnCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('MTN')).length;
-  const orangeCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('ORANGE')).length;
-  const airtelCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('AIRTEL')).length;
-  const moovCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('MOOV')).length;
-  const waveCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('WAVE')).length;
+  const uniqueOperatorNames = Array.from(
+    new Set(
+      numbers
+        .map((n) => n.operator_name || (n.operator_id && !n.operator_id.startsWith('op_') ? n.operator_id : null))
+        .filter(Boolean)
+    )
+  ) as string[];
 
-  const operatorReportData = [
-    { op: 'MTN', n: mtnCount, fraudes: numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('MTN') && n.statut === 'frauduleux').length },
-    { op: 'Orange', n: orangeCount, fraudes: numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('ORANGE') && n.statut === 'frauduleux').length },
-    { op: 'Airtel', n: airtelCount, fraudes: numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('AIRTEL') && n.statut === 'frauduleux').length },
-    { op: 'Moov', n: moovCount, fraudes: numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('MOOV') && n.statut === 'frauduleux').length },
-    { op: 'Wave', n: waveCount, fraudes: numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('WAVE') && n.statut === 'frauduleux').length },
-  ];
+  const operatorReportData = uniqueOperatorNames.length > 0
+    ? uniqueOperatorNames.map((opName) => {
+        const opNumbers = numbers.filter((n) => n.operator_name === opName || n.operator_id === opName);
+        const fraudes = opNumbers.filter((n) => n.statut === 'frauduleux' || (n.score_risque && n.score_risque >= 70)).length;
+        return {
+          op: opName,
+          n: opNumbers.length,
+          fraudes,
+        };
+      })
+    : [];
 
   const weeklyData = [
     { w: 'S1', sig: Math.round(totalReports * 0.1), fra: Math.round(validatedReports * 0.1) },
@@ -113,8 +119,8 @@ export default function ReportsPage() {
   return (
     <div className="flex flex-col gap-6 p-6 font-body max-w-7xl mx-auto">
       <PageHeader
-        title={t('reports.title')}
-        subtitle="Analyses approfondies, métriques avancées et historiques d'exportation."
+        title={t('reports.title', { defaultValue: 'Rapports & Analyses' })}
+        subtitle={t('reports.subtitle', { defaultValue: 'Analyses approfondies, métriques avancées et historiques d\'exportation.' })}
         showBreadcrumb={true}
       />
 
@@ -164,7 +170,7 @@ export default function ReportsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-row w-full text-xs"
+                className="w-full text-xs"
                 onClick={() => handleExport(r.title, 'PDF')}
               >
                 <Icon icon="solar:file-download-bold" className="text-sm text-brand-green mr-1" />
@@ -173,7 +179,7 @@ export default function ReportsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="flex-row w-full text-xs"
+                className="w-full text-xs"
                 onClick={() => handleExport(r.title, 'CSV')}
               >
                 <Icon icon="solar:export-bold" className="text-sm text-brand-blue mr-1" />
@@ -211,9 +217,9 @@ export default function ReportsPage() {
                 contentStyle={{
                   borderRadius: '16px',
                   fontSize: '12px',
-                  backgroundColor: 'bg-slate-400 dark:bg-slate-600',
-                  borderColor: 'border-brand-green',
-                  color: 'text-black dark:text-white',
+                  backgroundColor: '#161E33',
+                  borderColor: '#32B07F',
+                  color: '#FFFFFF',
                   fontFamily: 'Montserrat Alternates, sans-serif',
                 }}
               />
@@ -250,9 +256,9 @@ export default function ReportsPage() {
                 contentStyle={{
                   borderRadius: '16px',
                   fontSize: '12px',
-                  backgroundColor: 'bg-slate-400 dark:bg-slate-600',
-                  borderColor: 'border-brand-green',
-                  color: 'text-black dark:text-white',
+                  backgroundColor: '#161E33',
+                  borderColor: '#32B07F',
+                  color: '#FFFFFF',
                   fontFamily: 'Montserrat Alternates, sans-serif',
                 }}
               />

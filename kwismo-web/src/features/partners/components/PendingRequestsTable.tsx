@@ -26,22 +26,24 @@ export default function PendingRequestsTable({
   const [statusFilter, setStatusFilter] = useState('ALL');
 
   const filtered = useMemo(() => {
-    return requests.filter((r) => {
-      const q = search.toLowerCase();
-      const matchesSearch =
-        !search ||
-        r.nomEntreprise.toLowerCase().includes(q) ||
-        r.nomContact.toLowerCase().includes(q) ||
-        r.email.toLowerCase().includes(q);
+    return requests
+      .filter((r) => r.statut !== 'validated')
+      .filter((r) => {
+        const q = search.toLowerCase();
+        const matchesSearch =
+          !search ||
+          r.nomEntreprise.toLowerCase().includes(q) ||
+          r.nomContact.toLowerCase().includes(q) ||
+          r.email.toLowerCase().includes(q);
 
-      const matchesType =
-        typeFilter === 'ALL' || r.typePartenariat.toUpperCase() === typeFilter.toUpperCase();
+        const matchesType =
+          typeFilter === 'ALL' || r.typePartenariat.toUpperCase() === typeFilter.toUpperCase();
 
-      const matchesStatus =
-        statusFilter === 'ALL' || r.statut.toUpperCase() === statusFilter.toUpperCase();
+        const matchesStatus =
+          statusFilter === 'ALL' || r.statut.toUpperCase() === statusFilter.toUpperCase();
 
-      return matchesSearch && matchesType && matchesStatus;
-    });
+        return matchesSearch && matchesType && matchesStatus;
+      });
   }, [requests, search, typeFilter, statusFilter]);
 
   const columns: Column<PartnerRequestItem>[] = [

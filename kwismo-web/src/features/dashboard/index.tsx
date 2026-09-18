@@ -52,19 +52,25 @@ export default function DashboardPage() {
   const warningCount = numbers.filter((n) => n.statut === 'a_signaler' || n.statut === 'suspect').length;
   const fraudCount = numbers.filter((n) => n.statut === 'frauduleux' || n.statut === 'blocked').length;
 
-  const mtnCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('MTN')).length;
-  const orangeCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('ORANGE')).length;
-  const airtelCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('AIRTEL')).length;
-  const moovCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('MOOV')).length;
-  const waveCount = numbers.filter((n) => (n.operator_name || '').toUpperCase().includes('WAVE')).length;
+  const uniqueOperatorNames = Array.from(
+    new Set(
+      numbers
+        .map((n) => n.operator_name || (n.operator_id && !n.operator_id.startsWith('op_') ? n.operator_id : null))
+        .filter(Boolean)
+    )
+  ) as string[];
 
-  const operatorData: OperatorDataPoint[] = [
-    { name: 'MTN', fraudes: mtnCount, color: '#32B07F' },
-    { name: 'Orange', fraudes: orangeCount, color: '#FF9900' },
-    { name: 'Airtel', fraudes: airtelCount, color: '#6B98FF' },
-    { name: 'Moov', fraudes: moovCount, color: '#161E33' },
-    { name: 'Wave', fraudes: waveCount, color: '#e53e3e' },
-  ];
+  const palette = ['#32B07F', '#FF9900', '#6B98FF', '#161E33', '#E4483B', '#7C3AED', '#0891B2'];
+
+  const operatorData: OperatorDataPoint[] = uniqueOperatorNames.map((opName, idx) => {
+    const opNumbers = numbers.filter((n) => n.operator_name === opName || n.operator_id === opName);
+    const fraudes = opNumbers.filter((n) => n.statut === 'frauduleux' || n.statut === 'blocked' || (n.score_risque && n.score_risque >= 70)).length;
+    return {
+      name: opName,
+      fraudes,
+      color: palette[idx % palette.length],
+    };
+  });
 
   const statusData: StatusDataPoint[] = [
     { name: 'Sécurisé', value: secureCount, color: '#56B039' },
@@ -84,7 +90,7 @@ export default function DashboardPage() {
 
   const adminCards = [
     {
-      title: t('dashboard.activeUsers', { defaultValue: 'Utilisateurs actifs' }),
+      title: t('dashboard.activeUsers'),
       value: (findKpi('total_utilisateurs') ?? 0).toLocaleString('fr-FR'),
       change: '+0 %',
       isPositive: true,
@@ -92,7 +98,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-navy bg-brand-navy/10 dark:bg-brand-navy/30 dark:text-blue-300',
     },
     {
-      title: t('dashboard.verifiedNumbers', { defaultValue: 'Numéros vérifiés' }),
+      title: t('dashboard.verifiedNumbers'),
       value: (findKpi('total_numeros_analyses') ?? totalNumbers).toLocaleString('fr-FR'),
       change: '+0 %',
       isPositive: true,
@@ -100,7 +106,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
-      title: t('dashboard.reports', { defaultValue: 'Signalements' }),
+      title: t('dashboard.reports'),
       value: (findKpi('total_signalements') ?? totalReports).toLocaleString('fr-FR'),
       change: '+0 %',
       isPositive: true,
@@ -108,7 +114,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-orange bg-brand-orange/10 dark:bg-brand-orange/20',
     },
     {
-      title: t('dashboard.blockedFrauds', { defaultValue: 'Taux de fraude bloquée' }),
+      title: t('dashboard.blockedFrauds'),
       value: `${((findKpi('taux_fraude_detectee') ?? 0) * 100).toFixed(1)}%`,
       change: '0 %',
       isPositive: true,
@@ -116,7 +122,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-rose-600 bg-rose-500/10 dark:text-rose-400 dark:bg-rose-500/20',
     },
     {
-      title: t('dashboard.protectedTx', { defaultValue: 'Transferts protégés' }),
+      title: t('dashboard.protectedTx'),
       value: (findKpi('total_transferts_proteges') ?? 0).toLocaleString('fr-FR'),
       change: '+0 %',
       isPositive: true,
@@ -124,7 +130,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
-      title: t('dashboard.apiCalls', { defaultValue: 'Appels API' }),
+      title: t('dashboard.apiCalls'),
       value: (findKpi('total_appels_api') ?? 0).toLocaleString('fr-FR'),
       change: '+0 %',
       isPositive: true,
@@ -216,8 +222,8 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-6 p-6 font-body">
       <PageHeader
-        title={t('dashboard.title', { defaultValue: 'Tableau de bord' })}
-        subtitle={t('dashboard.subtitle', { defaultValue: 'Supervision des indicateurs et de la réputation récurrente' })}
+        title={t('dashboard.title')}
+        subtitle={t('dashboard.subtitle')}
         showBreadcrumb={false}
       />
 

@@ -1,4 +1,3 @@
-// Service API backend pour la gestion du profil utilisateur et des paramètres
 import { ApiClient } from '../../../shared/services/apiClient';
 
 export interface UserMeResponse {
@@ -6,28 +5,27 @@ export interface UserMeResponse {
   nom: string;
   prenom: string;
   email: string;
+  telephone?: string;
+  indicatif_pays?: string;
   email_verifie: boolean;
   statut: string;
   role: string;
   langue: string;
   date_inscription: string;
+  photo_url?: string;
   kpi: {
     numeros_verifies: number;
     signalements_effectues: number;
     transferts_proteges: number;
   };
-  devices: Array<{
-    id: string;
-    nom: string;
-    premiere_connexion: string;
-    derniere_connexion: string;
-  }>;
 }
 
 export interface UserUpdatePayload {
   nom?: string;
   prenom?: string;
   langue?: string;
+  telephone?: string;
+  indicatif_pays?: string;
 }
 
 export const profileApi = {
@@ -43,5 +41,10 @@ export const profileApi = {
       body: payload,
     });
   },
-};
 
+  async logout() {
+    return ApiClient.request<{ message: string }>('/auth/logout', {
+      method: 'POST',
+    });
+  },
+};
