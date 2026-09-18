@@ -48,14 +48,11 @@ export default function DashboardPage() {
 
   const filteredNumbers = numbers.filter((n) => {
     if (operatorFilter && n.operator_name !== operatorFilter && n.operator_id !== operatorFilter) return false;
-    if (countryFilter && n.pays && !n.pays.toLowerCase().includes(countryFilter.toLowerCase())) return false;
+    if (countryFilter && n.country_id && !n.country_id.toLowerCase().includes(countryFilter.toLowerCase())) return false;
     return true;
   });
 
-  const filteredReports = reports.filter((r) => {
-    if (operatorFilter && r.operateur && !r.operateur.toLowerCase().includes(operatorFilter.toLowerCase())) return false;
-    return true;
-  });
+  const filteredReports = reports;
 
   const totalNumbers = filteredNumbers.length;
   const totalReports = filteredReports.length;
@@ -332,7 +329,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <TrendChart isLoading={loading} data7d={trend7d} />
+          <TrendChart isLoading={loading} data={trendData} />
         </div>
         <div>
           <StatusDistributionChart isLoading={loading} data={statusData} />
