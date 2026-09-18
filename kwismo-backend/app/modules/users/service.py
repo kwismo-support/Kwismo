@@ -104,19 +104,26 @@ async def update_me(user_id: str, payload: UserUpdateIn, lang: str = "fr") -> Us
 # list_users
 # ---------------------------------------------------------------------------
 
-async def list_users(page: int, page_size: int):
+async def list_users(page: int, page_size: int, partner_id: str | None = None):
     from app.core.schemas import Page
     skip = (page - 1) * page_size
-    total = await db.user.count()
+    where = {}
+    if partner_id:
+        where["partnerId"] = partner_id
+
+    total = await db.user.count(where=where)
     users = await db.user.find_many(
+        where=where,
         skip=skip,
         take=page_size,
-        include={"role": True, "phones": True},
+        include={"role": True, "partner": True, "phones": True},
         order={"dateInscription": "desc"},
     )
     items = []
     for u in users:
         phones_count = len(u.phones or [])
+        role_nom = u.role.nomRole if u.role else "user"
+        p_name = u.partner.nomEntreprise if u.partner else None
         items.append(
             UserListItemOut(
                 id=u.id,
@@ -124,6 +131,10 @@ async def list_users(page: int, page_size: int):
                 prenom=u.prenom,
                 email=u.email,
                 statut=u.statut,
+                role=role_nom,
+                role_id=u.roleId,
+                partner_id=u.partnerId,
+                partner_name=p_name,
                 nombre_numeros=phones_count,
             )
         )
@@ -137,7 +148,7 @@ async def list_users(page: int, page_size: int):
 async def get_user(user_id: str, lang: str = "fr") -> UserDetailOut:
     user = await db.user.find_unique(
         where={"id": user_id},
-        include={"role": True, "phones": True},
+        include={"role": True, "partner": True, "phones": True},
     )
     if user is None:
         raise HTTPException(
@@ -149,15 +160,23 @@ async def get_user(user_id: str, lang: str = "fr") -> UserDetailOut:
         UserPhoneSummaryOut(id=p.id, valeur=p.valeur, est_verifie=p.estVerifie, est_compromis=p.estCompromis)
         for p in (user.phones or [])
     ]
+    role_nom = user.role.nomRole if user.role else "user"
+    p_name = user.partner.nomEntreprise if user.partner else None
+
     return UserDetailOut(
         id=user.id,
         nom=user.nom,
         prenom=user.prenom,
         email=user.email,
         statut=user.statut,
+        role=role_nom,
+        role_id=user.roleId,
+        partner_id=user.partnerId,
+        partner_name=p_name,
         nombre_numeros=phones_count,
         date_inscription=user.dateInscription,
         numeros=numeros,
+        custom_permissions=[],
     )
 
 
@@ -180,3 +199,4 @@ async def set_user_status(user_id: str, payload: UserStatusIn, lang: str = "fr")
 
     await db.user.update(where={"id": user_id}, data={"statut": payload.statut})
     return await get_user(user_id, lang)
+

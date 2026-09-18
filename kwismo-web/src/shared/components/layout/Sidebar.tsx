@@ -3,7 +3,6 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/shared/store/authStore';
-import { useThemeStore } from '@/shared/store/themeStore';
 import { usePermissions } from '@/shared/hooks/usePermissions';
 import { ConfirmDialog } from '@/shared/components/ConfirmDialog';
 import { cn } from '@/shared/lib/utils';
@@ -40,7 +39,6 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   const { t } = useTranslation('common');
   const navigate = useNavigate();
   const logout = useAuthStore((s) => s.logout);
-  const theme = useThemeStore((s) => s.theme);
   const { role, hasPermission } = usePermissions();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -84,17 +82,12 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             />
           </button>
           <div className="flex items-center gap-3">
-            <div
-              className={cn(
-                "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-title font-bold text-xl transition-colors",
-                theme === 'dark'
-                  ? "bg-brand-orange/20 text-brand-orange border border-brand-orange/30"
-                  : "bg-brand-navy/10 text-brand-navy border border-brand-navy/20"
-              )}
+            <img
+              src="/favicon.svg"
+              alt="KWISMO Logo"
+              className="h-9 w-9 shrink-0 object-contain"
               title="KWISMO Anti-Fraud Platform"
-            >
-              K
-            </div>
+            />
             {!isCollapsed && (
               <span className="font-title text-xl font-bold tracking-tight text-brand-navy dark:text-white transition-opacity">
                 KWISMO

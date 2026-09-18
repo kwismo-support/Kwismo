@@ -22,6 +22,10 @@ export interface UserItem {
   statut: string;
   nombre_numeros?: number;
   role?: string;
+  role_id?: string;
+  partner_id?: string;
+  partner_name?: string;
+  custom_permissions?: string[];
   langue?: string;
   date_inscription?: string;
   createdAt?: string;

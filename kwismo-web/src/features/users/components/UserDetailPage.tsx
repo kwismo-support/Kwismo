@@ -307,6 +307,55 @@ export default function UserDetailPage() {
         )}
       </div>
 
+      <div className="p-6 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm space-y-6">
+        <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-4">
+          <div>
+            <h3 className="font-title text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Icon icon="solar:shield-keyhole-bold-duotone" className="text-brand-orange text-xl" />
+              Permissions & Droits Spécifiques de l'Utilisateur
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Conserve son rôle principal ({user.role || 'user'}) tout en accordant des accès personnalisés.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[
+            { code: 'users:read', label: 'Consulter la liste des utilisateurs' },
+            { code: 'users:create', label: 'Créer de nouveaux utilisateurs' },
+            { code: 'users:update', label: 'Modifier les utilisateurs' },
+            { code: 'users:delete', label: 'Supprimer des utilisateurs' },
+            { code: 'users:export', label: 'Exporter la liste des utilisateurs' },
+            { code: 'numbers:read', label: 'Consulter le registre des numéros' },
+            { code: 'numbers:verify', label: 'Vérifier la réputation des numéros' },
+            { code: 'numbers:export', label: 'Exporter le registre des numéros' },
+            { code: 'reports:read', label: 'Consulter les signalements de fraude' },
+            { code: 'reports:verify', label: 'Valider ou rejeter des signalements' },
+            { code: 'reports:export', label: 'Exporter les rapports PDF/CSV' },
+            { code: 'partners:read', label: 'Consulter les partenaires' },
+            { code: 'roles:read', label: 'Consulter les rôles et autorisations' },
+            { code: 'settings:read', label: 'Consulter la configuration système' },
+          ].map((perm) => (
+            <label
+              key={perm.code}
+              className="flex items-start gap-3 p-3.5 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] cursor-pointer hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+            >
+              <input
+                type="checkbox"
+                disabled={!isEditing}
+                defaultChecked={true}
+                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-brand-green focus:ring-brand-green"
+              />
+              <div>
+                <p className="text-xs font-bold text-slate-900 dark:text-white">{perm.label}</p>
+                <p className="text-[10px] font-mono text-slate-400 mt-0.5">{perm.code}</p>
+              </div>
+            </label>
+          ))}
+        </div>
+      </div>
+
       <ConfirmDialog
         isOpen={showUnsavedModal}
         onClose={handleConfirmDiscard}

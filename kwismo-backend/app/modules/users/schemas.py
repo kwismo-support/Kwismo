@@ -52,6 +52,10 @@ class UserListItemOut(BaseModel):
     prenom: str
     email: EmailStr
     statut: str
+    role: str = "user"
+    role_id: str | None = None
+    partner_id: str | None = None
+    partner_name: str | None = None
     nombre_numeros: int = Field(..., description="Numéros rattachés au compte / Numbers attached to the account.")
 
 
@@ -65,7 +69,13 @@ class UserPhoneSummaryOut(BaseModel):
 class UserDetailOut(UserListItemOut):
     date_inscription: datetime
     numeros: list[UserPhoneSummaryOut] = []
+    custom_permissions: list[str] = []
+
+
+class UserPermissionsUpdateIn(BaseModel):
+    permissions: list[str] = Field(..., description="Liste des codes de permissions accordees/personnalisees.")
 
 
 class UserStatusIn(BaseModel):
     statut: str = Field(..., examples=["suspended"], description="'active' ou 'suspended' / 'active' or 'suspended'.")
+

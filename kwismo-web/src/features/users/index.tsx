@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { PageHeader, ConfirmDialog } from '@/shared/components';
 import UsersTable from './components/UsersTable';
-import UserDetailPanel from './components/UserDetailPanel';
 import { useUsers } from './hooks/useUsers';
 import { usePermissions } from '@/shared/hooks/usePermissions';
 import type { UserItem } from './services/users.api';
@@ -25,7 +24,6 @@ export default function UsersPage() {
     deleteUser,
   } = useUsers();
 
-  const [selectedUserForDrawer, setSelectedUserForDrawer] = useState<UserItem | null>(null);
   const [userToDelete, setUserToDelete] = useState<UserItem | null>(null);
   const [userToToggle, setUserToToggle] = useState<UserItem | null>(null);
 
@@ -72,15 +70,9 @@ export default function UsersPage() {
         onPageChange={setPage}
         onPageSizeChange={setPageSize}
         isLoading={loading}
-        onSelectUser={(u) => setSelectedUserForDrawer(u)}
+        onSelectUser={(u) => navigate(`/app/users/${u.id}`)}
         onToggleStatus={(u) => setUserToToggle(u)}
         onDeleteUser={(u) => setUserToDelete(u)}
-      />
-
-      <UserDetailPanel
-        user={selectedUserForDrawer}
-        onClose={() => setSelectedUserForDrawer(null)}
-        onToggleStatus={(u) => setUserToToggle(u)}
       />
 
       <ConfirmDialog

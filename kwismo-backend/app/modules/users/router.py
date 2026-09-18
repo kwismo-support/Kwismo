@@ -57,9 +57,13 @@ async def update_me(payload: UserUpdateIn, user=Depends(require_roles("user", "a
 async def list_users(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    user=Depends(require_roles("admin", "partner")),
+    partner_id: str | None = Query(None),
+    user=Depends(require_roles("admin", "partner", "superadmin")),
 ) -> Page[UserListItemOut]:
-    return await service.list_users(page, page_size)
+    eff_partner_id = partner_id
+    if user.role and user.role.nomRole == "partner" and user.partnerId:
+        eff_partner_id = user.partnerId
+    return await service.list_users(page, page_size, eff_partner_id)
 
 
 @router.get(

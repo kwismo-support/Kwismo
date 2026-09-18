@@ -66,9 +66,9 @@ export default function NumbersTable({
 
       let matchesRisk = true;
       const scorePct = Math.round(n.score_risque <= 1 ? n.score_risque * 100 : n.score_risque);
-      if (riskFilter === 'HIGH') matchesRisk = scorePct <= 40 || n.statut === 'frauduleux';
-      if (riskFilter === 'MEDIUM') matchesRisk = (scorePct > 40 && scorePct < 80) || n.statut === 'a_signaler';
-      if (riskFilter === 'LOW') matchesRisk = scorePct >= 80 || n.statut === 'securise';
+      if (riskFilter === 'HIGH') matchesRisk = scorePct >= 70 || n.statut === 'frauduleux';
+      if (riskFilter === 'MEDIUM') matchesRisk = (scorePct >= 30 && scorePct < 70) || n.statut === 'a_signaler';
+      if (riskFilter === 'LOW') matchesRisk = scorePct < 30 || n.statut === 'securise';
 
       return matchesSearch && matchesOperator && matchesCountry && matchesStatus && matchesRisk;
     });
@@ -79,7 +79,7 @@ export default function NumbersTable({
     const active = numbers.filter((n) => n.statut === 'securise' || n.statut === 'Sécurisé').length;
     const highRisk = numbers.filter((n) => {
       const score = n.score_risque <= 1 ? n.score_risque * 100 : n.score_risque;
-      return score <= 40 || n.statut === 'frauduleux';
+      return score >= 70 || n.statut === 'frauduleux';
     }).length;
     const reported = numbers.filter((n) => (n.nombre_signalements && n.nombre_signalements > 0) || n.statut === 'a_signaler').length;
     return { total: totalCount, active, highRisk, reported };
@@ -142,9 +142,9 @@ export default function NumbersTable({
       sortable: true,
       cell: (numero) => {
         const scorePct = Math.round(numero.score_risque <= 1 ? numero.score_risque * 100 : numero.score_risque);
-        const isLowScore = scorePct <= 40;
-        const isMediumScore = scorePct > 40 && scorePct < 80;
-        const color = isLowScore ? 'bg-rose-500' : isMediumScore ? 'bg-amber-500' : 'bg-brand-green';
+        const isHighScore = scorePct >= 70;
+        const isMediumScore = scorePct >= 30 && scorePct < 70;
+        const color = isHighScore ? 'bg-rose-500' : isMediumScore ? 'bg-amber-500' : 'bg-emerald-500';
 
         return (
           <div className="flex items-center gap-2.5 min-w-[120px]">
