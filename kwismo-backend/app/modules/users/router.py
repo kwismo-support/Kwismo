@@ -61,8 +61,8 @@ async def list_users(
     user=Depends(require_roles("admin", "partner", "superadmin")),
 ) -> Page[UserListItemOut]:
     eff_partner_id = partner_id
-    if user.role and user.role.nomRole == "partner" and user.partnerId:
-        eff_partner_id = user.partnerId
+    if user.role == "partner" and user.partner_id:
+        eff_partner_id = user.partner_id
     return await service.list_users(page, page_size, eff_partner_id)
 
 
