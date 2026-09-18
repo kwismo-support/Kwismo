@@ -177,7 +177,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
               </DropdownItem>
             )}
             <DropdownSeparator />
-            <DropdownItem onClick={handleLogout}>
+            <DropdownItem onClick={handleLogout} className='rounded-b'>
               <Icon icon="solar:logout-2-bold" className="text-base text-red-500" />
               <span className="text-red-500">{t('actions.logout')}</span>
             </DropdownItem>

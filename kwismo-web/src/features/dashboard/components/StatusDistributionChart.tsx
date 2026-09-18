@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { useTheme } from '@/shared/hooks/useTheme';
 
 export interface StatusDataPoint {
   name: string;
@@ -20,6 +21,7 @@ const defaultStatusData: StatusDataPoint[] = [
 
 export default function StatusDistributionChart({ isLoading = false, data }: StatusDistributionChartProps) {
   const { t } = useTranslation('admin');
+  const { isDark } = useTheme();
 
   if (isLoading) {
     return (
@@ -66,10 +68,21 @@ export default function StatusDistributionChart({ isLoading = false, data }: Sta
               contentStyle={{
                 borderRadius: '16px',
                 fontSize: '12px',
-                backgroundColor: '#161E33',
-                borderColor: '#242f48',
-                color: '#fff',
+                backgroundColor: isDark ? '#1E293B' : '#94A3B8',
+                borderColor: isDark ? '#334155' : '#64748B',
+                color: isDark ? '#FFFFFF' : '#0F172A',
                 fontFamily: 'Montserrat Alternates, sans-serif',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+              }}
+              itemStyle={{
+                color: isDark ? '#F8FAFC' : '#0F172A',
+                fontSize: '12px',
+                fontWeight: 600,
+              }}
+              labelStyle={{
+                color: isDark ? '#FFFFFF' : '#0F172A',
+                fontWeight: 700,
+                marginBottom: '4px',
               }}
               formatter={(v: number) => v.toLocaleString('fr-FR')}
             />

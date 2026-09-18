@@ -53,7 +53,7 @@ export function UserAvatar({
     <div className="relative inline-flex shrink-0">
       <div
         className={cn(
-          'relative flex items-center justify-center rounded-full overflow-hidden font-body font-bold',
+          'relative flex items-center justify-center rounded overflow-hidden font-body font-bold',
           'bg-gradient-to-br from-slate-100 to-slate-200 dark:from-brand-navy dark:to-slate-800',
           'text-brand-navy dark:text-white border border-slate-200 dark:border-white/10 shadow-xs',
           sizeConfig.container,

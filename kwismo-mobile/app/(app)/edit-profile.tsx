@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,7 +12,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { Input } from '@/shared/ui/Input';
-import { Button } from '@/shared/ui/Button';
 import { HeaderBar } from '@/shared/components/HeaderBar';
 import { CountrySelectInput } from '@/shared/components/CountrySelectInput';
 import { ProfilePhotoPickerModal } from '@/shared/components/ProfilePhotoPickerModal';
@@ -26,27 +25,37 @@ export default function EditProfileScreen() {
   const { t } = useTranslation();
 
   const { user } = useAuthStore();
-  const { updateProfile, loading: isSaving } = useProfile();
+  const { profile, updateProfile, loading: isSaving } = useProfile();
 
-  const [lastName, setLastName] = useState(user?.lastName || '');
-  const [firstName, setFirstName] = useState(user?.firstName || '');
-  const [email] = useState(user?.email || '');
+  const [lastName, setLastName] = useState(user?.lastName || profile?.nom || '');
+  const [firstName, setFirstName] = useState(user?.firstName || profile?.prenom || '');
+  const [phone, setPhone] = useState(profile?.telephone || '');
+  const [email] = useState(user?.email || profile?.email || '');
   const [countryName, setCountryName] = useState('Cameroun');
   const [countryCode, setCountryCode] = useState('CM');
-  const [, setProfilePhoto] = useState<string | null>(null);
+  const [, setProfilePhoto] = useState<string | null>(profile?.photo_url || null);
   const [isPhotoPickerOpen, setIsPhotoPickerOpen] = useState(false);
-
   const [nameError, setNameError] = useState('');
+
+  useEffect(() => {
+    if (profile) {
+      if (profile.nom) setLastName(profile.nom);
+      if (profile.prenom) setFirstName(profile.prenom);
+      if (profile.telephone) setPhone(profile.telephone);
+    }
+  }, [profile]);
 
   const handleSave = async () => {
     if (!firstName.trim() && !lastName.trim()) {
-      setNameError(t('validation.required', 'Le nom ou prénom est obligatoire.'));
+      setNameError(t('validation.required'));
       return;
     }
 
     const res = await updateProfile({
       nom: lastName.trim(),
       prenom: firstName.trim(),
+      telephone: phone.trim(),
+      indicatif_pays: countryCode,
     });
 
     if (res.success) {
@@ -61,10 +70,12 @@ export default function EditProfileScreen() {
       <HeaderBar
         title={t('profile.personalInfo')}
         showBack={true}
+        onBack={() => router.back()}
         rightAction={
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={handleSave}
+            disabled={isSaving}
             className="p-1"
           >
             {isSaving ? (
@@ -101,44 +112,55 @@ export default function EditProfileScreen() {
         </View>
 
         <Input
-          label={t('common.firstName', 'Prénom')}
+          label={t('common.firstName')}
           value={firstName}
           onChangeText={(val) => {
             setFirstName(val);
             if (nameError) setNameError('');
           }}
-          placeholder="Ismaël"
+          placeholder={t('common.firstNamePlaceholder')}
           error={nameError}
           iconLeft="solar:user-linear"
         />
 
         <View className="mt-3">
           <Input
-            label={t('common.lastName', 'Nom')}
+            label={t('common.lastName')}
             value={lastName}
             onChangeText={(val) => {
               setLastName(val);
               if (nameError) setNameError('');
             }}
-            placeholder="Cesar"
+            placeholder={t('common.lastNamePlaceholder')}
             iconLeft="solar:user-linear"
           />
         </View>
 
         <View className="mt-3">
           <Input
-            label={t('common.email', 'Adresse email')}
+            label={t('common.email')}
             value={email}
             editable={false}
             keyboardType="email-address"
-            placeholder="votre.email@kwismo.com"
+            placeholder={t('common.emailPlaceholder')}
             iconLeft="solar:letter-linear"
           />
         </View>
 
         <View className="mt-3">
+          <Input
+            label={t('common.phoneNumber')}
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+            placeholder="+237 600 00 00 00"
+            iconLeft="solar:phone-calling-linear"
+          />
+        </View>
+
+        <View className="mt-3">
           <CountrySelectInput
-            label={t('common.country', 'Pays')}
+            label={t('common.country')}
             value={countryName}
             countryCode={countryCode}
             onSelectCountry={(name, code) => {
@@ -157,4 +179,3 @@ export default function EditProfileScreen() {
     </View>
   );
 }
-

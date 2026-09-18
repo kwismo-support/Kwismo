@@ -200,6 +200,12 @@
     "activeSessionsItem": "Sessions actives",
     "deleteAccountItem": "Supprimer le compte",
     "logoutAction": "Se déconnecter",
+    "logoutConfirmTitle": "Se déconnecter de Kwismo ?",
+    "logoutConfirmMessage": "Êtes-vous sûr de vouloir vous déconnecter de votre compte ?",
+    "disconnect": "Déconnecter",
+    "firstNamePlaceholder": "Ismaël",
+    "lastNamePlaceholder": "Cesar",
+    "emailPlaceholder": "votre.email@kwismo.com",
     "noRegisteredNumbersTitle": "Aucun numéro enregistré",
     "noRegisteredNumbersSubtitle": "Vous n'avez pas encore rattaché de ligne SIM à votre compte Kwismo. Ajoutez votre premier numéro pour sécuriser vos opérations."
   }

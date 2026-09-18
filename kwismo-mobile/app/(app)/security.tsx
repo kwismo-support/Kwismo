@@ -13,13 +13,14 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { Input } from '@/shared/ui/Input';
 import { HeaderBar } from '@/shared/components/HeaderBar';
-import { toast } from '@/shared/store/toastStore';
+import { useSecurity } from '@/features/profile/hooks/useSecurity';
 import { colors } from '@/styles/tokens';
 
 export default function SecurityScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { changePassword, loading: isUpdating } = useSecurity();
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -28,8 +29,6 @@ export default function SecurityScreen() {
   const [currentPasswordError, setCurrentPasswordError] = useState('');
   const [newPasswordError, setNewPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
-
-  const [isUpdating, setIsUpdating] = useState(false);
 
   const passwordCriteria = {
     minLength: newPassword.length >= 8,
@@ -46,7 +45,7 @@ export default function SecurityScreen() {
     passwordCriteria.hasNumber &&
     passwordCriteria.hasSymbol;
 
-  const handleUpdatePassword = () => {
+  const handleUpdatePassword = async () => {
     let valid = true;
     setCurrentPasswordError('');
     setNewPasswordError('');
@@ -69,14 +68,17 @@ export default function SecurityScreen() {
 
     if (!valid) return;
 
-    setIsUpdating(true);
-    setTimeout(() => {
-      setIsUpdating(false);
-      toast.success(t('toasts.passwordResetSuccess'));
+    const res = await changePassword({
+      ancien_mot_de_passe: currentPassword,
+      nouveau_mot_de_passe: newPassword,
+    });
+
+    if (res.success) {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    }, 600);
+      router.back();
+    }
   };
 
   return (
@@ -143,7 +145,7 @@ export default function SecurityScreen() {
 
         <View className="mt-2.5 p-3 rounded-xl bg-slate-100 dark:bg-white/5">
           <Text className="font-bold text-2xs mb-1.5 text-slate-600 dark:text-slate-400">
-            Critères de robustesse du mot de passe :
+            {t('validation.passwordCriteriaTitle')}
           </Text>
           <View className="gap-1">
             {[
@@ -190,4 +192,3 @@ export default function SecurityScreen() {
     </View>
   );
 }
-

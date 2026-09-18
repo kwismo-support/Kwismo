@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { cn } from '@/shared/lib/utils';
+import { useTheme } from '@/shared/hooks/useTheme';
 
 export interface TrendDataPoint {
   day: string;
@@ -11,6 +12,7 @@ export interface TrendDataPoint {
 
 interface TrendChartProps {
   isLoading?: boolean;
+  data?: TrendDataPoint[];
   data7d?: TrendDataPoint[];
   data30d?: TrendDataPoint[];
 }
@@ -32,9 +34,10 @@ const empty30d: TrendDataPoint[] = [
   { day: 'Sem 4', verifications: 0, fraudes: 0 },
 ];
 
-export default function TrendChart({ isLoading = false, data7d, data30d }: TrendChartProps) {
+export default function TrendChart({ isLoading = false, data, data7d, data30d }: TrendChartProps) {
   const { t } = useTranslation('admin');
-  const [period, setPeriod] = useState<'7d' | '30d'>('7d');
+  const { isDark } = useTheme();
+  const [internalPeriod, setInternalPeriod] = useState<'7d' | '30d'>('7d');
 
   if (isLoading) {
     return (
@@ -46,7 +49,11 @@ export default function TrendChart({ isLoading = false, data7d, data30d }: Trend
     );
   }
 
-  const currentData = period === '7d' ? (data7d && data7d.length > 0 ? data7d : empty7d) : (data30d && data30d.length > 0 ? data30d : empty30d);
+  const currentData = data && data.length > 0 
+    ? data 
+    : internalPeriod === '7d' 
+      ? (data7d && data7d.length > 0 ? data7d : empty7d) 
+      : (data30d && data30d.length > 0 ? data30d : empty30d);
 
   return (
     <div className="flex flex-col p-6 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-navy shadow-sm font-body">
@@ -62,32 +69,34 @@ export default function TrendChart({ isLoading = false, data7d, data30d }: Trend
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-brand-darkBg border border-slate-200 dark:border-white/10">
-            <button
-              onClick={() => setPeriod('7d')}
-              className={cn(
-                'px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer',
-                period === '7d'
-                  ? 'bg-white dark:bg-brand-navy text-brand-navy dark:text-white shadow-xs'
-                  : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-              )}
-            >
-              7 jours
-            </button>
-            <button
-              onClick={() => setPeriod('30d')}
-              className={cn(
-                'px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer',
-                period === '30d'
-                  ? 'bg-white dark:bg-brand-navy text-brand-navy dark:text-white shadow-xs'
-                  : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
-              )}
-            >
-              30 jours
-            </button>
+        {!data && (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-brand-darkBg border border-slate-200 dark:border-white/10">
+              <button
+                onClick={() => setInternalPeriod('7d')}
+                className={cn(
+                  'px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer',
+                  internalPeriod === '7d'
+                    ? 'bg-white dark:bg-brand-navy text-brand-navy dark:text-white shadow-xs'
+                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                )}
+              >
+                7 jours
+              </button>
+              <button
+                onClick={() => setInternalPeriod('30d')}
+                className={cn(
+                  'px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer',
+                  internalPeriod === '30d'
+                    ? 'bg-white dark:bg-brand-navy text-brand-navy dark:text-white shadow-xs'
+                    : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'
+                )}
+              >
+                30 jours
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="flex items-center gap-6 mb-4 text-xs font-semibold">
@@ -121,10 +130,21 @@ export default function TrendChart({ isLoading = false, data7d, data30d }: Trend
               contentStyle={{
                 borderRadius: '16px',
                 fontSize: '12px',
-                backgroundColor: '#161E33',
-                borderColor: '#242f48',
-                color: '#fff',
-                fontFamily: 'Ageo, sans-serif',
+                backgroundColor: isDark ? '#1E293B' : '#94A3B8',
+                borderColor: isDark ? '#334155' : '#64748B',
+                color: isDark ? '#FFFFFF' : '#0F172A',
+                fontFamily: 'Montserrat Alternates, sans-serif',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+              }}
+              itemStyle={{
+                color: isDark ? '#F8FAFC' : '#0F172A',
+                fontSize: '12px',
+                fontWeight: 600,
+              }}
+              labelStyle={{
+                color: isDark ? '#FFFFFF' : '#0F172A',
+                fontWeight: 700,
+                marginBottom: '4px',
               }}
             />
             <Area

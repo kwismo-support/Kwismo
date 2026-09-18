@@ -68,5 +68,5 @@ export function DropdownItem({ children, onClick, className, disabled }: Dropdow
 }
 
 export function DropdownSeparator() {
-  return <hr className="my-1 border-[var(--color-border)]" />;
+  return <hr className="my-0 border-[var(--color-border)]" />;
 }

@@ -76,7 +76,25 @@ export function KpiCard({
       )}
     >
       <div>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-col gap-2.5">
+          <div className="flex items-center justify-between w-full">
+            {icon && (
+              <div
+                className={cn(
+                  'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-105',
+                  activeIconBg
+                )}
+              >
+                <Icon icon={icon} className="text-xl" />
+              </div>
+            )}
+            {badgeText && (
+              <Badge variant={badgeVariant} size="xs">
+                {badgeText}
+              </Badge>
+            )}
+          </div>
+
           <span
             className={cn(
               'text-xs font-semibold uppercase tracking-wider',
@@ -85,24 +103,6 @@ export function KpiCard({
           >
             {title}
           </span>
-
-          <div className="flex items-center gap-2">
-            {badgeText && (
-              <Badge variant={badgeVariant} size="xs">
-                {badgeText}
-              </Badge>
-            )}
-            {icon && (
-              <div
-                className={cn(
-                  'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-transform group-hover:scale-105',
-                  activeIconBg
-                )}
-              >
-                <Icon icon={icon} className="text-lg" />
-              </div>
-            )}
-          </div>
         </div>
 
         <div className="mt-3 flex items-baseline justify-between gap-2 flex-wrap">

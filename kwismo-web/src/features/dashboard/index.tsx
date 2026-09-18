@@ -46,11 +46,22 @@ export default function DashboardPage() {
 
   const findKpi = (key: string) => kpiItems.find((k) => k.nom_indicateur === key)?.valeur;
 
-  const totalNumbers = numbers.length;
-  const totalReports = reports.length;
-  const secureCount = numbers.filter((n) => n.statut === 'securise' || n.statut === 'active').length;
-  const warningCount = numbers.filter((n) => n.statut === 'a_signaler' || n.statut === 'suspect').length;
-  const fraudCount = numbers.filter((n) => n.statut === 'frauduleux' || n.statut === 'blocked').length;
+  const filteredNumbers = numbers.filter((n) => {
+    if (operatorFilter && n.operator_name !== operatorFilter && n.operator_id !== operatorFilter) return false;
+    if (countryFilter && n.pays && !n.pays.toLowerCase().includes(countryFilter.toLowerCase())) return false;
+    return true;
+  });
+
+  const filteredReports = reports.filter((r) => {
+    if (operatorFilter && r.operateur && !r.operateur.toLowerCase().includes(operatorFilter.toLowerCase())) return false;
+    return true;
+  });
+
+  const totalNumbers = filteredNumbers.length;
+  const totalReports = filteredReports.length;
+  const secureCount = filteredNumbers.filter((n) => n.statut === 'securise' || n.statut === 'active').length;
+  const warningCount = filteredNumbers.filter((n) => n.statut === 'a_signaler' || n.statut === 'suspect').length;
+  const fraudCount = filteredNumbers.filter((n) => n.statut === 'frauduleux' || n.statut === 'blocked').length;
 
   const uniqueOperatorNames = Array.from(
     new Set(
@@ -63,7 +74,7 @@ export default function DashboardPage() {
   const palette = ['#32B07F', '#FF9900', '#6B98FF', '#161E33', '#E4483B', '#7C3AED', '#0891B2'];
 
   const operatorData: OperatorDataPoint[] = uniqueOperatorNames.map((opName, idx) => {
-    const opNumbers = numbers.filter((n) => n.operator_name === opName || n.operator_id === opName);
+    const opNumbers = filteredNumbers.filter((n) => n.operator_name === opName || n.operator_id === opName);
     const fraudes = opNumbers.filter((n) => n.statut === 'frauduleux' || n.statut === 'blocked' || (n.score_risque && n.score_risque >= 70)).length;
     return {
       name: opName,
@@ -78,15 +89,45 @@ export default function DashboardPage() {
     { name: 'Frauduleux', value: fraudCount, color: '#E4483B' },
   ];
 
-  const trend7d: TrendDataPoint[] = [
-    { day: 'Lun', verifications: Math.round(totalNumbers * 0.1), fraudes: Math.round(fraudCount * 0.1) },
-    { day: 'Mar', verifications: Math.round(totalNumbers * 0.15), fraudes: Math.round(fraudCount * 0.15) },
-    { day: 'Mer', verifications: Math.round(totalNumbers * 0.2), fraudes: Math.round(fraudCount * 0.2) },
-    { day: 'Jeu', verifications: Math.round(totalNumbers * 0.15), fraudes: Math.round(fraudCount * 0.15) },
-    { day: 'Ven', verifications: Math.round(totalNumbers * 0.2), fraudes: Math.round(fraudCount * 0.2) },
-    { day: 'Sam', verifications: Math.round(totalNumbers * 0.1), fraudes: Math.round(fraudCount * 0.1) },
-    { day: 'Dim', verifications: Math.round(totalNumbers * 0.1), fraudes: Math.round(fraudCount * 0.1) },
-  ];
+  const trendData: TrendDataPoint[] = (() => {
+    if (period === '7 jours') {
+      const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+      const verifRatios = [0.10, 0.15, 0.20, 0.15, 0.20, 0.10, 0.10];
+      const fraudRatios = [0.08, 0.12, 0.18, 0.14, 0.22, 0.14, 0.12];
+      return days.map((d, i) => ({
+        day: d,
+        verifications: Math.round(totalNumbers * verifRatios[i]),
+        fraudes: Math.round(fraudCount * fraudRatios[i]),
+      }));
+    } else if (period === '30 jours') {
+      const weeks = ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'];
+      const verifRatios = [0.20, 0.30, 0.35, 0.15];
+      const fraudRatios = [0.15, 0.35, 0.30, 0.20];
+      return weeks.map((w, i) => ({
+        day: w,
+        verifications: Math.round(totalNumbers * verifRatios[i]),
+        fraudes: Math.round(fraudCount * fraudRatios[i]),
+      }));
+    } else if (period === '90 jours') {
+      const months = ['Mois 1', 'Mois 2', 'Mois 3'];
+      const verifRatios = [0.25, 0.35, 0.40];
+      const fraudRatios = [0.20, 0.40, 0.40];
+      return months.map((m, i) => ({
+        day: m,
+        verifications: Math.round(totalNumbers * verifRatios[i]),
+        fraudes: Math.round(fraudCount * fraudRatios[i]),
+      }));
+    } else {
+      const quarters = ['T1', 'T2', 'T3', 'T4'];
+      const verifRatios = [0.20, 0.25, 0.30, 0.25];
+      const fraudRatios = [0.15, 0.25, 0.35, 0.25];
+      return quarters.map((q, i) => ({
+        day: q,
+        verifications: Math.round(totalNumbers * verifRatios[i]),
+        fraudes: Math.round(fraudCount * fraudRatios[i]),
+      }));
+    }
+  })();
 
   const adminCards = [
     {

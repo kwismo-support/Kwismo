@@ -13,56 +13,16 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
-import { toast } from '@/shared/store/toastStore';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
-
-interface SessionItem {
-  id: string;
-  deviceName: string;
-  deviceType: 'mobile' | 'desktop';
-  location: string;
-  ipAddress: string;
-  lastActive: string;
-  isCurrent: boolean;
-}
-
-const INITIAL_SESSIONS: SessionItem[] = [
-  {
-    id: '1',
-    deviceName: 'Samsung Galaxy S23 Ultra',
-    deviceType: 'mobile',
-    location: 'Douala, Cameroun',
-    ipAddress: '154.72.165.22',
-    lastActive: 'En ce moment',
-    isCurrent: true,
-  },
-  {
-    id: '2',
-    deviceName: 'Chrome sur Windows 11',
-    deviceType: 'desktop',
-    location: 'Yaoundé, Cameroun',
-    ipAddress: '197.239.12.89',
-    lastActive: 'Il y a 2 heures',
-    isCurrent: false,
-  },
-  {
-    id: '3',
-    deviceName: 'Safari sur iPhone 14',
-    deviceType: 'mobile',
-    location: 'Douala, Cameroun',
-    ipAddress: '154.72.160.10',
-    lastActive: 'Hier à 18:45',
-    isCurrent: false,
-  },
-];
+import { useActiveSessions } from '@/features/profile/hooks/useActiveSessions';
+import { SessionsSkeleton } from '@/features/profile/components/ProfileSkeleton';
 
 export default function ActiveSessionsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { isDark } = useAppTheme();
-
-  const [sessions, setSessions] = useState<SessionItem[]>(INITIAL_SESSIONS);
+  const { sessions, loading, revokeSession, revokeAllOthers } = useActiveSessions();
 
   const [confirmModal, setConfirmModal] = useState<{
     visible: boolean;
@@ -74,44 +34,38 @@ export default function ActiveSessionsScreen() {
     visible: false,
     title: '',
     message: '',
-    confirmText: 'Déconnecter',
+    confirmText: t('common.disconnect'),
     onConfirm: () => {},
   });
 
   const handleRevokeSession = (sessionId: string, deviceName: string) => {
     setConfirmModal({
       visible: true,
-      title: 'Déconnexion de la session',
-      message: `Voulez-vous vraiment déconnecter la session sur "${deviceName}" ?`,
-      confirmText: 'Déconnecter',
-      onConfirm: () => {
-        setSessions((prev) => prev.filter((s) => s.id !== sessionId));
-        toast.success(`Session sur "${deviceName}" déconnectée.`);
-      },
+      title: t('security.sessionRevokeTitle'),
+      message: t('security.sessionRevokeConfirm', { device: deviceName }),
+      confirmText: t('common.disconnect'),
+      onConfirm: () => revokeSession(sessionId, deviceName),
     });
   };
 
   const handleRevokeAllOthers = () => {
     setConfirmModal({
       visible: true,
-      title: 'Déconnecter toutes les autres sessions',
-      message: 'Êtes-vous sûr de vouloir vous déconnecter de tous les autres appareils ?',
-      confirmText: 'Tout déconnecter',
-      onConfirm: () => {
-        setSessions((prev) => prev.filter((s) => s.isCurrent));
-        toast.success('Toutes les autres sessions ont été déconnectées.');
-      },
+      title: t('security.revokeAllTitle'),
+      message: t('security.revokeAllConfirm'),
+      confirmText: t('security.revokeAllAction'),
+      onConfirm: () => revokeAllOthers(),
     });
   };
 
-  const otherSessionsCount = sessions.filter((s) => !s.isCurrent).length;
+  const otherSessionsCount = sessions.filter((s) => !s.is_current).length;
 
   return (
     <View className="flex-1 bg-brand-green">
       <StatusBar style="light" />
 
       <HeaderBar
-        title={t('common.activeSessionsItem', 'Sessions actives')}
+        title={t('common.activeSessionsItem')}
         showBack={true}
         onBack={() => router.back()}
       />
@@ -122,20 +76,18 @@ export default function ActiveSessionsScreen() {
           showsVerticalScrollIndicator={false}
           className="gap-y-4"
         >
-          {/* Informative Banner */}
           <View className="flex-row items-start p-4 rounded-2xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/30">
             <Icon name="solar:shield-check-bold" color="#25B876" size={24} className="mr-3" />
             <View className="flex-1">
               <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white mb-1">
-                Appareils connectés
+                {t('security.connectedDevices')}
               </Text>
               <Text className="text-xs text-slate-600 dark:text-slate-300 leading-4.5">
-                Voici la liste des appareils actuellement connectés à votre compte Kwismo. Vous pouvez révoquer l'accès à tout moment.
+                {t('security.connectedDevicesDesc')}
               </Text>
             </View>
           </View>
 
-          {/* Revoke All Other Button */}
           {otherSessionsCount > 0 && (
             <TouchableOpacity
               activeOpacity={0.8}
@@ -145,79 +97,91 @@ export default function ActiveSessionsScreen() {
               <View className="flex-row items-center flex-1 pr-2">
                 <Icon name="solar:logout-3-bold" color="#EF4444" size={22} className="mr-3" />
                 <Text className="font-montserrat-bold text-sm font-bold text-red-600 dark:text-red-400">
-                  Déconnecter toutes les autres sessions ({otherSessionsCount})
+                  {t('security.revokeAllOtherCount', { count: otherSessionsCount })}
                 </Text>
               </View>
               <Icon name="solar:alt-arrow-right-linear" color="#EF4444" size={18} />
             </TouchableOpacity>
           )}
 
-          {/* Sessions List */}
-          <View className="gap-y-3 mt-2">
-            {sessions.map((session) => (
-              <View
-                key={session.id}
-                className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-brand-cardDark"
-              >
-                <View className="flex-row items-center justify-between mb-2">
-                  <View className="flex-row items-center flex-1 pr-2">
-                    <View className="wx-10 hx-10 rounded-xl bg-white dark:bg-slate-800 items-center justify-center mr-3 border border-slate-200 dark:border-slate-700">
-                      <Icon
-                        name={
-                          session.deviceType === 'desktop'
-                            ? 'solar:laptop-minimalistic-bold'
-                            : 'solar:smartphone-bold'
-                        }
-                        color={session.isCurrent ? '#25B876' : isDark ? '#94A3B8' : '#64748B'}
-                        size={22}
-                      />
-                    </View>
-                    <View className="flex-1">
-                      <View className="flex-row items-center gap-2">
-                        <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white">
-                          {session.deviceName}
+          {loading ? (
+            <SessionsSkeleton />
+          ) : sessions.length === 0 ? (
+            <View className="items-center justify-center py-12 px-4">
+              <Icon name="solar:smartphone-line-duotone" size={48} color="#94A3B8" />
+              <Text className="font-bold text-base text-slate-700 dark:text-slate-300 mt-4 text-center">
+                {t('security.noSessionsTitle')}
+              </Text>
+              <Text className="text-xs text-slate-400 dark:text-slate-500 mt-1 text-center">
+                {t('security.noSessionsDesc')}
+              </Text>
+            </View>
+          ) : (
+            <View className="gap-y-3 mt-2">
+              {sessions.map((session) => (
+                <View
+                  key={session.id}
+                  className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-brand-cardDark"
+                >
+                  <View className="flex-row items-center justify-between mb-2">
+                    <View className="flex-row items-center flex-1 pr-2">
+                      <View className="wx-10 hx-10 rounded-xl bg-white dark:bg-slate-800 items-center justify-center mr-3 border border-slate-200 dark:border-slate-700">
+                        <Icon
+                          name={
+                            session.device_type === 'desktop'
+                              ? 'solar:laptop-minimalistic-bold'
+                              : 'solar:smartphone-bold'
+                          }
+                          color={session.is_current ? '#25B876' : isDark ? '#94A3B8' : '#64748B'}
+                          size={22}
+                        />
+                      </View>
+                      <View className="flex-1">
+                        <View className="flex-row items-center gap-2">
+                          <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white">
+                            {session.device_name}
+                          </Text>
+                        </View>
+                        <Text className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                          {session.location} • {session.ip_address}
                         </Text>
                       </View>
-                      <Text className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        {session.location} • {session.ipAddress}
-                      </Text>
                     </View>
+
+                    {session.is_current ? (
+                      <View className="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800">
+                        <Text className="text-2xs font-bold text-emerald-600 dark:text-emerald-400">
+                          {t('security.currentDevice')}
+                        </Text>
+                      </View>
+                    ) : (
+                      <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={() => handleRevokeSession(session.id, session.device_name)}
+                        className="px-3 py-1.5 rounded-xl bg-red-100 dark:bg-red-950/40 border border-red-200 dark:border-red-900"
+                      >
+                        <Text className="text-xs font-bold text-red-600 dark:text-red-400">
+                          {t('common.disconnect')}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
 
-                  {session.isCurrent ? (
-                    <View className="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800">
-                      <Text className="text-2xs font-bold text-emerald-600 dark:text-emerald-400">
-                        Cet appareil
-                      </Text>
-                    </View>
-                  ) : (
-                    <TouchableOpacity
-                      activeOpacity={0.7}
-                      onPress={() => handleRevokeSession(session.id, session.deviceName)}
-                      className="px-3 py-1.5 rounded-xl bg-red-100 dark:bg-red-950/40 border border-red-200 dark:border-red-900"
-                    >
-                      <Text className="text-xs font-bold text-red-600 dark:text-red-400">
-                        Déconnecter
-                      </Text>
-                    </TouchableOpacity>
-                  )}
+                  <View className="flex-row items-center justify-between pt-2 border-t border-slate-200/60 dark:border-slate-800/60 mt-1">
+                    <Text className="text-2xs text-slate-400 dark:text-slate-500">
+                      {t('security.lastActive')}
+                    </Text>
+                    <Text className="text-2xs font-medium text-slate-600 dark:text-slate-400">
+                      {session.last_active}
+                    </Text>
+                  </View>
                 </View>
-
-                <View className="flex-row items-center justify-between pt-2 border-t border-slate-200/60 dark:border-slate-800/60 mt-1">
-                  <Text className="text-2xs text-slate-400 dark:text-slate-500">
-                    Dernière activité
-                  </Text>
-                  <Text className="text-2xs font-medium text-slate-600 dark:text-slate-400">
-                    {session.lastActive}
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </View>
+              ))}
+            </View>
+          )}
         </ScrollView>
       </View>
 
-      {/* Custom Confirmation Modal */}
       <Modal visible={confirmModal.visible} transparent animationType="fade">
         <Pressable
           className="flex-1 justify-center items-center bg-black/60 px-5"
@@ -246,7 +210,7 @@ export default function ActiveSessionsScreen() {
                 className="flex-1 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 items-center justify-center"
               >
                 <Text className="font-bold text-xs text-slate-700 dark:text-slate-300">
-                  Annuler
+                  {t('common.cancel')}
                 </Text>
               </TouchableOpacity>
 

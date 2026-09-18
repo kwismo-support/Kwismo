@@ -200,6 +200,12 @@
     "activeSessionsItem": "Active sessions",
     "deleteAccountItem": "Delete account",
     "logoutAction": "Log out",
+    "logoutConfirmTitle": "Log out of Kwismo?",
+    "logoutConfirmMessage": "Are you sure you want to log out of your account?",
+    "disconnect": "Disconnect",
+    "firstNamePlaceholder": "Ismael",
+    "lastNamePlaceholder": "Cesar",
+    "emailPlaceholder": "your.email@kwismo.com",
     "noRegisteredNumbersTitle": "No registered numbers",
     "noRegisteredNumbersSubtitle": "You have not linked any SIM line to your Kwismo account yet. Add your first number to secure your operations."
   }

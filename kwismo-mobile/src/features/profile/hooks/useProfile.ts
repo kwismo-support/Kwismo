@@ -1,4 +1,3 @@
-// Hook React pour récupérer et mettre à jour le profil utilisateur via /users/me
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { profileApi, UserMeResponse, UserUpdatePayload } from '../services/profile.api';
@@ -28,14 +27,14 @@ export function useProfile() {
           kpi: res.data.kpi,
         });
       } else {
-        setError(res.message || t('errors.generalMessage', 'Erreur de profil.'));
+        setError(res.message || t('profile.fetchError'));
       }
     } catch (err: any) {
-      setError(err.message || t('toasts.networkError', 'Erreur réseau.'));
+      setError(err.message || t('toasts.networkError'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchProfile();
@@ -56,12 +55,24 @@ export function useProfile() {
           langue: res.data.langue,
           kpi: res.data.kpi,
         });
-        toast.success(t('toasts.generalSuccess', 'Modifications enregistrées.'));
+        toast.success(t('toasts.generalSuccess'));
+      } else if (!res.success) {
+        toast.error(res.message || t('profile.updateError'));
       }
       return res;
+    } catch (err: any) {
+      toast.error(err.message || t('toasts.networkError'));
+      return { success: false, message: err.message };
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await profileApi.logout();
+    } catch {}
+    await useAuthStore.getState().logout();
   };
 
   return {
@@ -70,6 +81,6 @@ export function useProfile() {
     error,
     refresh: fetchProfile,
     updateProfile,
+    logout: handleLogout,
   };
 }
-

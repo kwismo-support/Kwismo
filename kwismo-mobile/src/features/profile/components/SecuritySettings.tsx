@@ -1,4 +1,3 @@
-// Composant pour les réglages de sécurité (Biométrie, PIN)
 import React from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
 

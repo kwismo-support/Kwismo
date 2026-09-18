@@ -4,6 +4,7 @@ import { Icon } from '@iconify/react';
 import { PageHeader } from '@/shared/components';
 import { Button } from '@/shared/ui/button';
 import { toast } from '@/shared/store/toastStore';
+import { useTheme } from '@/shared/hooks/useTheme';
 import { reportsApi, ReportItem } from './services/reports.api';
 import { numbersApi, NumberItem } from '@/features/numbers/services/numbers.api';
 import { generateCSVReport, generatePDFReport } from './services/reportsExport';
@@ -53,6 +54,7 @@ const strategicReports = [
 
 export default function ReportsPage() {
   const { t } = useTranslation('admin');
+  const { isDark } = useTheme();
   const [period, setPeriod] = useState<'7 jours' | '30 jours' | '90 jours' | 'Cette année'>('30 jours');
   const [reports, setReports] = useState<ReportItem[]>([]);
   const [numbers, setNumbers] = useState<NumberItem[]>([]);
@@ -99,12 +101,45 @@ export default function ReportsPage() {
       })
     : [];
 
-  const weeklyData = [
-    { w: 'S1', sig: Math.round(totalReports * 0.1), fra: Math.round(validatedReports * 0.1) },
-    { w: 'S2', sig: Math.round(totalReports * 0.2), fra: Math.round(validatedReports * 0.2) },
-    { w: 'S3', sig: Math.round(totalReports * 0.3), fra: Math.round(validatedReports * 0.3) },
-    { w: 'S4', sig: Math.round(totalReports * 0.4), fra: Math.round(validatedReports * 0.4) },
-  ];
+  const trendData = (() => {
+    if (period === '7 jours') {
+      const labels = ['J-6', 'J-5', 'J-4', 'J-3', 'J-2', 'J-1', 'Aujourd\'hui'];
+      const sigWeights = [0.08, 0.12, 0.15, 0.10, 0.18, 0.22, 0.15];
+      const fraWeights = [0.05, 0.10, 0.12, 0.08, 0.20, 0.25, 0.20];
+      return labels.map((lbl, idx) => ({
+        w: lbl,
+        sig: Math.round(totalReports * sigWeights[idx]),
+        fra: Math.round(validatedReports * fraWeights[idx]),
+      }));
+    } else if (period === '30 jours') {
+      const labels = ['Semaine 1', 'Semaine 2', 'Semaine 3', 'Semaine 4'];
+      const sigWeights = [0.15, 0.25, 0.35, 0.25];
+      const fraWeights = [0.10, 0.30, 0.40, 0.20];
+      return labels.map((lbl, idx) => ({
+        w: lbl,
+        sig: Math.round(totalReports * sigWeights[idx]),
+        fra: Math.round(validatedReports * fraWeights[idx]),
+      }));
+    } else if (period === '90 jours') {
+      const labels = ['Mois 1', 'Mois 2', 'Mois 3'];
+      const sigWeights = [0.25, 0.35, 0.40];
+      const fraWeights = [0.20, 0.40, 0.40];
+      return labels.map((lbl, idx) => ({
+        w: lbl,
+        sig: Math.round(totalReports * sigWeights[idx]),
+        fra: Math.round(validatedReports * fraWeights[idx]),
+      }));
+    } else {
+      const labels = ['Trim 1', 'Trim 2', 'Trim 3', 'Trim 4'];
+      const sigWeights = [0.20, 0.25, 0.30, 0.25];
+      const fraWeights = [0.15, 0.25, 0.35, 0.25];
+      return labels.map((lbl, idx) => ({
+        w: lbl,
+        sig: Math.round(totalReports * sigWeights[idx]),
+        fra: Math.round(validatedReports * fraWeights[idx]),
+      }));
+    }
+  })();
 
   const handleExport = (reportTitle: string, format: 'PDF' | 'CSV') => {
     if (format === 'CSV') {
@@ -209,7 +244,7 @@ export default function ReportsPage() {
 
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={weeklyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <LineChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
               <XAxis dataKey="w" stroke="#94a3b8" fontSize={11} />
               <YAxis stroke="#94a3b8" fontSize={11} />
@@ -217,10 +252,21 @@ export default function ReportsPage() {
                 contentStyle={{
                   borderRadius: '16px',
                   fontSize: '12px',
-                  backgroundColor: '#161E33',
-                  borderColor: '#32B07F',
-                  color: '#FFFFFF',
+                  backgroundColor: isDark ? '#1E293B' : '#94A3B8',
+                  borderColor: isDark ? '#334155' : '#64748B',
+                  color: isDark ? '#FFFFFF' : '#0F172A',
                   fontFamily: 'Montserrat Alternates, sans-serif',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                }}
+                itemStyle={{
+                  color: isDark ? '#F8FAFC' : '#0F172A',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                }}
+                labelStyle={{
+                  color: isDark ? '#FFFFFF' : '#0F172A',
+                  fontWeight: 700,
+                  marginBottom: '4px',
                 }}
               />
               <Legend wrapperStyle={{ fontSize: 11 }} iconType="circle" />
@@ -256,10 +302,21 @@ export default function ReportsPage() {
                 contentStyle={{
                   borderRadius: '16px',
                   fontSize: '12px',
-                  backgroundColor: '#161E33',
-                  borderColor: '#32B07F',
-                  color: '#FFFFFF',
+                  backgroundColor: isDark ? '#1E293B' : '#94A3B8',
+                  borderColor: isDark ? '#334155' : '#64748B',
+                  color: isDark ? '#FFFFFF' : '#0F172A',
                   fontFamily: 'Montserrat Alternates, sans-serif',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                }}
+                itemStyle={{
+                  color: isDark ? '#F8FAFC' : '#0F172A',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                }}
+                labelStyle={{
+                  color: isDark ? '#FFFFFF' : '#0F172A',
+                  fontWeight: 700,
+                  marginBottom: '4px',
                 }}
               />
               <Legend wrapperStyle={{ fontSize: 11 }} iconType="circle" />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   ScrollView,
 } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { useCallback } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +54,7 @@ export default function TwoFactorScreen() {
       await deleteUserPin();
       setPinConfigured(false);
       setBiometricsEnabled(false);
-      toast.info(t('security.pinDisabled', 'Code PIN et biométrie désactivés.'));
+      toast.info(t('security.pinDisabled'));
     }
   };
 
@@ -63,22 +62,17 @@ export default function TwoFactorScreen() {
     if (val) {
       const pinExists = await hasConfiguredPin();
       if (!pinExists) {
-        toast.info(
-          t(
-            'security.pinRequiredForBio',
-            'Veuillez d’abord définir un code PIN pour pouvoir activer la biométrie.'
-          )
-        );
+        toast.info(t('security.pinRequiredForBio'));
         router.push('/(app)/pin-setup');
         return;
       }
       await setBiometricPreference(true);
       setBiometricsEnabled(true);
-      toast.success(t('security.bioEnabled', 'Authentification biométrique activée.'));
+      toast.success(t('security.bioEnabled'));
     } else {
       await setBiometricPreference(false);
       setBiometricsEnabled(false);
-      toast.info(t('security.bioDisabled', 'Authentification biométrique désactivée.'));
+      toast.info(t('security.bioDisabled'));
     }
   };
 
@@ -87,7 +81,7 @@ export default function TwoFactorScreen() {
       <StatusBar style="light" />
 
       <HeaderBar
-        title={t('security.twoFactorTitle', 'Authentification à deux facteurs')}
+        title={t('security.twoFactorTitle')}
         showBack={true}
         onBack={() => router.back()}
         rightAction={
@@ -107,7 +101,6 @@ export default function TwoFactorScreen() {
           showsVerticalScrollIndicator={false}
           className="gap-y-4"
         >
-          {/* Code PIN Option */}
           <View className="flex-row items-center justify-between py-4 border-b border-slate-100 dark:border-slate-800">
             <TouchableOpacity
               activeOpacity={0.8}
@@ -122,7 +115,7 @@ export default function TwoFactorScreen() {
               />
               <View className="flex-1">
                 <Text className="font-montserrat-bold text-base font-bold text-slate-900 dark:text-white">
-                  {t('security.pinTitle', 'Code PIN')}
+                  {t('security.pinTitle')}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -134,7 +127,6 @@ export default function TwoFactorScreen() {
             />
           </View>
 
-          {/* Empreintes Option */}
           <View className="flex-row items-center justify-between py-4 border-b border-slate-100 dark:border-slate-800">
             <TouchableOpacity
               activeOpacity={0.8}
@@ -149,7 +141,7 @@ export default function TwoFactorScreen() {
               />
               <View className="flex-1">
                 <Text className="font-montserrat-bold text-base font-bold text-slate-900 dark:text-white">
-                  {t('security.biometricsTitle', 'Empreintes')}
+                  {t('security.biometricsTitle')}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -165,5 +157,3 @@ export default function TwoFactorScreen() {
     </View>
   );
 }
-
-

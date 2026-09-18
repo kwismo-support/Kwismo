@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { useTheme } from '@/shared/hooks/useTheme';
 
 export interface OperatorDataPoint {
   name: string;
@@ -22,6 +23,7 @@ const defaultOperators: OperatorDataPoint[] = [
 
 export default function FraudByOperatorChart({ isLoading = false, data }: FraudByOperatorChartProps) {
   const { t } = useTranslation('admin');
+  const { isDark } = useTheme();
 
   if (isLoading) {
     return (
@@ -58,10 +60,21 @@ export default function FraudByOperatorChart({ isLoading = false, data }: FraudB
               contentStyle={{
                 borderRadius: '16px',
                 fontSize: '12px',
-                backgroundColor: '#161E33',
-                borderColor: '#242f48',
-                color: '#fff',
-                fontFamily: 'Ageo, sans-serif',
+                backgroundColor: isDark ? '#1E293B' : '#94A3B8',
+                borderColor: isDark ? '#334155' : '#64748B',
+                color: isDark ? '#FFFFFF' : '#0F172A',
+                fontFamily: 'Montserrat Alternates, sans-serif',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+              }}
+              itemStyle={{
+                color: isDark ? '#F8FAFC' : '#0F172A',
+                fontSize: '12px',
+                fontWeight: 600,
+              }}
+              labelStyle={{
+                color: isDark ? '#FFFFFF' : '#0F172A',
+                fontWeight: 700,
+                marginBottom: '4px',
               }}
             />
             <Bar dataKey="fraudes" radius={[8, 8, 0, 0]} name={t('dashboard.blockedFrauds')}>
