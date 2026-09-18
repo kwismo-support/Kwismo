@@ -253,11 +253,17 @@ export default function DashboardPage() {
             className="h-10 px-3 text-xs rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-blue"
           >
             <option value="">Tous les opérateurs</option>
-            <option value="MTN">MTN</option>
-            <option value="Orange">Orange</option>
-            <option value="Airtel">Airtel</option>
-            <option value="Moov">Moov</option>
-            <option value="Wave">Wave</option>
+            {Array.from(
+              new Set(
+                numbers
+                  .map((n) => n.operator_name || (n.operator_id && !n.operator_id.startsWith('op_') ? n.operator_id : null))
+                  .filter(Boolean)
+              )
+            ).map((op) => (
+              <option key={op as string} value={op as string}>
+                {op as string}
+              </option>
+            ))}
           </select>
         </div>
       </div>

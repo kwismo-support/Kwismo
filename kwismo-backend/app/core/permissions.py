@@ -15,6 +15,8 @@ def require_roles(*roles: str):
     """Retourne une dependance qui exige un des roles donnes. / Returns a dependency requiring one of the given roles."""
 
     async def _dependency(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
+        if user.role in ("super_admin", "superadmin"):
+            return user
         if user.role not in roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

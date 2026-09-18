@@ -32,7 +32,7 @@ export function usePermissions() {
       'affiliation:read', 'affiliation:create', 'affiliation:update', 'affiliation:delete',
       'ussd:read', 'ussd:create', 'ussd:update', 'ussd:delete', 'ussd:export',
       'roles:read', 'roles:create', 'roles:update', 'roles:delete',
-      'analytics:read', 'phones:manage', 'devices:manage',
+      'analytics:read', 'settings:read', 'phones:manage', 'devices:manage',
     ],
     partner: [
       'users:read', 'users:create', 'users:update', 'users:delete',

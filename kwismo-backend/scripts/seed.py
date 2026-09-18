@@ -17,7 +17,7 @@ from app.core.security import hash_password
 from app.db.prisma_client import connect_db, db, disconnect_db
 
 SEED_DIR = Path(__file__).resolve().parent.parent / "prisma" / "seed_data"
-DEFAULT_ROLES = ["user", "partner", "admin"]
+DEFAULT_ROLES = ["user", "partner", "admin", "super_admin"]
 
 
 async def seed_roles_and_permissions() -> dict[str, str]:
@@ -31,13 +31,22 @@ async def seed_roles_and_permissions() -> dict[str, str]:
         roles[nom_role] = role.id
 
     permissions = {
-        "admin": [
+        "super_admin": [
             ("users:read", "Consulter tous les utilisateurs"),
             ("users:write", "Gerer les utilisateurs"),
             ("reports:read", "Consulter les signalements"),
             ("reports:verify", "Valider/Rejeter les signalements"),
             ("analytics:read", "Acceder aux tableau de bord"),
             ("system:configure", "Configurer le systeme"),
+            ("settings:read", "Consulter la configuration systeme"),
+            ("settings:update", "Mettre a jour la configuration systeme"),
+        ],
+        "admin": [
+            ("users:read", "Consulter tous les utilisateurs"),
+            ("users:write", "Gerer les utilisateurs"),
+            ("reports:read", "Consulter les signalements"),
+            ("reports:verify", "Valider/Rejeter les signalements"),
+            ("analytics:read", "Acceder aux tableau de bord"),
         ],
         "partner": [
             ("analytics:read", "Consulter ses statistiques"),
@@ -92,7 +101,7 @@ async def seed_users(role_ids: dict[str, str], partner_ids: dict[str, str]) -> d
         ("user@kwismo.com", "User", "Test", "user", None),
         ("user2@kwismo.com", "Douala", "Paul", "user", None),
         ("partner@kwismo.com", "Partner", "Test", "partner", partner_ids.get("KWISMO Partner Test")),
-        ("admin@kwismo.com", "KWISMO", "Admin", "admin", None),
+        ("admin@kwismo.com", "KWISMO", "SuperAdmin", "super_admin", None),
     ]
 
     user_ids = {}

@@ -162,9 +162,10 @@ export default function PartnersTable({
             icon: 'solar:widget-linear',
             options: [
               { label: t('admin:partners.filters.allTypes'), value: 'ALL' },
-              { label: t('admin:partners.filters.telco'), value: 'operateur' },
-              { label: t('admin:partners.filters.bank'), value: 'banque' },
-              { label: t('admin:partners.filters.fintech'), value: 'fintech' },
+              ...Array.from(new Set(partners.map((p) => p.type_partenariat).filter(Boolean))).map((typ) => ({
+                label: typ,
+                value: typ.toUpperCase(),
+              })),
             ],
           },
         ]}

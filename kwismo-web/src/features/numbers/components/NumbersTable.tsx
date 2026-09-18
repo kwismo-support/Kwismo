@@ -240,10 +240,16 @@ export default function NumbersTable({
             icon: 'solar:buildings-2-linear',
             options: [
               { label: t('admin:numbers.filters.allOperators'), value: 'ALL' },
-              { label: 'MTN', value: 'MTN' },
-              { label: 'Orange', value: 'ORANGE' },
-              { label: 'Wave', value: 'WAVE' },
-              { label: 'Moov', value: 'MOOV' },
+              ...Array.from(
+                new Set(
+                  numbers
+                    .map((n) => n.operator_name || (n.operator_id && !n.operator_id.startsWith('op_') ? n.operator_id : null))
+                    .filter(Boolean)
+                )
+              ).map((op) => ({
+                label: op as string,
+                value: (op as string).toUpperCase(),
+              })),
             ],
           },
           {
