@@ -164,7 +164,7 @@ export default function ReportsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full text-xs"
+                className="flex-row w-full text-xs"
                 onClick={() => handleExport(r.title, 'PDF')}
               >
                 <Icon icon="solar:file-download-bold" className="text-sm text-brand-green mr-1" />
@@ -173,7 +173,7 @@ export default function ReportsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full text-xs"
+                className="flex-row w-full text-xs"
                 onClick={() => handleExport(r.title, 'CSV')}
               >
                 <Icon icon="solar:export-bold" className="text-sm text-brand-blue mr-1" />
@@ -211,9 +211,9 @@ export default function ReportsPage() {
                 contentStyle={{
                   borderRadius: '16px',
                   fontSize: '12px',
-                  backgroundColor: '#161E33',
-                  borderColor: '#242f48',
-                  color: '#fff',
+                  backgroundColor: 'bg-slate-400 dark:bg-slate-600',
+                  borderColor: 'border-brand-green',
+                  color: 'text-black dark:text-white',
                   fontFamily: 'Montserrat Alternates, sans-serif',
                 }}
               />
@@ -250,9 +250,9 @@ export default function ReportsPage() {
                 contentStyle={{
                   borderRadius: '16px',
                   fontSize: '12px',
-                  backgroundColor: '#161E33',
-                  borderColor: '#242f48',
-                  color: '#fff',
+                  backgroundColor: 'bg-slate-400 dark:bg-slate-600',
+                  borderColor: 'border-brand-green',
+                  color: 'text-black dark:text-white',
                   fontFamily: 'Montserrat Alternates, sans-serif',
                 }}
               />

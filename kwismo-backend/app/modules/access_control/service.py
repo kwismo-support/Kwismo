@@ -20,23 +20,65 @@ logger = logging.getLogger("kwismo.backend")
 # Roles
 # ---------------------------------------------------------------------------
 
-async def list_roles() -> list[RoleOut]:
-    roles = await db.role.find_many(order={"nomRole": "asc"})
-    return [RoleOut(id=r.id, nom_role=r.nomRole) for r in roles]
+from app.core.security import CurrentUser
 
 
-async def create_role(payload: RoleIn, lang: str = "fr") -> RoleOut:
-    existing = await db.role.find_unique(where={"nomRole": payload.nom_role})
+async def list_roles(current_user: CurrentUser) -> list[RoleOut]:
+    if current_user.role == "partner" and current_user.partner_id:
+        roles = await db.role.find_many(
+            where={"partnerId": current_user.partner_id},
+            include={"partner": True},
+            order={"nomRole": "asc"},
+        )
+    else:
+        roles = await db.role.find_many(
+            include={"partner": True},
+            order={"nomRole": "asc"},
+        )
+
+    return [
+        RoleOut(
+            id=r.id,
+            nom_role=r.nomRole,
+            partner_id=r.partnerId,
+            partner_name=r.partner.nomEntreprise if r.partner else None,
+            is_system=r.partnerId is None,
+        )
+        for r in roles
+    ]
+
+
+async def create_role(payload: RoleIn, current_user: CurrentUser, lang: str = "fr") -> RoleOut:
+    eff_partner_id = current_user.partner_id if current_user.role == "partner" else payload.partner_id
+
+    existing = await db.role.find_first(
+        where={
+            "nomRole": payload.nom_role,
+            "partnerId": eff_partner_id,
+        }
+    )
     if existing:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=t("role_already_exists", lang),
         )
-    role = await db.role.create(data={"nomRole": payload.nom_role})
-    return RoleOut(id=role.id, nom_role=role.nomRole)
+    role = await db.role.create(
+        data={
+            "nomRole": payload.nom_role,
+            "partnerId": eff_partner_id,
+        },
+        include={"partner": True},
+    )
+    return RoleOut(
+        id=role.id,
+        nom_role=role.nomRole,
+        partner_id=role.partnerId,
+        partner_name=role.partner.nomEntreprise if role.partner else None,
+        is_system=role.partnerId is None,
+    )
 
 
-async def delete_role(role_id: str, lang: str = "fr"):
+async def delete_role(role_id: str, current_user: CurrentUser, lang: str = "fr"):
     from app.core.schemas import Message
 
     role = await db.role.find_unique(where={"id": role_id})
@@ -44,6 +86,12 @@ async def delete_role(role_id: str, lang: str = "fr"):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=t("role_not_found", lang),
+        )
+
+    if current_user.role == "partner" and role.partnerId != current_user.partner_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Rôle non modifiable / Role not owned by partner.",
         )
 
     # Vérifier qu'aucun utilisateur n'est encore attaché à ce rôle.

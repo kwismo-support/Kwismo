@@ -5,6 +5,9 @@ export interface RoleOut {
   id: string;
   nom_role: string;
   description?: string;
+  partner_id?: string | null;
+  partner_name?: string | null;
+  is_system?: boolean;
 }
 
 export interface AccessRightOut {

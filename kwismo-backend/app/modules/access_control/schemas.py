@@ -11,10 +11,14 @@ class RoleOut(BaseModel):
 
     id: str
     nom_role: str = Field(..., examples=["partner"])
+    partner_id: str | None = None
+    partner_name: str | None = None
+    is_system: bool = True
 
 
 class RoleIn(BaseModel):
     nom_role: str
+    partner_id: str | None = None
 
 
 class AccessRightOut(BaseModel):

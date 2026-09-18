@@ -23,17 +23,32 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, onDeleteRole }:
     return '#F6A020';
   };
 
-  const isSystemRole = (name: string) => {
-    const lower = name.toLowerCase();
+  const isSystemRole = (r: RoleOut) => {
+    if (r.is_system !== undefined) return r.is_system && !r.partner_id;
+    const lower = r.nom_role.toLowerCase();
     return lower === 'admin' || lower === 'partner' || lower === 'user' || lower === 'super_admin';
   };
 
+  if (roles.length === 0) {
+    return (
+      <div className="p-8 text-center bg-white dark:bg-[#161E33] border border-slate-200 dark:border-white/10 rounded-3xl font-body">
+        <Icon icon="solar:shield-user-bold-duotone" className="text-4xl text-slate-400 mx-auto mb-2" />
+        <h4 className="font-title text-sm font-bold text-slate-900 dark:text-white">
+          Aucun rôle personnalisé
+        </h4>
+        <p className="text-xs text-slate-400 mt-1">
+          Vous n'avez pas encore créé de rôles pour votre organisation. Cliquez sur le bouton "Ajouter un rôle" ci-dessus pour en créer un.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-body">
       {roles.map((r) => {
         const active = r.id === selectedRoleId;
         const color = getRoleColor(r.nom_role);
-        const system = isSystemRole(r.nom_role);
+        const system = isSystemRole(r);
 
         return (
           <div
@@ -58,8 +73,8 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, onDeleteRole }:
                     Système
                   </span>
                 ) : (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-brand-orange/10 text-brand-orange">
-                    Personnalisé
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                    {r.partner_name ? `Partenaire: ${r.partner_name}` : 'Mon Rôle'}
                   </span>
                 )}
               </div>

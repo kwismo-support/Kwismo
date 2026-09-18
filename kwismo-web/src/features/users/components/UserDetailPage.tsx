@@ -11,17 +11,23 @@ import { FormSkeleton } from '@/shared/ui/skeleton';
 import { ConfirmDialog } from '@/shared/components/ConfirmDialog';
 import { toast } from '@/shared/store/toastStore';
 import { usersApi, type UserItem } from '../services/users.api';
+import { accessControlApi, type RoleOut } from '@/features/access-control/services/accessControl.api';
 import { usePermissions } from '@/shared/hooks/usePermissions';
 
 export default function UserDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation(['admin', 'common']);
-  const { hasPermission } = usePermissions();
+  const { hasPermission, isPartner } = usePermissions();
   const [user, setUser] = useState<UserItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [availableRoles, setAvailableRoles] = useState<RoleOut[]>([]);
+
+  useEffect(() => {
+    accessControlApi.getRoles().then((fetched) => setAvailableRoles(fetched));
+  }, []);
 
   const [initialData, setInitialData] = useState({
     prenom: '',
@@ -257,9 +263,18 @@ export default function UserDetailPage() {
               onChange={(e) => setFormData({ ...formData, roleName: e.target.value })}
               className="h-11 px-4 rounded-xl border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] text-slate-900 dark:text-white text-xs sm:text-sm focus:outline-none focus:border-brand-green disabled:opacity-60 disabled:cursor-not-allowed font-body"
             >
-              <option value="admin">{t('admin:users.filters.admin')}</option>
-              <option value="partner">{t('admin:users.filters.partner')}</option>
-              <option value="user">{t('admin:users.filters.user')}</option>
+              {!isPartner && (
+                <>
+                  <option value="admin">{t('admin:users.filters.admin')}</option>
+                  <option value="partner">{t('admin:users.filters.partner')}</option>
+                  <option value="user">{t('admin:users.filters.user')}</option>
+                </>
+              )}
+              {availableRoles.map((r) => (
+                <option key={r.id} value={r.nom_role}>
+                  {r.nom_role} {r.partner_name ? `(${r.partner_name})` : ''}
+                </option>
+              ))}
             </select>
           </div>
 

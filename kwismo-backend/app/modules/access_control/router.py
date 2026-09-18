@@ -18,7 +18,7 @@ router = APIRouter(tags=["Access Control"])
     description="**FR** — Réservé admin et partner.\n\n**EN** — Admin and partner.",
 )
 async def list_roles(user=Depends(require_roles("admin", "partner"))) -> list[RoleOut]:
-    return await service.list_roles()
+    return await service.list_roles(user)
 
 
 @router.post(
@@ -30,7 +30,7 @@ async def list_roles(user=Depends(require_roles("admin", "partner"))) -> list[Ro
     description="**FR** — Réservé admin et partner.\n\n**EN** — Admin and partner.",
 )
 async def create_role(payload: RoleIn, user=Depends(require_roles("admin", "partner"))) -> RoleOut:
-    return await service.create_role(payload, user.langue)
+    return await service.create_role(payload, user, user.langue)
 
 
 @router.delete(
@@ -41,7 +41,7 @@ async def create_role(payload: RoleIn, user=Depends(require_roles("admin", "part
     description="**FR** — Réservé admin et partner.\n\n**EN** — Admin and partner.",
 )
 async def delete_role(role_id: str, user=Depends(require_roles("admin", "partner"))) -> Message:
-    return await service.delete_role(role_id, user.langue)
+    return await service.delete_role(role_id, user, user.langue)
 
 
 @router.get(

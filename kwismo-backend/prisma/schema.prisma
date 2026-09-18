@@ -53,9 +53,13 @@ model User {
 
 model Role {
   id           String        @id @default(cuid())
-  nomRole      String        @unique // "user" | "partner" | "admin"
+  nomRole      String
+  partnerId    String?
+  partner      Partner?      @relation(fields: [partnerId], references: [id], onDelete: Cascade)
   users        User[]
   accessRights AccessRight[]
+
+  @@index([partnerId])
 }
 
 model AccessRight {
@@ -267,6 +271,7 @@ model Partner {
   dateAdhesion    DateTime @default(now())
 
   users            User[]
+  roles            Role[]
   affiliationRules AffiliationRule[]
   kpis             Kpi[]
 }
