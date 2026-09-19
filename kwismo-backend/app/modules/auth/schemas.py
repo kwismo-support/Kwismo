@@ -61,6 +61,8 @@ class AuthUserOut(BaseModel):
     prenom: str
     email: EmailStr
     role: str = Field(..., examples=["user"])
+    partner_id: str | None = Field(default=None)
+    partnerId: str | None = Field(default=None)
 
 
 class TokenOut(BaseModel):

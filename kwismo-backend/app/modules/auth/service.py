@@ -67,6 +67,8 @@ def _build_token_out(user, role_name: str) -> TokenOut:
             prenom=user.prenom,
             email=user.email,
             role=role_name,
+            partner_id=partner_id,
+            partnerId=partner_id,
         ),
     )
 

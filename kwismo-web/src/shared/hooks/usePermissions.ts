@@ -81,7 +81,7 @@ export function usePermissions() {
     isAdmin,
     isPartner,
     isUser,
-    partnerId: user?.partnerId,
+    partnerId: user?.partnerId || (user as any)?.partner_id,
     currentPermissions,
     hasRole,
     hasPermission,

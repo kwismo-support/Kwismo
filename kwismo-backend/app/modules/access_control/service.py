@@ -24,7 +24,7 @@ from app.core.security import CurrentUser
 
 
 async def list_roles(current_user: CurrentUser) -> list[RoleOut]:
-    if current_user.role == "partner" and current_user.partner_id:
+    if (current_user.role == "partner" or current_user.partner_id) and current_user.partner_id:
         roles = await db.role.find_many(
             where={"partnerId": current_user.partner_id},
             include={"partner": True},
@@ -49,7 +49,7 @@ async def list_roles(current_user: CurrentUser) -> list[RoleOut]:
 
 
 async def create_role(payload: RoleIn, current_user: CurrentUser, lang: str = "fr") -> RoleOut:
-    eff_partner_id = current_user.partner_id if current_user.role == "partner" else payload.partner_id
+    eff_partner_id = current_user.partner_id or payload.partner_id
 
     existing = await db.role.find_first(
         where={
