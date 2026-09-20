@@ -465,6 +465,8 @@
   "settings": {
     "title": "System Settings & AI Config",
     "subtitle": "Global configuration of SuperAdmin risk thresholds (range 0.0 to 1.0) and system quotas.",
+    "accessDeniedTitle": "Access Restricted",
+    "accessDeniedDesc": "Only the primary system administrator (SuperAdmin) is authorized to modify the global configuration and AI risk thresholds of the platform.",
     "thresholdsTitle": "SuperAdmin — AI Risk Thresholds Configuration",
     "thresholdsSubtitle": "Set conversion rules for raw scores (0.0 to 1.0) to status levels. Full range [0.0, 1.0] must be covered.",
     "saveGrid": "Save threshold grid",

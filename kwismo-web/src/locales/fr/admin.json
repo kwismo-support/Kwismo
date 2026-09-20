@@ -451,6 +451,8 @@
   "settings": {
     "title": "Paramètres Système & Config IA",
     "subtitle": "Configuration globale des seuils de détection de fraude SuperAdmin (plage 0.0 à 1.0) et quotas système.",
+    "accessDeniedTitle": "Accès Restreint",
+    "accessDeniedDesc": "Seul l'administrateur système principal (SuperAdmin) est autorisé à modifier la configuration globale et les seuils de risque IA de la plateforme.",
     "thresholdsTitle": "SuperAdmin — Configuration des Seuils de Risque IA",
     "thresholdsSubtitle": "Fixez les règles de conversion des scores bruts (0.0 à 1.0) en statuts. Toute la plage [0.0, 1.0] doit être couverte.",
     "saveGrid": "Sauvegarder la grille",
