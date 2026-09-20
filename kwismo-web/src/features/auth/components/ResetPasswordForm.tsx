@@ -42,10 +42,10 @@ export default function ResetPasswordForm({ onSuccess }: ResetPasswordFormProps)
           <Icon icon="solar:check-circle-bold" className="text-3xl" />
         </div>
         <h3 className="font-title text-xl font-bold text-slate-900 dark:text-white">
-          Mot de passe modifié avec succès !
+          {t('resetSuccessTitle')}
         </h3>
         <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-md">
-          Vous pouvez maintenant vous connecter à votre compte avec votre nouveau mot de passe.
+          {t('resetSuccessDesc')}
         </p>
         <a
           href="/auth/login"
@@ -63,7 +63,7 @@ export default function ResetPasswordForm({ onSuccess }: ResetPasswordFormProps)
       {!token && (
         <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2">
           <Icon icon="solar:danger-circle-bold" className="text-base flex-shrink-0" />
-          <span>Attention: Jeton de réinitialisation absent dans l'URL.</span>
+          <span>{t('missingTokenWarning')}</span>
         </div>
       )}
 

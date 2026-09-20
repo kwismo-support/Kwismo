@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
@@ -14,6 +15,7 @@ interface DeviceVerifyFormProps {
 }
 
 export default function DeviceVerifyForm({ email, onVerify, onCancel }: DeviceVerifyFormProps) {
+  const { t } = useTranslation('auth');
   const [loading, setLoading] = useState(false);
 
   const {
@@ -41,16 +43,16 @@ export default function DeviceVerifyForm({ email, onVerify, onCancel }: DeviceVe
       <div className="p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-600 dark:text-amber-400 text-xs flex flex-col gap-1">
         <div className="flex items-center gap-2 font-bold">
           <Icon icon="solar:shield-warning-bold" className="text-base" />
-          <span>Nouvel appareil détecté</span>
+          <span>{t('deviceVerifyTitle')}</span>
         </div>
         <p className="text-[11px] leading-relaxed opacity-90">
-          Un code de vérification à 6 chiffres a été envoyé par email à <strong>{email}</strong>. Veuillez le saisir ci-dessous pour confirmer cet appareil.
+          {t('deviceVerifyDesc', { email })}
         </p>
       </div>
 
       <Input
         type="text"
-        label="Code d'autorisation (OTP)"
+        label={t('otpLabel')}
         placeholder="123456"
         leftIcon="solar:key-bold"
         errorKey={errors.code?.message}
@@ -66,7 +68,7 @@ export default function DeviceVerifyForm({ email, onVerify, onCancel }: DeviceVe
         leftIcon="solar:check-circle-bold"
         className="mt-2"
       >
-        Valider l'appareil et se connecter
+        {t('submitDeviceVerify')}
       </Button>
 
       <div className="mt-4 flex flex-col items-center gap-3 pt-4 border-t border-slate-200 dark:border-white/10 text-xs">
@@ -76,7 +78,7 @@ export default function DeviceVerifyForm({ email, onVerify, onCancel }: DeviceVe
           className="font-medium text-slate-500 hover:text-slate-800 dark:hover:text-white transition flex items-center gap-1.5"
         >
           <Icon icon="solar:arrow-left-linear" className="text-sm" />
-          <span>Annuler et retourner à la connexion</span>
+          <span>{t('cancelDeviceVerify')}</span>
         </button>
       </div>
     </form>

@@ -61,19 +61,18 @@ export default function PartnerRegisterForm({ onSuccess, onBackToLogin }: Partne
           <Icon icon="solar:check-circle-bold" className="text-3xl" />
         </div>
         <h3 className="font-title text-xl font-bold text-slate-900 dark:text-white">
-          Demande de partenariat transmise !
+          {t('partnerRegisterSuccessTitle')}
         </h3>
         <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-md">
-          Votre demande pour <strong className="text-brand-green font-semibold">{submittedData.nomEntreprise}</strong> a bien été enregistrée et transmise.
-          Elle est actuellement <strong className="text-brand-orange font-semibold">en attente de validation par le Super Administrateur</strong>.
+          {t('partnerRegisterSuccessDesc', { company: submittedData.nomEntreprise })}
         </p>
         <div className="p-3.5 bg-white dark:bg-brand-navy rounded-2xl border border-slate-200 dark:border-white/10 w-full text-left text-xs text-slate-600 dark:text-slate-300 flex flex-col gap-1.5 font-mono">
-          <div><span className="text-slate-400">Email contact :</span> {submittedData.email}</div>
-          <div><span className="text-slate-400">Téléphone :</span> {submittedData.telephone}</div>
-          <div><span className="text-slate-400">Statut dossier :</span> <span className="inline-flex px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 font-bold uppercase text-[10px]">En attente validation super admin</span></div>
+          <div><span className="text-slate-400">{t('contactEmailLabel')}</span> {submittedData.email}</div>
+          <div><span className="text-slate-400">{t('phoneLabelShort')}</span> {submittedData.telephone}</div>
+          <div><span className="text-slate-400">{t('fileStatusLabel')}</span> <span className="inline-flex px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 font-bold uppercase text-[10px]">{t('pendingSuperAdminValidation')}</span></div>
         </div>
         <p className="text-[11px] text-slate-500 dark:text-slate-400 italic">
-          Un email de confirmation a été envoyé à {submittedData.email}. Vous recevrez vos accès dès validation.
+          {t('confirmationEmailNotice', { email: submittedData.email })}
         </p>
         <a
           href="/"
@@ -176,7 +175,7 @@ export default function PartnerRegisterForm({ onSuccess, onBackToLogin }: Partne
         leftIcon="solar:hand-stars-bold"
         className="mt-2"
       >
-        Soumettre ma demande de partenariat
+        {t('submitPartnerRegister')}
       </Button>
 
       <div className="mt-4 flex flex-col items-center gap-3 pt-4 border-t border-slate-200 dark:border-white/10 text-xs">
