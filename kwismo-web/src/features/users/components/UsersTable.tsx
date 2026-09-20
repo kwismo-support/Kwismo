@@ -189,7 +189,7 @@ export default function UsersTable({
           setStatusFilter('ALL');
           setPartnerFilter('ALL');
         }}
-        onExport={hasPermission('users:export') ? () => toast.success(t('users.toasts.exportInitiated')) : undefined}
+        onExport={hasPermission('users:export') ? () => toast.success(t('admin:users.toasts.exportInitiated')) : undefined}
         selects={[
           {
             id: 'role',
@@ -209,7 +209,7 @@ export default function UsersTable({
             onChange: setPartnerFilter,
             icon: 'solar:buildings-linear',
             options: [
-              { label: 'Tous les partenaires', value: 'ALL' },
+              { label: t('admin:users.filters.allPartners'), value: 'ALL' },
               { label: 'KWISMO Partner Test', value: 'KWISMO Partner Test' },
               { label: 'MTN Mobile Money SAM', value: 'MTN Mobile Money SAM' },
             ],

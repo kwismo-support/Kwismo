@@ -128,9 +128,9 @@ export default function UserDetailPage() {
       setUser((prev) => (prev ? { ...prev, prenom: formData.prenom, nom: formData.nom, email: formData.email, statut: formData.statut } : null));
       setInitialData({ ...formData });
       setIsEditing(false);
-      toast.success(t('users.toasts.saveSuccess'));
+      toast.success(t('admin:users.toasts.saveSuccess'));
     } catch {
-      toast.error(t('users.toasts.saveError'));
+      toast.error(t('admin:users.toasts.saveError'));
     }
   };
 
@@ -327,16 +327,16 @@ export default function UserDetailPage() {
           <div>
             <h3 className="font-title text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Icon icon="solar:shield-keyhole-bold-duotone" className="text-brand-orange text-xl" />
-              Permissions & Droits Spécifiques de l'Utilisateur
+              {t('admin:users.permissionsSectionTitle')}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Rôle principal : <strong className="uppercase font-mono text-brand-navy dark:text-brand-orange">{roleNameStr}</strong>
+              {t('admin:users.primaryRole')} <strong className="uppercase font-mono text-brand-navy dark:text-brand-orange">{roleNameStr}</strong>
             </p>
           </div>
 
           {roleNameStr.toLowerCase().includes('super') && (
             <span className="px-3 py-1 rounded-full bg-brand-orange/20 text-brand-orange border border-brand-orange/30 text-xs font-bold font-mono">
-              Super-Admin (Toutes autorisations actives)
+              {t('admin:users.superAdminBadge')}
             </span>
           )}
         </div>
@@ -345,7 +345,7 @@ export default function UserDetailPage() {
           <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs font-semibold flex items-center gap-2">
             <Icon icon="solar:info-circle-bold" className="text-lg shrink-0 text-amber-500" />
             <span>
-              Le rôle Super-Admin possède de plein droit la totalité des autorisations système. Ses permissions ne peuvent pas être restreintes ou modifiées.
+              {t('admin:users.superAdminNotice')}
             </span>
           </div>
         )}
@@ -354,79 +354,79 @@ export default function UserDetailPage() {
           {[
             {
               id: 'users',
-              title: 'Gestion des Utilisateurs',
+              title: t('admin:access.categories.users'),
               permissions: [
-                { code: 'users:read', label: 'Consulter les utilisateurs' },
-                { code: 'users:create', label: 'Créer des utilisateurs' },
-                { code: 'users:update', label: 'Modifier les utilisateurs' },
-                { code: 'users:delete', label: 'Supprimer des utilisateurs' },
-                { code: 'users:export', label: 'Exporter les utilisateurs' },
+                { code: 'users:read', label: t('admin:users.permLabels.usersRead') },
+                { code: 'users:create', label: t('admin:users.permLabels.usersCreate') },
+                { code: 'users:update', label: t('admin:users.permLabels.usersUpdate') },
+                { code: 'users:delete', label: t('admin:users.permLabels.usersDelete') },
+                { code: 'users:export', label: t('admin:users.permLabels.usersExport') },
               ],
             },
             {
               id: 'numbers',
-              title: 'Registre des Numéros',
+              title: t('admin:access.categories.numbers'),
               permissions: [
-                { code: 'numbers:read', label: 'Consulter les numéros' },
-                { code: 'numbers:create', label: 'Ajouter des numéros' },
-                { code: 'numbers:update', label: 'Modifier des numéros' },
-                { code: 'numbers:delete', label: 'Supprimer des numéros' },
-                { code: 'numbers:verify', label: 'Vérifier la réputation' },
-                { code: 'numbers:export', label: 'Exporter le registre' },
+                { code: 'numbers:read', label: t('admin:users.permLabels.numbersRead') },
+                { code: 'numbers:create', label: t('admin:users.permLabels.numbersCreate') },
+                { code: 'numbers:update', label: t('admin:users.permLabels.numbersUpdate') },
+                { code: 'numbers:delete', label: t('admin:users.permLabels.numbersDelete') },
+                { code: 'numbers:verify', label: t('admin:users.permLabels.numbersVerify') },
+                { code: 'numbers:export', label: t('admin:users.permLabels.numbersExport') },
               ],
             },
             {
               id: 'reports',
-              title: 'Signalements de Fraude',
+              title: t('admin:access.categories.reports'),
               permissions: [
-                { code: 'reports:read', label: 'Consulter les signalements' },
-                { code: 'reports:create', label: 'Signaler un numéro' },
-                { code: 'reports:verify', label: 'Valider/Rejeter les signalements' },
-                { code: 'reports:delete', label: 'Supprimer des signalements' },
-                { code: 'reports:export', label: 'Exporter les rapports PDF/CSV' },
+                { code: 'reports:read', label: t('admin:users.permLabels.reportsRead') },
+                { code: 'reports:create', label: t('admin:users.permLabels.reportsCreate') },
+                { code: 'reports:verify', label: t('admin:users.permLabels.reportsVerify') },
+                { code: 'reports:delete', label: t('admin:users.permLabels.reportsDelete') },
+                { code: 'reports:export', label: t('admin:users.permLabels.reportsExport') },
               ],
             },
             {
               id: 'partners',
-              title: 'Partenaires & Affiliation',
+              title: t('admin:access.categories.partners'),
               permissions: [
-                { code: 'partners:read', label: 'Consulter les partenaires' },
-                { code: 'partners:create', label: 'Créer un partenaire' },
-                { code: 'partners:update', label: 'Modifier un partenaire' },
-                { code: 'partners:delete', label: 'Supprimer un partenaire' },
-                { code: 'affiliation:update', label: 'Gérer l’affiliation' },
-                { code: 'partners:export', label: 'Exporter les partenaires' },
+                { code: 'partners:read', label: t('admin:users.permLabels.partnersRead') },
+                { code: 'partners:create', label: t('admin:users.permLabels.partnersCreate') },
+                { code: 'partners:update', label: t('admin:users.permLabels.partnersUpdate') },
+                { code: 'partners:delete', label: t('admin:users.permLabels.partnersDelete') },
+                { code: 'affiliation:update', label: t('admin:users.permLabels.affiliationUpdate') },
+                { code: 'partners:export', label: t('admin:users.permLabels.partnersExport') },
               ],
             },
             {
               id: 'ussd',
-              title: 'Pays, Opérateurs & Actions USSD',
+              title: t('admin:access.categories.ussd'),
               permissions: [
-                { code: 'ussd:read', label: 'Consulter les pays & USSD' },
-                { code: 'ussd:create', label: 'Créer pays / opérateur / USSD' },
-                { code: 'ussd:update', label: 'Modifier pays / opérateur / USSD' },
-                { code: 'ussd:delete', label: 'Supprimer pays / opérateur / USSD' },
-                { code: 'ussd:export', label: 'Exporter la configuration USSD' },
+                { code: 'ussd:read', label: t('admin:users.permLabels.ussdRead') },
+                { code: 'ussd:create', label: t('admin:users.permLabels.ussdCreate') },
+                { code: 'ussd:update', label: t('admin:users.permLabels.ussdUpdate') },
+                { code: 'ussd:delete', label: t('admin:users.permLabels.ussdDelete') },
+                { code: 'ussd:export', label: t('admin:users.permLabels.ussdExport') },
               ],
             },
             {
               id: 'roles',
-              title: 'Rôles & Matrice d’Accès',
+              title: t('admin:access.categories.roles'),
               permissions: [
-                { code: 'roles:read', label: 'Consulter les rôles' },
-                { code: 'roles:create', label: 'Créer un rôle' },
-                { code: 'roles:update', label: 'Modifier la matrice de rôle' },
-                { code: 'roles:delete', label: 'Supprimer un rôle' },
+                { code: 'roles:read', label: t('admin:users.permLabels.rolesRead') },
+                { code: 'roles:create', label: t('admin:users.permLabels.rolesCreate') },
+                { code: 'roles:update', label: t('admin:users.permLabels.rolesUpdate') },
+                { code: 'roles:delete', label: t('admin:users.permLabels.rolesDelete') },
               ],
             },
             {
               id: 'settings',
-              title: 'Paramètres Système & Supervision',
+              title: t('admin:access.categories.settings'),
               permissions: [
-                { code: 'analytics:read', label: 'Supervision des KPI & API' },
-                { code: 'settings:read', label: 'Consulter les paramètres' },
-                { code: 'settings:update', label: 'Modifier les paramètres' },
-                { code: 'system:configure', label: 'Configurer les seuils de risque IA' },
+                { code: 'analytics:read', label: t('admin:users.permLabels.analyticsRead') },
+                { code: 'settings:read', label: t('admin:users.permLabels.settingsRead') },
+                { code: 'settings:update', label: t('admin:users.permLabels.settingsUpdate') },
+                { code: 'system:configure', label: t('admin:users.permLabels.systemConfigure') },
               ],
             },
           ].map((mod) => {
