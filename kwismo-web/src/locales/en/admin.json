@@ -478,7 +478,12 @@
     "trustedDevicesTitle": "Connected Trusted Devices",
     "noDevices": "No devices registered.",
     "lastConnection": "Last connection",
-    "deviceActive": "Active"
+    "deviceActive": "Active",
+    "toasts": {
+      "fetchError": "Error loading profile",
+      "updateSuccess": "Profile updated successfully",
+      "updateError": "Error updating profile"
+    }
   }
 }
 

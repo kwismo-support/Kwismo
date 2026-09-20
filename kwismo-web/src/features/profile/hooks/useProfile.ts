@@ -6,7 +6,7 @@ import { toast } from '@/shared/store/toastStore';
 import { useAuthStore } from '@/shared/store/authStore';
 
 export function useProfile() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation('admin');
   const { user: authUser, setUser: setAuthUser } = useAuthStore();
   const [profile, setProfile] = useState<UserProfileMe | null>(null);
   const [loading, setLoading] = useState(false);
@@ -21,11 +21,11 @@ export function useProfile() {
         i18n.changeLanguage(data.langue);
       }
     } catch {
-      toast.error('Erreur lors du chargement du profil');
+      toast.error(t('profile.toasts.fetchError'));
     } finally {
       setLoading(false);
     }
-  }, [i18n]);
+  }, [i18n, t]);
 
   useEffect(() => {
     fetchProfile();
@@ -47,10 +47,10 @@ export function useProfile() {
           langue: (updated.langue as 'fr' | 'en') || 'fr',
         });
       }
-      toast.success('Profil mis à jour avec succès');
+      toast.success(t('profile.toasts.updateSuccess'));
       return true;
     } catch {
-      toast.error('Erreur lors de la mise à jour du profil');
+      toast.error(t('profile.toasts.updateError'));
       return false;
     } finally {
       setUpdating(false);

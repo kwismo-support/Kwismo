@@ -464,7 +464,12 @@
     "trustedDevicesTitle": "Appareils de Confiance Connectés",
     "noDevices": "Aucun appareil enregistré.",
     "lastConnection": "Dernière connexion",
-    "deviceActive": "Actif"
+    "deviceActive": "Actif",
+    "toasts": {
+      "fetchError": "Erreur lors du chargement du profil",
+      "updateSuccess": "Profil mis à jour avec succès",
+      "updateError": "Erreur lors de la mise à jour du profil"
+    }
   }
 }
 
