@@ -24,7 +24,7 @@ export function useUssd() {
         setSelectedCountryId(defaultCountry.id);
       }
     } catch {
-      toast.error('Erreur lors du chargement des pays');
+      toast.error('admin:ussd.toasts.fetchCountriesError');
     } finally {
       setLoadingCountries(false);
     }
@@ -46,7 +46,7 @@ export function useUssd() {
         setSelectedOperatorId('');
       }
     } catch {
-      toast.error('Erreur lors du chargement des opérateurs');
+      toast.error('admin:ussd.toasts.fetchOperatorsError');
     } finally {
       setLoadingOperators(false);
     }
@@ -62,7 +62,7 @@ export function useUssd() {
       const data = await ussdApi.getActions(operatorId);
       setUssdActions(data);
     } catch {
-      toast.error('Erreur lors du chargement des actions USSD');
+      toast.error('admin:ussd.toasts.fetchActionsError');
     } finally {
       setLoadingActions(false);
     }
@@ -89,12 +89,12 @@ export function useUssd() {
   const handleCreateCountry = async (payload: CountryIn) => {
     try {
       const created = await ussdApi.createCountry(payload);
-      toast.success('Pays créé avec succès');
+      toast.success('admin:ussd.toasts.createCountrySuccess');
       await fetchCountries();
       setSelectedCountryId(created.id);
       return true;
     } catch {
-      toast.error('Erreur lors de la création du pays');
+      toast.error('admin:ussd.toasts.createCountryError');
       return false;
     }
   };
@@ -102,11 +102,11 @@ export function useUssd() {
   const handleUpdateCountry = async (id: string, payload: CountryIn) => {
     try {
       await ussdApi.updateCountry(id, payload);
-      toast.success('Pays mis à jour');
+      toast.success('admin:ussd.toasts.updateCountrySuccess');
       await fetchCountries();
       return true;
     } catch {
-      toast.error('Erreur lors de la modification du pays');
+      toast.error('admin:ussd.toasts.updateCountryError');
       return false;
     }
   };
@@ -114,14 +114,14 @@ export function useUssd() {
   const handleDeleteCountry = async (id: string) => {
     try {
       await ussdApi.deleteCountry(id);
-      toast.success('Pays supprimé');
+      toast.success('admin:ussd.toasts.deleteCountrySuccess');
       if (selectedCountryId === id) {
         setSelectedCountryId('');
       }
       await fetchCountries();
       return true;
     } catch {
-      toast.error('Erreur lors de la suppression du pays');
+      toast.error('admin:ussd.toasts.deleteCountryError');
       return false;
     }
   };
@@ -129,14 +129,14 @@ export function useUssd() {
   const handleCreateOperator = async (payload: OperatorIn) => {
     try {
       const created = await ussdApi.createOperator(payload);
-      toast.success('Opérateur créé avec succès');
+      toast.success('admin:ussd.toasts.createOperatorSuccess');
       if (selectedCountryId) {
         await fetchOperators(selectedCountryId);
       }
       setSelectedOperatorId(created.id);
       return true;
     } catch {
-      toast.error('Erreur lors de la création de l opérateur');
+      toast.error('admin:ussd.toasts.createOperatorError');
       return false;
     }
   };
@@ -144,13 +144,13 @@ export function useUssd() {
   const handleUpdateOperator = async (id: string, payload: OperatorIn) => {
     try {
       await ussdApi.updateOperator(id, payload);
-      toast.success('Opérateur mis à jour');
+      toast.success('admin:ussd.toasts.updateOperatorSuccess');
       if (selectedCountryId) {
         await fetchOperators(selectedCountryId);
       }
       return true;
     } catch {
-      toast.error('Erreur lors de la modification de l opérateur');
+      toast.error('admin:ussd.toasts.updateOperatorError');
       return false;
     }
   };
@@ -158,7 +158,7 @@ export function useUssd() {
   const handleDeleteOperator = async (id: string) => {
     try {
       await ussdApi.deleteOperator(id);
-      toast.success('Opérateur supprimé');
+      toast.success('admin:ussd.toasts.deleteOperatorSuccess');
       if (selectedOperatorId === id) {
         setSelectedOperatorId('');
       }
@@ -167,7 +167,7 @@ export function useUssd() {
       }
       return true;
     } catch {
-      toast.error('Erreur lors de la suppression de l opérateur');
+      toast.error('admin:ussd.toasts.deleteOperatorError');
       return false;
     }
   };
@@ -175,13 +175,13 @@ export function useUssd() {
   const handleCreateAction = async (payload: UssdActionIn) => {
     try {
       await ussdApi.createAction(payload);
-      toast.success('Action USSD créée avec succès');
+      toast.success('admin:ussd.toasts.createActionSuccess');
       if (selectedOperatorId) {
         await fetchActions(selectedOperatorId);
       }
       return true;
     } catch {
-      toast.error('Erreur lors de la création de l action USSD');
+      toast.error('admin:ussd.toasts.createActionError');
       return false;
     }
   };
@@ -189,13 +189,13 @@ export function useUssd() {
   const handleUpdateAction = async (id: string, payload: UssdActionIn) => {
     try {
       await ussdApi.updateAction(id, payload);
-      toast.success('Action USSD mise à jour');
+      toast.success('admin:ussd.toasts.updateActionSuccess');
       if (selectedOperatorId) {
         await fetchActions(selectedOperatorId);
       }
       return true;
     } catch {
-      toast.error('Erreur lors de la modification de l action USSD');
+      toast.error('admin:ussd.toasts.updateActionError');
       return false;
     }
   };
@@ -203,13 +203,13 @@ export function useUssd() {
   const handleDeleteAction = async (id: string) => {
     try {
       await ussdApi.deleteAction(id);
-      toast.success('Action USSD supprimée');
+      toast.success('admin:ussd.toasts.deleteActionSuccess');
       if (selectedOperatorId) {
         await fetchActions(selectedOperatorId);
       }
       return true;
     } catch {
-      toast.error('Erreur lors de la suppression de l action USSD');
+      toast.error('admin:ussd.toasts.deleteActionError');
       return false;
     }
   };

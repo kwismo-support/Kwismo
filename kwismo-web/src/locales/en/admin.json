@@ -344,7 +344,30 @@
     "definedActions": "Defined USSD Actions",
     "testUSSD": "Test USSD",
     "operatorSaveSuccess": "Operator saved successfully",
-    "operatorSaveError": "Error saving operator"
+    "operatorSaveError": "Error saving operator",
+    "toasts": {
+      "fetchCountriesError": "Error loading countries",
+      "fetchOperatorsError": "Error loading operators",
+      "fetchActionsError": "Error loading USSD actions",
+      "createCountrySuccess": "Country created successfully",
+      "createCountryError": "Error creating country",
+      "updateCountrySuccess": "Country updated successfully",
+      "updateCountryError": "Error updating country",
+      "deleteCountrySuccess": "Country deleted successfully",
+      "deleteCountryError": "Error deleting country",
+      "createOperatorSuccess": "Operator created successfully",
+      "createOperatorError": "Error creating operator",
+      "updateOperatorSuccess": "Operator updated successfully",
+      "updateOperatorError": "Error updating operator",
+      "deleteOperatorSuccess": "Operator deleted successfully",
+      "deleteOperatorError": "Error deleting operator",
+      "createActionSuccess": "USSD action created successfully",
+      "createActionError": "Error creating USSD action",
+      "updateActionSuccess": "USSD action updated successfully",
+      "updateActionError": "Error updating USSD action",
+      "deleteActionSuccess": "USSD action deleted successfully",
+      "deleteActionError": "Error deleting USSD action"
+    }
   },
   "access": {
     "title": "Access Control",

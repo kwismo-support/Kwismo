@@ -330,7 +330,30 @@
     "definedActions": "Actions USSD Définies",
     "testUSSD": "Test USSD",
     "operatorSaveSuccess": "Opérateur enregistré avec succès",
-    "operatorSaveError": "Erreur lors de l'enregistrement de l'opérateur"
+    "operatorSaveError": "Erreur lors de l'enregistrement de l'opérateur",
+    "toasts": {
+      "fetchCountriesError": "Erreur lors du chargement des pays",
+      "fetchOperatorsError": "Erreur lors du chargement des opérateurs",
+      "fetchActionsError": "Erreur lors du chargement des actions USSD",
+      "createCountrySuccess": "Pays créé avec succès",
+      "createCountryError": "Erreur lors de la création du pays",
+      "updateCountrySuccess": "Pays mis à jour avec succès",
+      "updateCountryError": "Erreur lors de la modification du pays",
+      "deleteCountrySuccess": "Pays supprimé avec succès",
+      "deleteCountryError": "Erreur lors de la suppression du pays",
+      "createOperatorSuccess": "Opérateur créé avec succès",
+      "createOperatorError": "Erreur lors de la création de l'opérateur",
+      "updateOperatorSuccess": "Opérateur mis à jour avec succès",
+      "updateOperatorError": "Erreur lors de la modification de l'opérateur",
+      "deleteOperatorSuccess": "Opérateur supprimé avec succès",
+      "deleteOperatorError": "Erreur lors de la suppression de l'opérateur",
+      "createActionSuccess": "Action USSD créée avec succès",
+      "createActionError": "Erreur lors de la création de l'action USSD",
+      "updateActionSuccess": "Action USSD mise à jour avec succès",
+      "updateActionError": "Erreur lors de la modification de l'action USSD",
+      "deleteActionSuccess": "Action USSD supprimée avec succès",
+      "deleteActionError": "Erreur lors de la suppression de l'action USSD"
+    }
   },
   "access": {
     "title": "Contrôle d'accès",
