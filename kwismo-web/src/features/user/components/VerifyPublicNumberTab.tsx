@@ -75,7 +75,7 @@ export function VerifyPublicNumberTab() {
                     {result.valeur}
                   </span>
                   <span className="text-xs text-slate-400">
-                    {result.op?.nomMatricule || 'Operateur GSM'}
+                    {result.op?.nomMatricule || t('user:verifyTab.gsmOperator')}
                   </span>
                 </div>
               </div>
@@ -99,7 +99,7 @@ export function VerifyPublicNumberTab() {
               <div>
                 <span className="text-slate-400 block">{t('user:verifyTab.operator')}</span>
                 <span className="text-sm font-bold text-slate-800 dark:text-white">
-                  {result.op?.nomMatricule || 'CAMTEL / MTN / Orange'}
+                  {result.op?.nomMatricule || t('user:verifyTab.defaultOperators')}
                 </span>
               </div>
             </div>

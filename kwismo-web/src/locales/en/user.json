@@ -60,7 +60,9 @@
     "subtitle": "Check if a number is safe before completing a money transfer.",
     "phoneLabel": "Number to verify",
     "trustScore": "Trust score",
-    "operator": "Telecom Operator"
+    "operator": "Telecom Operator",
+    "gsmOperator": "GSM Operator",
+    "defaultOperators": "CAMTEL / MTN / Orange"
   },
   "reportTab": {
     "title": "Report a fraud",
@@ -84,6 +86,14 @@
     "phoneRemoved": "Phone number removed from your account.",
     "compromiseDeclared": "Compromise alert registered successfully.",
     "profileUpdated": "Profile updated successfully!",
-    "reportSubmitted": "Fraud report submitted to authorities."
+    "reportSubmitted": "Fraud report submitted to authorities.",
+    "addPhoneFailed": "Failed to add phone number.",
+    "invalidOtp": "Invalid OTP code.",
+    "resendOtpFailed": "Failed to resend OTP code.",
+    "removePhoneFailed": "Failed to remove phone number.",
+    "compromiseFailed": "Failed to submit compromise report.",
+    "updateProfileFailed": "Failed to update profile.",
+    "verifyNumberFailed": "Phone number not found or invalid.",
+    "reportFailed": "Failed to submit fraud report."
   }
 }

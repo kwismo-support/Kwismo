@@ -61,7 +61,7 @@ export const userApi = {
       toast.success('user:toast.phoneAdded');
       return res.data;
     } catch (err: any) {
-      const msg = err.response?.data?.detail ?? err.message ?? 'Erreur lors de l\'ajout du numéro.';
+      const msg = err.response?.data?.detail ?? err.message ?? 'user:toast.addPhoneFailed';
       toast.error(msg);
       throw err;
     }
@@ -79,7 +79,7 @@ export const userApi = {
       await apiClient.post(`/users/me/phones/${phoneId}/verify`, { code });
       toast.success('user:toast.phoneVerified');
     } catch (err: any) {
-      const msg = err.response?.data?.detail ?? err.message ?? 'Code OTP invalide.';
+      const msg = err.response?.data?.detail ?? err.message ?? 'user:toast.invalidOtp';
       toast.error(msg);
       throw err;
     }
@@ -95,7 +95,7 @@ export const userApi = {
       await apiClient.post(`/users/me/phones/${phoneId}/resend`);
       toast.success('user:toast.otpResent');
     } catch (err: any) {
-      const msg = err.response?.data?.detail ?? err.message ?? 'Erreur lors de l\'envoi de l\'OTP.';
+      const msg = err.response?.data?.detail ?? err.message ?? 'user:toast.resendOtpFailed';
       toast.error(msg);
       throw err;
     }
@@ -113,7 +113,7 @@ export const userApi = {
       await apiClient.delete(`/users/me/phones/${phoneId}`);
       toast.success('user:toast.phoneRemoved');
     } catch (err: any) {
-      const msg = err.response?.data?.detail ?? err.message ?? 'Erreur lors de la suppression du numéro.';
+      const msg = err.response?.data?.detail ?? err.message ?? 'user:toast.removePhoneFailed';
       toast.error(msg);
       throw err;
     }
@@ -141,7 +141,7 @@ export const userApi = {
       toast.success('user:toast.compromiseDeclared');
       return res.data;
     } catch (err: any) {
-      const msg = err.response?.data?.detail ?? err.message ?? 'Erreur lors de la déclaration d\'incident.';
+      const msg = err.response?.data?.detail ?? err.message ?? 'user:toast.compromiseFailed';
       toast.error(msg);
       throw err;
     }
@@ -158,7 +158,7 @@ export const userApi = {
       toast.success('user:toast.profileUpdated');
       return res.data;
     } catch (err: any) {
-      const msg = err.response?.data?.detail ?? err.message ?? 'Erreur lors de la mise à jour du profil.';
+      const msg = err.response?.data?.detail ?? err.message ?? 'user:toast.updateProfileFailed';
       toast.error(msg);
       throw err;
     }
@@ -179,7 +179,7 @@ export const userApi = {
       const res = await apiClient.get('/numbers/verify', { params: { valeur } });
       return res.data;
     } catch (err: any) {
-      const msg = err.response?.data?.detail ?? err.message ?? 'Numéro non trouvé ou invalide.';
+      const msg = err.response?.data?.detail ?? err.message ?? 'user:toast.verifyNumberFailed';
       toast.error(msg);
       throw err;
     }
@@ -196,7 +196,7 @@ export const userApi = {
       toast.success('user:toast.reportSubmitted');
       return res.data;
     } catch (err: any) {
-      const msg = err.response?.data?.detail ?? err.message ?? 'Erreur lors du signalement.';
+      const msg = err.response?.data?.detail ?? err.message ?? 'user:toast.reportFailed';
       toast.error(msg);
       throw err;
     }
