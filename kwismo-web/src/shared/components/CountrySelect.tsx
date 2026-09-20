@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 
 export interface CountryItem {
@@ -47,12 +48,14 @@ interface CountrySelectProps {
 export function CountrySelect({
   value,
   onChange,
-  placeholder = 'Tous les pays',
+  placeholder,
   className = '',
   showAllOption = true,
 }: CountrySelectProps) {
+  const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const actualPlaceholder = placeholder || t('countrySelect.allCountries');
 
   const selectedCountry = useMemo(
     () => WORLD_COUNTRIES.find((c) => c.name.toLowerCase() === value.toLowerCase()),
@@ -86,7 +89,7 @@ export function CountrySelect({
           ) : (
             <>
               <Icon icon="solar:globe-linear" className="text-base text-slate-400 shrink-0" />
-              <span className="text-slate-500 dark:text-slate-400 truncate">{placeholder}</span>
+              <span className="text-slate-500 dark:text-slate-400 truncate">{actualPlaceholder}</span>
             </>
           )}
         </div>
@@ -107,7 +110,7 @@ export function CountrySelect({
                 autoFocus
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher un pays..."
+                placeholder={t('countrySelect.searchPlaceholder')}
                 className="w-full h-8 pl-8 pr-3 text-xs rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-brand-green"
               />
             </div>
@@ -127,7 +130,7 @@ export function CountrySelect({
                   }`}
                 >
                   <Icon icon="solar:globe-bold-duotone" className="text-base shrink-0" />
-                  <span>{placeholder}</span>
+                  <span>{actualPlaceholder}</span>
                 </button>
               )}
 
@@ -154,7 +157,7 @@ export function CountrySelect({
               ))}
 
               {filteredCountries.length === 0 && (
-                <p className="text-xs text-slate-400 p-3 text-center">Aucun pays trouvé</p>
+                <p className="text-xs text-slate-400 p-3 text-center">{t('countrySelect.noCountryFound')}</p>
               )}
             </div>
           </div>

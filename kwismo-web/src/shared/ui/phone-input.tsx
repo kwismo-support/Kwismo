@@ -14,7 +14,7 @@ interface PhoneInputProps {
 }
 
 export function PhoneInput({ value, onChange, label, required = false, disabled = false, className = '' }: PhoneInputProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const defaultCountryCode = detectUserCountryCode();
   const defaultCountry = COUNTRY_LIST.find((c) => c.code === defaultCountryCode) || COUNTRY_LIST[0];
   const [selectedCountry, setSelectedCountry] = useState<CountryOption>(defaultCountry);
@@ -157,7 +157,7 @@ export function PhoneInput({ value, onChange, label, required = false, disabled 
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Rechercher (nom, code, +237...)"
+                    placeholder={t('common:countrySelect.searchPlaceholder')}
                     autoFocus
                     className="w-full h-9 pl-9 pr-3 rounded-xl bg-slate-100 dark:bg-white/10 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-brand-green"
                   />
@@ -167,7 +167,7 @@ export function PhoneInput({ value, onChange, label, required = false, disabled 
               <div className="overflow-y-auto p-1 max-h-64 divide-y divide-slate-50 dark:divide-white/5">
                 {filteredCountries.length === 0 ? (
                   <div className="p-4 text-center text-xs text-slate-500 dark:text-slate-400">
-                    Aucun pays trouvé
+                    {t('common:countrySelect.noCountryFound')}
                   </div>
                 ) : (
                   filteredCountries.map((country) => {

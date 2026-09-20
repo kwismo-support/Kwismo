@@ -161,24 +161,24 @@ export function DataTable<T>({
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-navy dark:bg-brand-orange text-white dark:text-brand-navy text-xs font-bold">
               {selectedKeys.length}
             </span>
-            <span>élément(s) sélectionné(s)</span>
+            <span>{t('table.itemsSelected', { count: selectedKeys.length })}</span>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => {
-                toast.success(`${selectedKeys.length} élément(s) supprimé(s).`);
+                toast.success(t('table.itemsSelected', { count: selectedKeys.length }));
                 onSelectionChange?.([]);
               }}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition cursor-pointer"
             >
               <Icon icon="solar:trash-bin-trash-bold" className="text-sm" />
-              <span>Supprimer la sélection</span>
+              <span>{t('table.deleteSelection')}</span>
             </button>
             <button
               onClick={() => onSelectionChange?.([])}
               className="px-3 py-1.5 rounded-xl border border-brand-navy dark:border-white/20 hover:bg-brand-navy dark:hover:bg-white/10 text-brand-navy hover:text-white dark:text-white text-xs font-semibold transition cursor-pointer"
             >
-              Désélectionner
+              {t('table.deselectAll')}
             </button>
           </div>
         </div>

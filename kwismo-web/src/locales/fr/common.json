@@ -59,13 +59,49 @@
     "previous": "Précédent",
     "next": "Suivant",
     "of": "sur",
+    "to": "à",
+    "showing": "Affichage",
     "results": "résultats",
     "show": "Afficher",
     "rowsPerPage": "lignes par page (Total : {{total}})",
-    "page": "Page"
+    "page": "Page",
+    "showingRange": "Affichage {{start}} à {{end}} sur {{total}} résultats",
+    "selectedCount": "{{count}} sélectionné(s)",
+    "firstPage": "Première page",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
+    "lastPage": "Dernière page"
   },
   "table": {
     "noResults": "Aucun résultat",
-    "loading": "Chargement des données…"
+    "loading": "Chargement des données…",
+    "itemsSelected": "{{count}} élément(s) sélectionné(s)",
+    "deleteSelection": "Supprimer la sélection",
+    "deselectAll": "Désélectionner"
+  },
+  "filterBar": {
+    "searchPlaceholder": "Rechercher par nom, email, téléphone...",
+    "reset": "Réinitialiser",
+    "refresh": "Rafraîchir",
+    "export": "Exporter"
+  },
+  "countrySelect": {
+    "searchPlaceholder": "Rechercher un pays...",
+    "noCountryFound": "Aucun pays trouvé",
+    "allCountries": "Tous les pays"
+  },
+  "topbar": {
+    "searchPlaceholder": "Rechercher un numéro, un partenaire, un utilisateur...",
+    "searching": "Recherche de \"{{query}}\" en cours...",
+    "notifications": "Notifications",
+    "markAllRead": "Tout marquer comme lu",
+    "viewAllNotifications": "Voir toutes les notifications →",
+    "myProfile": "Mon Profil",
+    "systemSettings": "Paramètres Système"
+  },
+  "sidebar": {
+    "expand": "Déplier le menu",
+    "collapse": "Replier le menu",
+    "closeMenu": "Fermer le menu"
   }
 }

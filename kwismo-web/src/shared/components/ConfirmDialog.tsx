@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { cn } from '@/shared/lib/utils';
 
@@ -20,11 +21,15 @@ export function ConfirmDialog({
   onConfirm,
   title,
   description,
-  confirmLabel = 'Confirmer',
-  cancelLabel = 'Annuler',
+  confirmLabel,
+  cancelLabel,
   variant = 'danger',
   isLoading = false,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation('common');
+  const finalConfirmLabel = confirmLabel || t('confirm');
+  const finalCancelLabel = cancelLabel || t('cancel');
+
   if (!isOpen) return null;
 
   const variantConfig = {
@@ -91,7 +96,7 @@ export function ConfirmDialog({
               disabled={isLoading}
               className="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 transition"
             >
-              {cancelLabel}
+              {finalCancelLabel}
             </button>
 
             <button
@@ -108,7 +113,7 @@ export function ConfirmDialog({
               ) : (
                 <Icon icon="solar:check-read-bold" className="text-base" />
               )}
-              <span>{confirmLabel}</span>
+              <span>{finalConfirmLabel}</span>
             </button>
           </div>
         </div>

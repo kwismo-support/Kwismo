@@ -59,13 +59,49 @@
     "previous": "Previous",
     "next": "Next",
     "of": "of",
+    "to": "to",
+    "showing": "Showing",
     "results": "results",
     "show": "Show",
     "rowsPerPage": "rows per page (Total: {{total}})",
-    "page": "Page"
+    "page": "Page",
+    "showingRange": "Showing {{start}} to {{end}} of {{total}} results",
+    "selectedCount": "{{count}} selected",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
   },
   "table": {
     "noResults": "No results",
-    "loading": "Loading data…"
+    "loading": "Loading data…",
+    "itemsSelected": "{{count}} item(s) selected",
+    "deleteSelection": "Delete selection",
+    "deselectAll": "Deselect all"
+  },
+  "filterBar": {
+    "searchPlaceholder": "Search by name, email, phone...",
+    "reset": "Reset",
+    "refresh": "Refresh",
+    "export": "Export"
+  },
+  "countrySelect": {
+    "searchPlaceholder": "Search a country...",
+    "noCountryFound": "No country found",
+    "allCountries": "All countries"
+  },
+  "topbar": {
+    "searchPlaceholder": "Search number, partner, user...",
+    "searching": "Searching for \"{{query}}\"...",
+    "notifications": "Notifications",
+    "markAllRead": "Mark all as read",
+    "viewAllNotifications": "View all notifications →",
+    "myProfile": "My Profile",
+    "systemSettings": "System Settings"
+  },
+  "sidebar": {
+    "expand": "Expand menu",
+    "collapse": "Collapse menu",
+    "closeMenu": "Close menu"
   }
 }

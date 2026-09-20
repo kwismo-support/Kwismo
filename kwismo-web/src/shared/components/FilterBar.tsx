@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { cn } from '@/shared/lib/utils';
 import { CountrySelect } from '@/shared/ui/country-select';
@@ -36,7 +37,7 @@ export interface FilterBarProps {
 export function FilterBar({
   searchQuery,
   onSearchChange,
-  searchPlaceholder = 'Rechercher par nom, email, téléphone...',
+  searchPlaceholder,
   countryValue,
   onCountryChange,
   selects = [],
@@ -48,6 +49,8 @@ export function FilterBar({
   children,
   className,
 }: FilterBarProps) {
+  const { t } = useTranslation('common');
+  const actualPlaceholder = searchPlaceholder || t('filterBar.searchPlaceholder');
   const hasActiveFilters =
     Boolean(searchQuery) ||
     Boolean(countryValue && countryValue !== 'ALL') ||
@@ -72,7 +75,7 @@ export function FilterBar({
               type="text"
               value={searchQuery || ''}
               onChange={(e) => onSearchChange(e.target.value)}
-              placeholder={searchPlaceholder}
+              placeholder={actualPlaceholder}
               className={cn(
                 'w-full h-10 pl-10 pr-9 rounded-xl border text-xs sm:text-sm transition',
                 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-darkBg',
@@ -141,14 +144,14 @@ export function FilterBar({
             className="flex items-center gap-1.5 px-3 h-10 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition"
           >
             <Icon icon="solar:restart-bold" className="text-sm" />
-            <span>Réinitialiser</span>
+            <span>{t('filterBar.reset')}</span>
           </button>
         )}
 
         {onRefresh && (
           <button
             onClick={onRefresh}
-            title="Rafraîchir"
+            title={t('filterBar.refresh')}
             className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-brand-darkBg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition"
           >
             <Icon icon="solar:refresh-bold" className="text-base" />
@@ -161,7 +164,7 @@ export function FilterBar({
             className="flex items-center gap-1.5 px-3.5 h-10 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-brand-darkBg text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/10 transition shadow-sm"
           >
             <Icon icon="solar:export-bold" className="text-sm text-brand-green" />
-            <span>Exporter</span>
+            <span>{t('filterBar.export')}</span>
           </button>
         )}
 

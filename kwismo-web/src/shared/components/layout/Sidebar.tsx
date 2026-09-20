@@ -19,22 +19,21 @@ interface NavItem {
   to: string;
   icon: string;
   labelKey: string;
-  fallbackLabel: string;
   iconColor: string;
   roles?: UserRole[];
   permission?: PermissionCode;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/app/dashboard', icon: 'solar:widget-bold-duotone', labelKey: 'nav.dashboard', fallbackLabel: 'Dashboard', iconColor: 'text-brand-blue' },
-  { to: '/app/user', icon: 'solar:user-bold-duotone', labelKey: 'nav.myPortal', fallbackLabel: 'Portail Utilisateur', iconColor: 'text-emerald-500', roles: ['user'] },
-  { to: '/app/numbers', icon: 'solar:hashtag-square-bold-duotone', labelKey: 'nav.numbers', fallbackLabel: 'Numéros', iconColor: 'text-brand-green', permission: 'numbers:read' },
-  { to: '/app/users', icon: 'solar:users-group-two-rounded-bold-duotone', labelKey: 'nav.users', fallbackLabel: 'Utilisateurs', iconColor: 'text-brand-navy dark:text-blue-400', permission: 'users:read' },
-  { to: '/app/partners', icon: 'solar:buildings-bold-duotone', labelKey: 'nav.partners', fallbackLabel: 'Partenaires', iconColor: 'text-brand-orange', permission: 'partners:read' },
-  { to: '/app/ussd', icon: 'solar:global-bold-duotone', labelKey: 'nav.ussd', fallbackLabel: 'Pays & USSD', iconColor: 'text-purple-500', permission: 'ussd:read' },
-  { to: '/app/access', icon: 'solar:shield-keyhole-bold-duotone', labelKey: 'nav.access', fallbackLabel: "Droits d'accès", iconColor: 'text-amber-500', permission: 'roles:read' },
-  { to: '/app/reports', icon: 'solar:chart-bold-duotone', labelKey: 'nav.reports', fallbackLabel: 'Rapports', iconColor: 'text-emerald-500', permission: 'reports:read' },
-  { to: '/app/settings', icon: 'solar:settings-bold-duotone', labelKey: 'nav.settings', fallbackLabel: 'Paramètres', iconColor: 'text-slate-500', permission: 'settings:read' },
+  { to: '/app/dashboard', icon: 'solar:widget-bold-duotone', labelKey: 'nav.dashboard', iconColor: 'text-brand-blue' },
+  { to: '/app/user', icon: 'solar:user-bold-duotone', labelKey: 'nav.myPortal', iconColor: 'text-emerald-500', roles: ['user'] },
+  { to: '/app/numbers', icon: 'solar:hashtag-square-bold-duotone', labelKey: 'nav.numbers', iconColor: 'text-brand-green', permission: 'numbers:read' },
+  { to: '/app/users', icon: 'solar:users-group-two-rounded-bold-duotone', labelKey: 'nav.users', iconColor: 'text-brand-navy dark:text-blue-400', permission: 'users:read' },
+  { to: '/app/partners', icon: 'solar:buildings-bold-duotone', labelKey: 'nav.partners', iconColor: 'text-brand-orange', permission: 'partners:read' },
+  { to: '/app/ussd', icon: 'solar:global-bold-duotone', labelKey: 'nav.ussd', iconColor: 'text-purple-500', permission: 'ussd:read' },
+  { to: '/app/access', icon: 'solar:shield-keyhole-bold-duotone', labelKey: 'nav.access', iconColor: 'text-amber-500', permission: 'roles:read' },
+  { to: '/app/reports', icon: 'solar:chart-bold-duotone', labelKey: 'nav.reports', iconColor: 'text-emerald-500', permission: 'reports:read' },
+  { to: '/app/settings', icon: 'solar:settings-bold-duotone', labelKey: 'nav.settings', iconColor: 'text-slate-500', permission: 'settings:read' },
 ];
 
 export function Sidebar({ open, onClose }: SidebarProps) {
@@ -76,7 +75,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 z-50 h-6 w-6 items-center justify-center rounded-full border border-slate-200 dark:border-white/15 bg-white dark:bg-[#161E33] text-slate-500 hover:text-slate-900 dark:hover:text-white shadow-md transition cursor-pointer"
-            title={isCollapsed ? 'Déplier le menu' : 'Replier le menu'}
+            title={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
           >
             <Icon
               icon={isCollapsed ? 'solar:alt-arrow-right-linear' : 'solar:alt-arrow-left-linear'}
@@ -95,7 +94,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
           <button
             onClick={onClose}
-            aria-label="Fermer le menu"
+            aria-label={t('sidebar.closeMenu')}
             className="rounded-xl p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white lg:hidden"
           >
             <Icon icon="solar:close-circle-linear" className="text-2xl" />
@@ -104,7 +103,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5">
           {filteredNavItems.map((item) => {
-            const label = t(item.labelKey, { defaultValue: item.fallbackLabel });
+            const label = t(item.labelKey);
             return (
               <NavLink
                 key={item.to}

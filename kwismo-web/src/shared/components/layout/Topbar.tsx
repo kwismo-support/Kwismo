@@ -32,7 +32,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (globalSearch.trim()) {
-      toast.info(`Recherche de "${globalSearch}" en cours...`);
+      toast.info(t('topbar.searching', { query: globalSearch }));
       navigate(`/app/numbers?search=${encodeURIComponent(globalSearch)}`);
     }
   };
@@ -42,7 +42,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
       <div className="flex items-center gap-3 shrink-0">
         <button
           onClick={onMenuClick}
-          aria-label="Ouvrir le menu"
+          aria-label={t('sidebar.expand')}
           className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white lg:hidden hover:bg-slate-100 dark:hover:bg-white/5"
         >
           <Icon icon="solar:hamburger-menu-bold" className="text-xl" />
@@ -60,7 +60,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
             type="text"
             value={globalSearch}
             onChange={(e) => setGlobalSearch(e.target.value)}
-            placeholder="Rechercher un numéro, un partenaire, un utilisateur..."
+            placeholder={t('topbar.searchPlaceholder')}
             className="w-full h-10 pl-10 pr-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0F1626] text-xs sm:text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-brand-green font-body transition-colors"
           />
         </div>
@@ -73,7 +73,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
         <DropdownMenu
           trigger={
             <button
-              aria-label="Notifications"
+              aria-label={t('topbar.notifications')}
               className="relative p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
             >
               <Icon icon="solar:bell-bold" className="text-xl" />
@@ -86,19 +86,19 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           }
         >
           <div className="px-4 py-3 border-b border-slate-200 dark:border-white/10 flex items-center justify-between min-w-[300px]">
-            <h4 className="font-title text-xs font-bold text-slate-900 dark:text-white">Notifications</h4>
+            <h4 className="font-title text-xs font-bold text-slate-900 dark:text-white">{t('topbar.notifications')}</h4>
             {unreadCount > 0 && (
               <button
                 onClick={() => markAllAsRead()}
                 className="text-[10px] font-bold text-brand-green hover:underline"
               >
-                Tout marquer comme lu
+                {t('admin:notifications.markAllRead')}
               </button>
             )}
           </div>
           <div className="p-2 space-y-1 max-h-72 overflow-y-auto">
             {rawNotifications.length === 0 ? (
-              <p className="py-6 text-center text-xs text-slate-400">Aucune notification</p>
+              <p className="py-6 text-center text-xs text-slate-400">{t('admin:notifications.empty')}</p>
             ) : (
               rawNotifications.slice(0, 4).map((notif) => (
                 <DropdownItem
@@ -133,7 +133,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
               onClick={() => navigate('/app/notifications')}
               className="w-full text-center text-xs font-bold text-brand-navy dark:text-brand-orange hover:underline py-1"
             >
-              Voir toutes les notifications →
+              {t('topbar.viewAllNotifications')}
             </button>
           </div>
         </DropdownMenu>
@@ -142,7 +142,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           <DropdownMenu
             trigger={
               <button
-                aria-label="Mon compte"
+                aria-label={user.prenom}
                 className="flex items-center gap-2.5 rounded-xl p-1 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
               >
                 <UserAvatar
@@ -168,12 +168,12 @@ export function Topbar({ onMenuClick }: TopbarProps) {
             <DropdownSeparator />
             <DropdownItem onClick={() => navigate('/app/profile')}>
               <Icon icon="solar:user-bold" className="text-base" />
-              Mon Profil
+              {t('topbar.myProfile')}
             </DropdownItem>
             {isSuperAdmin && (
               <DropdownItem onClick={() => navigate('/app/settings')}>
                 <Icon icon="solar:settings-bold" className="text-base" />
-                Paramètres Système
+                {t('topbar.systemSettings')}
               </DropdownItem>
             )}
             <DropdownSeparator />

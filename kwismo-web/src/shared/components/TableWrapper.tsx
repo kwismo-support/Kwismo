@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { cn } from '@/shared/lib/utils';
 
@@ -28,7 +29,7 @@ export function TableWrapper({
         className
       )}
     >
-      {}
+      {/* Header */}
       {(title || headerActions) && (
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-6 py-5 border-b border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-brand-darkBg/40">
           <div>
@@ -59,10 +60,10 @@ export function TableWrapper({
         </div>
       )}
 
-      {}
+      {/* Content */}
       <div className="overflow-x-auto">{children}</div>
 
-      {}
+      {/* Footer */}
       {footer && (
         <div className="px-6 py-4 border-t border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-brand-darkBg/40">
           {footer}
@@ -91,6 +92,7 @@ export function TablePagination({
   onPageSizeChange,
   selectedCount = 0,
 }: PaginationProps) {
+  const { t } = useTranslation();
   const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
   const endItem = Math.min(currentPage * pageSize, totalItems);
 
@@ -114,20 +116,18 @@ export function TablePagination({
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-body">
       <div className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
         <span>
-          Affichage <strong className="text-slate-800 dark:text-slate-200 font-mono">{startItem}</strong> à{' '}
-          <strong className="text-slate-800 dark:text-slate-200 font-mono">{endItem}</strong> sur{' '}
-          <strong className="text-slate-800 dark:text-slate-200 font-mono">{totalItems}</strong> résultats
+          {t('common:pagination.showingRange', { start: startItem, end: endItem, total: totalItems })}
         </span>
 
         {selectedCount > 0 && (
           <span className="font-bold text-brand-orange bg-brand-orange/10 border border-brand-orange/20 px-2.5 py-0.5 rounded-full font-mono">
-            {selectedCount} sélectionné(s)
+            {t('common:pagination.selectedCount', { count: selectedCount })}
           </span>
         )}
 
         {onPageSizeChange && (
           <div className="flex items-center gap-1.5 ml-2">
-            <span>Afficher</span>
+            <span>{t('common:pagination.show')}</span>
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
@@ -148,7 +148,7 @@ export function TablePagination({
         <button
           onClick={() => onPageChange(1)}
           disabled={currentPage === 1}
-          title="Première page"
+          title={t('common:pagination.firstPage')}
           className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
         >
           <Icon icon="solar:double-alt-arrow-left-bold" className="text-sm" />
@@ -158,7 +158,7 @@ export function TablePagination({
         <button
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
-          title="Page précédente"
+          title={t('common:pagination.previousPage')}
           className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
         >
           <Icon icon="solar:alt-arrow-left-bold" className="text-sm" />
@@ -189,7 +189,7 @@ export function TablePagination({
         <button
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
           disabled={currentPage === totalPages || totalPages === 0}
-          title="Page suivante"
+          title={t('common:pagination.nextPage')}
           className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
         >
           <Icon icon="solar:alt-arrow-right-bold" className="text-sm" />
@@ -199,7 +199,7 @@ export function TablePagination({
         <button
           onClick={() => onPageChange(totalPages)}
           disabled={currentPage === totalPages || totalPages === 0}
-          title="Dernière page"
+          title={t('common:pagination.lastPage')}
           className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
         >
           <Icon icon="solar:double-alt-arrow-right-bold" className="text-sm" />
@@ -208,3 +208,4 @@ export function TablePagination({
     </div>
   );
 }
+
