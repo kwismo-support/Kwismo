@@ -97,7 +97,7 @@ export default function AccessControlPage() {
           role={selectedRole}
           accessRights={accessRights}
           onToggleRight={toggleAccessRight}
-          onSave={() => toast.success('admin:access.saveMatrixSuccess')}
+          onSave={() => toast.success(t('access.saveMatrixSuccess'))}
           saving={saving}
         />
       )}

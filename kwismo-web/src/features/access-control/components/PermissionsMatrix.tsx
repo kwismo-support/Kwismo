@@ -8,7 +8,7 @@ import type { PermissionCode } from '@/shared/types/access';
 export interface ModuleConfig {
   id: string;
   labelKey: string;
-  permissions: { code: PermissionCode; actionLabel: string }[];
+  permissions: { code: PermissionCode; actionKey: string }[];
 }
 
 export const MODULE_PERMISSIONS: ModuleConfig[] = [
@@ -16,77 +16,77 @@ export const MODULE_PERMISSIONS: ModuleConfig[] = [
     id: 'users',
     labelKey: 'access.categories.users',
     permissions: [
-      { code: 'users:read', actionLabel: 'Voir' },
-      { code: 'users:create', actionLabel: 'Créer' },
-      { code: 'users:update', actionLabel: 'Modifier' },
-      { code: 'users:delete', actionLabel: 'Supprimer' },
-      { code: 'users:export', actionLabel: 'Exporter' },
+      { code: 'users:read', actionKey: 'access.actions.read' },
+      { code: 'users:create', actionKey: 'access.actions.create' },
+      { code: 'users:update', actionKey: 'access.actions.update' },
+      { code: 'users:delete', actionKey: 'access.actions.delete' },
+      { code: 'users:export', actionKey: 'access.actions.export' },
     ],
   },
   {
     id: 'numbers',
     labelKey: 'access.categories.numbers',
     permissions: [
-      { code: 'numbers:read', actionLabel: 'Voir' },
-      { code: 'numbers:create', actionLabel: 'Créer' },
-      { code: 'numbers:update', actionLabel: 'Modifier' },
-      { code: 'numbers:delete', actionLabel: 'Supprimer' },
-      { code: 'numbers:verify', actionLabel: 'Vérifier' },
-      { code: 'numbers:export', actionLabel: 'Exporter' },
+      { code: 'numbers:read', actionKey: 'access.actions.read' },
+      { code: 'numbers:create', actionKey: 'access.actions.create' },
+      { code: 'numbers:update', actionKey: 'access.actions.update' },
+      { code: 'numbers:delete', actionKey: 'access.actions.delete' },
+      { code: 'numbers:verify', actionKey: 'access.actions.verify' },
+      { code: 'numbers:export', actionKey: 'access.actions.export' },
     ],
   },
   {
     id: 'reports',
     labelKey: 'access.categories.reports',
     permissions: [
-      { code: 'reports:read', actionLabel: 'Voir' },
-      { code: 'reports:create', actionLabel: 'Signaler' },
-      { code: 'reports:verify', actionLabel: 'Valider/Rejeter' },
-      { code: 'reports:delete', actionLabel: 'Supprimer' },
-      { code: 'reports:export', actionLabel: 'Exporter' },
+      { code: 'reports:read', actionKey: 'access.actions.read' },
+      { code: 'reports:create', actionKey: 'access.actions.report' },
+      { code: 'reports:verify', actionKey: 'access.actions.verifyReport' },
+      { code: 'reports:delete', actionKey: 'access.actions.delete' },
+      { code: 'reports:export', actionKey: 'access.actions.export' },
     ],
   },
   {
     id: 'partners',
     labelKey: 'access.categories.partners',
     permissions: [
-      { code: 'partners:read', actionLabel: 'Voir' },
-      { code: 'partners:create', actionLabel: 'Créer' },
-      { code: 'partners:update', actionLabel: 'Modifier' },
-      { code: 'partners:delete', actionLabel: 'Supprimer' },
-      { code: 'affiliation:update', actionLabel: 'Gérer l’affiliation' },
-      { code: 'partners:export', actionLabel: 'Exporter' },
+      { code: 'partners:read', actionKey: 'access.actions.read' },
+      { code: 'partners:create', actionKey: 'access.actions.create' },
+      { code: 'partners:update', actionKey: 'access.actions.update' },
+      { code: 'partners:delete', actionKey: 'access.actions.delete' },
+      { code: 'affiliation:update', actionKey: 'access.actions.manageAffiliation' },
+      { code: 'partners:export', actionKey: 'access.actions.export' },
     ],
   },
   {
     id: 'ussd',
     labelKey: 'access.categories.ussd',
     permissions: [
-      { code: 'ussd:read', actionLabel: 'Voir' },
-      { code: 'ussd:create', actionLabel: 'Créer' },
-      { code: 'ussd:update', actionLabel: 'Modifier' },
-      { code: 'ussd:delete', actionLabel: 'Supprimer' },
-      { code: 'ussd:export', actionLabel: 'Exporter' },
+      { code: 'ussd:read', actionKey: 'access.actions.read' },
+      { code: 'ussd:create', actionKey: 'access.actions.create' },
+      { code: 'ussd:update', actionKey: 'access.actions.update' },
+      { code: 'ussd:delete', actionKey: 'access.actions.delete' },
+      { code: 'ussd:export', actionKey: 'access.actions.export' },
     ],
   },
   {
     id: 'roles',
     labelKey: 'access.categories.roles',
     permissions: [
-      { code: 'roles:read', actionLabel: 'Voir' },
-      { code: 'roles:create', actionLabel: 'Créer' },
-      { code: 'roles:update', actionLabel: 'Modifier' },
-      { code: 'roles:delete', actionLabel: 'Supprimer' },
+      { code: 'roles:read', actionKey: 'access.actions.read' },
+      { code: 'roles:create', actionKey: 'access.actions.create' },
+      { code: 'roles:update', actionKey: 'access.actions.update' },
+      { code: 'roles:delete', actionKey: 'access.actions.delete' },
     ],
   },
   {
     id: 'settings',
     labelKey: 'access.categories.settings',
     permissions: [
-      { code: 'analytics:read', actionLabel: 'Supervision API' },
-      { code: 'settings:read', actionLabel: 'Voir Paramètres' },
-      { code: 'settings:update', actionLabel: 'Modifier Paramètres' },
-      { code: 'system:configure', actionLabel: 'Configurer Système' },
+      { code: 'analytics:read', actionKey: 'access.actions.apiSupervision' },
+      { code: 'settings:read', actionKey: 'access.actions.readSettings' },
+      { code: 'settings:update', actionKey: 'access.actions.updateSettings' },
+      { code: 'system:configure', actionKey: 'access.actions.configureSystem' },
     ],
   },
 ];
@@ -151,7 +151,7 @@ export function PermissionsMatrix({ role, accessRights, onToggleRight, onSave, s
         <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs font-semibold flex items-center gap-2">
           <Icon icon="solar:info-circle-bold" className="text-lg shrink-0 text-amber-500" />
           <span>
-            Le rôle Super-Admin possède de plein droit la totalité des autorisations système. Ses permissions sont toutes actives et ne peuvent pas être modifiées.
+            {t('access.superAdminNotice')}
           </span>
         </div>
       )}
@@ -202,7 +202,7 @@ export function PermissionsMatrix({ role, accessRights, onToggleRight, onSave, s
                         onChange={(e) => canModify && onToggleRight(role.id, p.code, e.target.checked)}
                         className="rounded border-slate-300 text-brand-green focus:ring-brand-green h-4 w-4 cursor-pointer disabled:cursor-not-allowed"
                       />
-                      <span className="text-xs">{p.actionLabel}</span>
+                      <span className="text-xs">{t(p.actionKey)}</span>
                     </label>
                   );
                 })}

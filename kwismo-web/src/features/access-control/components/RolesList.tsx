@@ -34,10 +34,10 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, onDeleteRole }:
       <div className="p-8 text-center bg-white dark:bg-[#161E33] border border-slate-200 dark:border-white/10 rounded-3xl font-body">
         <Icon icon="solar:shield-user-bold-duotone" className="text-4xl text-slate-400 mx-auto mb-2" />
         <h4 className="font-title text-sm font-bold text-slate-900 dark:text-white">
-          Aucun rôle personnalisé
+          {t('access.noCustomRolesTitle')}
         </h4>
         <p className="text-xs text-slate-400 mt-1">
-          Vous n'avez pas encore créé de rôles pour votre organisation. Cliquez sur le bouton "Ajouter un rôle" ci-dessus pour en créer un.
+          {t('access.noCustomRolesDesc')}
         </p>
       </div>
     );
@@ -70,11 +70,11 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, onDeleteRole }:
                 </div>
                 {system ? (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300">
-                    Système
+                    {t('access.systemBadge')}
                   </span>
                 ) : (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
-                    {r.partner_name ? `Partenaire: ${r.partner_name}` : 'Mon Rôle'}
+                    {r.partner_name ? t('access.partnerBadgePrefix', { name: r.partner_name }) : t('access.myRoleBadge')}
                   </span>
                 )}
               </div>
