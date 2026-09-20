@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@iconify/react';
 import { reportsApi, ReportItem } from '@/features/reports/services/reports.api';
 
@@ -7,6 +8,7 @@ interface RecentActivityLogProps {
 }
 
 export default function RecentActivityLog({ isLoading = false }: RecentActivityLogProps) {
+  const { t } = useTranslation('admin');
   const [reports, setReports] = useState<ReportItem[]>([]);
   const [fetching, setFetching] = useState(true);
 
@@ -40,10 +42,10 @@ export default function RecentActivityLog({ isLoading = false }: RecentActivityL
         <div>
           <h3 className="font-title text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Icon icon="solar:history-bold-duotone" className="text-brand-orange text-lg" />
-            Activités Récentes & Signalements
+            {t('dashboard.recentActivityTitle')}
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Historique dynamique alimenté par les API du backend Kwismo.
+            {t('dashboard.recentActivitySubtitle')}
           </p>
         </div>
       </div>
@@ -64,14 +66,14 @@ export default function RecentActivityLog({ isLoading = false }: RecentActivityL
                 />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-snug">
-                    Signalement : {r.motif}
+                    {t('dashboard.signalement')} : {r.motif}
                   </p>
                   <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
-                    Statut : <span className="font-mono font-medium text-slate-600 dark:text-slate-300">{r.statut}</span>
+                    {t('dashboard.status')} : <span className="font-mono font-medium text-slate-600 dark:text-slate-300">{r.statut}</span>
                   </p>
                 </div>
                 <span className="text-[10px] text-slate-400 dark:text-slate-500 shrink-0 whitespace-nowrap font-mono">
-                  {r.date_signalement ? new Date(r.date_signalement).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Récent'}
+                  {r.date_signalement ? new Date(r.date_signalement).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : t('dashboard.recent')}
                 </span>
               </div>
             );
@@ -79,7 +81,7 @@ export default function RecentActivityLog({ isLoading = false }: RecentActivityL
         ) : (
           <div className="py-12 text-center text-xs text-slate-400">
             <Icon icon="solar:history-linear" className="text-3xl mx-auto mb-2 opacity-40" />
-            <p>Aucune activité récente enregistrée dans la base de données</p>
+            <p>{t('dashboard.noRecentActivity')}</p>
           </div>
         )}
       </div>

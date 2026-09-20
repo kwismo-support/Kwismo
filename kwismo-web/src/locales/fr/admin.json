@@ -2,21 +2,56 @@
   "dashboard": {
     "title": "Tableau de bord Supervision",
     "subtitle": "Vue d'ensemble de l'activité, des vérifications et des menaces détectées.",
-    "welcome": "Bienvenue",
+    "activeUsers": "Utilisateurs actifs",
     "totalUsers": "Utilisateurs",
     "totalNumbers": "Numéros",
     "totalReports": "Signalements",
-    "verifiedNumbers": "Numéros Vérifiés",
-    "blockedFrauds": "Fraudes Bloquées",
-    "apiCalls": "Appels API (24h)",
+    "reports": "Signalements reçus",
+    "verifiedNumbers": "Numéros vérifiés",
+    "blockedFrauds": "Fraudes bloquées",
+    "protectedTx": "Transferts protégés",
+    "apiCalls": "Appels API",
     "aiAccuracy": "Taux de Précision AI",
-    "trendChartTitle": "Évolution Mensuelle des Signalements",
+    "trendChartTitle": "Évolution de l'Activité & Signalements",
     "trendChartSubtitle": "Comparaison entre vérifications sécurisées et fraudes détectées",
     "operatorChartTitle": "Répartition des Fraudes par Opérateur",
     "operatorChartSubtitle": "Volume de requêtes suspectes par réseau Mobile Money",
-    "fraudRate": "Taux de fraude",
-    "trend": "Évolution",
-    "byOperator": "Par opérateur"
+    "statusChartTitle": "Répartition par Statut de Réputation",
+    "statusChartSubtitle": "Distribution des numéros selon leur niveau de risque",
+    "recentActivityTitle": "Activités Récentes & Signalements",
+    "recentActivitySubtitle": "Historique dynamique alimenté par le système KWISMO",
+    "validVerifications": "Vérifications Valides",
+    "blockedAttempts": "Tentatives Bloquées",
+    "signalement": "Signalement",
+    "status": "Statut",
+    "recent": "Récent",
+    "noRecentActivity": "Aucune activité récente enregistrée dans la base de données",
+    "allCountries": "Tous les pays...",
+    "allOperators": "Tous les opérateurs",
+    "periods": {
+      "7d": "7 jours",
+      "30d": "30 jours",
+      "90d": "90 jours",
+      "year": "Cette année"
+    },
+    "statuses": {
+      "secure": "Sécurisé",
+      "warning": "À signaler",
+      "fraudulent": "Frauduleux"
+    },
+    "partnerCards": {
+      "monitoredNumbers": "Numéros surveillés",
+      "avoidedFrauds": "Fraudes évitées",
+      "affiliatedReports": "Signalements affiliés",
+      "apiCalls": "Appels API",
+      "secureReputationNumbers": "Numéros de réputation sûre",
+      "avgReputationScore": "Score moyen de réputation"
+    },
+    "userCards": {
+      "verifiedSims": "Mes cartes SIM vérifiées",
+      "avoidedScams": "Tentatives d'arnaque évitées",
+      "myReports": "Mes signalements effectués"
+    }
   },
   "users": {
     "title": "Gestion des utilisateurs",

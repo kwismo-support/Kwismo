@@ -2,21 +2,56 @@
   "dashboard": {
     "title": "Supervision Dashboard",
     "subtitle": "Overview of activity, verifications, and detected threats.",
-    "welcome": "Welcome",
+    "activeUsers": "Active Users",
     "totalUsers": "Users",
     "totalNumbers": "Numbers",
     "totalReports": "Reports",
+    "reports": "Reports Received",
     "verifiedNumbers": "Verified Numbers",
     "blockedFrauds": "Blocked Frauds",
-    "apiCalls": "API Calls (24h)",
+    "protectedTx": "Protected Transfers",
+    "apiCalls": "API Calls",
     "aiAccuracy": "AI Accuracy Rate",
-    "trendChartTitle": "Monthly Reports Trend",
-    "trendChartSubtitle": "Comparison between safe verifications and detected frauds",
+    "trendChartTitle": "Activity & Reports Trend",
+    "trendChartSubtitle": "Comparison between secure verifications and detected frauds",
     "operatorChartTitle": "Fraud Distribution by Operator",
-    "operatorChartSubtitle": "Volume of suspicious requests by Mobile Money network",
-    "fraudRate": "Fraud rate",
-    "trend": "Trend",
-    "byOperator": "By operator"
+    "operatorChartSubtitle": "Suspect request volume per Mobile Money network",
+    "statusChartTitle": "Reputation Status Distribution",
+    "statusChartSubtitle": "Distribution of numbers based on risk level",
+    "recentActivityTitle": "Recent Activity & Reports",
+    "recentActivitySubtitle": "Dynamic history powered by the KWISMO system",
+    "validVerifications": "Valid Verifications",
+    "blockedAttempts": "Blocked Attempts",
+    "signalement": "Report",
+    "status": "Status",
+    "recent": "Recent",
+    "noRecentActivity": "No recent activity recorded in the database",
+    "allCountries": "All countries...",
+    "allOperators": "All operators",
+    "periods": {
+      "7d": "7 days",
+      "30d": "30 days",
+      "90d": "90 days",
+      "year": "This year"
+    },
+    "statuses": {
+      "secure": "Secure",
+      "warning": "To report",
+      "fraudulent": "Fraudulent"
+    },
+    "partnerCards": {
+      "monitoredNumbers": "Monitored Numbers",
+      "avoidedFrauds": "Avoided Frauds",
+      "affiliatedReports": "Affiliated Reports",
+      "apiCalls": "API Calls",
+      "secureReputationNumbers": "Secure Reputation Numbers",
+      "avgReputationScore": "Average Reputation Score"
+    },
+    "userCards": {
+      "verifiedSims": "My Verified SIM Cards",
+      "avoidedScams": "Avoided Scam Attempts",
+      "myReports": "My Submitted Reports"
+    }
   },
   "users": {
     "title": "User Management",

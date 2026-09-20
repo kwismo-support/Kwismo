@@ -81,9 +81,9 @@ export default function DashboardPage() {
   });
 
   const statusData: StatusDataPoint[] = [
-    { name: 'Sécurisé', value: secureCount, color: '#56B039' },
-    { name: 'À signaler', value: warningCount, color: '#F6A020' },
-    { name: 'Frauduleux', value: fraudCount, color: '#E4483B' },
+    { name: t('dashboard.statuses.secure'), value: secureCount, color: '#56B039' },
+    { name: t('dashboard.statuses.warning'), value: warningCount, color: '#F6A020' },
+    { name: t('dashboard.statuses.fraudulent'), value: fraudCount, color: '#E4483B' },
   ];
 
   const trendData: TrendDataPoint[] = (() => {
@@ -179,7 +179,7 @@ export default function DashboardPage() {
 
   const partnerCards = [
     {
-      title: 'Numéros surveillés',
+      title: t('dashboard.partnerCards.monitoredNumbers'),
       value: totalNumbers.toLocaleString('fr-FR'),
       change: '0 %',
       isPositive: true,
@@ -187,7 +187,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-navy bg-brand-navy/10 dark:bg-brand-navy/30 dark:text-blue-300',
     },
     {
-      title: 'Fraudes évitées',
+      title: t('dashboard.partnerCards.avoidedFrauds'),
       value: fraudCount.toLocaleString('fr-FR'),
       change: '0 %',
       isPositive: true,
@@ -195,7 +195,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
-      title: 'Signalements affiliés',
+      title: t('dashboard.partnerCards.affiliatedReports'),
       value: totalReports.toLocaleString('fr-FR'),
       change: '0 %',
       isPositive: true,
@@ -203,7 +203,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-orange bg-brand-orange/10 dark:bg-brand-orange/20',
     },
     {
-      title: 'Appels API',
+      title: t('dashboard.partnerCards.apiCalls'),
       value: (findKpi('total_appels_api') ?? 0).toLocaleString('fr-FR'),
       change: '0 %',
       isPositive: true,
@@ -211,7 +211,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-navy bg-brand-navy/10 dark:bg-brand-navy/30 dark:text-blue-300',
     },
     {
-      title: 'Numéros de réputation sûre',
+      title: t('dashboard.partnerCards.secureReputationNumbers'),
       value: secureCount.toLocaleString('fr-FR'),
       change: '0 %',
       isPositive: true,
@@ -219,7 +219,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
-      title: 'Score moyen de réputation',
+      title: t('dashboard.partnerCards.avgReputationScore'),
       value: totalNumbers > 0 ? `${Math.round((secureCount / totalNumbers) * 100)} / 100` : '0 / 100',
       change: '0 %',
       isPositive: true,
@@ -230,7 +230,7 @@ export default function DashboardPage() {
 
   const userCards = [
     {
-      title: 'Mes cartes SIM vérifiées',
+      title: t('dashboard.userCards.verifiedSims'),
       value: secureCount.toString(),
       change: '0',
       isPositive: true,
@@ -238,7 +238,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-green bg-brand-green/10 dark:bg-brand-green/20',
     },
     {
-      title: 'Tentatives d\'arnaque évitées',
+      title: t('dashboard.userCards.avoidedScams'),
       value: fraudCount.toString(),
       change: '0',
       isPositive: true,
@@ -246,7 +246,7 @@ export default function DashboardPage() {
       iconBgColor: 'text-brand-navy bg-brand-navy/10 dark:bg-brand-navy/30 dark:text-blue-300',
     },
     {
-      title: 'Mes signalements effectués',
+      title: t('dashboard.userCards.myReports'),
       value: totalReports.toString(),
       change: '0',
       isPositive: true,
@@ -256,6 +256,13 @@ export default function DashboardPage() {
   ];
 
   const cardsToRender = isPartner ? partnerCards : isUser ? userCards : adminCards;
+
+  const periodsList = [
+    { key: '7 jours' as const, label: t('dashboard.periods.7d') },
+    { key: '30 jours' as const, label: t('dashboard.periods.30d') },
+    { key: '90 jours' as const, label: t('dashboard.periods.90d') },
+    { key: 'Cette année' as const, label: t('dashboard.periods.year') },
+  ];
 
   return (
     <div className="flex flex-col gap-6 p-6 font-body">
@@ -267,17 +274,17 @@ export default function DashboardPage() {
 
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-white dark:bg-[#161E33] p-4 rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm">
         <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-xl">
-          {(['7 jours', '30 jours', '90 jours', 'Cette année'] as const).map((p) => (
+          {periodsList.map((p) => (
             <button
-              key={p}
-              onClick={() => setPeriod(p)}
+              key={p.key}
+              onClick={() => setPeriod(p.key)}
               className={`px-3 py-1.5 rounded text-xs font-semibold transition ${
-                period === p
+                period === p.key
                   ? 'bg-brand-navy text-white dark:bg-brand-orange dark:text-brand-navy shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              {p}
+              {p.label}
             </button>
           ))}
         </div>
@@ -287,7 +294,7 @@ export default function DashboardPage() {
             <CountrySelect
               value={countryFilter}
               onChange={(val) => setCountryFilter(val)}
-              placeholder="Tous les pays..."
+              placeholder={t('dashboard.allCountries')}
             />
           </div>
 
@@ -296,7 +303,7 @@ export default function DashboardPage() {
             onChange={(e) => setOperatorFilter(e.target.value)}
             className="h-11 px-3 text-xs rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-blue"
           >
-            <option value="">Tous les opérateurs</option>
+            <option value="">{t('dashboard.allOperators')}</option>
             {Array.from(
               new Set(
                 numbers

@@ -102,11 +102,11 @@ export default function TrendChart({ isLoading = false, data, data7d, data30d }:
       <div className="flex items-center gap-6 mb-4 text-xs font-semibold">
         <div className="flex items-center gap-2">
           <span className="h-3 w-3 rounded-full bg-brand-green" />
-          <span className="text-slate-700 dark:text-slate-300">Vérifications Valides</span>
+          <span className="text-slate-700 dark:text-slate-300">{t('dashboard.validVerifications')}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="h-3 w-3 rounded-full bg-brand-orange" />
-          <span className="text-slate-700 dark:text-slate-300">Tentatives Bloquées</span>
+          <span className="text-slate-700 dark:text-slate-300">{t('dashboard.blockedAttempts')}</span>
         </div>
       </div>
 
@@ -154,7 +154,7 @@ export default function TrendChart({ isLoading = false, data, data7d, data30d }:
               strokeWidth={3}
               fillOpacity={1}
               fill="url(#colorVerif)"
-              name="Vérifications Valides"
+              name={t('dashboard.validVerifications')}
             />
             <Area
               type="monotone"
@@ -163,7 +163,7 @@ export default function TrendChart({ isLoading = false, data, data7d, data30d }:
               strokeWidth={3}
               fillOpacity={1}
               fill="url(#colorFraude)"
-              name="Fraudes Bloquées"
+              name={t('dashboard.blockedAttempts')}
             />
           </AreaChart>
         </ResponsiveContainer>
