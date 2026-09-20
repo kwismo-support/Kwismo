@@ -6,7 +6,6 @@ import { FilterBar } from '@/shared/components/FilterBar';
 import { StatusBadge } from '@/shared/components/StatusBadge';
 import { KpiCard } from '@/shared/components/KpiCard';
 import { TablePagination } from '@/shared/components/TableWrapper';
-import { Button } from '@/shared/ui/button';
 import { toast } from '@/shared/store/toastStore';
 import { usePermissions } from '@/shared/hooks/usePermissions';
 import type { NumberItem } from '../services/numbers.api';
@@ -202,11 +201,6 @@ export default function NumbersTable({
     },
   ];
 
-  const handleBulkDelete = () => {
-    toast.success(t('numbers.toasts.bulkDeleteSuccess'));
-    setSelectedKeys([]);
-  };
-
   return (
     <div className="flex flex-col gap-6 w-full font-body">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -266,29 +260,6 @@ export default function NumbersTable({
           },
         ]}
       />
-
-      {selectedKeys.length > 0 && (
-        <div className="p-4 rounded-2xl bg-brand-navy text-white flex items-center justify-between font-body animate-in fade-in duration-150">
-          <div className="flex items-center gap-3">
-            <span className="px-3 py-1 rounded-full bg-brand-orange text-brand-navy font-bold font-mono text-xs">
-              {selectedKeys.length} {t('common:selected')}
-            </span>
-            <span className="text-xs sm:text-sm font-semibold">{t('admin:numbers.bulkActions')}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            {hasPermission('numbers:export') && (
-              <Button size="xs" variant="outline" className="text-white border-white/20 hover:bg-white/10" onClick={() => toast.info(t('numbers.toasts.exportSelection'))}>
-                {t('common:export')}
-              </Button>
-            )}
-            {hasPermission('numbers:delete') && (
-              <Button size="xs" variant="primary" className="bg-red-500 hover:bg-red-600 text-white" onClick={handleBulkDelete}>
-                {t('common:delete')}
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
 
       {viewMode === 'table' ? (
         <DataTable

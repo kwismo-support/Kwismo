@@ -25,28 +25,6 @@
       "verifiedNumbers": "numéros vérifiés",
       "accuracy": "Précision",
       "operators": "Opérateurs"
-    },
-    "badges": {
-      "protected": {
-        "title": "Protection Active",
-        "desc": "24h/24 & 7j/7"
-      },
-      "alert": {
-        "title": "Alerte Temps Réel",
-        "desc": "Anti-Vishing & SIM Swap"
-      },
-      "offline": {
-        "title": "Moteur IA Offline",
-        "desc": "Vérification USSD locale"
-      },
-      "verified": {
-        "title": "Score de Confiance",
-        "desc": "0 Fraude signalée"
-      },
-      "operators": {
-        "title": "Multi-Opérateurs",
-        "desc": "Orange Money & MTN MoMo"
-      }
     }
   },
   "fraudProblem": {
@@ -85,6 +63,36 @@
       "approach": {
         "title": "Notre approche",
         "desc": "Une technologie locale, pensée pour les usages et les réseaux africains. Notre moteur IA calcule un score de risque instantané, même hors ligne."
+      }
+    }
+  },
+  "features": {
+    "title": "Une protection intelligente à chaque étape",
+    "subtitle": "FONCTIONNALITÉS CLÉS",
+    "items": {
+      "verify": {
+        "title": "Vérification de numéro",
+        "desc": "Analyse instantanée pour détecter les numéros signalés et suspectés de fraude avant toute transaction."
+      },
+      "detect": {
+        "title": "Détection d'appels suspects",
+        "desc": "Alertes en temps réel contre le vishing et les appels d'usurpation d'identité."
+      },
+      "transfer": {
+        "title": "Transfert protégé USSD",
+        "desc": "Superposition sécurisée lors de la saisie de vos codes USSD Mobile Money."
+      },
+      "report": {
+        "title": "Signalement communautaire",
+        "desc": "Partagez et consultez les signalements de la communauté pour bloquer collectivement les arnaqueurs."
+      },
+      "whatsapp": {
+        "title": "Alerte piratage WhatsApp",
+        "desc": "Détection automatique des tentatives de prise de contrôle de votre compte WhatsApp."
+      },
+      "contacts": {
+        "title": "Contacts de confiance",
+        "desc": "Attribuez des insignes de sécurité vérifiés à vos contacts fréquents."
       }
     }
   },
@@ -143,6 +151,21 @@
       "API REST documentée, intégration rapide",
       "Tableaux de bord et rapports dédiés"
     ],
+    "cards": [
+      {
+        "title": "Flux de Données Anti-Fraude en Temps Réel",
+        "desc": "API REST et Webhooks haute performance pour synchroniser les alertes d'arnaque instantanément."
+      },
+      {
+        "title": "Supervision & Intelligence Communautaire",
+        "desc": "Tableau de bord dédié aux opérateurs pour visualiser la propagation des arnaques et scores de risque."
+      },
+      {
+        "title": "Conformité & Protection de la Clientèle",
+        "desc": "Réduisez le taux de fraude sur vos réseaux Mobile Money tout en respectant les normes réglementaires."
+      }
+    ],
+    "optionLabel": "Option",
     "cta": "Devenir partenaire"
   },
   "allYouNeed": {
@@ -197,8 +220,6 @@
   "contactForm": {
     "title": "Une question ? Une idée ?",
     "subtitle": "Notre équipe est disponible pour répondre à toutes vos questions.",
-    "infoTitle": "Restons en contact",
-    "infoDesc": "Des questions sur nos solutions ou besoin d'un accompagnement personnalisé ?",
     "supportEmailTitle": "Support & Ventes",
     "supportPhoneTitle": "Ligne Directe",
     "supportLocationTitle": "Siège Africain",

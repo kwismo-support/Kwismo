@@ -56,7 +56,7 @@ export default function NotificationsList({
           <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-xl">
             <button
               onClick={() => onFilterChange('all')}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
+              className={`px-3 py-1 rounded text-xs font-semibold transition ${
                 filter === 'all'
                   ? 'bg-brand-navy text-white dark:bg-brand-orange dark:text-brand-navy shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -66,7 +66,7 @@ export default function NotificationsList({
             </button>
             <button
               onClick={() => onFilterChange('unread')}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
+              className={`px-3 py-1 rounded text-xs font-semibold transition ${
                 filter === 'unread'
                   ? 'bg-brand-navy text-white dark:bg-brand-orange dark:text-brand-navy shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'

@@ -147,7 +147,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               isCollapsed ? 'w-full justify-center px-0' : 'w-full gap-3 px-3.5'
             )}
           >
-            <Icon icon="solar:logout-3-bold" className="text-xl shrink-0 text-rose-500" />
+            <Icon icon="solar:logout-2-bold" className="text-xl shrink-0 text-rose-500" />
             {!isCollapsed && <span>{t('actions.logout')}</span>}
           </button>
         </div>

@@ -5,7 +5,7 @@ import ImgOperateur from '@/assets/illustrations/Img_Operateur.jpeg';
 export default function Partners() {
   const { t } = useTranslation('landing');
 
-  const benefits = t('operatorsInstitutions.points', { returnObjects: true }) as string[];
+  const benefits = t('landing:operatorsInstitutions.points', { returnObjects: true }) as string[];
 
   return (
     <section id="partner" className="w-full bg-white dark:bg-brand-darkBg px-6 py-12 font-body transition-colors">

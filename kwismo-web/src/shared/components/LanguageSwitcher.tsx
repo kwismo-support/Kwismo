@@ -16,7 +16,7 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
 
   return (
     <div
-      className={cn('flex items-center gap-1 rounded-full border border-[var(--color-border)] p-0.5', className)}
+      className={cn('flex items-center gap-1 rounded border border-[var(--color-border)] p-0.5', className)}
       role="group"
       aria-label="Changer de langue"
     >
@@ -27,7 +27,7 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
           aria-pressed={lang === l}
           aria-label={l === 'fr' ? 'Français' : 'English'}
           className={cn(
-            'rounded-full px-2.5 py-1 text-xs font-medium transition-colors',
+            'rounded px-2.5 py-1 text-xs font-medium transition-colors',
             lang === l
               ? 'bg-primary-500 text-white'
               : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]',

@@ -156,9 +156,9 @@ export function DataTable<T>({
 
       {/* Bulk Action Bar */}
       {selectedKeys.length > 0 && (
-        <div className="flex items-center justify-between p-3.5 px-5 rounded-2xl bg-brand-navy text-white shadow-md animate-in fade-in slide-in-from-top-2 border border-brand-orange/30">
+        <div className="flex items-center justify-between p-3.5 px-5 rounded-2xl bg-slate-50 dark:bg-brand-navy text-slate-900 dark:text-white shadow-md animate-in fade-in slide-in-from-top-2 border border-brand-orange/30">
           <div className="flex items-center gap-2.5 text-xs font-bold font-title">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-orange text-brand-navy text-xs font-bold">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-navy dark:bg-brand-orange text-white dark:text-brand-navy text-xs font-bold">
               {selectedKeys.length}
             </span>
             <span>élément(s) sélectionné(s)</span>
@@ -176,7 +176,7 @@ export function DataTable<T>({
             </button>
             <button
               onClick={() => onSelectionChange?.([])}
-              className="px-3 py-1.5 rounded-xl border border-white/20 hover:bg-white/10 text-white text-xs font-semibold transition cursor-pointer"
+              className="px-3 py-1.5 rounded-xl border border-brand-navy dark:border-white/20 hover:bg-brand-navy dark:hover:bg-white/10 text-brand-navy hover:text-white dark:text-white text-xs font-semibold transition cursor-pointer"
             >
               Désélectionner
             </button>

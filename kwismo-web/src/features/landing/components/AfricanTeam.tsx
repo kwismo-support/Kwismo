@@ -9,20 +9,20 @@ export default function AfricanTeam() {
 
   const cards = [
     {
-      title: t('africanTeam.cards.mission.title'),
-      desc: t('africanTeam.cards.mission.desc'),
+      title: t('landing:africanTeam.cards.mission.title'),
+      desc: t('landing:africanTeam.cards.mission.desc'),
       icon: 'solar:shield-star-bold-duotone',
       iconColor: 'text-brand-orange',
     },
     {
-      title: t('africanTeam.cards.community.title'),
-      desc: t('africanTeam.cards.community.desc'),
+      title: t('landing:africanTeam.cards.community.title'),
+      desc: t('landing:africanTeam.cards.community.desc'),
       icon: 'solar:users-group-two-rounded-bold-duotone',
       iconColor: 'text-brand-green',
     },
     {
-      title: t('africanTeam.cards.approach.title'),
-      desc: t('africanTeam.cards.approach.desc'),
+      title: t('landing:africanTeam.cards.approach.title'),
+      desc: t('landing:africanTeam.cards.approach.desc'),
       icon: 'solar:bolt-circle-bold-duotone',
       iconColor: 'text-brand-orange',
     },
@@ -34,11 +34,11 @@ export default function AfricanTeam() {
         <div className="flex flex-col justify-between items-start gap-6 lg:gap-8">
           <div>
             <h2 className="font-title text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold leading-tight text-white">
-              {t('africanTeam.title')}
+              {t('landing:africanTeam.title')}
             </h2>
 
             <p className="mt-4 sm:mt-5 font-body text-sm sm:text-base lg:text-lg leading-relaxed text-white/95">
-              {t('africanTeam.desc')}
+              {t('landing:africanTeam.desc')}
             </p>
           </div>
 

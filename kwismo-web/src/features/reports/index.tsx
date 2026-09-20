@@ -168,7 +168,7 @@ export default function ReportsPage() {
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition ${
+              className={`px-3.5 py-1.5 rounded text-xs font-semibold transition ${
                 period === p
                   ? 'bg-brand-navy text-white dark:bg-brand-orange dark:text-brand-navy shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'

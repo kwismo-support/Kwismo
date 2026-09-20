@@ -170,7 +170,7 @@ export function FilterBar({
             <button
               onClick={() => onViewModeChange('table')}
               className={cn(
-                'flex h-8 w-8 items-center justify-center rounded-lg transition',
+                'flex h-8 w-8 items-center justify-center rounded transition',
                 viewMode === 'table'
                   ? 'bg-white dark:bg-brand-navy text-brand-green shadow-xs'
                   : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
@@ -181,7 +181,7 @@ export function FilterBar({
             <button
               onClick={() => onViewModeChange('grid')}
               className={cn(
-                'flex h-8 w-8 items-center justify-center rounded-lg transition',
+                'flex h-8 w-8 items-center justify-center rounded transition',
                 viewMode === 'grid'
                   ? 'bg-white dark:bg-brand-navy text-brand-green shadow-xs'
                   : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'

@@ -7,38 +7,38 @@ export default function Features() {
   const featureList = [
     {
       icon: 'solar:magnifer-bold-duotone',
-      title: t('features.items.verify.title'),
-      desc: t('features.items.verify.desc'),
+      title: t('landing:features.items.verify.title'),
+      desc: t('landing:features.items.verify.desc'),
       color: 'text-brand-green bg-brand-green/10',
     },
     {
       icon: 'solar:shield-warning-bold-duotone',
-      title: t('features.items.detect.title'),
-      desc: t('features.items.detect.desc'),
+      title: t('landing:features.items.detect.title'),
+      desc: t('landing:features.items.detect.desc'),
       color: 'text-brand-orange bg-brand-orange/10',
     },
     {
       icon: 'solar:card-transfer-bold-duotone',
-      title: t('features.items.transfer.title'),
-      desc: t('features.items.transfer.desc'),
+      title: t('landing:features.items.transfer.title'),
+      desc: t('landing:features.items.transfer.desc'),
       color: 'text-brand-blue bg-brand-blue/10',
     },
     {
       icon: 'solar:users-group-two-rounded-bold-duotone',
-      title: t('features.items.report.title'),
-      desc: t('features.items.report.desc'),
+      title: t('landing:features.items.report.title'),
+      desc: t('landing:features.items.report.desc'),
       color: 'text-brand-green bg-brand-green/10',
     },
     {
       icon: 'solar:chat-round-call-bold-duotone',
-      title: t('features.items.whatsapp.title'),
-      desc: t('features.items.whatsapp.desc'),
+      title: t('landing:features.items.whatsapp.title'),
+      desc: t('landing:features.items.whatsapp.desc'),
       color: 'text-brand-orange bg-brand-orange/10',
     },
     {
       icon: 'solar:user-check-bold-duotone',
-      title: t('features.items.contacts.title'),
-      desc: t('features.items.contacts.desc'),
+      title: t('landing:features.items.contacts.title'),
+      desc: t('landing:features.items.contacts.desc'),
       color: 'text-brand-blue bg-brand-blue/10',
     },
   ];
@@ -48,10 +48,10 @@ export default function Features() {
       <div className="mx-auto max-w-[90%]">
         <div className="text-center max-w-2xl mx-auto">
           <span className="text-xs font-semibold uppercase tracking-wider text-brand-orange">
-            {t('features.subtitle')}
+            {t('landing:features.subtitle')}
           </span>
           <h2 className="mt-2 font-title text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
-            {t('features.title')}
+            {t('landing:features.title')}
           </h2>
         </div>
 

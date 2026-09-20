@@ -44,12 +44,17 @@ export default function Pricing() {
           {plans.map((plan, idx) => (
             <div
               key={idx}
-              className={`flex flex-col justify-between rounded-3xl border p-6 transition ${
+              className={`flex flex-col justify-between rounded-3xl border p-6 transition relative ${
                 plan.featured
                   ? 'border-brand-green bg-brand-navy text-white shadow-xl'
                   : 'border-slate-200 dark:border-white/10 bg-white dark:bg-brand-darkBg text-slate-900 dark:text-white shadow-sm'
               }`}
             >
+              {plan.featured && (
+                <span className="absolute -top-3 right-6 bg-brand-green text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-md">
+                  {t('landing:pricing.recommended')}
+                </span>
+              )}
               <div>
                 <span className="text-xs font-semibold uppercase tracking-wider text-brand-green">
                   {plan.type}

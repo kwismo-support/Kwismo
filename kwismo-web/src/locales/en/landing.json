@@ -25,28 +25,6 @@
       "verifiedNumbers": "verified numbers",
       "accuracy": "Accuracy",
       "operators": "Operators"
-    },
-    "badges": {
-      "protected": {
-        "title": "Active Protection",
-        "desc": "100% secure transfers"
-      },
-      "alert": {
-        "title": "Real-time Alert",
-        "desc": "Anti-Vishing & SIM Swap"
-      },
-      "offline": {
-        "title": "Offline AI Engine",
-        "desc": "Local USSD verification"
-      },
-      "verified": {
-        "title": "Trust Score",
-        "desc": "0 Fraud reported"
-      },
-      "operators": {
-        "title": "Multi-Operators",
-        "desc": "Orange Money & MTN MoMo"
-      }
     }
   },
   "fraudProblem": {
@@ -85,6 +63,36 @@
       "approach": {
         "title": "Our Approach",
         "desc": "A local technology designed for African networks and usage patterns. Our AI engine computes an instant risk score, even offline."
+      }
+    }
+  },
+  "features": {
+    "title": "Smart protection at every step",
+    "subtitle": "KEY FEATURES",
+    "items": {
+      "verify": {
+        "title": "Number Verification",
+        "desc": "Instant analysis to detect reported and suspected fraudulent numbers before any transaction."
+      },
+      "detect": {
+        "title": "Suspect Call Detection",
+        "desc": "Real-time alerts against vishing and impersonation calls."
+      },
+      "transfer": {
+        "title": "Protected USSD Transfer",
+        "desc": "Secure overlay during your Mobile Money USSD code entry."
+      },
+      "report": {
+        "title": "Community Reporting",
+        "desc": "Share and consult community reports to collectively block scammers."
+      },
+      "whatsapp": {
+        "title": "WhatsApp Hacking Alert",
+        "desc": "Automatic detection of takeover attempts on your WhatsApp account."
+      },
+      "contacts": {
+        "title": "Trusted Contacts",
+        "desc": "Assign verified security badges to your frequent contacts."
       }
     }
   },
@@ -143,6 +151,21 @@
       "Documented REST API, fast integration",
       "Dedicated dashboards and strategic reports"
     ],
+    "cards": [
+      {
+        "title": "Real-Time Anti-Fraud Data Feed",
+        "desc": "High-performance REST API and Webhooks to synchronize scam alerts instantly."
+      },
+      {
+        "title": "Supervision & Community Intelligence",
+        "desc": "Dedicated dashboard for operators to visualize scam propagation and risk scores."
+      },
+      {
+        "title": "Compliance & Customer Protection",
+        "desc": "Reduce fraud rates across your Mobile Money networks while maintaining regulatory compliance."
+      }
+    ],
+    "optionLabel": "Option",
     "cta": "Become a Partner"
   },
   "allYouNeed": {
@@ -197,8 +220,6 @@
   "contactForm": {
     "title": "A Question? An Idea?",
     "subtitle": "Our team is available to answer all your questions.",
-    "infoTitle": "Stay in Touch",
-    "infoDesc": "Have questions about our solutions or need personalized assistance?",
     "supportEmailTitle": "Support & Sales",
     "supportPhoneTitle": "Direct Line",
     "supportLocationTitle": "African HQ",

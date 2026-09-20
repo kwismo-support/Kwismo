@@ -7,22 +7,24 @@ export default function OperatorsInstitutions() {
   const { t } = useTranslation('landing');
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
+  const cardsData = t('landing:operatorsInstitutions.cards', { returnObjects: true }) as Array<{ title: string; desc: string }>;
+
   const pointCards = [
     {
-      title: 'Flux de Données Anti-Fraude en Temps Réel',
-      desc: 'API REST et Webhooks haute performance pour synchroniser les alertes d’arnaque instantanément.',
+      title: Array.isArray(cardsData) && cardsData[0] ? cardsData[0].title : 'Flux de Données Anti-Fraude en Temps Réel',
+      desc: Array.isArray(cardsData) && cardsData[0] ? cardsData[0].desc : 'API REST et Webhooks haute performance pour synchroniser les alertes d’arnaque instantanément.',
       icon: 'solar:server-square-bold-duotone',
       color: 'text-brand-green bg-brand-green/10 border-brand-green/30',
     },
     {
-      title: 'Supervision & Intelligence Communautaire',
-      desc: 'Tableau de bord dédié aux opérateurs pour visualiser la propagation des arnaques et scores de risque.',
+      title: Array.isArray(cardsData) && cardsData[1] ? cardsData[1].title : 'Supervision & Intelligence Communautaire',
+      desc: Array.isArray(cardsData) && cardsData[1] ? cardsData[1].desc : 'Tableau de bord dédié aux opérateurs pour visualiser la propagation des arnaques et scores de risque.',
       icon: 'solar:chart-2-bold-duotone',
       color: 'text-brand-orange bg-brand-orange/10 border-brand-orange/30',
     },
     {
-      title: 'Conformité & Protection de la Clientèle',
-      desc: 'Réduisez le taux de fraude sur vos réseaux Mobile Money tout en respectant les normes réglementaires.',
+      title: Array.isArray(cardsData) && cardsData[2] ? cardsData[2].title : 'Conformité & Protection de la Clientèle',
+      desc: Array.isArray(cardsData) && cardsData[2] ? cardsData[2].desc : 'Réduisez le taux de fraude sur vos réseaux Mobile Money tout en respectant les normes réglementaires.',
       icon: 'solar:shield-check-bold-duotone',
       color: 'text-brand-green bg-brand-green/10 border-brand-green/30',
     },
@@ -107,7 +109,7 @@ export default function OperatorsInstitutions() {
 
               <div className="flex flex-col justify-center flex-1 text-left">
                 <span className="text-xs font-bold uppercase tracking-wider text-brand-green">
-                  Option {activeIndex + 1} / 3
+                  {t('landing:operatorsInstitutions.optionLabel')} {activeIndex + 1} / 3
                 </span>
                 <h3 className="font-title text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-1">
                   {activeCard.title}

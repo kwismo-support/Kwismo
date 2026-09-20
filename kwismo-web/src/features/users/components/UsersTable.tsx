@@ -228,44 +228,6 @@ export default function UsersTable({
         ]}
       />
 
-      {selectedKeys.length > 0 && (
-        <div className="flex items-center justify-between p-4 rounded-2xl border border-brand-green/30 bg-brand-green/10 text-slate-900 dark:text-white text-xs font-bold font-body animate-in fade-in">
-          <div className="flex items-center gap-2">
-            <Icon icon="solar:check-square-bold" className="text-brand-green text-lg" />
-            <span>{selectedKeys.length} utilisateur(s) sélectionné(s)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                toast.success(`${selectedKeys.length} utilisateur(s) activé(s)`);
-                setSelectedKeys([]);
-              }}
-              className="px-3 py-1.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition"
-            >
-              Activer en masse
-            </button>
-            <button
-              onClick={() => {
-                toast.warning(`${selectedKeys.length} utilisateur(s) suspendu(s)`);
-                setSelectedKeys([]);
-              }}
-              className="px-3 py-1.5 rounded-xl bg-amber-600 text-white hover:bg-amber-700 transition"
-            >
-              Suspendre en masse
-            </button>
-            <button
-              onClick={() => {
-                toast.error(`${selectedKeys.length} utilisateur(s) supprimé(s)`);
-                setSelectedKeys([]);
-              }}
-              className="px-3 py-1.5 rounded-xl bg-rose-600 text-white hover:bg-rose-700 transition"
-            >
-              Supprimer
-            </button>
-          </div>
-        </div>
-      )}
-
       {viewMode === 'table' ? (
         <DataTable
           columns={columns}
