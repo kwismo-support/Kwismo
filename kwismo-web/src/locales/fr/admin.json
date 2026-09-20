@@ -204,6 +204,44 @@
       "pending": "En attente",
       "validated": "Validé",
       "rejected": "Rejeté"
+    },
+    "analysisPeriod": "Période d'analyse :",
+    "exportChart": "Exporter Graphique",
+    "exportData": "Exporter Données",
+    "trendsTitle": "Tendances de Signalements & Fraudes — {{period}}",
+    "trendsSubtitle": "Évolution temporelle calculée depuis la base de données.",
+    "operatorChartTitle": "Numéros et Fraudes par Opérateur Télécom",
+    "operatorChartSubtitle": "Volume total de numéros surveillés vs menaces détectées par réseau.",
+    "availableReportsTitle": "Rapports Disponibles pour Téléchargement",
+    "loading": "Chargement des rapports...",
+    "noReports": "Aucun signalement enregistré",
+    "reportLabel": "Signalement",
+    "recent": "Récent",
+    "strategic": {
+      "trendsTitle": "Tendances de fraude",
+      "trendsDesc": "Évolution et vélocité des fraudes détectées sur la période.",
+      "campaignsTitle": "Campagnes détectées",
+      "campaignsDesc": "Campagnes coordonnées identifiées par la plateforme IA.",
+      "mappingTitle": "Cartographie par opérateur",
+      "mappingDesc": "Répartition régionale et vulnérabilité par réseau télécom.",
+      "partnerActivityTitle": "Activité partenaires",
+      "partnerActivityDesc": "Consommation API et taux d'interrogation par entreprise."
+    },
+    "periods": {
+      "7d": "7 jours",
+      "30d": "30 jours",
+      "90d": "90 jours",
+      "year": "Cette année"
+    },
+    "charts": {
+      "reports": "Signalements",
+      "blockedFrauds": "Fraudes Bloquées",
+      "totalNumbers": "Total Numéros",
+      "detectedFrauds": "Fraudes Détectées"
+    },
+    "toasts": {
+      "exportCsvSuccess": "Export CSV « {{title}} » téléchargé.",
+      "exportPdfSuccess": "Impression PDF « {{title}} » préparée."
     }
   },
   "ussd": {

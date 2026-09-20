@@ -24,38 +24,45 @@ import {
 const strategicReports = [
   {
     id: 'tendances',
-    title: 'Tendances de fraude',
-    desc: 'Évolution et vélocité des fraudes détectées sur la période.',
+    titleKey: 'reports.strategic.trendsTitle',
+    descKey: 'reports.strategic.trendsDesc',
     icon: 'solar:danger-triangle-bold-duotone',
     color: '#E4483B',
   },
   {
     id: 'campagnes',
-    title: 'Campagnes détectées',
-    desc: 'Campagnes coordonnées identifiées par la plateforme IA.',
+    titleKey: 'reports.strategic.campaignsTitle',
+    descKey: 'reports.strategic.campaignsDesc',
     icon: 'solar:network-bold-duotone',
     color: '#F6A020',
   },
   {
     id: 'cartographie',
-    title: 'Cartographie par opérateur',
-    desc: 'Répartition régionale et vulnérabilité par réseau télécom.',
+    titleKey: 'reports.strategic.mappingTitle',
+    descKey: 'reports.strategic.mappingDesc',
     icon: 'solar:radio-minimalistic-bold-duotone',
     color: '#4D6AB1',
   },
   {
     id: 'partenaires',
-    title: 'Activité partenaires',
-    desc: 'Consommation API et taux d’interrogation par entreprise.',
+    titleKey: 'reports.strategic.partnerActivityTitle',
+    descKey: 'reports.strategic.partnerActivityDesc',
     icon: 'solar:case-bold-duotone',
     color: '#7C3AED',
   },
 ];
 
+const periodOptions: Array<{ key: '7d' | '30d' | '90d' | 'year'; labelKey: string }> = [
+  { key: '7d', labelKey: 'reports.periods.7d' },
+  { key: '30d', labelKey: 'reports.periods.30d' },
+  { key: '90d', labelKey: 'reports.periods.90d' },
+  { key: 'year', labelKey: 'reports.periods.year' },
+];
+
 export default function ReportsPage() {
   const { t } = useTranslation('admin');
   const { isDark } = useTheme();
-  const [period, setPeriod] = useState<'7 jours' | '30 jours' | '90 jours' | 'Cette année'>('30 jours');
+  const [period, setPeriod] = useState<'7d' | '30d' | '90d' | 'year'>('30d');
   const [reports, setReports] = useState<ReportItem[]>([]);
   const [numbers, setNumbers] = useState<NumberItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,7 +109,7 @@ export default function ReportsPage() {
     : [];
 
   const trendData = (() => {
-    if (period === '7 jours') {
+    if (period === '7d') {
       const labels = ['J-6', 'J-5', 'J-4', 'J-3', 'J-2', 'J-1', 'Aujourd\'hui'];
       const sigWeights = [0.08, 0.12, 0.15, 0.10, 0.18, 0.22, 0.15];
       const fraWeights = [0.05, 0.10, 0.12, 0.08, 0.20, 0.25, 0.20];
@@ -111,7 +118,7 @@ export default function ReportsPage() {
         sig: Math.round(totalReports * sigWeights[idx]),
         fra: Math.round(validatedReports * fraWeights[idx]),
       }));
-    } else if (period === '30 jours') {
+    } else if (period === '30d') {
       const labels = ['Semaine 1', 'Semaine 2', 'Semaine 3', 'Semaine 4'];
       const sigWeights = [0.15, 0.25, 0.35, 0.25];
       const fraWeights = [0.10, 0.30, 0.40, 0.20];
@@ -120,7 +127,7 @@ export default function ReportsPage() {
         sig: Math.round(totalReports * sigWeights[idx]),
         fra: Math.round(validatedReports * fraWeights[idx]),
       }));
-    } else if (period === '90 jours') {
+    } else if (period === '90d') {
       const labels = ['Mois 1', 'Mois 2', 'Mois 3'];
       const sigWeights = [0.25, 0.35, 0.40];
       const fraWeights = [0.20, 0.40, 0.40];
@@ -144,37 +151,37 @@ export default function ReportsPage() {
   const handleExport = (reportTitle: string, format: 'PDF' | 'CSV') => {
     if (format === 'CSV') {
       generateCSVReport(reportTitle, reports);
-      toast.success(`Export CSV « ${reportTitle} » téléchargé.`);
+      toast.success(t('reports.toasts.exportCsvSuccess', { title: reportTitle }));
     } else {
       generatePDFReport(reportTitle, reports);
-      toast.success(`Impression PDF « ${reportTitle} » préparée.`);
+      toast.success(t('reports.toasts.exportPdfSuccess', { title: reportTitle }));
     }
   };
 
   return (
     <div className="flex flex-col gap-6 p-6 font-body max-w-7xl mx-auto">
       <PageHeader
-        title={t('reports.title', { defaultValue: 'Rapports & Analyses' })}
-        subtitle={t('reports.subtitle', { defaultValue: 'Analyses approfondies, métriques avancées et historiques d\'exportation.' })}
+        title={t('reports.title')}
+        subtitle={t('reports.subtitle')}
         showBreadcrumb={true}
       />
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm">
         <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-          Période d’analyse :
+          {t('reports.analysisPeriod')}
         </span>
         <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-xl">
-          {(['7 jours', '30 jours', '90 jours', 'Cette année'] as const).map((p) => (
+          {periodOptions.map((p) => (
             <button
-              key={p}
-              onClick={() => setPeriod(p)}
-              className={`px-3.5 py-1.5 rounded text-xs font-semibold transition ${
-                period === p
+              key={p.key}
+              onClick={() => setPeriod(p.key)}
+              className={`px-3.5 py-1.5 rounded text-xs font-semibold transition cursor-pointer ${
+                period === p.key
                   ? 'bg-brand-navy text-white dark:bg-brand-orange dark:text-brand-navy shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              {p}
+              {t(p.labelKey)}
             </button>
           ))}
         </div>
@@ -194,10 +201,10 @@ export default function ReportsPage() {
                 <Icon icon={r.icon} className="text-xl" style={{ color: r.color }} />
               </div>
               <h3 className="font-title text-base font-bold text-slate-900 dark:text-white leading-snug">
-                {r.title}
+                {t(r.titleKey)}
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                {r.desc}
+                {t(r.descKey)}
               </p>
             </div>
 
@@ -206,7 +213,7 @@ export default function ReportsPage() {
                 variant="outline"
                 size="sm"
                 className="w-full text-xs"
-                onClick={() => handleExport(r.title, 'PDF')}
+                onClick={() => handleExport(t(r.titleKey), 'PDF')}
               >
                 <Icon icon="solar:file-download-bold" className="text-sm text-brand-green mr-1" />
                 PDF
@@ -215,7 +222,7 @@ export default function ReportsPage() {
                 variant="outline"
                 size="sm"
                 className="w-full text-xs"
-                onClick={() => handleExport(r.title, 'CSV')}
+                onClick={() => handleExport(t(r.titleKey), 'CSV')}
               >
                 <Icon icon="solar:export-bold" className="text-sm text-brand-blue mr-1" />
                 CSV
@@ -229,15 +236,15 @@ export default function ReportsPage() {
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-4">
           <div>
             <h3 className="font-title text-base font-bold text-slate-900 dark:text-white">
-              Tendances de Signalements & Fraudes — {period}
+              {t('reports.trendsTitle', { period: t(`reports.periods.${period}`) })}
             </h3>
             <p className="text-xs text-slate-400">
-              Évolution temporelle calculée depuis la base de données.
+              {t('reports.trendsSubtitle')}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => handleExport('Tendances', 'PDF')}>
-              Exporter Graphique
+              {t('reports.exportChart')}
             </Button>
           </div>
         </div>
@@ -270,8 +277,8 @@ export default function ReportsPage() {
                 }}
               />
               <Legend wrapperStyle={{ fontSize: 11 }} iconType="circle" />
-              <Line type="monotone" dataKey="sig" stroke="#4D6AB1" strokeWidth={2.5} dot={false} name="Signalements" />
-              <Line type="monotone" dataKey="fra" stroke="#E4483B" strokeWidth={2.5} dot={false} name="Fraudes Bloquées" />
+              <Line type="monotone" dataKey="sig" stroke="#4D6AB1" strokeWidth={2.5} dot={false} name={t('reports.charts.reports')} />
+              <Line type="monotone" dataKey="fra" stroke="#E4483B" strokeWidth={2.5} dot={false} name={t('reports.charts.blockedFrauds')} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -281,14 +288,14 @@ export default function ReportsPage() {
         <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-4">
           <div>
             <h3 className="font-title text-base font-bold text-slate-900 dark:text-white">
-              Numéros et Fraudes par Opérateur Télécom
+              {t('reports.operatorChartTitle')}
             </h3>
             <p className="text-xs text-slate-400">
-              Volume total de numéros surveillés vs menaces détectées par réseau.
+              {t('reports.operatorChartSubtitle')}
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={() => handleExport('Par Opérateur', 'CSV')}>
-            Exporter Données
+            {t('reports.exportData')}
           </Button>
         </div>
 
@@ -320,8 +327,8 @@ export default function ReportsPage() {
                 }}
               />
               <Legend wrapperStyle={{ fontSize: 11 }} iconType="circle" />
-              <Bar dataKey="n" fill="#4D6AB1" radius={[6, 6, 0, 0]} name="Total Numéros" />
-              <Bar dataKey="fraudes" fill="#E4483B" radius={[6, 6, 0, 0]} name="Fraudes Détectées" />
+              <Bar dataKey="n" fill="#4D6AB1" radius={[6, 6, 0, 0]} name={t('reports.charts.totalNumbers')} />
+              <Bar dataKey="fraudes" fill="#E4483B" radius={[6, 6, 0, 0]} name={t('reports.charts.detectedFrauds')} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -330,23 +337,23 @@ export default function ReportsPage() {
       <div className="p-6 rounded-3xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#161E33] shadow-sm space-y-4">
         <h3 className="font-title text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <Icon icon="solar:history-bold-duotone" className="text-brand-orange text-xl" />
-          Rapports Disponibles pour Téléchargement
+          {t('reports.availableReportsTitle')}
         </h3>
 
         <div className="divide-y divide-slate-100 dark:divide-white/5">
           {loading ? (
-            <div className="py-6 text-center text-xs text-slate-400">Chargement des rapports...</div>
+            <div className="py-6 text-center text-xs text-slate-400">{t('reports.loading')}</div>
           ) : reports.length === 0 ? (
-            <div className="py-8 text-center text-xs text-slate-400">Aucun signalement enregistré</div>
+            <div className="py-8 text-center text-xs text-slate-400">{t('reports.noReports')}</div>
           ) : (
             reports.slice(0, 5).map((r) => (
               <div key={r.id} className="py-3.5 flex items-center justify-between gap-4">
                 <div>
                   <span className="font-bold text-sm text-slate-900 dark:text-white block">
-                    Signalement — {r.motif}
+                    {t('reports.reportLabel')} — {r.motif}
                   </span>
                   <span className="text-xs text-slate-400 font-mono">
-                    Statut: {r.statut} · {r.date_signalement ? new Date(r.date_signalement).toLocaleDateString('fr-FR') : 'Récent'}
+                    Statut: {r.statut} · {r.date_signalement ? new Date(r.date_signalement).toLocaleDateString('fr-FR') : t('reports.recent')}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">

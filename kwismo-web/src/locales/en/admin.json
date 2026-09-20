@@ -218,6 +218,44 @@
       "pending": "Pending",
       "validated": "Validated",
       "rejected": "Rejected"
+    },
+    "analysisPeriod": "Analysis Period:",
+    "exportChart": "Export Chart",
+    "exportData": "Export Data",
+    "trendsTitle": "Reporting & Fraud Trends — {{period}}",
+    "trendsSubtitle": "Time-series evolution calculated from the database.",
+    "operatorChartTitle": "Numbers and Fraud by Telecom Operator",
+    "operatorChartSubtitle": "Total monitored numbers vs detected threats per network.",
+    "availableReportsTitle": "Reports Available for Download",
+    "loading": "Loading reports...",
+    "noReports": "No reports registered",
+    "reportLabel": "Report",
+    "recent": "Recent",
+    "strategic": {
+      "trendsTitle": "Fraud Trends",
+      "trendsDesc": "Evolution and velocity of fraud detected over the period.",
+      "campaignsTitle": "Detected Campaigns",
+      "campaignsDesc": "Coordinated campaigns identified by the AI platform.",
+      "mappingTitle": "Operator Mapping",
+      "mappingDesc": "Regional distribution and vulnerability by telecom network.",
+      "partnerActivityTitle": "Partner Activity",
+      "partnerActivityDesc": "API usage and query rates per company."
+    },
+    "periods": {
+      "7d": "7 days",
+      "30d": "30 days",
+      "90d": "90 days",
+      "year": "This year"
+    },
+    "charts": {
+      "reports": "Reports",
+      "blockedFrauds": "Blocked Frauds",
+      "totalNumbers": "Total Numbers",
+      "detectedFrauds": "Detected Frauds"
+    },
+    "toasts": {
+      "exportCsvSuccess": "CSV export \"{{title}}\" downloaded.",
+      "exportPdfSuccess": "PDF print for \"{{title}}\" prepared."
     }
   },
   "ussd": {
