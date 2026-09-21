@@ -35,7 +35,8 @@
     "noSenderError": "Please register a SIM card in your account to continue.",
     "actionsPendingHint": "Loading available transfer actions for this operator...",
     "noActionHint": "No transfer action configured for this operator.",
-    "launchMaxIt": "Transfer via operator app"
+    "launchMaxIt": "Transfer via operator app",
+    "addSimAction": "Add a SIM number"
   },
   "management": {
     "title": "Number Management",
@@ -160,7 +161,33 @@
     "noSessionsTitle": "No other active session",
     "noSessionsDesc": "Only this device is currently connected to your account.",
     "currentDevice": "This device",
-    "lastActive": "Last active"
+    "lastActive": "Last active",
+    "biometricPrompt": "Please authenticate to unlock the app"
+  },
+  "auth": {
+    "forgotTitle": "Forgot Password?",
+    "forgotSubtitle": "Enter your email address to receive a reset link.",
+    "loginTitle": "Welcome back!",
+    "loginSubtitle": "Log in to access your secure Kwismo account.",
+    "forgotPasswordLink": "Forgot password?",
+    "otpWelcomeBackTitle": "Welcome to Kwismo",
+    "otpSuccessTitle": "Verification successful!",
+    "secureAccountTitle": "Account Security",
+    "secureAccountEmailSubtitle": "A verification code has been sent to your email address.",
+    "secureAccountOtpSubtitle": "An SMS verification code has been sent to your phone number.",
+    "alreadySentQuestion": "Already sent?",
+    "resendCode": "Resend code",
+    "registerTitle": "Create an Account",
+    "registerSubtitle": "Join Kwismo and protect your Mobile Money transactions.",
+    "acceptPrivacyPrefix": "I accept the ",
+    "privacyPolicyTitle": "Privacy Policy",
+    "privacyPolicyLink": "privacy policy",
+    "acceptTermsPrefix": " and the ",
+    "termsTitle": "Terms of Service",
+    "termsOfServiceLink": "terms of service",
+    "resetTitle": "Reset Password",
+    "resetSubtitle": "Enter your new password below.",
+    "phonePlaceholder": "Phone number"
   },
   "twoFactor": {
     "title": "Two-Factor Authentication",
@@ -228,7 +255,8 @@
     "criteriaUppercase": "1 uppercase letter",
     "criteriaLowercase": "1 lowercase letter",
     "criteriaNumber": "1 digit",
-    "criteriaSymbol": "1 special symbol"
+    "criteriaSymbol": "1 special symbol",
+    "passwordCriteriaTitle": "Password strength criteria:"
   },
   "toasts": {
     "loginSuccess": "Login successful! Welcome back.",

@@ -240,6 +240,11 @@
     "operatorLabel": "Opérateur",
     "recentList": "Récents",
     "riskDetected": "Risque détecté",
-    "dangerTitle": "Danger"
+    "dangerTitle": "Danger",
+    "transferSubtitle": "Initiation de votre transaction",
+    "amount": "Montant total",
+    "loading": "Analyse en cours...",
+    "mockSuccess": "Opération réussie (simulée)",
+    "localFallback": "Données enregistrées en local"
   }
 }

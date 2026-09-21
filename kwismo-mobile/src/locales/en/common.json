@@ -240,6 +240,11 @@
     "operatorLabel": "Operator",
     "recentList": "Recents",
     "riskDetected": "Risk detected",
-    "dangerTitle": "Danger"
+    "dangerTitle": "Danger",
+    "transferSubtitle": "Initiating your transaction",
+    "amount": "Total amount",
+    "loading": "Analyzing...",
+    "mockSuccess": "Operation successful (mocked)",
+    "localFallback": "Data saved locally"
   }
 }

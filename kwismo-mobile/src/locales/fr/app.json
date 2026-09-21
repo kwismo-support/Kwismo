@@ -35,7 +35,8 @@
     "noSenderError": "Veuillez enregistrer une puce SIM dans votre compte pour continuer.",
     "actionsPendingHint": "Chargement des actions de transfert disponible pour cet opérateur...",
     "noActionHint": "Aucune action de transfert configurée pour cet opérateur.",
-    "launchMaxIt": "Faire le transfert sur l’application de l’opérateur"
+    "launchMaxIt": "Faire le transfert sur l’application de l’opérateur",
+    "addSimAction": "Ajouter un numéro SIM"
   },
   "management": {
     "title": "Gestion des numéros",
@@ -160,7 +161,33 @@
     "noSessionsTitle": "Aucune autre session active",
     "noSessionsDesc": "Seul cet appareil est actuellement connecté à votre compte.",
     "currentDevice": "Cet appareil",
-    "lastActive": "Dernière activité"
+    "lastActive": "Dernière activité",
+    "biometricPrompt": "Veuillez vous authentifier pour déverrouiller l'application"
+  },
+  "auth": {
+    "forgotTitle": "Mot de passe oublié ?",
+    "forgotSubtitle": "Saisissez votre adresse email pour recevoir un lien de réinitialisation.",
+    "loginTitle": "Bon retour parmi nous !",
+    "loginSubtitle": "Connectez-vous pour accéder à votre espace sécurisé Kwismo.",
+    "forgotPasswordLink": "Mot de passe oublié ?",
+    "otpWelcomeBackTitle": "Bienvenue sur Kwismo",
+    "otpSuccessTitle": "Vérification réussie !",
+    "secureAccountTitle": "Sécurisation du compte",
+    "secureAccountEmailSubtitle": "Un code de vérification a été envoyé à votre adresse email.",
+    "secureAccountOtpSubtitle": "Un code de vérification SMS a été envoyé à votre numéro de téléphone.",
+    "alreadySentQuestion": "Déjà envoyé ?",
+    "resendCode": "Renvoyer le code",
+    "registerTitle": "Créer un compte",
+    "registerSubtitle": "Rejoignez Kwismo et protégez vos transactions Mobile Money.",
+    "acceptPrivacyPrefix": "J'accepte la ",
+    "privacyPolicyTitle": "Politique de confidentialité",
+    "privacyPolicyLink": "politique de confidentialité",
+    "acceptTermsPrefix": " et les ",
+    "termsTitle": "Conditions d'utilisation",
+    "termsOfServiceLink": "conditions d'utilisation",
+    "resetTitle": "Réinitialisation du mot de passe",
+    "resetSubtitle": "Saisissez votre nouveau mot de passe ci-dessous.",
+    "phonePlaceholder": "Numéro de téléphone"
   },
   "twoFactor": {
     "title": "Authentification à deux facteurs",
@@ -228,7 +255,8 @@
     "criteriaUppercase": "1 lettre majuscule",
     "criteriaLowercase": "1 lettre minuscule",
     "criteriaNumber": "1 chiffre",
-    "criteriaSymbol": "1 symbole spécial"
+    "criteriaSymbol": "1 symbole spécial",
+    "passwordCriteriaTitle": "Critères de robustesse du mot de passe :"
   },
   "toasts": {
     "loginSuccess": "Connexion réussie ! Ravi de vous revoir.",
