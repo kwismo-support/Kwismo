@@ -25,6 +25,7 @@ import { CountryItem } from '@/shared/components/CountryPickerModal';
 import { toast } from '@/shared/store/toastStore';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { numbersApi } from '@/features/numbers/services/numbers.api';
+import { Skeleton } from '@/shared/ui/Skeleton';
 import { transferApi } from '@/features/transfer/services/transfer.api';
 import { useAuthStore } from '@/shared/store/authStore';
 
@@ -64,6 +65,7 @@ export default function TransferScreen() {
   const [selectedAction, setSelectedAction] = useState<ActionOption | null>(null);
 
   const [isDataLoading, setIsDataLoading] = useState(true);
+  const [isActionLoading, setIsActionLoading] = useState(false);
   const [isPreparing, setIsPreparing] = useState(false);
   const [serverUssdCode, setServerUssdCode] = useState<string | null>(null);
 
@@ -89,6 +91,7 @@ export default function TransferScreen() {
       setSelectedAction(null);
       return;
     }
+    setIsActionLoading(true);
     try {
       const actionsRes = await transferApi.getActions(opId);
       if (actionsRes.success && actionsRes.data && actionsRes.data.length > 0) {
@@ -108,6 +111,8 @@ export default function TransferScreen() {
     } catch {
       setAvailableActions([]);
       setSelectedAction(null);
+    } finally {
+      setIsActionLoading(false);
     }
   };
 
@@ -368,14 +373,7 @@ export default function TransferScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {isDataLoading ? (
-          <View className="py-12 items-center justify-center">
-            <ActivityIndicator color="#25B876" size="large" />
-            <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400 mt-3">
-              Chargement des données de transfert...
-            </Text>
-          </View>
-        ) : step === 'form' ? (
+        {step === 'form' ? (
           <View className="w-full">
             <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1">
               {t('transfer.enterDetails', 'Détails du transfert')}
@@ -412,32 +410,34 @@ export default function TransferScreen() {
               }
             />
 
-            {registeredSenders.length === 0 ? (
-              <View className="p-4 rounded-2xl mb-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
-                <View className="flex-row items-center mb-2">
-                  <Icon name="solar:sim-card-bold" color="#D97706" size={24} className="mr-2" />
-                  <Text className="font-font-bold text-sm font-bold text-amber-800 dark:text-amber-300">
-                    {t('transfer.noSenderTitle', 'Aucun numéro SIM d’envoi disponible')}
+            <View className="mb-4">
+              <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
+                {t('transfer.senderLabel', "Numéro d'expéditeur (SIM)")}
+              </Text>
+              {isDataLoading ? (
+                <Skeleton height={56} borderRadius={12} className="w-full" />
+              ) : registeredSenders.length === 0 ? (
+                <View className="p-4 rounded-2xl mb-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
+                  <View className="flex-row items-center mb-2">
+                    <Icon name="solar:sim-card-bold" color="#D97706" size={24} className="mr-2" />
+                    <Text className="font-font-bold text-sm font-bold text-amber-800 dark:text-amber-300">
+                      {t('transfer.noSenderTitle', 'Aucun numéro SIM d’envoi disponible')}
+                    </Text>
+                  </View>
+                  <Text className="font-font-regular text-xs text-amber-700 dark:text-amber-400 mb-3 leading-5">
+                    {t(
+                      'transfer.noSenderDesc',
+                      'Vous n’avez enregistré aucun numéro d’expéditeur. Veuillez ajouter au moins une puce SIM dans votre compte pour effectuer des transferts.'
+                    )}
                   </Text>
+                  <Button
+                    title={t('transfer.addSimAction', 'Ajouter un numéro SIM')}
+                    onPress={() => router.push('/(app)/management')}
+                    variant="outline"
+                    size="sm"
+                  />
                 </View>
-                <Text className="font-font-regular text-xs text-amber-700 dark:text-amber-400 mb-3 leading-5">
-                  {t(
-                    'transfer.noSenderDesc',
-                    'Vous n’avez enregistré aucun numéro d’expéditeur. Veuillez ajouter au moins une puce SIM dans votre compte pour effectuer des transferts.'
-                  )}
-                </Text>
-                <Button
-                  title={t('transfer.addSimAction', 'Ajouter un numéro SIM')}
-                  onPress={() => router.push('/(app)/management')}
-                  variant="outline"
-                  size="sm"
-                />
-              </View>
-            ) : selectedSender ? (
-              <View className="mb-4">
-                <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
-                  {t('transfer.senderLabel', "Numéro d'expéditeur (SIM)")}
-                </Text>
+              ) : selectedSender ? (
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={() => setSenderModalVisible(true)}
@@ -453,14 +453,16 @@ export default function TransferScreen() {
                   </View>
                   <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={20} />
                 </TouchableOpacity>
-              </View>
-            ) : null}
+              ) : null}
+            </View>
 
-            {availableActions.length > 0 && selectedAction ? (
-              <View className="mb-4">
-                <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
-                  {t('transfer.actionLabel', 'Action à exécuter')}
-                </Text>
+            <View className="mb-4">
+              <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
+                {t('transfer.actionLabel', 'Action à exécuter')}
+              </Text>
+              {isDataLoading || isActionLoading ? (
+                <Skeleton height={56} borderRadius={12} className="w-full" />
+              ) : availableActions.length > 0 && selectedAction ? (
                 <TouchableOpacity
                   activeOpacity={0.8}
                   onPress={() => setActionModalVisible(true)}
@@ -474,22 +476,22 @@ export default function TransferScreen() {
                   </View>
                   <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={20} />
                 </TouchableOpacity>
-              </View>
-            ) : registeredSenders.length > 0 ? (
-              <View className="p-3.5 rounded-xl mb-4 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex-row items-center">
-                <Icon name="solar:info-circle-linear" color="#94A3B8" size={20} className="mr-2.5" />
-                <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 flex-1 leading-4">
-                  {t('transfer.actionsPendingHint', 'Les actions USSD s’afficheront selon l’opérateur du bénéficiaire ou la SIM d’envoi.')}
-                </Text>
-              </View>
-            ) : null}
+              ) : registeredSenders.length > 0 ? (
+                <View className="p-3.5 rounded-xl mb-4 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex-row items-center">
+                  <Icon name="solar:info-circle-linear" color="#94A3B8" size={20} className="mr-2.5" />
+                  <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 flex-1 leading-4">
+                    {t('transfer.actionsPendingHint', 'Les actions USSD s’afficheront selon l’opérateur du bénéficiaire ou la SIM d’envoi.')}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
 
             <Button
               title={t('common.continue', 'Continuer vers le récapitulatif')}
               onPress={handleValidateForm}
               variant="primary"
               size="md"
-              disabled={registeredSenders.length === 0}
+              disabled={isDataLoading || registeredSenders.length === 0}
               leftIcon={<Icon name="solar:shield-check-bold" color="#FFFFFF" size={20} />}
               style={{ marginTop: 12 }}
             />
