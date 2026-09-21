@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { dashboardApi, DashboardSummary } from '../services/dashboard.api';
 import { storage } from '../../../shared/services/storage';
 
 const DASHBOARD_CACHE_KEY = 'kwismo_dashboard_summary_cache';
 
 export function useDashboard() {
+  const { t } = useTranslation();
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -22,15 +24,15 @@ export function useDashboard() {
         setSummary(res.data);
         await storage.setItem(DASHBOARD_CACHE_KEY, JSON.stringify(res.data)).catch(() => {});
       } else if (isRefresh) {
-        setError(res.message || 'Error');
+        setError(res.message || t('errors.generalMessage'));
       }
     } catch (err: any) {
-      if (isRefresh) setError(err.message || 'Network error');
+      if (isRefresh) setError(err.message || t('toasts.networkError'));
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     let isMounted = true;

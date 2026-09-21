@@ -83,15 +83,15 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
 
   const categoryChips: SearchCategory[] = useMemo(
     () => [
-      { id: 'all', label: 'Tout', icon: 'solar:stars-bold' },
-      { id: 'transfer', label: 'Transfert USSD', icon: 'solar:card-send-bold' },
-      { id: 'report', label: 'Signaler numéro', icon: 'solar:danger-triangle-bold' },
-      { id: 'whatsapp', label: 'Alertes WhatsApp', icon: 'solar:chat-round-dots-bold' },
-      { id: 'contacts', label: 'Contacts', icon: 'solar:users-group-two-rounded-bold' },
-      { id: 'sim', label: 'Numéros SIM', icon: 'solar:sim-cards-bold' },
-      { id: 'security', label: 'Sécurité & PIN', icon: 'solar:shield-keyhole-bold' },
+      { id: 'all', label: t('common.searchAll'), icon: 'solar:stars-bold' },
+      { id: 'transfer', label: t('common.actionTransfer'), icon: 'solar:card-send-bold' },
+      { id: 'report', label: t('common.report'), icon: 'solar:danger-triangle-bold' },
+      { id: 'whatsapp', label: t('common.actionWhatsapp'), icon: 'solar:chat-round-dots-bold' },
+      { id: 'contacts', label: t('common.myContacts'), icon: 'solar:users-group-two-rounded-bold' },
+      { id: 'sim', label: t('common.myNumbers'), icon: 'solar:sim-cards-bold' },
+      { id: 'security', label: t('common.security'), icon: 'solar:shield-keyhole-bold' },
     ],
-    []
+    [t]
   );
 
   const searchIndex: SearchItem[] = useMemo(
@@ -99,85 +99,69 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
       {
         id: 's-1',
         category: 'transfer',
-        title: 'Transfert de crédit / argent',
-        subtitle: 'Protéger et effectuer un transfert par USSD',
+        title: t('common.searchTransferTitle'),
+        subtitle: t('common.searchTransferSub'),
         icon: 'solar:card-send-bold',
         route: '/(app)/transfer',
       },
       {
         id: 's-2',
         category: 'report',
-        title: 'Signaler un numéro frauduleux',
-        subtitle: 'Déclarer un numéro suspect ou d’usurpation',
+        title: t('common.searchReportTitle'),
+        subtitle: t('common.searchReportSub'),
         icon: 'solar:danger-triangle-bold',
         route: '/(app)/report',
       },
       {
         id: 's-3',
         category: 'whatsapp',
-        title: 'Alerter sur WhatsApp',
-        subtitle: 'Activer et diffuser les alertes WhatsApp',
+        title: t('common.searchWhatsappTitle'),
+        subtitle: t('common.searchWhatsappSub'),
         icon: 'solar:chat-round-dots-bold',
         route: '/(app)/alert-whatsapp',
       },
       {
         id: 's-4',
         category: 'contacts',
-        title: 'Carnet de contacts',
-        subtitle: 'Vérifier la réputation de vos contacts',
+        title: t('common.searchContactsTitle'),
+        subtitle: t('common.searchContactsSub'),
         icon: 'solar:users-group-two-rounded-bold',
         route: '/(app)/contacts',
       },
       {
         id: 's-5',
         category: 'sim',
-        title: 'Gestion des numéros SIM',
-        subtitle: 'Ajouter ou sécuriser vos puces SIM',
+        title: t('common.searchSimTitle'),
+        subtitle: t('common.searchSimSub'),
         icon: 'solar:sim-cards-bold',
         route: '/(app)/management',
       },
       {
         id: 's-6',
         category: 'security',
-        title: 'Authentification 2FA & PIN',
-        subtitle: 'Configurer Face ID, empreinte et code PIN',
+        title: t('common.searchSecurityTitle'),
+        subtitle: t('common.searchSecuritySub'),
         icon: 'solar:shield-keyhole-bold',
         route: '/(app)/two-factor',
       },
       {
         id: 's-7',
         category: 'security',
-        title: 'Sessions actives & appareils',
-        subtitle: 'Gérer vos appareils connectés',
+        title: t('common.searchSessionsTitle'),
+        subtitle: t('common.searchSessionsSub'),
         icon: 'solar:devices-bold',
         route: '/(app)/active-sessions',
       },
       {
         id: 's-8',
         category: 'all',
-        title: 'Centre de notifications',
-        subtitle: 'Voir les dernières alertes et activités',
+        title: t('common.searchNotificationsTitle'),
+        subtitle: t('common.searchNotificationsSub'),
         icon: 'solar:bell-bold',
         route: '/(app)/notifications',
       },
-      {
-        id: 's-9',
-        category: 'sim',
-        title: '+237 6 98 44 43 88 (Orange)',
-        subtitle: 'SIM Vérifiée • Statut Normal',
-        icon: 'solar:phone-bold',
-        route: '/(app)/management',
-      },
-      {
-        id: 's-10',
-        category: 'sim',
-        title: '+237 6 77 12 34 56 (MTN)',
-        subtitle: 'SIM En attente de validation',
-        icon: 'solar:phone-bold',
-        route: '/(app)/management',
-      },
     ],
-    []
+    [t]
   );
 
   const showVerticalResults = searchQuery.trim().length > 0 || selectedCategory !== 'all';
