@@ -73,7 +73,6 @@ export function PhoneInput({ value, onChange, label, required = false, disabled 
   };
 
   const handleInputChange = (val: string) => {
-    let activeCountry = selectedCountry;
     let cleanVal = val.trim();
 
     if (cleanVal.startsWith('+')) {
@@ -82,40 +81,34 @@ export function PhoneInput({ value, onChange, label, required = false, disabled 
         if (parsed && parsed.country) {
           const matched = COUNTRY_LIST.find((c) => c.code === parsed.country);
           if (matched) {
-            activeCountry = matched;
             setSelectedCountry(matched);
+            const nat = parsed.nationalNumber;
+            setRawInput(nat);
+            validateAndUpdate(nat, matched);
+            return;
           }
-          const nat = parsed.nationalNumber;
-          setRawInput(nat);
-          validateAndUpdate(nat, activeCountry);
-          return;
         }
       } catch {}
     }
 
-    const digitsOnly = cleanVal.replace(/^\+/, '');
-    const matchedDial = COUNTRY_LIST.find((c) => digitsOnly.startsWith(c.dialCode.replace('+', '')));
-    if (matchedDial && digitsOnly.length > matchedDial.dialCode.length) {
-      activeCountry = matchedDial;
-      setSelectedCountry(matchedDial);
-      const dialDigits = matchedDial.dialCode.replace('+', '');
-      cleanVal = digitsOnly.slice(dialDigits.length);
-    }
-
     setRawInput(cleanVal);
-    validateAndUpdate(cleanVal, activeCountry);
+    validateAndUpdate(cleanVal, selectedCountry);
   };
 
   const validateAndUpdate = (val: string, country: CountryOption) => {
-    const cleanDigits = val.replace(/^0+/, '');
-    const fullString = val.startsWith('+') ? val : `${country.dialCode}${cleanDigits}`;
+    if (!val.trim()) {
+      onChange('', false);
+      return;
+    }
+    const cleanVal = val.replace(/\s+/g, '');
+    const fullString = cleanVal.startsWith('+') ? cleanVal : `${country.dialCode}${cleanVal}`;
     const isValid = validatePhone(fullString, country.code as CountryCode);
     const normalized = isValid ? formatE164(fullString, country.code as CountryCode) : fullString;
     onChange(normalized, isValid);
   };
 
-  const cleanDigits = rawInput.replace(/^0+/, '');
-  const checkString = rawInput.startsWith('+') ? rawInput : `${selectedCountry.dialCode}${cleanDigits}`;
+  const cleanDigits = rawInput.replace(/\s+/g, '');
+  const checkString = cleanDigits.startsWith('+') ? cleanDigits : `${selectedCountry.dialCode}${cleanDigits}`;
   const isValid = validatePhone(checkString, selectedCountry.code as CountryCode);
 
   const filteredCountries = COUNTRY_LIST.filter((country) => {
