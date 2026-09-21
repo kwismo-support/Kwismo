@@ -24,6 +24,7 @@ model User {
   emailVerifie    Boolean  @default(false)
   statut          String   @default("active") // active | suspended
   langue          String   @default("fr")     // fr | en
+  photo_url       String?
   dateInscription DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

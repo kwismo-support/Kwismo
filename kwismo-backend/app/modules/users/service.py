@@ -1,6 +1,7 @@
-"""Logique metier du module users. / Business logic for the users module."""
-
+import base64
 import logging
+import os
+import uuid
 
 from fastapi import HTTPException, status
 
@@ -22,10 +23,6 @@ logger = logging.getLogger("kwismo.backend")
 _users = UserRepository()
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
 async def _build_me(user) -> UserMeOut:
     phones_count = await db.userphone.count(where={"userId": user.id})
     reports_count = await db.report.count(where={"userId": user.id})
@@ -46,6 +43,7 @@ async def _build_me(user) -> UserMeOut:
         nom=user.nom,
         prenom=user.prenom,
         email=user.email,
+        photo_url=getattr(user, "photo_url", None),
         email_verifie=user.emailVerifie,
         statut=user.statut,
         role=user.role.nomRole,
@@ -60,10 +58,6 @@ async def _build_me(user) -> UserMeOut:
     )
 
 
-# ---------------------------------------------------------------------------
-# get_me
-# ---------------------------------------------------------------------------
-
 async def get_me(user_id: str) -> UserMeOut:
     user = await db.user.find_unique(
         where={"id": user_id},
@@ -74,10 +68,6 @@ async def get_me(user_id: str) -> UserMeOut:
     return await _build_me(user)
 
 
-# ---------------------------------------------------------------------------
-# update_me
-# ---------------------------------------------------------------------------
-
 async def update_me(user_id: str, payload: UserUpdateIn, lang: str = "fr") -> UserMeOut:
     data: dict = {}
     if payload.nom is not None:
@@ -86,6 +76,39 @@ async def update_me(user_id: str, payload: UserUpdateIn, lang: str = "fr") -> Us
         data["prenom"] = payload.prenom
     if payload.langue is not None and payload.langue in ("fr", "en"):
         data["langue"] = payload.langue
+
+    if payload.photo_url is not None and payload.photo_url.strip():
+        current_user = await db.user.find_unique(where={"id": user_id})
+        if current_user and getattr(current_user, "photo_url", None):
+            old_photo = current_user.photo_url
+            if old_photo and "/uploads/avatars/" in old_photo:
+                old_filename = old_photo.split("/uploads/avatars/")[-1]
+                old_path = os.path.join("uploads", "avatars", old_filename)
+                if os.path.exists(old_path):
+                    try:
+                        os.remove(old_path)
+                    except Exception as e:
+                        logger.warning(f"Could not remove old photo {old_path}: {e}")
+
+        image_uuid = str(uuid.uuid4())
+        ext = "jpg"
+        photo_str = payload.photo_url
+        if "data:image/" in photo_str and ";base64," in photo_str:
+            header, base64_data = photo_str.split(";base64,", 1)
+            if "png" in header:
+                ext = "png"
+            elif "webp" in header:
+                ext = "webp"
+            img_bytes = base64.b64decode(base64_data)
+            os.makedirs("uploads/avatars", exist_ok=True)
+            file_name = f"{image_uuid}.{ext}"
+            file_path = os.path.join("uploads", "avatars", file_name)
+            with open(file_path, "wb") as f:
+                f.write(img_bytes)
+            data["photo_url"] = f"/uploads/avatars/{file_name}"
+        else:
+            data["photo_url"] = payload.photo_url
+
     if not data:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

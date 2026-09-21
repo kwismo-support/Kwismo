@@ -548,7 +548,7 @@ export default function TransferScreen() {
       >
         <View className="flex-1 bg-black/70 items-center justify-center p-5">
           <View className="w-full rounded-3xl p-6 items-center bg-white dark:bg-brand-cardDark">
-            <View className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-950/50 items-center justify-center mb-4">
+            <View className="wx-16 hx-16 rounded-full bg-red-100 dark:bg-red-950/50 items-center justify-center mb-4">
               <Icon name="solar:shield-warning-bold" color="#DC2626" size={48} />
             </View>
 

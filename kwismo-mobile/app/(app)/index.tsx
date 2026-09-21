@@ -127,8 +127,10 @@ export default function HomeScreen() {
                     className="wx-13 hx-13 rounded-full"
                   />
                 ) : (
-                  <View className="wx-13 hx-13 rounded-full bg-emerald-100 dark:bg-emerald-900/40 justify-center items-center">
-                    <Icon name="solar:user-bold" color={colors.green} size={28} />
+                  <View className="wx-13 hx-13 rounded-full bg-emerald-100 dark:bg-emerald-900/40 justify-center items-center border border-brand-green/30">
+                    <Text className="font-headline-bold text-xl font-extrabold text-brand-green dark:text-emerald-400">
+                      {(userName || 'K').charAt(0).toUpperCase()}
+                    </Text>
                   </View>
                 )}
               </View>

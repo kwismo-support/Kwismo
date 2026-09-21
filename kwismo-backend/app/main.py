@@ -169,10 +169,13 @@ app = FastAPI(
     openapi_tags=TAGS_METADATA,
     docs_url=None,
     redoc_url=None,
-    lifespan=lifespan,
 )
 
-# --- Securite ---------------------------------------------------------
+import os
+from fastapi.staticfiles import StaticFiles
+
+os.makedirs("uploads/avatars", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 # Ordre : le dernier middleware ajoute est le plus "exterieur" (execute en
 # premier sur la requete). On rejette d'abord les hotes/tailles suspects,
 # puis CORS, puis on habille la reponse (en-tetes, compression).

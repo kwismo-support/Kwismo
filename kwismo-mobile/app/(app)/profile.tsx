@@ -68,11 +68,11 @@ export default function ProfileScreen() {
           </View>
         ) : (
           <View className="flex-row items-center p-4 rounded-2xl shadow-xl shadow-black elevation-4 border border-slate-100 dark:border-slate-800 bg-white dark:bg-brand-cardDark -mt-10 mb-4">
-            <View className="wx-13 hx-13 rounded-full bg-emerald-500 items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800">
+            <View className="wx-13 hx-13 rounded-full bg-emerald-100 dark:bg-emerald-900/40 items-center justify-center overflow-hidden border border-brand-green/30">
               {avatarPhoto ? (
                 <Image source={{ uri: avatarPhoto }} className="w-full h-full" resizeMode="cover" />
               ) : (
-                <Text className="font-bold text-2xl text-white">
+                <Text className="font-headline-bold text-xl font-extrabold text-brand-green dark:text-emerald-400">
                   {(userName || 'K').charAt(0).toUpperCase()}
                 </Text>
               )}

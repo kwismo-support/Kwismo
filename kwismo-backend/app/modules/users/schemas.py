@@ -23,12 +23,11 @@ class UserKpiOut(BaseModel):
 
 
 class UserMeOut(BaseModel):
-    """Table User (vue du compte courant). / User table (current-account view)."""
-
     id: str
     nom: str
     prenom: str
     email: EmailStr
+    photo_url: str | None = None
     email_verifie: bool
     statut: str = Field(..., examples=["active"])
     role: str = Field(..., examples=["user"])
@@ -41,6 +40,7 @@ class UserMeOut(BaseModel):
 class UserUpdateIn(BaseModel):
     nom: str | None = None
     prenom: str | None = None
+    photo_url: str | None = None
     langue: str | None = Field(None, examples=["fr", "en"])
 
 

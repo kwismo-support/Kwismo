@@ -35,9 +35,14 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
       input.onchange = (e: any) => {
         const file = e.target.files?.[0];
         if (file) {
-          const url = URL.createObjectURL(file);
-          onSelectPhoto(url);
-          toast.success(t('toasts.generalSuccess', 'Photo de profil sélectionnée !'));
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            if (evt.target?.result) {
+              onSelectPhoto(evt.target.result as string);
+              toast.success(t('toasts.generalSuccess', 'Photo de profil sélectionnée !'));
+            }
+          };
+          reader.readAsDataURL(file);
         }
       };
       input.click();
@@ -57,10 +62,13 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
+        base64: true,
       });
 
-      if (!result.canceled && result.assets?.[0]?.uri) {
-        onSelectPhoto(result.assets[0].uri);
+      if (!result.canceled && result.assets?.[0]) {
+        const asset = result.assets[0];
+        const photoData = asset.base64 ? `data:image/jpeg;base64,${asset.base64}` : asset.uri;
+        onSelectPhoto(photoData);
         toast.success(t('toasts.generalSuccess', 'Photo de profil sélectionnée !'));
         onClose();
       }
@@ -78,9 +86,14 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
       input.onchange = (e: any) => {
         const file = e.target.files?.[0];
         if (file) {
-          const url = URL.createObjectURL(file);
-          onSelectPhoto(url);
-          toast.success(t('toasts.generalSuccess', 'Photo prise avec succès !'));
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            if (evt.target?.result) {
+              onSelectPhoto(evt.target.result as string);
+              toast.success(t('toasts.generalSuccess', 'Photo prise avec succès !'));
+            }
+          };
+          reader.readAsDataURL(file);
         }
       };
       input.click();
@@ -99,10 +112,13 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
+        base64: true,
       });
 
-      if (!result.canceled && result.assets?.[0]?.uri) {
-        onSelectPhoto(result.assets[0].uri);
+      if (!result.canceled && result.assets?.[0]) {
+        const asset = result.assets[0];
+        const photoData = asset.base64 ? `data:image/jpeg;base64,${asset.base64}` : asset.uri;
+        onSelectPhoto(photoData);
         toast.success(t('toasts.generalSuccess', 'Photo prise avec succès !'));
         onClose();
       }

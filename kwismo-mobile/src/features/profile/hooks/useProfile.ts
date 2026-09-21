@@ -3,6 +3,7 @@ import i18next from 'i18next';
 import { profileApi, UserMeResponse, UserUpdatePayload } from '../services/profile.api';
 import { useAuthStore, User } from '../../../shared/store/authStore';
 import { toast } from '../../../shared/store/toastStore';
+import { formatAvatarUrl } from '../../../shared/utils/avatar';
 
 function userToProfile(u: User): UserMeResponse {
   return {
@@ -10,7 +11,7 @@ function userToProfile(u: User): UserMeResponse {
     email: u.email,
     prenom: u.firstName || '',
     nom: u.lastName || '',
-    photo_url: u.avatarUrl,
+    photo_url: formatAvatarUrl(u.avatarUrl),
     langue: u.langue || 'fr',
     role: u.role || 'user',
     email_verifie: true,
@@ -44,13 +45,14 @@ export function useProfile() {
     try {
       const res = await profileApi.getProfile();
       if (res.success && res.data) {
-        setProfile(res.data);
+        const formattedPhoto = formatAvatarUrl(res.data.photo_url) || currentUser?.avatarUrl;
+        setProfile({ ...res.data, photo_url: formattedPhoto });
         useAuthStore.getState().setUser({
           id: res.data.id,
           email: res.data.email,
           firstName: res.data.prenom,
           lastName: res.data.nom,
-          avatarUrl: res.data.photo_url || currentUser?.avatarUrl,
+          avatarUrl: formattedPhoto,
           role: res.data.role,
           langue: res.data.langue,
           kpi: res.data.kpi,
@@ -74,7 +76,8 @@ export function useProfile() {
     try {
       const res = await profileApi.updateProfile(payload);
       const current = useAuthStore.getState().user;
-      const newAvatarUrl = payload.photo_url || (res.success && res.data?.photo_url) || current?.avatarUrl;
+      const rawAvatar = (res.success && res.data?.photo_url) || payload.photo_url || current?.avatarUrl;
+      const newAvatarUrl = formatAvatarUrl(rawAvatar);
 
       if (res.success && res.data) {
         const updatedProfile = { ...res.data, photo_url: newAvatarUrl };
@@ -108,12 +111,14 @@ export function useProfile() {
     } catch (err: any) {
       const current = useAuthStore.getState().user;
       if (current) {
+        const rawAvatar = payload.photo_url || current.avatarUrl;
+        const newAvatarUrl = formatAvatarUrl(rawAvatar);
         const updatedUser: User = {
           ...current,
           firstName: payload.prenom ?? current.firstName,
           lastName: payload.nom ?? current.lastName,
           email: payload.email ?? current.email,
-          avatarUrl: payload.photo_url || current.avatarUrl,
+          avatarUrl: newAvatarUrl,
         };
         useAuthStore.getState().setUser(updatedUser);
         setProfile(userToProfile(updatedUser));

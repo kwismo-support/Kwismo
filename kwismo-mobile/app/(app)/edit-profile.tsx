@@ -160,11 +160,11 @@ export default function EditProfileScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View className="self-center relative mb-6">
-          <View className="wx-24 hx-24 rounded-full items-center justify-center bg-slate-200 dark:bg-slate-700 overflow-hidden border-2 border-brand-green">
+          <View className="wx-24 hx-24 rounded-full items-center justify-center bg-emerald-100 dark:bg-emerald-900/40 overflow-hidden border-2 border-brand-green">
             {profilePhoto ? (
               <Image source={{ uri: profilePhoto }} className="w-full h-full" resizeMode="cover" />
             ) : (
-              <Text className="font-extrabold text-3xl text-slate-900 dark:text-white">
+              <Text className="font-headline-bold text-3xl font-extrabold text-brand-green dark:text-emerald-400">
                 {(firstName || lastName || 'K').charAt(0).toUpperCase()}
               </Text>
             )}
