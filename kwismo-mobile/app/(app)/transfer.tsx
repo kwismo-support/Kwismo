@@ -83,11 +83,38 @@ export default function TransferScreen() {
   const [phoneError, setPhoneError] = useState('');
   const [amountError, setAmountError] = useState('');
 
+  const fetchActionsForOperator = async (opId?: string) => {
+    if (!opId) {
+      setAvailableActions([]);
+      setSelectedAction(null);
+      return;
+    }
+    try {
+      const actionsRes = await transferApi.getActions(opId);
+      if (actionsRes.success && actionsRes.data && actionsRes.data.length > 0) {
+        const mappedActions: ActionOption[] = actionsRes.data.map((a: any) => ({
+          id: a.id,
+          label: a.nomAction || a.nom || 'Transfert d’argent',
+          description: a.format || a.pattern_code || 'Transfert via USSD',
+          ussdFormat: a.format || a.pattern_code || '*126*{montant}*{numero}#',
+          operator_id: a.operatorId || a.operator_id,
+        }));
+        setAvailableActions(mappedActions);
+        setSelectedAction(mappedActions[0]);
+      } else {
+        setAvailableActions([]);
+        setSelectedAction(null);
+      }
+    } catch {
+      setAvailableActions([]);
+      setSelectedAction(null);
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
     const loadInitialData = async () => {
       setIsDataLoading(true);
-      let activeSender: SenderNumberOption | null = null;
       try {
         const phonesRes = await numbersApi.getMyNumbers();
         if (isMounted && phonesRes.success && phonesRes.data && phonesRes.data.length > 0) {
@@ -104,39 +131,24 @@ export default function TransferScreen() {
             };
           });
           setRegisteredSenders(mappedSenders);
-          activeSender = mappedSenders[0];
-          setSelectedSender(activeSender);
-        } else if (isMounted) {
-          const currentUser = useAuthStore.getState().user;
-          if (currentUser) {
-            const defaultSender: SenderNumberOption = {
-              id: currentUser.id || 'sim-main',
-              label: 'SIM Principale',
-              phone: currentUser.firstName || currentUser.email || 'Mon compte',
-              callingCode: selectedCountry.callingCode,
-              operator: 'Opérateur',
-            };
-            setRegisteredSenders([defaultSender]);
-            activeSender = defaultSender;
-            setSelectedSender(defaultSender);
+          setSelectedSender(mappedSenders[0]);
+          if (mappedSenders[0]?.operator_id) {
+            await fetchActionsForOperator(mappedSenders[0].operator_id);
           }
+        } else if (isMounted) {
+          setRegisteredSenders([]);
+          setSelectedSender(null);
+          setAvailableActions([]);
+          setSelectedAction(null);
         }
-      } catch {}
-
-      try {
-        const actionsRes = await transferApi.getActions(activeSender?.operator_id);
-        if (isMounted && actionsRes.success && actionsRes.data && actionsRes.data.length > 0) {
-          const mappedActions: ActionOption[] = actionsRes.data.map((a: any) => ({
-            id: a.id,
-            label: a.nomAction || a.nom || 'Transfert d’argent',
-            description: a.format || a.pattern_code || 'Transfert via USSD',
-            ussdFormat: a.format || a.pattern_code || '*126*{montant}*{numero}#',
-            operator_id: a.operatorId || a.operator_id,
-          }));
-          setAvailableActions(mappedActions);
-          setSelectedAction(mappedActions[0]);
+      } catch {
+        if (isMounted) {
+          setRegisteredSenders([]);
+          setSelectedSender(null);
+          setAvailableActions([]);
+          setSelectedAction(null);
         }
-      } catch {}
+      }
 
       if (isMounted) setIsDataLoading(false);
     };
@@ -150,20 +162,7 @@ export default function TransferScreen() {
   const handleSelectSender = async (sender: SenderNumberOption) => {
     setSelectedSender(sender);
     setSenderModalVisible(false);
-    try {
-      const actionsRes = await transferApi.getActions(sender.operator_id);
-      if (actionsRes.success && actionsRes.data && actionsRes.data.length > 0) {
-        const mappedActions: ActionOption[] = actionsRes.data.map((a: any) => ({
-          id: a.id,
-          label: a.nomAction || a.nom || 'Transfert d’argent',
-          description: a.format || a.pattern_code || 'Transfert via USSD',
-          ussdFormat: a.format || a.pattern_code || '*126*{montant}*{numero}#',
-          operator_id: a.operatorId || a.operator_id,
-        }));
-        setAvailableActions(mappedActions);
-        setSelectedAction(mappedActions[0]);
-      }
-    } catch {}
+    await fetchActionsForOperator(sender.operator_id);
   };
 
   const formattedAmount = useMemo(() => {
@@ -203,6 +202,11 @@ export default function TransferScreen() {
     setPhoneError('');
     setAmountError('');
 
+    if (registeredSenders.length === 0) {
+      toast.error(t('transfer.noSenderError', 'Veuillez enregistrer une puce SIM dans votre compte pour continuer.'));
+      return false;
+    }
+
     const cleanPhone = beneficiaryPhone.replace(/\D/g, '');
     if (!cleanPhone) {
       setPhoneError(t('validation.phoneRequired', 'Veuillez saisir le numéro du bénéficiaire'));
@@ -227,6 +231,11 @@ export default function TransferScreen() {
         setBeneficiaryRiskScore(verifyRes.data.score_risque || 0);
         if (verifyRes.data.operator_name) {
           setBeneficiaryOperatorName(verifyRes.data.operator_name);
+        }
+        if (verifyRes.data.operator_id) {
+          await fetchActionsForOperator(verifyRes.data.operator_id);
+        } else if (selectedSender?.operator_id) {
+          await fetchActionsForOperator(selectedSender.operator_id);
         }
       }
     } catch {}
@@ -403,7 +412,28 @@ export default function TransferScreen() {
               }
             />
 
-            {selectedSender && (
+            {registeredSenders.length === 0 ? (
+              <View className="p-4 rounded-2xl mb-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
+                <View className="flex-row items-center mb-2">
+                  <Icon name="solar:sim-card-bold" color="#D97706" size={24} className="mr-2" />
+                  <Text className="font-font-bold text-sm font-bold text-amber-800 dark:text-amber-300">
+                    {t('transfer.noSenderTitle', 'Aucun numéro SIM d’envoi disponible')}
+                  </Text>
+                </View>
+                <Text className="font-font-regular text-xs text-amber-700 dark:text-amber-400 mb-3 leading-5">
+                  {t(
+                    'transfer.noSenderDesc',
+                    'Vous n’avez enregistré aucun numéro d’expéditeur. Veuillez ajouter au moins une puce SIM dans votre compte pour effectuer des transferts.'
+                  )}
+                </Text>
+                <Button
+                  title={t('transfer.addSimAction', 'Ajouter un numéro SIM')}
+                  onPress={() => router.push('/(app)/management')}
+                  variant="outline"
+                  size="sm"
+                />
+              </View>
+            ) : selectedSender ? (
               <View className="mb-4">
                 <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
                   {t('transfer.senderLabel', "Numéro d'expéditeur (SIM)")}
@@ -424,9 +454,9 @@ export default function TransferScreen() {
                   <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={20} />
                 </TouchableOpacity>
               </View>
-            )}
+            ) : null}
 
-            {selectedAction && (
+            {availableActions.length > 0 && selectedAction ? (
               <View className="mb-4">
                 <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
                   {t('transfer.actionLabel', 'Action à exécuter')}
@@ -445,16 +475,25 @@ export default function TransferScreen() {
                   <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={20} />
                 </TouchableOpacity>
               </View>
-            )}
+            ) : registeredSenders.length > 0 ? (
+              <View className="p-3.5 rounded-xl mb-4 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex-row items-center">
+                <Icon name="solar:info-circle-linear" color="#94A3B8" size={20} className="mr-2.5" />
+                <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 flex-1 leading-4">
+                  {t('transfer.actionsPendingHint', 'Les actions USSD s’afficheront selon l’opérateur du bénéficiaire ou la SIM d’envoi.')}
+                </Text>
+              </View>
+            ) : null}
 
             <Button
               title={t('common.continue', 'Continuer vers le récapitulatif')}
               onPress={handleValidateForm}
               variant="primary"
               size="md"
+              disabled={registeredSenders.length === 0}
               leftIcon={<Icon name="solar:shield-check-bold" color="#FFFFFF" size={20} />}
               style={{ marginTop: 12 }}
             />
+
           </View>
         ) : step === 'summary' ? (
           <View className="w-full">

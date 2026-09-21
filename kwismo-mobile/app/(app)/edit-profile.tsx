@@ -116,7 +116,7 @@ export default function EditProfileScreen() {
       toast.success(t('profile.updatedSuccess', 'Profil mis à jour avec succès !'));
       router.back();
     } else {
-      toast.error(res.message || t('errors.generalMessage', 'Erreur de mise à jour'));
+      toast.error((res as any).message || t('errors.generalMessage', 'Erreur de mise à jour'));
     }
   };
 
@@ -329,6 +329,7 @@ export default function EditProfileScreen() {
           </Pressable>
         </Pressable>
       </Modal>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
+
