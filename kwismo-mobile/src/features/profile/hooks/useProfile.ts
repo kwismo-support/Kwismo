@@ -45,7 +45,7 @@ export function useProfile() {
     try {
       const res = await profileApi.getProfile();
       if (res.success && res.data) {
-        const formattedPhoto = formatAvatarUrl(res.data.photo_url) || currentUser?.avatarUrl;
+        const formattedPhoto = formatAvatarUrl(res.data.photo_url);
         setProfile({ ...res.data, photo_url: formattedPhoto });
         useAuthStore.getState().setUser({
           id: res.data.id,
@@ -76,8 +76,15 @@ export function useProfile() {
     try {
       const res = await profileApi.updateProfile(payload);
       const current = useAuthStore.getState().user;
-      const rawAvatar = (res.success && res.data?.photo_url) || payload.photo_url || current?.avatarUrl;
-      const newAvatarUrl = formatAvatarUrl(rawAvatar);
+
+      let newAvatarUrl: string | undefined = undefined;
+      if (res.success && res.data) {
+        newAvatarUrl = formatAvatarUrl(res.data.photo_url);
+      } else if (payload.photo_url !== undefined) {
+        newAvatarUrl = formatAvatarUrl(payload.photo_url);
+      } else {
+        newAvatarUrl = current?.avatarUrl;
+      }
 
       if (res.success && res.data) {
         const updatedProfile = { ...res.data, photo_url: newAvatarUrl };
@@ -111,7 +118,7 @@ export function useProfile() {
     } catch (err: any) {
       const current = useAuthStore.getState().user;
       if (current) {
-        const rawAvatar = payload.photo_url || current.avatarUrl;
+        const rawAvatar = payload.photo_url !== undefined ? payload.photo_url : current.avatarUrl;
         const newAvatarUrl = formatAvatarUrl(rawAvatar);
         const updatedUser: User = {
           ...current,

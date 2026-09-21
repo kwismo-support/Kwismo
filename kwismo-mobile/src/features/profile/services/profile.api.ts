@@ -24,7 +24,7 @@ export interface UserUpdatePayload {
   nom?: string;
   prenom?: string;
   email?: string;
-  photo_url?: string;
+  photo_url?: string | null;
   langue?: string;
   telephone?: string;
   indicatif_pays?: string;

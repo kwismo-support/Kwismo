@@ -109,7 +109,7 @@ export default function EditProfileScreen() {
       nom: lastName.trim(),
       prenom: firstName.trim(),
       email: overrides.email || email.trim(),
-      photo_url: profilePhoto || undefined,
+      photo_url: profilePhoto !== null ? profilePhoto : null,
     });
 
     if (res.success) {
