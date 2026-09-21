@@ -12,7 +12,13 @@ function userToProfile(u: User): UserMeResponse {
     nom: u.lastName || '',
     langue: u.langue || 'fr',
     role: u.role || 'user',
-    kpi: u.kpi,
+    email_verifie: true,
+    statut: 'active',
+    kpi: {
+      numeros_verifies: u.kpi?.numeros_verifies ?? 0,
+      signalements_effectues: u.kpi?.signalements_effectues ?? 0,
+      transferts_proteges: u.kpi?.transferts_proteges ?? 0,
+    },
   };
 }
 

@@ -7,16 +7,16 @@ export interface UserMeResponse {
   email: string;
   telephone?: string;
   indicatif_pays?: string;
-  email_verifie: boolean;
-  statut: string;
+  email_verifie?: boolean;
+  statut?: string;
   role: string;
   langue: string;
-  date_inscription: string;
+  date_inscription?: string;
   photo_url?: string;
-  kpi: {
-    numeros_verifies: number;
-    signalements_effectues: number;
-    transferts_proteges: number;
+  kpi?: {
+    numeros_verifies?: number;
+    signalements_effectues?: number;
+    transferts_proteges?: number;
   };
 }
 
