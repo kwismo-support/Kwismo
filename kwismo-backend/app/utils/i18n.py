@@ -112,6 +112,14 @@ MESSAGES: dict[str, dict[str, str]] = {
         "fr": "Ce numéro est déjà vérifié.",
         "en": "This number is already verified.",
     },
+    "phone_verified": {
+        "fr": "Numéro vérifié avec succès.",
+        "en": "Phone number successfully verified.",
+    },
+    "success.phone_verified": {
+        "fr": "Numéro vérifié avec succès.",
+        "en": "Phone number successfully verified.",
+    },
     "phone_removed": {
         "fr": "Numéro retiré du compte.",
         "en": "Number removed from account.",
@@ -119,6 +127,10 @@ MESSAGES: dict[str, dict[str, str]] = {
     "otp_sms_resent": {
         "fr": "Nouveau code OTP SMS envoyé.",
         "en": "New SMS OTP sent.",
+    },
+    "success.phone_removed": {
+        "fr": "Numéro retiré du compte.",
+        "en": "Number removed from account.",
     },
     "phone_not_verified_for_compromise": {
         "fr": "Seul un numéro vérifié peut être déclaré compromis.",

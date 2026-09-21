@@ -1,5 +1,3 @@
-"""Logique metier du module user_phones. / Business logic for the user_phones module."""
-
 import logging
 
 from fastapi import HTTPException, status
@@ -21,10 +19,6 @@ from app.utils.phone import is_valid_phone, normalize_phone
 logger = logging.getLogger("kwismo.backend")
 settings = get_settings()
 
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
 
 def _to_out(p) -> UserPhoneOut:
     c_code = p.country.codePays if getattr(p, "country", None) else None
@@ -81,10 +75,6 @@ async def _create_sms_otp(user_id: str, user_phone_id: str, phone_valeur: str) -
     return code
 
 
-# ---------------------------------------------------------------------------
-# list_my_phones
-# ---------------------------------------------------------------------------
-
 async def list_my_phones(user_id: str) -> list[UserPhoneOut]:
     await connect_db()
     phones = await db.userphone.find_many(
@@ -95,29 +85,12 @@ async def list_my_phones(user_id: str) -> list[UserPhoneOut]:
     return [_to_out(p) for p in phones]
 
 
-# ---------------------------------------------------------------------------
-# add_my_phone
-# ---------------------------------------------------------------------------
-
 async def _resolve_country_id(valeur: str, lang: str = "fr") -> str:
-    """Auto-detecte le pays du numero depuis son indicatif international.
-
-    FR — Parse l'indicatif international du numero (ex. "+237" -> Cameroun)
-    et retourne l'id du pays correspondant. Si aucun indicatif ne correspond,
-    on retombe sur le pays par defaut (`estParDefaut = True`). Si aucun pays
-    par defaut n'existe, 400.
-    EN — Parses the number's international prefix (e.g. "+237" -> Cameroon)
-    and returns the matching country id. If no prefix matches, falls back to
-    the default country (`estParDefaut = True`). If no default country
-    exists, 400.
-    """
-    # Auto-detect from the international prefix (e.g. "+237").
     countries = await db.country.find_many()
     for c in countries:
         if valeur.startswith(c.codePays):
             return c.id
 
-    # Fallback to the default country (Cameroon).
     default_country = await db.country.find_first(where={"estParDefaut": True})
     if default_country is None:
         raise HTTPException(
@@ -143,29 +116,29 @@ async def add_my_phone(user_id: str, payload: UserPhoneAddIn, lang: str = "fr") 
         )
 
     country_id = await _resolve_country_id(valeur, lang)
-
     operator_id = await _detect_operator(valeur, country_id)
+
     phone = await db.userphone.create(
         data={
             "userId": user_id,
             "valeur": valeur,
             "countryId": country_id,
             "operatorId": operator_id,
-            "estVerifie": False,  # Explicitly unverified on creation — OTP required before verification
+            "estVerifie": False,
         }
     )
+
+    code = await _create_sms_otp(user_id, phone.id, valeur)
     user = await db.user.find_unique(where={"id": user_id})
     user_email = user.email if user else None
+
     try:
-        await send_sms_otp(valeur, email=user_email)
+        await send_sms_otp(valeur, code=code, email=user_email)
     except Exception as exc:
         logger.warning("Notification OTP SMS/Email non envoyee pour %s : %s", valeur, exc)
+
     return _to_out(phone)
 
-
-# ---------------------------------------------------------------------------
-# verify_my_phone
-# ---------------------------------------------------------------------------
 
 async def verify_my_phone(user_id: str, phone_id: str, payload: UserPhoneVerifyIn, lang: str = "fr") -> Message:
     phone = await db.userphone.find_unique(where={"id": phone_id})
@@ -174,8 +147,16 @@ async def verify_my_phone(user_id: str, phone_id: str, payload: UserPhoneVerifyI
     if phone.estVerifie:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=t("phone_already_verified", lang))
 
-    # Twilio Verify validates the code — no DB lookup needed
-    valid = await check_sms_otp(phone.valeur, payload.code)
+    stored_otp = await db.otpcode.find_first(
+        where={"userPhoneId": phone_id, "canal": "sms", "code": payload.code, "estUtilise": False}
+    )
+
+    if stored_otp is not None and not is_expired(stored_otp.dateExpiration):
+        await db.otpcode.update(where={"id": stored_otp.id}, data={"estUtilise": True})
+        valid = True
+    else:
+        valid = await check_sms_otp(phone.valeur, payload.code)
+
     if not valid:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -188,14 +169,10 @@ async def verify_my_phone(user_id: str, phone_id: str, payload: UserPhoneVerifyI
         data={"estVerifie": True, "dateVerification": now},
     )
     return Message(
-        message_fr=t("success.phone_verified", "fr"),
-        message_en=t("success.phone_verified", "en"),
+        message_fr=t("phone_verified", "fr"),
+        message_en=t("phone_verified", "en"),
     )
 
-
-# ---------------------------------------------------------------------------
-# resend_my_phone_otp
-# ---------------------------------------------------------------------------
 
 async def resend_my_phone_otp(user_id: str, phone_id: str, lang: str = "fr"):
     phone = await db.userphone.find_unique(where={"id": phone_id})
@@ -208,16 +185,15 @@ async def resend_my_phone_otp(user_id: str, phone_id: str, lang: str = "fr"):
         )
     user = await db.user.find_unique(where={"id": user_id})
     user_email = user.email if user else None
-    await send_sms_otp(phone.valeur, email=user_email)
+
+    code = await _create_sms_otp(user_id, phone_id, phone.valeur)
+    await send_sms_otp(phone.valeur, code=code, email=user_email)
+
     return Message(
-        message_fr=t("success.otp_sms_resent", "fr"),
-        message_en=t("success.otp_sms_resent", "en"),
+        message_fr=t("otp_sms_resent", "fr"),
+        message_en=t("otp_sms_resent", "en"),
     )
 
-
-# ---------------------------------------------------------------------------
-# remove_my_phone
-# ---------------------------------------------------------------------------
 
 async def remove_my_phone(user_id: str, phone_id: str, lang: str = "fr"):
     phone = await db.userphone.find_unique(where={"id": phone_id})
@@ -230,14 +206,10 @@ async def remove_my_phone(user_id: str, phone_id: str, lang: str = "fr"):
     )
     await db.userphone.delete(where={"id": phone_id})
     return Message(
-        message_fr=t("success.phone_removed", "fr"),
-        message_en=t("success.phone_removed", "en"),
+        message_fr=t("phone_removed", "fr"),
+        message_en=t("phone_removed", "en"),
     )
 
-
-# ---------------------------------------------------------------------------
-# declare_my_phone_compromised
-# ---------------------------------------------------------------------------
 
 async def declare_my_phone_compromised(user_id: str, phone_id: str, lang: str = "fr") -> CompromiseIncidentOut:
     phone = await db.userphone.find_unique(where={"id": phone_id})
