@@ -8,6 +8,7 @@ interface HeaderActionsProps {
   unreadNotificationsCount?: number;
   iconColor?: string;
   onPressNotifications?: () => void;
+  onPressSearch?: () => void;
   showBell?: boolean;
 }
 
@@ -15,6 +16,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
   unreadNotificationsCount = 0,
   iconColor = '#FFFFFF',
   onPressNotifications,
+  onPressSearch,
   showBell = true,
 }) => {
   const router = useRouter();
@@ -27,6 +29,14 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
       onPressNotifications();
     } else {
       router.push('/(app)/notifications');
+    }
+  };
+
+  const handleSearchPress = () => {
+    if (onPressSearch) {
+      onPressSearch();
+    } else {
+      setSearchModalVisible(true);
     }
   };
 
@@ -55,7 +65,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
 
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => setSearchModalVisible(true)}
+        onPress={handleSearchPress}
         className="wx-9 hx-9 items-center justify-center relative"
       >
         <Icon name="bitcoin-icons:search-filled" size={24} color={iconColor} />

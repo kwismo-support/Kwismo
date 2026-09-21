@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import { Stack, Redirect } from 'expo-router';
 import { useAuthStore } from '@/shared/store/authStore';
+import { useNavAnimationStore } from '@/shared/store/navAnimationStore';
 import { syncDelta, processOutbox } from '@/shared/services/syncEngine';
 
 import { colors } from '@/styles/tokens';
@@ -28,10 +29,13 @@ export default function AppLayout() {
     return <Redirect href="/(auth)/login" />;
   }
 
+  const { stackAnimation } = useNavAnimationStore();
+
   return (
     <Stack
       screenOptions={{
         headerShown: false,
+        animation: stackAnimation,
       }}
     />
   );

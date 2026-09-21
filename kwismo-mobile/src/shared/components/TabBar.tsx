@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { useNavAnimationStore } from '@/shared/store/navAnimationStore';
 import { colors } from '@/styles/tokens';
 
 export type TabRoute = 'home' | 'management' | 'transfer' | 'profile';
@@ -19,6 +20,7 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { isDark, colors: themeColors } = useAppTheme();
+  const { setTabNavigation } = useNavAnimationStore();
 
   const currentTab: TabRoute = activeTab || (
     pathname.includes('management') ? 'management' :
@@ -27,6 +29,12 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
   );
 
   const activeColor = isDark ? colors.white : '#161E33';
+
+  const handleTabPress = (routePath: string, tabName: TabRoute) => {
+    if (currentTab === tabName) return;
+    setTabNavigation(tabName);
+    router.replace(routePath as any);
+  };
 
   return (
     <View
@@ -37,7 +45,7 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
     >
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => router.replace('/(app)')}
+        onPress={() => handleTabPress('/(app)', 'home')}
         className="items-center justify-center flex-1 py-1"
       >
         <Icon
@@ -58,7 +66,7 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
 
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => router.replace('/(app)/management')}
+        onPress={() => handleTabPress('/(app)/management', 'management')}
         className="items-center justify-center flex-1 py-1"
       >
         <Icon
@@ -79,7 +87,7 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
 
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => router.replace('/(app)/transfer')}
+        onPress={() => handleTabPress('/(app)/transfer', 'transfer')}
         className="items-center justify-center flex-1 py-1"
       >
         <Icon
@@ -100,7 +108,7 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
 
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => router.replace('/(app)/profile')}
+        onPress={() => handleTabPress('/(app)/profile', 'profile')}
         className="items-center justify-center flex-1 py-1"
       >
         <Icon
