@@ -55,17 +55,16 @@ class Settings(BaseSettings):
     allowed_image_extensions: str = "jpg,jpeg,png,webp"
     allowed_video_extensions: str = "mp4,mov,webm"
 
+    # Email (Brevo / Sendinblue — API & SMTP)
+    brevo_api_key: str = ""
+    brevo_smtp_host: str = "smtp-relay.brevo.com"
+    brevo_smtp_port: int = 587
+    brevo_smtp_user: str = ""
+    brevo_smtp_key: str = ""
+
     # Email (Resend)
     resend_api_key: str = ""
-    email_from: str = "KWISMO <noreply@unphishable.org>"
-
-    # Email (Google SMTP - fallback if Resend is unavailable)
-    smtp_host: str = "smtp.gmail.com"
-    smtp_port: int = 587
-    smtp_user: str = ""
-    smtp_password: str = ""
-    smtp_from: str = ""
-    smtp_use_tls: bool = True
+    email_from: str = ""
 
     # Firebase Auth & SMS
     firebase_project_id: str = ""

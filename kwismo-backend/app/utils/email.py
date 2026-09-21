@@ -15,16 +15,81 @@ logger = logging.getLogger("kwismo.backend")
 
 
 async def send_email(to: str, subject: str, body_html: str, dev_tag: str = "EMAIL-DEV") -> bool:
-    """Envoie un email via la chaîne de secours : Resend -> Google SMTP -> Console log."""
+    """Envoie un email via la chaîne de secours stricte issue de .env : Brevo API -> Brevo SMTP -> Resend API -> Console log."""
     settings = get_settings()
+    sender_email = settings.email_from or "KWISMO <noreply@kwismo.com>"
 
-    # 1. Tentative via Resend API
+    # 1. Priorité 1a : Brevo API (via .env BREVO_API_KEY)
+    if settings.brevo_api_key:
+        try:
+            import httpx
+            sender_name = "KWISMO"
+            sender_addr = "noreply@kwismo.com"
+            if "<" in sender_email and ">" in sender_email:
+                sender_name = sender_email.split("<")[0].strip()
+                sender_addr = sender_email.split("<")[1].replace(">", "").strip()
+            elif "@" in sender_email:
+                sender_addr = sender_email.strip()
+
+            async with httpx.AsyncClient() as client:
+                res = await client.post(
+                    "https://api.brevo.com/v3/smtp/email",
+                    headers={
+                        "api-key": settings.brevo_api_key,
+                        "content-type": "application/json",
+                        "accept": "application/json",
+                    },
+                    json={
+                        "sender": {"name": sender_name, "email": sender_addr},
+                        "to": [{"email": to}],
+                        "subject": subject,
+                        "htmlContent": body_html,
+                    },
+                    timeout=10.0,
+                )
+                if res.status_code in (200, 201, 202):
+                    logger.info("Email envoyé via Brevo API à %s (sujet: %s)", to, subject)
+                    return True
+                else:
+                    logger.warning("Échec Brevo API (statut %s): %s — tentative fallback Brevo SMTP", res.status_code, res.text)
+        except Exception as exc:
+            logger.warning("Échec envoi email via Brevo API à %s : %s — tentative fallback Brevo SMTP", to, exc)
+
+    # 2. Priorité 1b : Brevo SMTP (via .env BREVO_SMTP_USER & BREVO_SMTP_KEY)
+    if settings.brevo_smtp_user and settings.brevo_smtp_key:
+        try:
+            import smtplib
+            from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
+
+            def _send_brevo_smtp():
+                msg = MIMEMultipart("alternative")
+                msg["Subject"] = subject
+                msg["From"] = sender_email
+                msg["To"] = to
+                msg.attach(MIMEText(body_html, "html"))
+
+                host = settings.brevo_smtp_host or "smtp-relay.brevo.com"
+                port = settings.brevo_smtp_port or 587
+                server = smtplib.SMTP(host, port, timeout=10)
+                server.starttls()
+                server.login(settings.brevo_smtp_user, settings.brevo_smtp_key)
+                server.sendmail(msg["From"], [to], msg.as_string())
+                server.quit()
+
+            await asyncio.to_thread(_send_brevo_smtp)
+            logger.info("Email envoyé via Brevo SMTP à %s (sujet: %s)", to, subject)
+            return True
+        except Exception as exc:
+            logger.warning("Échec envoi email via Brevo SMTP à %s : %s — tentative fallback Resend API", to, exc)
+
+    # 3. Priorité 2 : Resend API (via .env RESEND_API_KEY)
     if settings.resend_api_key:
         try:
             import resend
             resend.api_key = settings.resend_api_key
             await asyncio.to_thread(resend.Emails.send, {
-                "from": settings.email_from,
+                "from": sender_email,
                 "to": [to],
                 "subject": subject,
                 "html": body_html,
@@ -32,39 +97,9 @@ async def send_email(to: str, subject: str, body_html: str, dev_tag: str = "EMAI
             logger.info("Email envoyé via Resend à %s (sujet: %s)", to, subject)
             return True
         except Exception as exc:
-            logger.warning("Échec envoi email via Resend à %s : %s — tentative fallback SMTP", to, exc)
+            logger.warning("Échec envoi email via Resend à %s : %s — tentative fallback Dev Console", to, exc)
 
-    # 2. Tentative via Google SMTP (ou serveur SMTP configuré)
-    if settings.smtp_user and settings.smtp_password:
-        try:
-            import smtplib
-            from email.mime.multipart import MIMEMultipart
-            from email.mime.text import MIMEText
-
-            def _send_smtp():
-                msg = MIMEMultipart("alternative")
-                msg["Subject"] = subject
-                msg["From"] = settings.smtp_from or settings.smtp_user
-                msg["To"] = to
-                msg.attach(MIMEText(body_html, "html"))
-
-                if settings.smtp_use_tls:
-                    server = smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=10)
-                    server.starttls()
-                else:
-                    server = smtplib.SMTP_SSL(settings.smtp_host, settings.smtp_port, timeout=10)
-
-                server.login(settings.smtp_user, settings.smtp_password)
-                server.sendmail(msg["From"], [to], msg.as_string())
-                server.quit()
-
-            await asyncio.to_thread(_send_smtp)
-            logger.info("Email envoyé via SMTP à %s (sujet: %s)", to, subject)
-            return True
-        except Exception as exc:
-            logger.warning("Échec envoi email via SMTP à %s : %s", to, exc)
-
-    # 3. Fallback Dev Mode (console log)
+    # 4. Fallback Dev Mode (console log)
     logger.info("[%s] To: %s | Subject: %s | Body: %s", dev_tag, to, subject, body_html)
     return True
 
