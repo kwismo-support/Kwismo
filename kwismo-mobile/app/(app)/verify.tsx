@@ -221,7 +221,7 @@ export default function VerifyScreen() {
       <StatusBar style="light" />
 
       <HeaderBar
-        title={t('common.verifyNumberTitle', 'Vérification numéro')}
+        title={t('common.verifyNumberTitle')}
         showBack={true}
         onBack={handleHeaderBack}
         rightAction={
@@ -243,7 +243,7 @@ export default function VerifyScreen() {
               selectedCountry={selectedCountry}
               onSelectCountry={(c) => setSelectedCountry(c)}
               showContactPicker={false}
-              placeholder={t('verify.enterNumberOrNameLabel')}
+              placeholder={t('common.phonePlaceholder')}
               onSelectContactFromPicker={(contactPhone, contactName) => {
                 handleSelectContact(contactPhone, contactName);
               }}
@@ -264,7 +264,7 @@ export default function VerifyScreen() {
             {recentPhones.length > 0 && (
               <View className="mb-5">
                 <Text className="text-sm font-semibold text-slate-400 dark:text-slate-400 mb-3">
-                  Récents
+                  {t('common.recentList')}
                 </Text>
                 {recentPhones.slice(0, 3).map((phone) => (
                   <TouchableOpacity
@@ -286,17 +286,17 @@ export default function VerifyScreen() {
 
             <View className="mb-4">
               <Text className="text-sm font-semibold text-slate-400 dark:text-slate-400 mb-3">
-                Contacts
+                {t('common.contactsHeader')}
               </Text>
 
               {permissionGranted === false ? (
                 <View className="py-6 items-center justify-center px-4 bg-slate-50 dark:bg-brand-cardDark rounded-2xl border border-slate-100 dark:border-slate-800">
                   <Icon name="solar:users-group-two-rounded-bold" color="#94A3B8" size={48} className="mb-2" />
                   <Text className="font-bold text-sm text-slate-900 dark:text-white text-center mb-1">
-                    {t('common.contactsPermissionTitle', 'Accès aux contacts')}
+                    {t('common.contactsPermissionTitle')}
                   </Text>
                   <Text className="text-xs text-slate-500 dark:text-slate-400 text-center mb-4 leading-4">
-                    {t('common.contactsPermissionSubtitle', 'Autorisez Kwismo à accéder à vos contacts pour vérifier rapidement leurs numéros.')}
+                    {t('common.contactsPermissionSubtitle')}
                   </Text>
                   <TouchableOpacity
                     activeOpacity={0.85}
@@ -304,7 +304,7 @@ export default function VerifyScreen() {
                     className="px-5 py-2.5 rounded-xl bg-brand-green"
                   >
                     <Text className="font-bold text-xs text-white">
-                      {t('common.grantPermission', 'Accorder la permission')}
+                      {t('common.grantPermission')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -324,7 +324,7 @@ export default function VerifyScreen() {
                 </SkeletonLoader>
               ) : filteredContacts.length === 0 ? (
                 <View className="py-8 items-center justify-center">
-                  <Text className="text-sm text-slate-400">Aucun contact trouvé</Text>
+                  <Text className="text-sm text-slate-400">{t('common.noContactsFound')}</Text>
                 </View>
               ) : (
                 filteredContacts.map((c) => (
@@ -365,7 +365,7 @@ export default function VerifyScreen() {
             <View className="flex-row items-center bg-blue-50/80 dark:bg-slate-800/80 p-4 rounded-2xl mb-4 border border-blue-100 dark:border-slate-700">
               <Icon name="solar:info-circle-bold" color="#6B98FF" size={22} className="mr-3" />
               <Text className="flex-1 text-xs font-medium text-blue-900 dark:text-blue-200">
-                Cette operation prend généralement quelques secondes
+                {t('common.operationTimeInfo')}
               </Text>
             </View>
 
@@ -373,38 +373,38 @@ export default function VerifyScreen() {
 
             <View className="items-center mb-6">
               <Text className="text-xl font-bold font-title text-slate-900 dark:text-white text-center mb-1.5">
-                Analyse en cours...
+                {t('common.analyzing')}
               </Text>
               <Text className="text-xs font-medium text-slate-400 dark:text-slate-400 text-center px-6">
-                Nous vérifions ce numero dans notre base de données et auprès de la communauté
+                {t('common.analyzingSubtitle')}
               </Text>
             </View>
 
             <View className="bg-white dark:bg-brand-cardDark rounded-2xl p-2 border border-slate-100 dark:border-slate-800">
               <View className="flex-row justify-between items-center py-3 px-3 border-b border-slate-100 dark:border-slate-800">
                 <Text className="text-sm font-medium text-slate-400 dark:text-slate-400">
-                  Analyse de la base de données
+                  {t('common.dbAnalysis')}
                 </Text>
                 <Icon name="solar:shield-minimalistic-bold" color="#CBD5E1" size={20} />
               </View>
 
               <View className="flex-row justify-between items-center py-3 px-3 border-b border-slate-100 dark:border-slate-800">
                 <Text className="text-sm font-medium text-slate-400 dark:text-slate-400">
-                  Vérification des signalements
+                  {t('common.reportsCheck')}
                 </Text>
                 <Icon name="solar:shield-minimalistic-bold" color="#CBD5E1" size={20} />
               </View>
 
               <View className="flex-row justify-between items-center py-3 px-3 border-b border-slate-100 dark:border-slate-800">
                 <Text className="text-sm font-medium text-slate-400 dark:text-slate-400">
-                  Consultation de la communauté
+                  {t('common.communityCheck')}
                 </Text>
                 <Icon name="solar:shield-minimalistic-bold" color="#CBD5E1" size={20} />
               </View>
 
               <View className="flex-row justify-between items-center py-3 px-3">
                 <Text className="text-sm font-medium text-slate-400 dark:text-slate-400">
-                  Calcul du score de risque
+                  {t('common.riskCalculation')}
                 </Text>
                 <Icon name="solar:shield-minimalistic-bold" color="#CBD5E1" size={20} />
               </View>
@@ -435,27 +435,27 @@ export default function VerifyScreen() {
                 }`}
               >
                 {testResultType === 'secure'
-                  ? 'Sécurisé'
+                  ? t('common.secured')
                   : testResultType === 'warning'
-                  ? 'Risque détecté'
-                  : 'Danger'}
+                  ? t('common.riskDetected')
+                  : t('common.dangerTitle')}
               </Text>
             </View>
 
             <View className="bg-brand-green dark:bg-brand-darkBg rounded-2xl p-4 mb-5">
               <View className="flex-row justify-between items-center mb-3">
                 <View className="flex-row items-center">
-                  <Text className="text-white text-sm font-bold mr-1">Score de risque</Text>
+                  <Text className="text-white text-sm font-bold mr-1">{t('common.riskScore')}</Text>
                   <Icon name="solar:info-circle-bold" color="#FFFFFF" size={16} />
                 </View>
 
                 <View className="bg-white/20 px-3 py-1 rounded-xl">
                   <Text className="text-white text-xs font-bold">
                     {testResultType === 'secure'
-                      ? 'Tres faible'
+                      ? t('common.veryLow')
                       : testResultType === 'warning'
-                      ? 'Suspect'
-                      : 'Frauduleux'}
+                      ? t('common.suspect')
+                      : t('common.fraudulent')}
                   </Text>
                 </View>
               </View>
@@ -478,14 +478,14 @@ export default function VerifyScreen() {
 
             <View className="mb-6">
               <Text className="text-base font-bold text-slate-900 dark:text-white mb-3">
-                Historique communautaire
+                {t('common.communityHistory')}
               </Text>
 
               <View className="flex-row justify-between items-center py-3 border-b border-slate-100 dark:border-slate-800">
                 <View className="flex-row items-center">
                   <Icon name="solar:alarm-sleep-bold" color={isDark ? '#94A3B8' : '#0F172A'} size={22} className="mr-1" />
                   <Text className="text-sm font-medium text-slate-900 dark:text-white ml-2">
-                    Signalements
+                    {t('common.reportsCount')}
                   </Text>
                 </View>
                 <Text className="text-base font-bold text-slate-900 dark:text-white">
@@ -497,7 +497,7 @@ export default function VerifyScreen() {
                 <View className="flex-row items-center">
                   <Icon name="solar:chat-round-line-bold" color={isDark ? '#94A3B8' : '#0F172A'} size={22} className="mr-1" />
                   <Text className="text-sm font-medium text-slate-900 dark:text-white ml-2">
-                    Opérateur
+                    {t('common.operatorLabel')}
                   </Text>
                 </View>
                 <Text className="text-base font-bold text-slate-900 dark:text-white">
@@ -520,7 +520,7 @@ export default function VerifyScreen() {
               }
               className="w-full hx-13 rounded-2xl bg-brand-orange justify-center items-center shadow-md shadow-brand-orange/30 mb-4"
             >
-              <Text className="text-white text-base font-bold">Transferer</Text>
+              <Text className="text-white text-base font-bold">{t('common.transfer')}</Text>
             </TouchableOpacity>
           </ScrollView>
         )}

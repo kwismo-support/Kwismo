@@ -10,7 +10,7 @@ export function useVerifyNumber() {
 
   const verifyNumber = async (phone: string) => {
     if (!phone.trim()) {
-      setError(t('validation.phoneRequired', 'Numéro requis'));
+      setError(t('validation.phoneRequired'));
       return { success: false };
     }
 
@@ -22,12 +22,12 @@ export function useVerifyNumber() {
         setResult(res.data);
         return { success: true, data: res.data };
       } else {
-        const msg = t('errors.generalMessage', 'Erreur de vérification.');
+        const msg = t('errors.generalMessage');
         setError(msg);
         return { success: false, message: msg };
       }
     } catch (err: any) {
-      const msg = err.message || t('toasts.networkError', 'Erreur réseau.');
+      const msg = err.message || t('toasts.networkError');
       setError(msg);
       return { success: false, message: msg };
     } finally {

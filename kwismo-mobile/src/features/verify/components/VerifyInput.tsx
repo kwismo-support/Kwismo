@@ -1,6 +1,6 @@
-// Composant de recherche / vérification rapide d'un numéro
 import React, { useState } from 'react';
 import { View, TextInput, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface VerifyInputProps {
   onSearch: (phone: string) => void;
@@ -9,6 +9,7 @@ interface VerifyInputProps {
 
 export const VerifyInput: React.FC<VerifyInputProps> = ({ onSearch, loading }) => {
   const [phone, setPhone] = useState('');
+  const { t } = useTranslation();
 
   return (
     <View style={styles.container}>
@@ -16,7 +17,7 @@ export const VerifyInput: React.FC<VerifyInputProps> = ({ onSearch, loading }) =
         style={styles.input}
         value={phone}
         onChangeText={setPhone}
-        placeholder="Entrez un numéro à vérifier..."
+        placeholder={t('common.phonePlaceholder')}
         keyboardType="phone-pad"
       />
       <TouchableOpacity
@@ -24,7 +25,7 @@ export const VerifyInput: React.FC<VerifyInputProps> = ({ onSearch, loading }) =
         onPress={() => onSearch(phone)}
         disabled={loading || !phone}
       >
-        <Text style={styles.buttonText}>{loading ? '...' : 'Vérifier'}</Text>
+        <Text style={styles.buttonText}>{loading ? '...' : t('common.verify')}</Text>
       </TouchableOpacity>
     </View>
   );
