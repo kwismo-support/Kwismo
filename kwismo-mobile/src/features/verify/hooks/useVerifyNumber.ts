@@ -1,8 +1,6 @@
-// Hook React pour la vérification de numéro via le backend Kwismo
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { verifyApi, VerifyResult } from '../services/verify.api';
-import { toast } from '../../../shared/store/toastStore';
 
 export function useVerifyNumber() {
   const [loading, setLoading] = useState(false);
@@ -24,7 +22,7 @@ export function useVerifyNumber() {
         setResult(res.data);
         return { success: true, data: res.data };
       } else {
-        const msg = res.message || t('errors.generalMessage', 'Erreur de vérification.');
+        const msg = t('errors.generalMessage', 'Erreur de vérification.');
         setError(msg);
         return { success: false, message: msg };
       }

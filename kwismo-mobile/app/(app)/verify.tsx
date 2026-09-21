@@ -21,7 +21,11 @@ import { CountryItem, COUNTRIES_DATA } from '@/shared/components/CountryPickerMo
 import { VerificationGraphic } from '@/shared/components/VerificationGraphic';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { verifyApi, VerifyResult } from '@/features/verify/services/verify.api';
-import { lookupNumberOffline } from '@/shared/services/database';
+import {
+  lookupNumberOffline,
+  getRecentVerifications,
+  addRecentVerification,
+} from '@/shared/services/database';
 import { Skeleton, SkeletonCircle, SkeletonLoader } from '@/shared/ui/Skeleton';
 
 export interface DeviceContactItem {
@@ -38,8 +42,6 @@ const DEFAULT_COUNTRY: CountryItem = {
   callingCode: '+237',
 };
 
-
-
 export default function VerifyScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ phone?: string }>();
@@ -47,7 +49,6 @@ export default function VerifyScreen() {
   const { t } = useTranslation();
   const { isDark } = useAppTheme();
 
-  // Mode: 'input' | 'analyzing' | 'result'
   const [mode, setMode] = useState<'input' | 'analyzing' | 'result'>(
     params.phone ? 'result' : 'input'
   );
@@ -55,12 +56,11 @@ export default function VerifyScreen() {
   const [inputPhone, setInputPhone] = useState(params.phone || '');
   const [selectedCountry, setSelectedCountry] = useState<CountryItem>(DEFAULT_COUNTRY);
 
-  // Contacts & Permission state
   const [permissionGranted, setPermissionGranted] = useState<boolean | null>(null);
   const [contactsLoading, setContactsLoading] = useState(true);
   const [contactsList, setContactsList] = useState<DeviceContactItem[]>([]);
+  const [recentPhones, setRecentPhones] = useState<string[]>([]);
 
-  // Result state
   const [testResultType, setTestResultType] = useState<'secure' | 'warning' | 'danger'>('secure');
   const [result, setResult] = useState<VerifyResult | null>(
     params.phone
@@ -70,20 +70,27 @@ export default function VerifyScreen() {
           phone: params.phone,
           score_risque: 0,
           riskScore: 0,
-          statut: 'active',
+          statut: 'securise',
           riskLevel: 'LOW',
+          testResultType: 'secure',
           est_compromis: false,
           nombre_signalements: 0,
           reportCount: 0,
-          operator: 'MTN Cameroon',
-          recommendation: 'Dernier signalement il y’a 8 mois',
+          operator: 'Opérateur Mobile',
+          recommendation: 'Aucun signalement récent',
         }
       : null
   );
 
   useEffect(() => {
     requestContactsPermission();
+    loadRecents();
   }, []);
+
+  const loadRecents = async () => {
+    const list = await getRecentVerifications();
+    setRecentPhones(list);
+  };
 
   const requestContactsPermission = async () => {
     setContactsLoading(true);
@@ -133,7 +140,6 @@ export default function VerifyScreen() {
     }
   };
 
-  // Helper to auto-update country when selecting a phone number
   const updateCountryFromPhone = (phoneNumber: string) => {
     const parsed = parsePhoneNumberFromString(phoneNumber);
     if (parsed && parsed.country) {
@@ -152,62 +158,40 @@ export default function VerifyScreen() {
     startVerificationProcess(rawNumber);
   };
 
-  const startVerificationProcess = (phoneNumber: string) => {
+  const startVerificationProcess = async (phoneNumber: string) => {
     const cleanPhone = phoneNumber.replace(/\s+/g, '');
     setMode('analyzing');
+    await addRecentVerification(cleanPhone);
+    await loadRecents();
 
-    setTimeout(() => {
-      if (cleanPhone.includes('90') || cleanPhone.includes('99') || cleanPhone.endsWith('00')) {
-        setTestResultType('danger');
-        setResult({
-          id: 'res-danger',
-          valeur: cleanPhone,
-          phone: cleanPhone,
-          score_risque: 90,
-          riskScore: 90,
-          statut: 'frauduleux',
-          riskLevel: 'HIGH',
-          est_compromis: true,
-          nombre_signalements: 90,
-          reportCount: 90,
-          operator: 'Orange Cameroon',
-          recommendation: 'Dernier signalement il y’a 8 mois',
-        });
-      } else if (cleanPhone.includes('50') || cleanPhone.includes('221') || cleanPhone.includes('77')) {
-        setTestResultType('warning');
-        setResult({
-          id: 'res-warning',
-          valeur: cleanPhone,
-          phone: cleanPhone,
-          score_risque: 50,
-          riskScore: 50,
-          statut: 'suspect',
-          riskLevel: 'MEDIUM',
-          est_compromis: false,
-          nombre_signalements: 50,
-          reportCount: 50,
-          operator: 'MTN Cameroon',
-          recommendation: 'Dernier signalement il y’a 8 mois',
-        });
+    try {
+      const res = await verifyApi.checkNumber(cleanPhone);
+      if (res.success && res.data) {
+        setResult(res.data);
+        setTestResultType(res.data.testResultType || 'secure');
       } else {
         setTestResultType('secure');
         setResult({
-          id: 'res-secure',
+          id: `res-${Date.now()}`,
           valeur: cleanPhone,
           phone: cleanPhone,
           score_risque: 0,
           riskScore: 0,
           statut: 'securise',
           riskLevel: 'LOW',
+          testResultType: 'secure',
           est_compromis: false,
           nombre_signalements: 0,
           reportCount: 0,
-          operator: 'MTN Cameroon',
-          recommendation: 'Dernier signalement il y’a 8 mois',
+          operator: 'Opérateur Mobile',
+          recommendation: 'Aucune menace critique détectée',
         });
       }
+    } catch {
+      setTestResultType('secure');
+    } finally {
       setMode('result');
-    }, 2400);
+    }
   };
 
   const handleSearch = () => {
@@ -229,11 +213,13 @@ export default function VerifyScreen() {
     }
   };
 
+  const currentScore = Math.min(100, Math.max(0, result?.score_risque ?? result?.riskScore ?? 0));
+  const currentReports = result?.nombre_signalements ?? result?.reportCount ?? 0;
+
   return (
     <View className="flex-1 bg-brand-green">
       <StatusBar style="light" />
 
-      {/* Unified HeaderBar matching Contacts Page */}
       <HeaderBar
         title={t('common.verifyNumberTitle', 'Vérification numéro')}
         showBack={true}
@@ -245,11 +231,9 @@ export default function VerifyScreen() {
         }
       />
 
-      {/* Main Content Card Container */}
       <View className="flex-1 bg-white dark:bg-brand-darkBg rounded-t-[28px] overflow-hidden pt-4 px-4">
         {mode === 'input' && (
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}>
-            {/* Country & Phone Input using PhoneCountryInput Component */}
             <PhoneCountryInput
               phoneNumber={inputPhone}
               onChangePhoneNumber={(val) => {
@@ -265,7 +249,6 @@ export default function VerifyScreen() {
               }}
             />
 
-            {/* Launch Verify Button if text entered */}
             {inputPhone.trim().length > 0 && (
               <TouchableOpacity
                 activeOpacity={0.85}
@@ -278,26 +261,29 @@ export default function VerifyScreen() {
               </TouchableOpacity>
             )}
 
-            {/* Section Récents */}
-            <View className="mb-5">
-              <Text className="text-sm font-semibold text-slate-400 dark:text-slate-400 mb-3">
-                Récents
-              </Text>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => handleSelectContact('+237 698 00 40 12')}
-                className="flex-row items-center"
-              >
-                <View className="wx-10 hx-10 rounded-full bg-brand-green items-center justify-center mr-3">
-                  <Text className="text-white font-bold text-base">#</Text>
-                </View>
-                <Text className="text-base font-bold text-slate-900 dark:text-white">
-                  +237 698 00 40 12
+            {recentPhones.length > 0 && (
+              <View className="mb-5">
+                <Text className="text-sm font-semibold text-slate-400 dark:text-slate-400 mb-3">
+                  Récents
                 </Text>
-              </TouchableOpacity>
-            </View>
+                {recentPhones.slice(0, 3).map((phone) => (
+                  <TouchableOpacity
+                    key={phone}
+                    activeOpacity={0.7}
+                    onPress={() => handleSelectContact(phone)}
+                    className="flex-row items-center mb-2.5"
+                  >
+                    <View className="wx-10 hx-10 rounded-full bg-brand-green items-center justify-center mr-3">
+                      <Text className="text-white font-bold text-base">#</Text>
+                    </View>
+                    <Text className="text-base font-bold text-slate-900 dark:text-white">
+                      {phone}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
 
-            {/* Section Contacts (Real Device Contacts or Fallback) */}
             <View className="mb-4">
               <Text className="text-sm font-semibold text-slate-400 dark:text-slate-400 mb-3">
                 Contacts
@@ -376,7 +362,6 @@ export default function VerifyScreen() {
 
         {mode === 'analyzing' && (
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}>
-            {/* Top Info Banner */}
             <View className="flex-row items-center bg-blue-50/80 dark:bg-slate-800/80 p-4 rounded-2xl mb-4 border border-blue-100 dark:border-slate-700">
               <Icon name="solar:info-circle-bold" color="#6B98FF" size={22} className="mr-3" />
               <Text className="flex-1 text-xs font-medium text-blue-900 dark:text-blue-200">
@@ -384,7 +369,6 @@ export default function VerifyScreen() {
               </Text>
             </View>
 
-            {/* Shield Graphic */}
             <VerificationGraphic state="analyzing" isDark={isDark} />
 
             <View className="items-center mb-6">
@@ -396,7 +380,6 @@ export default function VerifyScreen() {
               </Text>
             </View>
 
-            {/* Checklist */}
             <View className="bg-white dark:bg-brand-cardDark rounded-2xl p-2 border border-slate-100 dark:border-slate-800">
               <View className="flex-row justify-between items-center py-3 px-3 border-b border-slate-100 dark:border-slate-800">
                 <Text className="text-sm font-medium text-slate-400 dark:text-slate-400">
@@ -431,10 +414,8 @@ export default function VerifyScreen() {
 
         {mode === 'result' && (
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}>
-            {/* Status Graphic */}
             <VerificationGraphic status={testResultType} isDark={isDark} />
 
-            {/* Status Banner */}
             <View
               className={`w-full py-1 rounded-xl items-center justify-center mt-8 mb-4 ${
                 testResultType === 'secure'
@@ -461,7 +442,6 @@ export default function VerifyScreen() {
               </Text>
             </View>
 
-            {/* Dark Green Risk Score Card */}
             <View className="bg-brand-green dark:bg-brand-darkBg rounded-2xl p-4 mb-5">
               <View className="flex-row justify-between items-center mb-3">
                 <View className="flex-row items-center">
@@ -483,27 +463,19 @@ export default function VerifyScreen() {
               <View className="mt-1">
                 <View className="flex-row justify-between mb-1">
                   <Text className="text-white text-xs font-medium">0</Text>
+                  <Text className="text-white text-xs font-bold">{currentScore}/100</Text>
                   <Text className="text-white text-xs font-medium">100</Text>
                 </View>
 
                 <View className="hx-2 bg-white/30 rounded-full overflow-hidden">
                   <View
                     className="h-full bg-white rounded-full"
-                    style={{
-                      width: `${
-                        testResultType === 'secure'
-                          ? 5
-                          : testResultType === 'warning'
-                          ? 50
-                          : 90
-                      }%`,
-                    }}
+                    style={{ width: `${Math.max(4, currentScore)}%` }}
                   />
                 </View>
               </View>
             </View>
 
-            {/* Community History */}
             <View className="mb-6">
               <Text className="text-base font-bold text-slate-900 dark:text-white mb-3">
                 Historique communautaire
@@ -517,7 +489,7 @@ export default function VerifyScreen() {
                   </Text>
                 </View>
                 <Text className="text-base font-bold text-slate-900 dark:text-white">
-                  {testResultType === 'secure' ? '0' : testResultType === 'warning' ? '50' : '90'}
+                  {currentReports}
                 </Text>
               </View>
 
@@ -525,26 +497,25 @@ export default function VerifyScreen() {
                 <View className="flex-row items-center">
                   <Icon name="solar:chat-round-line-bold" color={isDark ? '#94A3B8' : '#0F172A'} size={22} className="mr-1" />
                   <Text className="text-sm font-medium text-slate-900 dark:text-white ml-2">
-                    Commentaires positifs
+                    Opérateur
                   </Text>
                 </View>
                 <Text className="text-base font-bold text-slate-900 dark:text-white">
-                  {testResultType === 'secure' ? '24' : testResultType === 'warning' ? '10' : '00'}
+                  {result?.operator || 'Opérateur Mobile'}
                 </Text>
               </View>
 
               <Text className="text-xs font-medium text-slate-400 dark:text-slate-400 mt-3">
-                Dernier signalement il y’a 8 mois
+                {result?.recommendation || 'Aucune menace critique détectée'}
               </Text>
             </View>
 
-            {/* Action Button: Transferer */}
             <TouchableOpacity
               activeOpacity={0.88}
               onPress={() =>
                 router.push({
                   pathname: '/(app)/transfer',
-                  params: { recipient: inputPhone || '+237698004012' },
+                  params: { recipient: result?.valeur || inputPhone || '+237698004012' },
                 })
               }
               className="w-full hx-13 rounded-2xl bg-brand-orange justify-center items-center shadow-md shadow-brand-orange/30 mb-4"

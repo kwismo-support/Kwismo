@@ -26,7 +26,6 @@ export const callDetectionApi = {
         is_scam: data.statut === 'frauduleux' || (data.score_risque ?? 0) >= 0.7,
       };
     } catch (err) {
-      // Fallback local SQLite / cache
       const cached = await lookupNumberOffline(phoneNumber);
       if (cached) {
         return {
@@ -34,7 +33,7 @@ export const callDetectionApi = {
           phone_number: cached.valeur,
           caller_name: cached.statut === 'frauduleux' ? 'Numéro Suspect (Hors ligne)' : 'Appel Entrant',
           risk_score: cached.score_risque,
-          statut: cached.statut,
+          statut: cached.statut || 'securise',
           timestamp: new Date().toISOString(),
           is_scam: cached.statut === 'frauduleux' || cached.score_risque >= 0.7,
         };
