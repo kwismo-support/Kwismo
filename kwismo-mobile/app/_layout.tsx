@@ -178,6 +178,9 @@ export default function RootLayout() {
     if (fontsLoaded) {
       initializeAuth().finally(() => {
         SplashScreen.hideAsync().catch(() => {});
+        import('@/shared/services/offlineQueue').then(({ offlineQueue }) => {
+          offlineQueue.processQueue().catch(() => {});
+        });
       });
     }
   }, [fontsLoaded, initializeAuth]);

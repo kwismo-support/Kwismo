@@ -1,5 +1,5 @@
-// Service API backend pour la préparation des transferts protégés via FastAPI (/transactions et /ussd)
 import { ApiClient } from '../../../shared/services/apiClient';
+import { offlineQueue } from '../../../shared/services/offlineQueue';
 
 export interface PrepareTransactionPayload {
   numero: string;
@@ -47,10 +47,33 @@ export const transferApi = {
   },
 
   async prepareTransfer(payload: PrepareTransactionPayload) {
-    return ApiClient.request<TransactionOut>('/transactions/prepare', {
+    const res = await ApiClient.request<TransactionOut>('/transactions/prepare', {
       method: 'POST',
       body: payload,
     });
+
+    if (!res.success && res.errorCode === 'NETWORK_ERROR') {
+      await offlineQueue.enqueue(
+        'transfer',
+        '/transactions/prepare',
+        'POST',
+        payload,
+        'Demande de transfert enregistrée hors-ligne. Elle sera synchronisée au retour de la connexion !'
+      );
+      return {
+        success: true,
+        message: 'Demande enregistrée hors-ligne',
+        data: {
+          id: `offline-tx-${Date.now()}`,
+          numero_id: payload.numero,
+          montant: payload.montant,
+          date_transaction: new Date().toISOString(),
+          statut: 'pending_offline',
+        },
+      };
+    }
+
+    return res;
   },
 
   async getTransactions() {
@@ -59,4 +82,3 @@ export const transferApi = {
     });
   },
 };
-
