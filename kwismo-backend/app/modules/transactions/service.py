@@ -12,7 +12,7 @@ import logging
 
 from fastapi import HTTPException, status
 
-from app.db.prisma_client import db
+from app.db.prisma_client import connect_db, db
 from app.db.repositories.transaction_repository import TransactionRepository
 from app.modules.transactions.schemas import TransactionOut, TransactionPrepareIn
 from app.utils.i18n import t
@@ -29,10 +29,6 @@ RISK_THRESHOLDS = {
 }
 
 
-# ---------------------------------------------------------------------------
-# Helper
-# ---------------------------------------------------------------------------
-
 def _to_out(t) -> TransactionOut:
     return TransactionOut(
         id=t.id,
@@ -46,17 +42,11 @@ def _to_out(t) -> TransactionOut:
 
 
 def _generate_ussd(template: str, montant: float, numero: str) -> str:
-    """Remplace {montant} et {numero} dans le gabarit USSD.
-    Ex. '*126*{montant}*{numero}#' -> '*126*5000*+237690000004#'
-    """
     return template.replace("{montant}", str(int(montant))).replace("{numero}", numero)
 
 
-# ---------------------------------------------------------------------------
-# prepare_transaction
-# ---------------------------------------------------------------------------
-
 async def prepare_transaction(user_id: str, payload: TransactionPrepareIn, lang: str = "fr") -> TransactionOut:
+    await connect_db()
     valeur = normalize_phone(payload.numero)
     if not is_valid_phone(valeur):
         raise HTTPException(

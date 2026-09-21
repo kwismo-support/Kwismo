@@ -5,7 +5,7 @@ import logging
 from fastapi import HTTPException, status
 
 from app.core.cache import get_cached, invalidate_cache, invalidate_pattern
-from app.db.prisma_client import db
+from app.db.prisma_client import connect_db, db
 from app.modules.ussd.schemas import (
     CountryIn,
     CountryOut,

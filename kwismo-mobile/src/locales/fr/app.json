@@ -194,6 +194,7 @@
     "registerSuccess": "Compte créé avec succès ! Bienvenue sur Kwismo.",
     "otpSent": "Un code de confirmation a été envoyé par e-mail.",
     "otpResent": "Un nouveau code a été envoyé avec succès.",
+    "unverifiedEmailOtpSent": "Compte non vérifié. Un code de confirmation a été envoyé par e-mail.",
     "passwordResetSuccess": "Votre mot de passe a été réinitialisé avec succès.",
     "transferInitiated": "Transfert initié en toute sécurité.",
     "networkError": "Impossible de joindre le serveur. Vérifiez votre connexion.",
