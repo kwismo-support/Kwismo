@@ -70,10 +70,10 @@ export default function ContactsScreen() {
       if (supported) {
         await Linking.openURL(smsUrl);
       } else {
-        toast.info(`Invitation envoyée à ${targetInviteContact.name}`);
+        toast.info(t('toasts.inviteSentTo', { name: targetInviteContact.name }));
       }
     } catch {
-      toast.info(`Invitation envoyée à ${targetInviteContact.name}`);
+      toast.info(t('toasts.inviteSentTo', { name: targetInviteContact.name }));
     }
   };
 

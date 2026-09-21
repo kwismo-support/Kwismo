@@ -156,7 +156,7 @@ export default function AlertWhatsappScreen() {
       <StatusBar style="light" />
 
       <HeaderBar
-        title={t('whatsapp.title', 'Alerte whatsapp')}
+        title={t('whatsapp.title')}
         showBack={true}
         onBack={handleHeaderBack}
         rightAction={
@@ -182,7 +182,7 @@ export default function AlertWhatsappScreen() {
               <Icon name="solar:magnifer-linear" color="#94A3B8" size={20} className="mr-3" />
               <TextInput
                 className="flex-1 text-sm font-medium text-slate-900 dark:text-white"
-                placeholder="Recherche de..."
+                placeholder={t('common.searchPlaceholderContacts')}
                 placeholderTextColor="#94A3B8"
                 value={search}
                 onChangeText={setSearch}
@@ -192,7 +192,7 @@ export default function AlertWhatsappScreen() {
             {/* Header select row */}
             <View className="flex-row items-center justify-between mb-3">
               <Text className="text-sm font-semibold text-slate-400 dark:text-slate-500">
-                Mes contacts
+                {t('common.myContacts')}
               </Text>
 
               <TouchableOpacity
@@ -201,7 +201,7 @@ export default function AlertWhatsappScreen() {
                 className="flex-row items-center gap-2"
               >
                 <Text className="text-xs font-medium text-slate-400 dark:text-slate-500">
-                  Tout sélectionner
+                  {t('common.selectAll')}
                 </Text>
                 <View
                   className={`wx-5 hx-5 rounded-full border items-center justify-center ${
@@ -224,7 +224,7 @@ export default function AlertWhatsappScreen() {
               ) : filteredContacts.length === 0 ? (
                 <View className="py-8 items-center justify-center">
                   <Text className="text-xs text-slate-500 dark:text-slate-400">
-                    Aucun contact disponible.
+                    {t('common.noContactsFound')}
                   </Text>
                 </View>
               ) : (
@@ -278,14 +278,14 @@ export default function AlertWhatsappScreen() {
               activeOpacity={0.85}
               onPress={() => {
                 if (selectedIds.size === 0) {
-                  toast.info('Veuillez sélectionner au moins un contact.');
+                  toast.info(t('whatsapp.selectOneContactError'));
                 }
                 setStep('configure_message');
               }}
               className="h-13 rounded-2xl bg-brand-orange justify-center items-center mb-6 shadow-md shadow-brand-orange/30"
             >
               <Text className="font-montserrat-bold text-base font-bold text-white">
-                Suivant
+                {t('common.next')}
               </Text>
             </TouchableOpacity>
           </ScrollView>
@@ -299,26 +299,26 @@ export default function AlertWhatsappScreen() {
             className="pt-2"
           >
             <Text className="font-montserrat-bold text-xl font-bold text-slate-900 dark:text-white mb-1">
-              Message d’alerte
+              {t('whatsapp.alertMessageTitle')}
             </Text>
             <Text className="text-xs text-slate-500 dark:text-slate-400 leading-4.5 mb-6">
-              Sélectionnez ou modifiez le message à envoyer à vos contacts.
+              {t('whatsapp.alertMessageSub')}
             </Text>
 
             <Text className="font-montserrat-bold text-base font-bold text-slate-900 dark:text-white mb-2">
-              Objet du message
+              {t('whatsapp.messageSubject')}
             </Text>
 
             {/* Alert Type Selector */}
             <View className="flex-row items-center justify-between p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark mb-6">
               <Text className="text-sm font-medium text-slate-900 dark:text-white">
-                Type d’alerte
+                {t('whatsapp.alertTypeLabel')}
               </Text>
               <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={20} />
             </View>
 
             <Text className="font-montserrat-bold text-base font-bold text-slate-900 dark:text-white mb-2">
-              Modèle de message
+              {t('whatsapp.messageTemplateLabel')}
             </Text>
 
             {/* Message Template Input Box */}
@@ -337,7 +337,7 @@ export default function AlertWhatsappScreen() {
             <View className="flex-row items-center p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40 mb-8">
               <Icon name="solar:info-circle-bold" color="#6B98FF" size={22} className="mr-3" />
               <Text className="flex-1 text-xs font-medium text-blue-900 dark:text-blue-200 leading-4.5">
-                Ce message alerte vos contacts sélectionnés que votre numéro est compromis.
+                {t('whatsapp.compromisedNotice')}
               </Text>
             </View>
 
@@ -348,7 +348,7 @@ export default function AlertWhatsappScreen() {
               className="h-13 rounded-2xl bg-brand-orange justify-center items-center mb-6 shadow-md shadow-brand-orange/30"
             >
               <Text className="font-montserrat-bold text-base font-bold text-white">
-                Envoyer
+                {t('common.send')}
               </Text>
             </TouchableOpacity>
           </ScrollView>
@@ -367,11 +367,11 @@ export default function AlertWhatsappScreen() {
             </View>
 
             <Text className="font-montserrat-bold text-xl font-bold text-slate-900 dark:text-white text-center mb-2">
-              Alerte en cours de diffusion...
+              {t('whatsapp.broadcastingTitle')}
             </Text>
 
             <Text className="text-xs text-slate-400 dark:text-slate-400 text-center max-w-[280px] leading-5 mb-8">
-              {selectedCount} contacts ont été notifiés de la compromission de votre lignes.
+              {t('whatsapp.broadcastingSub', { count: selectedCount })}
             </Text>
 
             {/* Progress Bar */}
@@ -394,11 +394,11 @@ export default function AlertWhatsappScreen() {
             </View>
 
             <Text className="font-montserrat-bold text-xl font-bold text-slate-900 dark:text-white text-center mb-2">
-              L’alerte a bien été diffusion
+              {t('whatsapp.broadcastSuccessTitle')}
             </Text>
 
             <Text className="text-xs text-slate-400 dark:text-slate-400 text-center max-w-[280px] leading-5 mb-8">
-              {selectedCount} contacts ont été notifiés de la compromission de votre lignes.
+              {t('whatsapp.broadcastSuccessSub', { count: selectedCount })}
             </Text>
 
             <TouchableOpacity
@@ -407,7 +407,7 @@ export default function AlertWhatsappScreen() {
               className="w-full max-w-[280px] h-13 rounded-2xl bg-brand-green justify-center items-center shadow-md shadow-emerald-500/30"
             >
               <Text className="font-montserrat-bold text-base font-bold text-white">
-                Terminer
+                {t('common.continue')}
               </Text>
             </TouchableOpacity>
 
@@ -434,7 +434,7 @@ export default function AlertWhatsappScreen() {
             <View className="flex-row items-start p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 mb-8">
               <Icon name="solar:info-circle-bold" color="#D97706" size={22} className="mr-3 mt-0.5" />
               <Text className="flex-1 text-xs text-amber-900 dark:text-amber-200 leading-5">
-                L’alerte n’a pas été transmise à tous vos contacts. Vous pouvez relancer l’envoi pour sécuriser les destinataires manqués, ou ignorer.
+                {t('whatsapp.failureNotice')}
               </Text>
             </View>
 
@@ -444,11 +444,11 @@ export default function AlertWhatsappScreen() {
               </View>
 
               <Text className="font-montserrat-bold text-xl font-bold text-slate-900 dark:text-white text-center mb-2">
-                Diffusion partiellement interrompu
+                {t('whatsapp.failureTitle')}
               </Text>
 
               <Text className="text-xs text-slate-400 dark:text-slate-400 text-center max-w-[280px] leading-5 mb-8">
-                95 messages envoyés, 5 échecs dus au réseau.
+                {t('whatsapp.failureSub')}
               </Text>
             </View>
 
@@ -459,7 +459,7 @@ export default function AlertWhatsappScreen() {
               className="h-13 rounded-2xl bg-brand-orange justify-center items-center mb-3 shadow-md shadow-brand-orange/30"
             >
               <Text className="font-montserrat-bold text-base font-bold text-white">
-                Ignorer
+                {t('common.skip')}
               </Text>
             </TouchableOpacity>
 
@@ -470,7 +470,7 @@ export default function AlertWhatsappScreen() {
               className="h-13 rounded-2xl bg-red-600 justify-center items-center mb-6 shadow-md shadow-red-600/30"
             >
               <Text className="font-montserrat-bold text-base font-bold text-white">
-                Réessayer
+                {t('common.retry')}
               </Text>
             </TouchableOpacity>
           </ScrollView>

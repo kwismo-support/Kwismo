@@ -31,7 +31,7 @@ export default function BiometricsScreen() {
     if (val) {
       const hasPin = await hasConfiguredPin();
       if (!hasPin) {
-        toast.info(t('security.pinRequired', 'Veuillez définir un code PIN à 6 chiffres pour activer la biométrie.'));
+        toast.info(t('security.pinRequiredForBio'));
         router.push('/(app)/pin-setup');
         return;
       }
@@ -39,9 +39,9 @@ export default function BiometricsScreen() {
     await setBiometricPreference(val);
     setBiometricsEnabled(val);
     if (val) {
-      toast.success(t('security.bioEnabled', 'Authentification biométrique activée.'));
+      toast.success(t('security.bioEnabled'));
     } else {
-      toast.info(t('security.bioDisabled', 'Authentification biométrique désactivée.'));
+      toast.info(t('security.bioDisabled'));
     }
   };
 
@@ -54,7 +54,7 @@ export default function BiometricsScreen() {
       <StatusBar style="light" />
 
       <HeaderBar
-        title={t('security.biometricsPageTitle', 'Empreinte')}
+        title={t('security.biometricsTitle')}
         showBack={true}
         onBack={() => router.back()}
         rightAction={
@@ -70,16 +70,16 @@ export default function BiometricsScreen() {
         </View>
 
         <Text className="font-montserrat-bold text-xl font-bold text-slate-900 dark:text-white text-center mb-2">
-          {t('security.useBiometricsTitle', 'Utilisez votre biométrie')}
+          {t('security.useBiometricsTitle')}
         </Text>
 
         <Text className="text-xs text-slate-400 dark:text-slate-400 text-center max-w-[280px] leading-5 mb-8">
-          {t('security.useBiometricsSubtitle', 'Confirmez vos opérations rapidement avec votre empreinte ou votre reconnaissance faciale')}
+          {t('security.useBiometricsSubtitle')}
         </Text>
 
         <View className="flex-row items-center justify-between w-full max-w-[320px] p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-brand-cardDark">
           <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white">
-            {t('security.enableBiometrics', 'Activer la biométrie')}
+            {t('security.enableBiometrics')}
           </Text>
           <CustomSwitch
             value={biometricsEnabled}

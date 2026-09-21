@@ -71,12 +71,12 @@ export default function ReportScreen() {
     setValidationError('');
 
     if (!targetPhone.trim()) {
-      setValidationError(t('report.selectPhoneError', 'Veuillez sélectionner ou indiquer un numéro.'));
+      setValidationError(t('report.selectPhoneError'));
       return;
     }
 
     if (!selectedReason) {
-      setValidationError(t('report.selectReasonError', 'Veuillez sélectionner un motif de signalement.'));
+      setValidationError(t('report.selectReasonError'));
       return;
     }
 

@@ -86,7 +86,21 @@
     "enableProtection": "Activer la détection de piratage WhatsApp",
     "noticeText": "En activant cette option, Kwismo surveillera automatiquement les tentatives d'usurpation de votre compte WhatsApp sur ce numéro.",
     "saveSettings": "Enregistrer la configuration",
-    "settingsSaved": "Paramètres WhatsApp enregistrés avec succès !"
+    "settingsSaved": "Paramètres WhatsApp enregistrés avec succès !",
+    "selectOneContactError": "Veuillez sélectionner au moins un contact.",
+    "alertMessageTitle": "Message d’alerte",
+    "alertMessageSub": "Sélectionnez ou modifiez le message à envoyer à vos contacts.",
+    "messageSubject": "Objet du message",
+    "alertTypeLabel": "Type d’alerte",
+    "messageTemplateLabel": "Modèle de message",
+    "compromisedNotice": "Ce message alerte vos contacts sélectionnés que votre numéro est compromis.",
+    "broadcastingTitle": "Alerte en cours de diffusion...",
+    "broadcastingSub": "{{count}} contacts ont été notifiés de la compromission de votre ligne.",
+    "broadcastSuccessTitle": "L’alerte a bien été diffusée",
+    "broadcastSuccessSub": "{{count}} contacts ont été notifiés de la compromission de votre ligne.",
+    "failureNotice": "L’alerte n’a pas été transmise à tous vos contacts. Vous pouvez relancer l’envoi pour sécuriser les destinataires manqués, ou ignorer.",
+    "failureTitle": "Diffusion partiellement interrompue",
+    "failureSub": "Certains messages n'ont pas pu être envoyés en raison du réseau."
   },
   "profile": {
     "preferences": "Préférences",
@@ -124,6 +138,9 @@
     "pinTitle": "Code PIN",
     "pinConfiguredSuccess": "Code PIN configuré et sécurité biométrique activée avec succès !",
     "biometricsTitle": "Empreintes biométriques",
+    "useBiometricsTitle": "Utilisez votre biométrie",
+    "useBiometricsSubtitle": "Confirmez vos opérations rapidement avec votre empreinte ou votre reconnaissance faciale",
+    "enableBiometrics": "Activer la biométrie",
     "twoFactorEnabled": "Authentification 2FA activée avec succès.",
     "twoFactorDisabled": "Authentification 2FA désactivée.",
     "twoFactorEnableError": "Impossible d'activer le 2FA.",
@@ -226,6 +243,7 @@
     "ussdLaunched": "Code USSD envoyé au composeur natif",
     "ussdCopied": "Code USSD copié dans le presse-papier",
     "operatorAppLaunched": "Ouverture de l’application de transfert...",
+    "inviteSentTo": "Invitation envoyée à {{name}}",
     "copiedToClipboard": "Copié dans le presse-papier !"
   },
   "errors": {

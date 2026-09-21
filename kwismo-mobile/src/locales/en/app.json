@@ -86,7 +86,21 @@
     "enableProtection": "Enable WhatsApp takeover detection",
     "noticeText": "By enabling this option, Kwismo will automatically monitor spoofing or takeover attempts on your WhatsApp account for this number.",
     "saveSettings": "Save configuration",
-    "settingsSaved": "WhatsApp settings saved successfully!"
+    "settingsSaved": "WhatsApp settings saved successfully!",
+    "selectOneContactError": "Please select at least one contact.",
+    "alertMessageTitle": "Alert Message",
+    "alertMessageSub": "Select or edit the message to send to your contacts.",
+    "messageSubject": "Message Subject",
+    "alertTypeLabel": "Alert Type",
+    "messageTemplateLabel": "Message Template",
+    "compromisedNotice": "This message alerts your selected contacts that your number is compromised.",
+    "broadcastingTitle": "Alert broadcasting in progress...",
+    "broadcastingSub": "{{count}} contacts have been notified of your line compromise.",
+    "broadcastSuccessTitle": "The alert has been successfully broadcast",
+    "broadcastSuccessSub": "{{count}} contacts have been notified of your line compromise.",
+    "failureNotice": "The alert was not transmitted to all your contacts. You can retry sending to secure missed recipients, or ignore.",
+    "failureTitle": "Broadcast partially interrupted",
+    "failureSub": "Some messages could not be sent due to network errors."
   },
   "profile": {
     "preferences": "Preferences",
@@ -124,6 +138,9 @@
     "pinTitle": "PIN Code",
     "pinConfiguredSuccess": "PIN code set and biometric security enabled successfully!",
     "biometricsTitle": "Biometric Fingerprints",
+    "useBiometricsTitle": "Use your biometrics",
+    "useBiometricsSubtitle": "Quickly confirm your operations with your fingerprint or facial recognition",
+    "enableBiometrics": "Enable biometrics",
     "twoFactorEnabled": "2FA authentication enabled successfully.",
     "twoFactorDisabled": "2FA authentication disabled.",
     "twoFactorEnableError": "Unable to enable 2FA.",
@@ -226,6 +243,7 @@
     "ussdLaunched": "USSD code sent to native dialer",
     "ussdCopied": "USSD code copied to clipboard",
     "operatorAppLaunched": "Launching operator transfer app...",
+    "inviteSentTo": "Invitation sent to {{name}}",
     "copiedToClipboard": "Copied to clipboard!"
   },
   "errors": {

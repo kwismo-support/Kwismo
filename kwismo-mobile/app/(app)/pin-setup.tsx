@@ -18,7 +18,7 @@ export default function PinSetupScreen() {
       await saveUserPin(pin);
     }
     await setBiometricPreference(true);
-    toast.success('Code PIN configuré et sécurité biométrique activée avec succès !');
+    toast.success(t('security.pinConfiguredSuccess'));
     router.back();
   };
 
@@ -26,7 +26,7 @@ export default function PinSetupScreen() {
     <View className="flex-1 bg-brand-green">
       <StatusBar style="light" />
       <HeaderBar
-        title={t('security.pinPageTitle', 'Code PIN')}
+        title={t('security.pinTitle')}
         showBack={true}
         onBack={() => router.back()}
         rightAction={
