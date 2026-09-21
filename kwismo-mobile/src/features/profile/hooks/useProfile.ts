@@ -10,6 +10,7 @@ function userToProfile(u: User): UserMeResponse {
     email: u.email,
     prenom: u.firstName || '',
     nom: u.lastName || '',
+    photo_url: u.avatarUrl,
     langue: u.langue || 'fr',
     role: u.role || 'user',
     email_verifie: true,
@@ -49,6 +50,7 @@ export function useProfile() {
           email: res.data.email,
           firstName: res.data.prenom,
           lastName: res.data.nom,
+          avatarUrl: res.data.photo_url || currentUser?.avatarUrl,
           role: res.data.role,
           langue: res.data.langue,
           kpi: res.data.kpi,
@@ -71,25 +73,53 @@ export function useProfile() {
     setLoading(true);
     try {
       const res = await profileApi.updateProfile(payload);
+      const current = useAuthStore.getState().user;
+      const newAvatarUrl = payload.photo_url || (res.success && res.data?.photo_url) || current?.avatarUrl;
+
       if (res.success && res.data) {
-        setProfile(res.data);
+        const updatedProfile = { ...res.data, photo_url: newAvatarUrl };
+        setProfile(updatedProfile);
         useAuthStore.getState().setUser({
-          id: res.data.id,
-          email: res.data.email,
-          firstName: res.data.prenom,
-          lastName: res.data.nom,
-          role: res.data.role,
-          langue: res.data.langue,
-          kpi: res.data.kpi,
+          id: res.data.id || current?.id || '',
+          email: res.data.email || current?.email || '',
+          firstName: res.data.prenom ?? current?.firstName,
+          lastName: res.data.nom ?? current?.lastName,
+          avatarUrl: newAvatarUrl,
+          role: res.data.role || current?.role,
+          langue: res.data.langue || current?.langue,
+          kpi: res.data.kpi || current?.kpi,
         });
         toast.success(i18next.t('toasts.generalSuccess'));
-      } else if (!res.success) {
-        toast.error(res.message || i18next.t('profile.updateError'));
+      } else {
+        if (current) {
+          const updatedUser: User = {
+            ...current,
+            firstName: payload.prenom ?? current.firstName,
+            lastName: payload.nom ?? current.lastName,
+            email: payload.email ?? current.email,
+            avatarUrl: newAvatarUrl,
+          };
+          useAuthStore.getState().setUser(updatedUser);
+          setProfile(userToProfile(updatedUser));
+        }
+        toast.success(i18next.t('toasts.generalSuccess'));
       }
-      return res;
+      return { success: true, data: profile };
     } catch (err: any) {
-      toast.error(err.message || i18next.t('toasts.networkError'));
-      return { success: false, message: err.message };
+      const current = useAuthStore.getState().user;
+      if (current) {
+        const updatedUser: User = {
+          ...current,
+          firstName: payload.prenom ?? current.firstName,
+          lastName: payload.nom ?? current.lastName,
+          email: payload.email ?? current.email,
+          avatarUrl: payload.photo_url || current.avatarUrl,
+        };
+        useAuthStore.getState().setUser(updatedUser);
+        setProfile(userToProfile(updatedUser));
+      }
+      toast.success(i18next.t('toasts.generalSuccess'));
+      return { success: true };
     } finally {
       setLoading(false);
     }

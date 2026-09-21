@@ -257,7 +257,7 @@ export default function EditProfileScreen() {
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => setEmailWarningModalVisible(false)}
-                className="flex-1 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 items-center justify-center"
+                className="flex-1 hx-11 rounded-xl bg-slate-100 dark:bg-slate-800 items-center justify-center"
               >
                 <Text className="font-bold text-xs text-slate-700 dark:text-slate-300">
                   {t('common.cancel', 'Annuler')}
@@ -267,7 +267,7 @@ export default function EditProfileScreen() {
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={handleConfirmSendOtp}
-                className="flex-1 h-11 rounded-xl bg-brand-green items-center justify-center"
+                className="flex-1 hx-11 rounded-xl bg-brand-green items-center justify-center"
               >
                 <Text className="font-bold text-xs text-white">
                   Continuer

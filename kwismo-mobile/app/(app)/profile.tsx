@@ -6,6 +6,7 @@ import {
   ScrollView,
   Modal,
   Pressable,
+  Image,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -52,6 +53,8 @@ export default function ProfileScreen() {
     return 'Français';
   };
 
+  const avatarPhoto = user?.avatarUrl || profile?.photo_url;
+
   return (
     <View className="flex-1 bg-white dark:bg-brand-darkBg">
       <StatusBar style="light" />
@@ -66,9 +69,13 @@ export default function ProfileScreen() {
         ) : (
           <View className="flex-row items-center p-4 rounded-2xl shadow-xl shadow-black elevation-4 border border-slate-100 dark:border-slate-800 bg-white dark:bg-brand-cardDark -mt-10 mb-4">
             <View className="wx-13 hx-13 rounded-full bg-emerald-500 items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800">
-              <Text className="font-bold text-2xl text-white">
-                {(userName || 'K').charAt(0).toUpperCase()}
-              </Text>
+              {avatarPhoto ? (
+                <Image source={{ uri: avatarPhoto }} className="w-full h-full" resizeMode="cover" />
+              ) : (
+                <Text className="font-bold text-2xl text-white">
+                  {(userName || 'K').charAt(0).toUpperCase()}
+                </Text>
+              )}
             </View>
 
             <View className="flex-1 ml-3.5">
