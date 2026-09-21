@@ -47,22 +47,22 @@ export const PermissionModal: React.FC<PermissionModalProps> = ({
 
           <View className="flex-row gap-3 w-full">
             <TouchableOpacity
-              className="flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 justify-center items-center"
+              className="flex-1 hx-11 rounded-xl border border-slate-200 dark:border-slate-700 justify-center items-center"
               onPress={onCancel}
               activeOpacity={0.7}
             >
               <Text className="text-sm font-headline-bold font-semibold text-slate-900 dark:text-white">
-                {cancelText || t('common.cancel', 'Refuser')}
+                {cancelText || t('common.cancel')}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="flex-1 h-11 rounded-xl bg-brand-green justify-center items-center"
+              className="flex-1 hx-11 rounded-xl bg-brand-green justify-center items-center"
               onPress={onConfirm}
               activeOpacity={0.85}
             >
               <Text className="text-sm font-headline-bold font-bold text-white">
-                {confirmText || t('common.allow', 'Autoriser')}
+                {confirmText || t('common.grantPermission')}
               </Text>
             </TouchableOpacity>
           </View>

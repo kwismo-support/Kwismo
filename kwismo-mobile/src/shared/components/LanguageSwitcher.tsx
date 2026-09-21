@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import i18n from '@/locales/i18n';
+import { useAuthStore } from '@/shared/store/authStore';
+import { profileApi } from '@/features/profile/services/profile.api';
 
 interface LanguageSwitcherProps {
   darkTheme?: boolean;
@@ -8,10 +10,21 @@ interface LanguageSwitcherProps {
 
 export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({ darkTheme = true }) => {
   const [currentLang, setCurrentLang] = useState<string>(i18n.language || 'fr');
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
 
-  const toggleLanguage = (lang: string) => {
+  const toggleLanguage = async (lang: string) => {
     i18n.changeLanguage(lang);
     setCurrentLang(lang);
+    if (isAuthenticated && user && user.langue !== lang) {
+      try {
+        const updated = await profileApi.updateProfile({ langue: lang });
+        setUser({ ...user, ...updated, langue: lang });
+      } catch (err) {
+        console.error('Failed to sync language to backend:', err);
+      }
+    }
   };
 
   return (

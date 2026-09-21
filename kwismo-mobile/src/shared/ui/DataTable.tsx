@@ -95,7 +95,7 @@ export function DataTable<T extends { id: string | number }>({
         <View className="py-8 items-center justify-center">
           <Icon name="solar:inbox-line-bold" size={32} color="#94A3B8" />
           <Text className="font-regular text-xs text-slate-500 dark:text-slate-400 mt-1.5">
-            {emptyText || t('common.noDataAvailable', 'Aucune donnée disponible')}
+            {emptyText || t('common.noDataAvailable')}
           </Text>
         </View>
       ) : (
@@ -130,7 +130,7 @@ export function DataTable<T extends { id: string | number }>({
       {data.length > 0 && !loading && (
         <View className="flex-row items-center justify-between px-3.5 py-2.5 border-t border-slate-200 dark:border-slate-700/60">
           <Text className="font-regular text-2xs text-slate-500 dark:text-slate-400">
-            Page {currentPage} / {totalPages} ({data.length} {t('common.items', 'éléments')})
+            Page {currentPage} / {totalPages} ({data.length} {t('common.items')})
           </Text>
 
           <View className="flex-row items-center gap-2">

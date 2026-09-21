@@ -76,7 +76,7 @@ export const CountrySelectInput: React.FC<CountrySelectInputProps> = ({
               isSelected ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'
             }`}
           >
-            {value || placeholder || t('common.selectCountry', 'Sélectionner un pays')}
+            {value || placeholder || t('common.selectCountry')}
           </Text>
         </View>
 

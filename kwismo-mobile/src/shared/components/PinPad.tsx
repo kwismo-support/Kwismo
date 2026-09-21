@@ -121,8 +121,8 @@ export const PinPad: React.FC<PinPadProps> = ({
   return (
     <View className="flex-1 bg-white dark:bg-brand-darkBg rounded-t-[28px] items-center pt-8 px-6">
       <View className="items-center mb-6">
-        <View className="wx-32 hx-32 rounded-full bg-emerald-50 dark:bg-emerald-950/30 items-center justify-center mb-4">
-          <Icon name="solar:lock-keyhole-bold" size={52} color="#25B876" />
+        <View className="wx-25 hx-25 rounded-full bg-emerald-50 dark:bg-emerald-950/30 items-center justify-center mb-4">
+          <Icon name="solar:lock-keyhole-bold" size={42} color="#25B876" />
         </View>
         <Text className="font-montserrat-bold text-xl font-bold text-center mb-1.5 text-slate-900 dark:text-white">
           {currentTitle}
@@ -138,7 +138,7 @@ export const PinPad: React.FC<PinPadProps> = ({
           return (
             <View
               key={i}
-              className={`w-5 h-5 rounded-full border-2 ${
+              className={`wx-5 hx-5 rounded-full border-2 ${
                 filled
                   ? 'bg-slate-900 dark:bg-white border-slate-900 dark:border-white'
                   : 'bg-transparent border-slate-300 dark:border-slate-700'

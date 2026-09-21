@@ -21,7 +21,7 @@ export const LockScreen: React.FC<LockScreenProps> = ({ onUnlock, biometricEnabl
   const triggerBiometric = useCallback(async () => {
     if (!biometricAvailable || Platform.OS === 'web') return;
     setBiometricPending(true);
-    const ok = await authenticate(t('security.biometricPrompt', 'Déverrouillez KWISMO'));
+    const ok = await authenticate(t('security.biometricPrompt'));
     setBiometricPending(false);
     if (ok) onUnlock();
   }, [biometricAvailable, authenticate, onUnlock, t]);

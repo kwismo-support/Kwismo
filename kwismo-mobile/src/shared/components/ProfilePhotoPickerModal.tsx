@@ -39,7 +39,7 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
           reader.onload = (evt) => {
             if (evt.target?.result) {
               onSelectPhoto(evt.target.result as string);
-              toast.success(t('toasts.generalSuccess', 'Photo de profil sélectionnée !'));
+              toast.success(t('common.photoSelectedSuccess'));
             }
           };
           reader.readAsDataURL(file);
@@ -53,7 +53,7 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
     try {
       const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permission.granted) {
-        toast.error("Permission d'accès à la galerie refusée.");
+        toast.error(t('common.galleryPermissionDenied'));
         return;
       }
 
@@ -69,11 +69,11 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
         const asset = result.assets[0];
         const photoData = asset.base64 ? `data:image/jpeg;base64,${asset.base64}` : asset.uri;
         onSelectPhoto(photoData);
-        toast.success(t('toasts.generalSuccess', 'Photo de profil sélectionnée !'));
+        toast.success(t('common.photoSelectedSuccess'));
         onClose();
       }
     } catch {
-      toast.error('Erreur lors de la sélection de la photo.');
+      toast.error(t('common.photoPickerError'));
     }
   };
 
@@ -90,7 +90,7 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
           reader.onload = (evt) => {
             if (evt.target?.result) {
               onSelectPhoto(evt.target.result as string);
-              toast.success(t('toasts.generalSuccess', 'Photo prise avec succès !'));
+              toast.success(t('common.photoTakenSuccess'));
             }
           };
           reader.readAsDataURL(file);
@@ -104,7 +104,7 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
     try {
       const permission = await ImagePicker.requestCameraPermissionsAsync();
       if (!permission.granted) {
-        toast.error("Permission d'accès à la caméra refusée.");
+        toast.error(t('common.cameraPermissionDenied'));
         return;
       }
 
@@ -119,11 +119,11 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
         const asset = result.assets[0];
         const photoData = asset.base64 ? `data:image/jpeg;base64,${asset.base64}` : asset.uri;
         onSelectPhoto(photoData);
-        toast.success(t('toasts.generalSuccess', 'Photo prise avec succès !'));
+        toast.success(t('common.photoTakenSuccess'));
         onClose();
       }
     } catch {
-      toast.error('Erreur lors de la prise de photo.');
+      toast.error(t('common.photoTakeError'));
     }
   };
 
@@ -136,7 +136,7 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
         >
           <View className="flex-row items-center justify-between mb-4">
             <Text className="font-headline-bold text-base font-extrabold text-slate-900 dark:text-white">
-              Changer la photo de profil
+              {t('common.photoPickerTitle')}
             </Text>
             <TouchableOpacity onPress={onClose}>
               <Icon name="solar:close-circle-bold" color={themeColors.inputPlaceholder} size={22} />
@@ -153,10 +153,10 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
             </View>
             <View className="flex-1 ml-3.5">
               <Text className="font-headline-bold text-sm font-bold text-slate-900 dark:text-white">
-                Prendre une photo à l'instant
+                {t('common.takePhoto')}
               </Text>
               <Text className="font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Utiliser la caméra de votre appareil
+                {t('common.takePhotoSub')}
               </Text>
             </View>
           </TouchableOpacity>
@@ -171,10 +171,10 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
             </View>
             <View className="flex-1 ml-3.5">
               <Text className="font-headline-bold text-sm font-bold text-slate-900 dark:text-white">
-                Choisir dans la galerie / l'appareil
+                {t('common.chooseGallery')}
               </Text>
               <Text className="font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Sélectionner un fichier image
+                {t('common.chooseGallerySub')}
               </Text>
             </View>
           </TouchableOpacity>

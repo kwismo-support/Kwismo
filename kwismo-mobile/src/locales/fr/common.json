@@ -224,6 +224,17 @@
     "lastNamePlaceholder": "Cesar",
     "emailPlaceholder": "votre.email@kwismo.com",
     "noRegisteredNumbersTitle": "Aucun numéro enregistré",
-    "noRegisteredNumbersSubtitle": "Vous n'avez pas encore rattaché de ligne SIM à votre compte Kwismo. Ajoutez votre premier numéro pour sécuriser vos opérations."
+    "noRegisteredNumbersSubtitle": "Vous n'avez pas encore rattaché de ligne SIM à votre compte Kwismo. Ajoutez votre premier numéro pour sécuriser vos opérations.",
+    "photoPickerTitle": "Changer la photo de profil",
+    "takePhoto": "Prendre une photo à l'instant",
+    "takePhotoSub": "Utiliser la caméra de votre appareil",
+    "chooseGallery": "Choisir dans la galerie / l'appareil",
+    "chooseGallerySub": "Sélectionner un fichier image",
+    "galleryPermissionDenied": "Permission d'accès à la galerie refusée.",
+    "cameraPermissionDenied": "Permission d'accès à la caméra refusée.",
+    "photoPickerError": "Erreur lors de la sélection de la photo.",
+    "photoTakeError": "Erreur lors de la prise de photo.",
+    "photoSelectedSuccess": "Photo de profil sélectionnée avec succès !",
+    "photoTakenSuccess": "Photo prise avec succès !"
   }
 }

@@ -26,11 +26,11 @@ export const ErrorScreen: React.FC<ErrorScreenProps> = ({
         </View>
 
         <Text className="font-montserrat-bold text-lg text-center font-extrabold text-slate-900 dark:text-white">
-          {title || t('errors.generalTitle', 'Une erreur est survenue')}
+          {title || t('errors.generalTitle')}
         </Text>
 
         <Text className="font-regular text-xs text-center mt-2 leading-5 text-slate-500 dark:text-slate-400">
-          {message || t('errors.generalMessage', 'Impossible de charger la ressource. Veuillez réessayer.')}
+          {message || t('errors.generalMessage')}
         </Text>
 
         {onRetry && (
@@ -41,7 +41,7 @@ export const ErrorScreen: React.FC<ErrorScreenProps> = ({
           >
             <Icon name="solar:restart-bold" size={18} color="#FFFFFF" className="mr-1.5" />
             <Text className="font-montserrat-bold text-sm text-white font-bold">
-              {t('common.retry', 'Réessayer')}
+              {t('common.retry')}
             </Text>
           </TouchableOpacity>
         )}

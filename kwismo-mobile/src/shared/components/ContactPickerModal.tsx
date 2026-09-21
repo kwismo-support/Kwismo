@@ -141,7 +141,7 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
         >
           <View className="flex-row items-center justify-between mb-4">
             <Text className="font-montserrat-bold text-xl text-slate-900 dark:text-white">
-              {t('common.selectFromContacts', 'Choisir dans mes contacts')}
+              {t('common.selectFromContacts')}
             </Text>
             <TouchableOpacity
               activeOpacity={0.7}
@@ -157,7 +157,7 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
             <TextInput
               style={Platform.OS === 'web' ? ({ outline: 'none' } as any) : {}}
               className="flex-1 font-medium text-sm text-slate-900 dark:text-white h-full"
-              placeholder={t('common.search', 'Rechercher un contact...')}
+              placeholder={t('common.search')}
               placeholderTextColor={themeColors.inputPlaceholder}
               value={search}
               onChangeText={setSearch}
@@ -177,13 +177,13 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
             <View className="flex-1 items-center justify-center p-6">
               <Icon name="solar:shield-warning-bold" color="#FF9900" size={48} className="mb-3" />
               <Text className="font-medium text-sm text-slate-900 dark:text-white text-center">
-                {t('common.permissionContactsDenied', "Permission d'accès aux contacts refusée.")}
+                {t('common.permissionContactsDenied')}
               </Text>
             </View>
           ) : filtered.length === 0 ? (
             <View className="flex-1 items-center justify-center p-6">
               <Text className="font-medium text-sm text-slate-500 dark:text-slate-400">
-                {t('common.noContactsFound', 'Aucun contact trouvé')}
+                {t('common.noContactsFound')}
               </Text>
             </View>
           ) : (
