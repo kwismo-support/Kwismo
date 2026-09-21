@@ -76,18 +76,6 @@ export default function ActiveSessionsScreen() {
           showsVerticalScrollIndicator={false}
           className="gap-y-4"
         >
-          <View className="flex-row items-start p-4 rounded-2xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/30">
-            <Icon name="solar:shield-check-bold" color="#25B876" size={24} className="mr-3" />
-            <View className="flex-1">
-              <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white mb-1">
-                {t('security.connectedDevices')}
-              </Text>
-              <Text className="text-xs text-slate-600 dark:text-slate-300 leading-4.5">
-                {t('security.connectedDevicesDesc')}
-              </Text>
-            </View>
-          </View>
-
           {otherSessionsCount > 0 && (
             <TouchableOpacity
               activeOpacity={0.8}
