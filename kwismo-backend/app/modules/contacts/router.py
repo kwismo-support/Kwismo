@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, status
 from app.core.permissions import require_roles
 from app.core.schemas import AUTH_RESPONSES, Message, NOT_FOUND_RESPONSE
 from app.modules.contacts import service
-from app.modules.contacts.schemas import ContactAddIn, ContactOut
+from app.modules.contacts.schemas import ContactAddIn, ContactOut, ContactSyncIn
 
 router = APIRouter(prefix="/contacts", tags=["Contacts"])
 
@@ -43,6 +43,17 @@ async def list_contacts(user=Depends(require_roles("user"))) -> list[ContactOut]
 )
 async def add_contact(payload: ContactAddIn, user=Depends(require_roles("user"))) -> ContactOut:
     return await service.add_contact(user.id, payload, user.langue)
+
+
+@router.post(
+    "/sync",
+    response_model=list[ContactOut],
+    responses=AUTH_RESPONSES,
+    summary="Synchronize and merge contacts / Synchroniser les contacts",
+)
+async def sync_contacts(payload: ContactSyncIn, user=Depends(require_roles("user"))) -> list[ContactOut]:
+    from app.modules.contacts.schemas import ContactSyncIn
+    return await service.sync_contacts(user.id, payload)
 
 
 @router.post(

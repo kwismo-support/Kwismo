@@ -22,10 +22,17 @@ def _to_out(d) -> DeviceOut:
 
 
 async def list_my_devices(user_id: str) -> list[DeviceOut]:
+    from datetime import UTC, datetime
     devices = await db.device.find_many(
         where={"userId": user_id},
         order={"dateDerniereConnexion": "desc"},
     )
+    if devices:
+        await db.device.update(
+            where={"id": devices[0].id},
+            data={"dateDerniereConnexion": datetime.now(UTC)},
+        )
+        devices[0].dateDerniereConnexion = datetime.now(UTC)
     return [_to_out(d) for d in devices]
 
 

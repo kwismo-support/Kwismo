@@ -107,6 +107,35 @@ async def refresh_contact(user_id: str, contact_id: str, lang: str = "fr") -> Co
 # remove_contact
 # ---------------------------------------------------------------------------
 
+async def sync_contacts(user_id: str, payload) -> list[ContactOut]:
+    for item in payload.contacts:
+        valeur = normalize_phone(item.numero)
+        if not is_valid_phone(valeur):
+            continue
+        existing = await db.contact.find_first(where={"userId": user_id, "numero": valeur})
+        nom_complet = f"{item.prenom or ''} {item.nom}".strip() or item.nom or valeur
+        if existing is None:
+            badge = await _resolve_badge(valeur)
+            numero_ref = await db.numero.find_unique(where={"valeur": valeur})
+            numero_id = numero_ref.id if numero_ref else None
+            await db.contact.create(
+                data={
+                    "userId": user_id,
+                    "nom": nom_complet,
+                    "numero": valeur,
+                    "statut": badge,
+                    "numeroId": numero_id,
+                }
+            )
+        elif nom_complet and existing.nom != nom_complet:
+            await db.contact.update(
+                where={"id": existing.id},
+                data={"nom": nom_complet},
+            )
+
+    return await list_contacts(user_id)
+
+
 async def remove_contact(user_id: str, contact_id: str, lang: str = "fr"):
     from app.core.schemas import Message
     contact = await db.contact.find_unique(where={"id": contact_id})

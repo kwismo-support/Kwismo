@@ -26,3 +26,13 @@ class ContactOut(BaseModel):
     numero: str
     statut: str | None = Field(None, examples=["securise"], description="Insigne / Badge: securise, suspect, frauduleux, inconnu.")
     created_at: datetime
+
+
+class ContactSyncItem(BaseModel):
+    nom: str = Field(...)
+    prenom: str | None = Field(None)
+    numero: str = Field(...)
+
+
+class ContactSyncIn(BaseModel):
+    contacts: list[ContactSyncItem]
