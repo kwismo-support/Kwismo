@@ -204,10 +204,10 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           <View className="absolute -top-10 -right-5 wx-55 hx-55 rounded-full border-[26px] border-white -rotate-25 scale-x-140" />
         </View>
 
-        <View className="flex-row items-center justify-between min-h-7 mb-10">
+        <View className={`flex-row items-center justify-between min-h-7 ${!showBack || subtitle ? 'mb-6' : 'mb-2'}`}>
           {showBack ? (
             <>
-              <View className="wx-10 flex-row items-center justify-start">
+              <View className="w-10 flex-row items-center justify-start">
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={handleBack}
@@ -217,9 +217,20 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                 </TouchableOpacity>
               </View>
 
-              <View className="flex-1" />
+              <View className="flex-1 items-center justify-center px-2">
+                {title ? (
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={{ color: textColor }}
+                    className="font-montserrat-bold text-lg font-bold text-center"
+                  >
+                    {title}
+                  </Text>
+                ) : null}
+              </View>
 
-              <View className="wx-10 flex-row items-center justify-end">
+              <View className="w-10 flex-row items-center justify-end">
                 {rightAction || null}
               </View>
             </>
@@ -250,26 +261,13 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           )}
         </View>
 
-        {showBack && title && (
+        {subtitle ? (
           <View className="items-center justify-center">
-            <Text
-              numberOfLines={1}
-              ellipsizeMode="tail"
-              style={{ color: textColor }}
-              className="flex-1 justify-end items-end font-montserrat-bold text-2xl font-bold text-center"
-            >
-              {title}
-            </Text>
-          </View>
-        )}
-
-        {!showBack && subtitle && (
-          <View className="items-center justify-center">
-            <Text style={{ color: textColor }} className="font-semibold text-base text-center">
+            <Text style={{ color: textColor }} className="font-semibold text-sm text-center">
               {subtitle}
             </Text>
           </View>
-        )}
+        ) : null}
       </View>
 
       <Modal

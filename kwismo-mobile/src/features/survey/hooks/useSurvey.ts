@@ -17,10 +17,10 @@ export function useSurvey() {
       if (res.success && res.data) {
         setSurveys(res.data.items || []);
       } else {
-        setError(res.message || t('errors.generalMessage', 'Erreur de sondages.'));
+        setError(res.message || t('errors.generalMessage'));
       }
     } catch (err: any) {
-      setError(err.message || t('toasts.networkError', 'Erreur réseau.'));
+      setError(err.message || t('toasts.networkError'));
     } finally {
       setLoading(false);
     }
@@ -35,7 +35,7 @@ export function useSurvey() {
     try {
       const res = await surveyApi.submitAnswers(survey_id, answers);
       if (res.success) {
-        toast.success(t('toasts.generalSuccess', 'Merci pour vos réponses !'));
+        toast.success(t('toasts.generalSuccess'));
       }
       return res;
     } finally {

@@ -118,7 +118,7 @@ export default function ReportScreen() {
       <StatusBar style="light" />
 
       <HeaderBar
-        title={t('common.report', 'Signaler')}
+        title={t('common.report')}
         showBack={true}
       />
 
@@ -131,12 +131,12 @@ export default function ReportScreen() {
           <View className="flex-row items-center p-3.5 rounded-xl mb-5 bg-amber-100 dark:bg-slate-800">
             <Icon name="solar:shield-warning-bold" color="#F97316" size={22} className="mr-2.5" />
             <Text className="flex-1 font-font-medium text-xs text-amber-900 dark:text-amber-200 leading-4.5">
-              {t('report.ruleNotice', "Règle communautaire : Vous ne pouvez signaler qu'un numéro suspect vous ayant réellement contacté ou appelé.")}
+              {t('report.ruleNotice')}
             </Text>
           </View>
 
           <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white mb-2">
-            {t('report.phoneLabel', 'Numéro concerné')}
+            {t('report.phoneLabel')}
           </Text>
 
           <View
@@ -151,7 +151,7 @@ export default function ReportScreen() {
 
             <TextInput
               className="flex-1 font-font-semibold text-base text-slate-900 dark:text-white"
-              placeholder="6 55 98 76 54"
+              placeholder={t('common.phonePlaceholder')}
               placeholderTextColor="#94A3B8"
               keyboardType="phone-pad"
               value={targetPhone}
@@ -168,7 +168,7 @@ export default function ReportScreen() {
             >
               <Icon name="solar:history-bold" color="#25B876" size={18} className="mr-1" />
               <Text className="font-font-bold text-xs text-brand-green font-bold">
-                {t('report.recentCalls5min', 'Appels (< 5 min)')}
+                {t('report.recentCalls5min')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -181,7 +181,7 @@ export default function ReportScreen() {
           ) : null}
 
           <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white mt-6 mb-2">
-            {t('report.reasonLabel', 'Motif du signalement')}
+            {t('report.reasonLabel')}
           </Text>
 
           <View className="gap-2.5">
@@ -212,7 +212,7 @@ export default function ReportScreen() {
                           : 'text-slate-900 dark:text-white'
                       }`}
                     >
-                      {t(reason.labelKey, reason.label)}
+                      {t(reason.labelKey)}
                     </Text>
                   </View>
 
@@ -231,12 +231,12 @@ export default function ReportScreen() {
           </View>
 
           <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white mt-6 mb-2">
-            {t('report.detailsLabel', 'Description ou détails (optionnel)')}
+            {t('report.detailsLabel')}
           </Text>
 
           <TextInput
             className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-3.5 font-font-regular text-xs text-slate-900 dark:text-white min-h-24 text-top"
-            placeholder={t('report.detailsPlaceholder', "Décrivez brièvement la tentative...")}
+            placeholder={t('report.detailsPlaceholder')}
             placeholderTextColor="#94A3B8"
             multiline
             numberOfLines={4}
@@ -260,7 +260,7 @@ export default function ReportScreen() {
               <>
                 <Icon name="heroicons:signal-16-solid" color="#FFFFFF" size={20} className="mr-2" />
                 <Text className="font-font-bold text-base font-bold text-white">
-                  {t('report.submitReport', 'Envoyer le signalement')}
+                  {t('report.submitReport')}
                 </Text>
               </>
             )}
@@ -273,7 +273,7 @@ export default function ReportScreen() {
           <View className="rounded-t-3xl p-6 pb-9 bg-white dark:bg-brand-darkBg">
             <View className="flex-row items-center justify-between mb-2">
               <Text className="font-font-bold text-lg font-extrabold text-slate-900 dark:text-white">
-                Appels reçus (Moins de 5 minutes)
+                {t('report.recentCallsModalTitle')}
               </Text>
               <TouchableOpacity onPress={() => setShowCallPickerModal(false)}>
                 <Icon name="solar:close-circle-bold" color="#94A3B8" size={26} />
@@ -281,13 +281,13 @@ export default function ReportScreen() {
             </View>
 
             <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mb-4">
-              Sélectionnez un numéro qui vous a appelé au cours des 5 dernières minutes :
+              {t('report.recentCallsModalSub')}
             </Text>
 
             <View className="gap-1">
               {filteredFiveMinCalls.length === 0 ? (
                 <View className="py-6 items-center">
-                  <Text className="text-xs text-slate-400">Aucun appel dans les 5 dernières minutes</Text>
+                  <Text className="text-xs text-slate-400">{t('report.noRecent5minCalls')}</Text>
                 </View>
               ) : (
                 filteredFiveMinCalls.map((call, idx) => (
@@ -325,10 +325,10 @@ export default function ReportScreen() {
             </View>
 
             <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white text-center mb-2">
-              Signalement enregistré !
+              {t('report.reportSuccessModalTitle')}
             </Text>
             <Text className="font-font-regular text-xs text-slate-600 dark:text-slate-300 text-center leading-5 mb-6">
-              Merci pour votre vigilance. Ce signalement a été transmis à la communauté Kwismo et aide à protéger des milliers d'utilisateurs.
+              {t('report.reportSuccessModalSub')}
             </Text>
 
             <TouchableOpacity
@@ -339,7 +339,7 @@ export default function ReportScreen() {
               }}
               className="h-12 rounded-xl w-full items-center justify-center bg-brand-green"
             >
-              <Text className="font-font-bold text-base font-bold text-white">Terminer</Text>
+              <Text className="font-font-bold text-base font-bold text-white">{t('report.finishBtn')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -347,12 +347,12 @@ export default function ReportScreen() {
 
       <PermissionModal
         visible={permissionModalVisible}
-        title="Accès au journal d'appels"
-        description="Kwismo a besoin d'analyser vos appels entrants des 5 dernières minutes pour vous permettre de sélectionner un numéro récent à signaler."
+        title={t('report.permissionCallLogTitle')}
+        description={t('report.permissionCallLogDesc')}
         iconName="solar:phone-calling-rounded-bold"
         iconColor="#25B876"
-        confirmText="Autoriser l'accès"
-        cancelText="Refuser"
+        confirmText={t('common.grantPermission')}
+        cancelText={t('common.cancel')}
         onConfirm={handleGrantCallLogPermission}
         onCancel={() => setPermissionModalVisible(false)}
       />

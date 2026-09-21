@@ -39,15 +39,15 @@ export function useTransfer() {
       const res = await transferApi.prepareTransfer(payload);
       if (res.success && res.data) {
         setPreparedData(res.data);
-        toast.success(t('toasts.transferInitiated', 'Transfert préparé avec succès !'));
+        toast.success(t('toasts.transferInitiated'));
         return { success: true, data: res.data };
       } else {
-        const msg = res.message || t('errors.generalMessage', 'Échec du transfert.');
+        const msg = res.message || t('errors.generalMessage');
         setError(msg);
         return { success: false, message: msg };
       }
     } catch (err: any) {
-      const msg = err.message || t('toasts.networkError', 'Erreur réseau.');
+      const msg = err.message || t('toasts.networkError');
       setError(msg);
       return { success: false, message: msg };
     } finally {
@@ -58,7 +58,7 @@ export function useTransfer() {
   const executeUssdCall = async () => {
     if (!preparedData?.code_ussd_genere) return;
     await launchUssd(preparedData.code_ussd_genere);
-    toast.success(t('toasts.ussdLaunched', 'Code USSD envoyé au téléphone.'));
+    toast.success(t('toasts.ussdLaunched'));
   };
 
   return {

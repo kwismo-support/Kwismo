@@ -21,10 +21,10 @@ export function useNotifications() {
         setNotifications(items);
         await storage.setItem(NOTIFICATIONS_CACHE_KEY, JSON.stringify(items)).catch(() => {});
       } else if (isManualRefresh) {
-        setError(res.message || i18next.t('errors.generalMessage', 'Erreur des notifications.'));
+        setError(res.message || i18next.t('errors.generalMessage'));
       }
     } catch (err: any) {
-      if (isManualRefresh) setError(err.message || i18next.t('toasts.networkError', 'Erreur réseau.'));
+      if (isManualRefresh) setError(err.message || i18next.t('toasts.networkError'));
     } finally {
       setLoading(false);
     }
@@ -73,7 +73,7 @@ export function useNotifications() {
     setNotifications(updated);
     storage.setItem(NOTIFICATIONS_CACHE_KEY, JSON.stringify(updated)).catch(() => {});
 
-    toast.success(i18next.t('notifications.markedAllRead', 'Toutes les notifications lues.'));
+    toast.success(i18next.t('notifications.markedAllRead'));
 
     try {
       await notificationsApi.markAllAsRead();

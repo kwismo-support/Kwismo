@@ -15,15 +15,15 @@ export function useWhatsappAlert() {
     try {
       const res = await whatsappApi.declareIncident(payload);
       if (res.success && res.data) {
-        toast.success(t('whatsapp.settingsSaved', 'Incident WhatsApp enregistré !'));
+        toast.success(t('whatsapp.settingsSaved'));
         return { success: true, data: res.data };
       } else {
-        const msg = res.message || t('errors.generalMessage', 'Erreur de déclaration.');
+        const msg = res.message || t('errors.generalMessage');
         setError(msg);
         return { success: false, message: msg };
       }
     } catch (err: any) {
-      const msg = err.message || t('toasts.networkError', 'Erreur réseau.');
+      const msg = err.message || t('toasts.networkError');
       setError(msg);
       return { success: false, message: msg };
     } finally {
@@ -37,15 +37,15 @@ export function useWhatsappAlert() {
     try {
       const res = await whatsappApi.broadcastAlert(payload);
       if (res.success && res.data) {
-        toast.success(t('toasts.generalSuccess', 'Alerte diffusée avec succès !'));
+        toast.success(t('toasts.generalSuccess'));
         return { success: true, data: res.data };
       } else {
-        const msg = res.message || t('errors.generalMessage', 'Erreur de diffusion.');
+        const msg = res.message || t('errors.generalMessage');
         setError(msg);
         return { success: false, message: msg };
       }
     } catch (err: any) {
-      const msg = err.message || t('toasts.networkError', 'Erreur réseau.');
+      const msg = err.message || t('toasts.networkError');
       setError(msg);
       return { success: false, message: msg };
     } finally {

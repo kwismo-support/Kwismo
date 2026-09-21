@@ -29,7 +29,13 @@
     "selectAction": "Sélectionner l’action",
     "warningModalTitle": "Êtes-vous absolument sûr ?",
     "warningModalBody": "Le numéro destinataire présente un risque élevé de fraude selon notre système. Continuer peut entraîner une perte définitive de vos fonds.",
-    "confirmAnyway": "Continuer quand même"
+    "confirmAnyway": "Continuer quand même",
+    "noSenderTitle": "Aucun numéro SIM d’envoi disponible",
+    "noSenderDesc": "Veuillez ajouter au moins un numéro dans votre compte pour effectuer des transferts.",
+    "noSenderError": "Veuillez enregistrer une puce SIM dans votre compte pour continuer.",
+    "actionsPendingHint": "Chargement des actions de transfert disponible pour cet opérateur...",
+    "noActionHint": "Aucune action de transfert configurée pour cet opérateur.",
+    "launchMaxIt": "Faire le transfert sur l’application de l’opérateur"
   },
   "management": {
     "title": "Gestion des numéros",
@@ -59,7 +65,16 @@
     "reasonFakeAgent": "Faux agent d'opérateur (Orange / MTN)",
     "reasonPhishing": "Message frauduleux / Phishing",
     "reasonHarassment": "Appels répétés suspects / Harcèlement",
-    "reasonWrongTransfer": "Faux transfert ou demande de remboursement"
+    "reasonWrongTransfer": "Faux transfert ou demande de remboursement",
+    "recentCalls5min": "Appels (< 5 min)",
+    "recentCallsModalTitle": "Appels reçus (Moins de 5 minutes)",
+    "recentCallsModalSub": "Sélectionnez un numéro qui vous a appelé au cours des 5 dernières minutes :",
+    "noRecent5minCalls": "Aucun appel dans les 5 dernières minutes",
+    "reportSuccessModalTitle": "Signalement enregistré !",
+    "reportSuccessModalSub": "Merci pour votre vigilance. Ce signalement a été transmis à la communauté Kwismo et aide à protéger des milliers d'utilisateurs.",
+    "finishBtn": "Terminer",
+    "permissionCallLogTitle": "Accès au journal d'appels",
+    "permissionCallLogDesc": "Kwismo a besoin d'analyser vos appels entrants des 5 dernières minutes pour vous permettre de sélectionner un numéro récent à signaler."
   },
   "whatsapp": {
     "title": "Alerte WhatsApp",
@@ -209,6 +224,7 @@
     "generalSuccess": "Opération effectuée avec succès",
     "ussdLaunched": "Code USSD envoyé au composeur natif",
     "ussdCopied": "Code USSD copié dans le presse-papier",
+    "operatorAppLaunched": "Ouverture de l’application de transfert...",
     "copiedToClipboard": "Copié dans le presse-papier !"
   },
   "errors": {

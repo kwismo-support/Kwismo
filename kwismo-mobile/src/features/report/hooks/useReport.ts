@@ -11,13 +11,13 @@ export function useReport() {
 
   const submitReport = async (payload: ReportPayload) => {
     if (!payload.numero.trim()) {
-      const msg = t('report.selectPhoneError', 'Veuillez saisir un numéro.');
+      const msg = t('report.selectPhoneError');
       setError(msg);
       toast.error(msg);
       return { success: false };
     }
     if (!payload.motif.trim()) {
-      const msg = t('report.selectReasonError', 'Veuillez sélectionner un motif.');
+      const msg = t('report.selectReasonError');
       setError(msg);
       toast.error(msg);
       return { success: false };
@@ -28,15 +28,15 @@ export function useReport() {
     try {
       const res = await reportApi.submitReport(payload);
       if (res.success) {
-        toast.success(t('report.reportSuccessTitle', 'Signalement transmis avec succès !'));
+        toast.success(t('report.reportSuccessTitle'));
         return { success: true, data: res.data };
       } else {
-        const msg = res.message || t('errors.generalMessage', 'Échec du signalement.');
+        const msg = res.message || t('errors.generalMessage');
         setError(msg);
         return { success: false, message: msg };
       }
     } catch (err: any) {
-      const msg = err.message || t('toasts.networkError', 'Erreur réseau.');
+      const msg = err.message || t('toasts.networkError');
       setError(msg);
       return { success: false, message: msg };
     } finally {

@@ -29,7 +29,13 @@
     "selectAction": "Select Action",
     "warningModalTitle": "Are you absolutely sure?",
     "warningModalBody": "The recipient number presents a high fraud risk according to our system. Proceeding may result in permanent loss of funds.",
-    "confirmAnyway": "Proceed anyway"
+    "confirmAnyway": "Proceed anyway",
+    "noSenderTitle": "No sender SIM card available",
+    "noSenderDesc": "Please add at least one phone number to your account to make transfers.",
+    "noSenderError": "Please register a SIM card in your account to continue.",
+    "actionsPendingHint": "Loading available transfer actions for this operator...",
+    "noActionHint": "No transfer action configured for this operator.",
+    "launchMaxIt": "Transfer via operator app"
   },
   "management": {
     "title": "Number Management",
@@ -59,7 +65,16 @@
     "reasonFakeAgent": "Fake operator agent (Orange / MTN)",
     "reasonPhishing": "Fraudulent message / Phishing",
     "reasonHarassment": "Repeated suspicious calls / Harassment",
-    "reasonWrongTransfer": "Fake transfer or refund request"
+    "reasonWrongTransfer": "Fake transfer or refund request",
+    "recentCalls5min": "Calls (< 5 min)",
+    "recentCallsModalTitle": "Received calls (Under 5 minutes)",
+    "recentCallsModalSub": "Select a number that called you in the last 5 minutes:",
+    "noRecent5minCalls": "No calls in the last 5 minutes",
+    "reportSuccessModalTitle": "Report registered!",
+    "reportSuccessModalSub": "Thank you for your vigilance. This report has been transmitted to the Kwismo community and helps protect thousands of users.",
+    "finishBtn": "Finish",
+    "permissionCallLogTitle": "Access to call log",
+    "permissionCallLogDesc": "Kwismo needs to analyze your incoming calls from the last 5 minutes to let you select a recent number to report."
   },
   "whatsapp": {
     "title": "WhatsApp Alert",
@@ -209,6 +224,7 @@
     "generalSuccess": "Operation completed successfully",
     "ussdLaunched": "USSD code sent to native dialer",
     "ussdCopied": "USSD code copied to clipboard",
+    "operatorAppLaunched": "Launching operator transfer app...",
     "copiedToClipboard": "Copied to clipboard!"
   },
   "errors": {

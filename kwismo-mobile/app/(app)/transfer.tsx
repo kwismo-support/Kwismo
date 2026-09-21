@@ -242,21 +242,21 @@ export default function TransferScreen() {
     setAmountError('');
 
     if (registeredSenders.length === 0) {
-      toast.error(t('transfer.noSenderError', 'Veuillez enregistrer une puce SIM dans votre compte pour continuer.'));
+      toast.error(t('transfer.noSenderError'));
       return false;
     }
 
     const cleanPhone = beneficiaryPhone.replace(/\D/g, '');
     if (!cleanPhone) {
-      setPhoneError(t('validation.phoneRequired', 'Veuillez saisir le numéro du bénéficiaire'));
+      setPhoneError(t('validation.phoneRequired'));
       valid = false;
     } else if (cleanPhone.length < 8) {
-      setPhoneError(t('validation.phoneNumberInvalid', 'Numéro de téléphone invalide'));
+      setPhoneError(t('validation.phoneNumberInvalid'));
       valid = false;
     }
 
     if (!rawAmount || parseInt(rawAmount, 10) <= 0) {
-      setAmountError(t('validation.amountRequired', 'Veuillez saisir un montant valide'));
+      setAmountError(t('validation.amountRequired'));
       valid = false;
     }
 
@@ -348,13 +348,13 @@ export default function TransferScreen() {
       const supported = await Linking.canOpenURL(telUrl);
       if (supported) {
         await Linking.openURL(telUrl);
-        toast.success(t('toasts.ussdLaunched', 'Ouverture de l’application Téléphone...'));
+        toast.success(t('toasts.ussdLaunched'));
       } else {
         await Linking.openURL(telUrl);
       }
     } catch {
       Clipboard.setString(generatedUssdCode);
-      toast.info(t('toasts.ussdCopied', 'Code USSD copié dans le presse-papier !'));
+      toast.info(t('toasts.ussdCopied'));
     }
   };
 
@@ -371,20 +371,20 @@ export default function TransferScreen() {
       const supported = await Linking.canOpenURL(deepLink);
       if (supported) {
         await Linking.openURL(deepLink);
-        toast.success(t('toasts.operatorAppLaunched', 'Ouverture de l’application de transfert...'));
+        toast.success(t('toasts.operatorAppLaunched'));
       } else {
         Clipboard.setString(generatedUssdCode);
-        toast.info(t('toasts.ussdCopied', 'Code USSD copié dans le presse-papier !'));
+        toast.info(t('toasts.ussdCopied'));
       }
     } catch {
       Clipboard.setString(generatedUssdCode);
-      toast.info(t('toasts.ussdCopied', 'Code USSD copié dans le presse-papier !'));
+      toast.info(t('toasts.ussdCopied'));
     }
   };
 
   const handleCopyUssd = () => {
     Clipboard.setString(generatedUssdCode);
-    toast.success(t('toasts.copiedToClipboard', 'Code USSD copié dans le presse-papier !'));
+    toast.success(t('toasts.copiedToClipboard'));
   };
 
   const handleReset = () => {
@@ -404,8 +404,8 @@ export default function TransferScreen() {
       <StatusBar style={isDark ? 'light' : 'dark'} />
 
       <HeaderBar
-        title={t('common.transfer', 'Transfert')}
-        subtitle={t('common.transferSubtitle', 'Initiation de votre transaction')}
+        title={t('common.transfer')}
+        subtitle={t('common.transferSubtitle')}
         showBack={step !== 'form'}
         onBack={() => {
           if (step === 'summary') setStep('form');
