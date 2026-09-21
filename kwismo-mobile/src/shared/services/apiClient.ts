@@ -94,7 +94,7 @@ export class ApiClient {
           errorMsg = i18next.t('errors.generic', 'Une erreur est survenue.');
         }
 
-        if (env.IS_DEV) {
+        if (env.IS_DEV && !silent) {
           console.warn(`\x1b[31m[API ERROR ${response.status}]\x1b[0m ${url}:`, errorMsg, json);
         }
 

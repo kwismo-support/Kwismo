@@ -113,14 +113,14 @@ export default function ActiveSessionsScreen() {
                 >
                   <View className="flex-row items-center justify-between mb-2">
                     <View className="flex-row items-center flex-1 pr-2">
-                      <View className="wx-10 hx-10 rounded-xl bg-white dark:bg-slate-800 items-center justify-center mr-3 border border-slate-200 dark:border-slate-700">
+                      <View className="wx-10 hx-10 rounded-xl bg-emerald-50 dark:bg-slate-800 items-center justify-center mr-3 border border-emerald-200 dark:border-slate-700">
                         <Icon
                           name={
                             session.device_type === 'desktop'
                               ? 'solar:laptop-minimalistic-bold'
                               : 'solar:smartphone-bold'
                           }
-                          color={session.is_current ? '#25B876' : isDark ? '#94A3B8' : '#64748B'}
+                          color="#25B876"
                           size={22}
                         />
                       </View>
@@ -131,7 +131,7 @@ export default function ActiveSessionsScreen() {
                           </Text>
                         </View>
                         <Text className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          {session.location} • {session.ip_address}
+                          {session.location}
                         </Text>
                       </View>
                     </View>

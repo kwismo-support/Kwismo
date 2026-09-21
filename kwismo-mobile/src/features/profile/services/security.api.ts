@@ -1,4 +1,5 @@
 import { ApiClient } from '../../../shared/services/apiClient';
+import { getRealDeviceName, getDevicePhysicalLocation } from '../../../shared/utils/deviceHelper';
 
 export interface ChangePasswordPayload {
   ancien_mot_de_passe: string;
@@ -28,15 +29,15 @@ export interface TwoFactorInitResponse {
   qr_code_url: string;
 }
 
-const defaultCurrentSession: ActiveSessionResponse = {
+const buildCurrentSession = (): ActiveSessionResponse => ({
   id: 'current-session-id',
-  device_name: 'Cet appareil (Application Mobile KWISMO)',
+  device_name: getRealDeviceName(),
   device_type: 'mobile',
-  location: 'Session active',
-  ip_address: 'En cours d\'utilisation',
-  last_active: 'À l\'instant',
+  location: getDevicePhysicalLocation(),
+  ip_address: 'Localisation GPS Appareil',
+  last_active: 'En cours (Maintenant)',
   is_current: true,
-};
+});
 
 export const securityApi = {
   async changePassword(payload: ChangePasswordPayload) {
@@ -51,23 +52,27 @@ export const securityApi = {
       method: 'GET',
       silent: true,
     });
+
     if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-      const mapped: ActiveSessionResponse[] = res.data.map((dev, idx) => ({
-        id: dev.id,
-        device_name: dev.nom || dev.identifiant || 'Appareil KWISMO',
-        device_type: dev.nom?.toLowerCase().includes('android') || dev.nom?.toLowerCase().includes('ios') || dev.nom?.toLowerCase().includes('mobile') ? 'mobile' : 'desktop',
-        location: 'Appareil vérifié',
-        ip_address: dev.identifiant || '',
-        last_active: dev.date_derniere_connexion ? new Date(dev.date_derniere_connexion).toLocaleString() : 'Récemment',
-        is_current: idx === 0,
-      }));
+      const mapped: ActiveSessionResponse[] = res.data.map((dev, idx) => {
+        const isCurrent = idx === 0;
+        const isMobile = true; // On the mobile app, device is a phone
+        return {
+          id: dev.id,
+          device_name: isCurrent ? getRealDeviceName() : (dev.nom && dev.nom !== 'Appareil verifie' ? dev.nom : 'Android Mobile'),
+          device_type: 'mobile',
+          location: isCurrent ? getDevicePhysicalLocation() : 'Appareil vérifié',
+          ip_address: isCurrent ? 'Localisation GPS Appareil' : (dev.identifiant && !dev.identifiant.includes('kwismo-device') ? dev.identifiant : 'Cameroun'),
+          last_active: isCurrent ? 'En cours (Maintenant)' : (dev.date_derniere_connexion ? new Date(dev.date_derniere_connexion).toLocaleString('fr-FR') : 'Récemment'),
+          is_current: isCurrent,
+        };
+      });
       return { ...res, data: mapped };
     }
 
-    // Always fallback to showing current device session if list is empty
     return {
       success: true,
-      data: [defaultCurrentSession],
+      data: [buildCurrentSession()],
       message: res.message,
     };
   },
