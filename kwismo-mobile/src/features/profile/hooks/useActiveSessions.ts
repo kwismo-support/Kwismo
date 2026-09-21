@@ -10,8 +10,8 @@ export function useActiveSessions() {
   const [sessions, setSessions] = useState<ActiveSessionResponse[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchSessions = useCallback(async (silent = false) => {
-    if (!silent) setLoading(true);
+  const fetchSessions = useCallback(async (isManualRefresh = false) => {
+    if (isManualRefresh) setLoading(true);
     try {
       const res = await securityApi.getActiveSessions();
       if (res.success && res.data) {
@@ -19,7 +19,7 @@ export function useActiveSessions() {
         await storage.setItem(DEVICES_CACHE_KEY, JSON.stringify(res.data)).catch(() => {});
       }
     } catch (err: any) {
-      if (!silent) toast.error(err.message || i18next.t('toasts.networkError'));
+      if (isManualRefresh) toast.error(err.message || i18next.t('toasts.networkError'));
     } finally {
       setLoading(false);
     }
@@ -30,18 +30,22 @@ export function useActiveSessions() {
     (async () => {
       // 1. Instant local cache load
       const cachedStr = await storage.getItem(DEVICES_CACHE_KEY);
+      let hasValidCache = false;
       if (cachedStr && isMounted) {
         try {
           const parsed = JSON.parse(cachedStr);
           if (Array.isArray(parsed) && parsed.length > 0) {
             setSessions(parsed);
             setLoading(false);
+            hasValidCache = true;
           }
         } catch {}
       }
 
-      // 2. Background sync
-      await fetchSessions(true);
+      // 2. Only fetch network if no cache is present
+      if (!hasValidCache) {
+        await fetchSessions(false);
+      }
       if (isMounted) setLoading(false);
     })();
 
@@ -85,7 +89,7 @@ export function useActiveSessions() {
   return {
     sessions,
     loading,
-    refresh: () => fetchSessions(false),
+    refresh: () => fetchSessions(true),
     revokeSession,
     revokeAllOthers,
   };

@@ -74,11 +74,11 @@ export function useManagement() {
         const transformed = res.data.map(transformBackendPhone);
         setNumbers(transformed);
         await storage.setItem(USER_PHONES_CACHE_KEY, JSON.stringify(transformed)).catch(() => {});
-      } else if (!isManualRefresh) {
+      } else if (isManualRefresh) {
         setError(res.message || 'Failed to fetch numbers');
       }
     } catch (err: any) {
-      if (!isManualRefresh) setError(err.message || 'Network error');
+      if (isManualRefresh) setError(err.message || 'Network error');
     }
   }, []);
 
@@ -87,18 +87,22 @@ export function useManagement() {
     (async () => {
       // 1. Instant local cache load (0ms)
       const cachedStr = await storage.getItem(USER_PHONES_CACHE_KEY);
+      let hasValidCache = false;
       if (cachedStr && isMounted) {
         try {
           const parsed = JSON.parse(cachedStr);
           if (Array.isArray(parsed) && parsed.length > 0) {
             setNumbers(parsed);
             setLoading(false);
+            hasValidCache = true;
           }
         } catch {}
       }
 
-      // 2. Silent background sync with backend DB
-      await fetchNumbers(false);
+      // 2. Only fetch from network if NO cached numbers exist in storage
+      if (!hasValidCache) {
+        await fetchNumbers(false);
+      }
       if (isMounted) setLoading(false);
     })();
 
