@@ -25,7 +25,12 @@ export const getDeviceContacts = async (): Promise<{
   }
 
   try {
-    const Contacts = require('expo-contacts');
+    let Contacts: any;
+    try {
+      Contacts = require('expo-contacts/legacy');
+    } catch {
+      Contacts = require('expo-contacts');
+    }
     const { status } = await Contacts.requestPermissionsAsync();
     if (status !== 'granted') {
       return { granted: false, contacts: [] };

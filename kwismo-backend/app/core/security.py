@@ -12,7 +12,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 
 from app.core.config import get_settings
-from app.db.prisma_client import db
+from app.db.prisma_client import connect_db, db
 
 logger = logging.getLogger("kwismo.backend")
 
@@ -123,6 +123,7 @@ async def get_current_user(
     role: str = payload.get("role", "")
     partner_id: str | None = payload.get("partner_id")
 
+    await connect_db()
     user = await db.user.find_unique(where={"id": user_id})
     if user is None:
         raise HTTPException(

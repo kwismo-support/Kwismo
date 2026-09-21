@@ -5,7 +5,7 @@ import uuid
 
 from fastapi import HTTPException, status
 
-from app.db.prisma_client import db
+from app.db.prisma_client import connect_db, db
 from app.db.repositories.user_repository import UserRepository
 from app.modules.users.schemas import (
     DeviceSummaryOut,
@@ -24,6 +24,7 @@ _users = UserRepository()
 
 
 async def _build_me(user) -> UserMeOut:
+    await connect_db()
     phones_count = await db.userphone.count(where={"userId": user.id})
     reports_count = await db.report.count(where={"userId": user.id})
     transactions_count = await db.transaction.count(where={"userId": user.id})
@@ -59,6 +60,7 @@ async def _build_me(user) -> UserMeOut:
 
 
 async def get_me(user_id: str) -> UserMeOut:
+    await connect_db()
     user = await db.user.find_unique(
         where={"id": user_id},
         include={"role": True, "devices": True},
@@ -69,6 +71,7 @@ async def get_me(user_id: str) -> UserMeOut:
 
 
 async def update_me(user_id: str, payload: UserUpdateIn, lang: str = "fr") -> UserMeOut:
+    await connect_db()
     data: dict = {}
     if payload.nom is not None:
         data["nom"] = payload.nom
