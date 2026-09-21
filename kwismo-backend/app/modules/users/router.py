@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends, Query, status
 
 from app.core.permissions import require_roles
-from app.core.schemas import AUTH_RESPONSES, NOT_FOUND_RESPONSE, Page
+from app.core.schemas import AUTH_RESPONSES, NOT_FOUND_RESPONSE, Message, Page
 from app.modules.users import service
 from app.modules.users.schemas import (
     UserDetailOut,

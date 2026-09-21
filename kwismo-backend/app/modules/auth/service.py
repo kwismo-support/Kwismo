@@ -16,7 +16,7 @@ from app.core.security import (
     verify_password,
 )
 from app.core.token_store import is_revoked, revoke_token
-from app.db.prisma_client import db
+from app.db.prisma_client import connect_db, db
 from app.modules.auth.schemas import (
     AuthUserOut,
     DeviceVerificationRequiredOut,
@@ -200,6 +200,7 @@ async def resend_email_otp(payload: EmailResendIn) -> Message:
 
 
 async def login(payload: LoginIn) -> TokenOut | DeviceVerificationRequiredOut:
+    await connect_db()
     user = await db.user.find_unique(
         where={"email": payload.email}, include={"role": True}
     )

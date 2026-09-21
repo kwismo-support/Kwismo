@@ -5,6 +5,7 @@ import uuid
 
 from fastapi import HTTPException, status
 
+from app.core.schemas import Message
 from app.db.prisma_client import connect_db, db
 from app.db.repositories.user_repository import UserRepository
 from app.modules.users.schemas import (

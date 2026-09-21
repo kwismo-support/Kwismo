@@ -12,9 +12,13 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.db.prisma_client import db
 
 
 @pytest.fixture
 def client() -> TestClient:
     with TestClient(app, base_url="http://testserver/api/v1") as test_client:
         yield test_client
+    db._engine = None
+
+

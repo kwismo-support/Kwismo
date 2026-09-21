@@ -30,7 +30,7 @@ export default function ProfileScreen() {
   const { isDark } = useAppTheme();
   const { userThemePreference, setTheme } = useThemeStore();
   const { user } = useAuthStore();
-  const { profile, loading, logout } = useProfile();
+  const { profile, loading, logout, updateProfile } = useProfile();
   const { preferences, updatePreference } = useNotificationSettings();
 
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
@@ -240,9 +240,10 @@ export default function ProfileScreen() {
                 <TouchableOpacity
                   key={lang.code}
                   activeOpacity={0.7}
-                  onPress={() => {
+                  onPress={async () => {
                     i18n.changeLanguage(lang.code);
                     setLanguageModalVisible(false);
+                    await updateProfile({ langue: lang.code });
                   }}
                   className="flex-row items-center justify-between py-3"
                 >

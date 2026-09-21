@@ -61,12 +61,9 @@ def _action_out(a) -> UssdActionOut:
 # ---------------------------------------------------------------------------
 
 async def list_countries() -> list[CountryOut]:
-    async def _fetch():
-        countries = await db.country.find_many(order={"nom": "asc"})
-        return [_country_out(c).__dict__ for c in countries]
-    
-    cached = await get_cached("countries:all", _fetch, ttl=3600)
-    return [CountryOut(**c) for c in cached]
+    await connect_db()
+    countries = await db.country.find_many(order={"nom": "asc"})
+    return [_country_out(c) for c in countries]
 
 
 async def create_country(payload: CountryIn, lang: str = "fr") -> CountryOut:
