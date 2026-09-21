@@ -1,4 +1,3 @@
-// Service API backend pour les notifications via FastAPI (/notifications)
 import { ApiClient } from '../../../shared/services/apiClient';
 
 export interface NotificationItem {
@@ -28,9 +27,14 @@ export const notificationsApi = {
   },
 
   async markAsRead(id: string) {
-    return ApiClient.request<NotificationItem>(`/notifications/${id}/read`, {
+    return ApiClient.request<{ message: string }>(`/notifications/${id}/read`, {
+      method: 'PATCH',
+    });
+  },
+
+  async markAllAsRead() {
+    return ApiClient.request<{ message: string }>('/notifications/read-all', {
       method: 'PATCH',
     });
   },
 };
-

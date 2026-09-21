@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { parsePhoneNumberFromString, isValidPhoneNumber } from 'libphonenumber-js/min';
 import { contactsService } from '../services/contacts.service';
 import { ContactItem, AddContactPayload } from '../types/contacts.types';
+import { storage } from '../../../shared/services/storage';
+
+const CONTACTS_CACHE_KEY = 'kwismo_contacts_cache';
 
 export function useContacts() {
   const [loading, setLoading] = useState(true);
@@ -11,16 +14,41 @@ export function useContacts() {
   const [selectedContactIds, setSelectedContactIds] = useState<Set<string>>(new Set());
   const [isInviteMode, setIsInviteMode] = useState(false);
 
-  const loadContacts = useCallback(async () => {
-    setLoading(true);
-    const result = await contactsService.requestPermissionAndFetch();
-    setPermissionGranted(result.granted);
-    setContactsList(result.contacts);
-    setLoading(false);
+  const loadContacts = useCallback(async (isManualRefresh = false) => {
+    if (isManualRefresh) setLoading(true);
+    try {
+      const result = await contactsService.requestPermissionAndFetch();
+      setPermissionGranted(result.granted);
+      setContactsList(result.contacts);
+      await storage.setItem(CONTACTS_CACHE_KEY, JSON.stringify(result.contacts)).catch(() => {});
+    } catch {} finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    loadContacts();
+    let isMounted = true;
+    (async () => {
+      // 1. Instant local cache load (0ms)
+      const cachedStr = await storage.getItem(CONTACTS_CACHE_KEY);
+      if (cachedStr && isMounted) {
+        try {
+          const parsed = JSON.parse(cachedStr);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setContactsList(parsed);
+            setLoading(false);
+          }
+        } catch {}
+      }
+
+      // 2. Background sync
+      await loadContacts(false);
+      if (isMounted) setLoading(false);
+    })();
+
+    return () => {
+      isMounted = false;
+    };
   }, [loadContacts]);
 
   const addContactLocally = (payload: AddContactPayload): { success: boolean; messageKey?: string; item?: ContactItem } => {
@@ -44,7 +72,12 @@ export function useContacts() {
       countryCode: payload.countryCode,
     };
 
-    setContactsList((prev) => [newContact, ...prev]);
+    setContactsList((prev) => {
+      const updated = [newContact, ...prev];
+      storage.setItem(CONTACTS_CACHE_KEY, JSON.stringify(updated)).catch(() => {});
+      return updated;
+    });
+
     return { success: true, item: newContact };
   };
 
@@ -89,7 +122,7 @@ export function useContacts() {
     selectedContactIds,
     isInviteMode,
     setIsInviteMode,
-    loadContacts,
+    loadContacts: () => loadContacts(true),
     addContactLocally,
     toggleSelectAll,
     toggleSelectContact,
