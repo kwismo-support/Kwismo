@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import { securityApi, ActiveSessionResponse } from '../services/security.api';
 import { toast } from '../../../shared/store/toastStore';
 
 export function useActiveSessions() {
   const [sessions, setSessions] = useState<ActiveSessionResponse[]>([]);
   const [loading, setLoading] = useState(true);
-  const { t } = useTranslation();
 
   const fetchSessions = useCallback(async () => {
     setLoading(true);
@@ -16,11 +15,11 @@ export function useActiveSessions() {
         setSessions(res.data);
       }
     } catch (err: any) {
-      toast.error(err.message || t('toasts.networkError'));
+      toast.error(err.message || i18next.t('toasts.networkError'));
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, []);
 
   useEffect(() => {
     fetchSessions();
@@ -31,12 +30,12 @@ export function useActiveSessions() {
       const res = await securityApi.revokeSession(sessionId);
       if (res.success) {
         setSessions((prev) => prev.filter((s) => s.id !== sessionId));
-        toast.success(t('security.sessionRevoked', { device: deviceName }));
+        toast.success(i18next.t('security.sessionRevoked', { device: deviceName }));
       } else {
-        toast.error(res.message || t('security.revokeSessionError'));
+        toast.error(res.message || i18next.t('security.revokeSessionError'));
       }
     } catch (err: any) {
-      toast.error(err.message || t('toasts.networkError'));
+      toast.error(err.message || i18next.t('toasts.networkError'));
     }
   };
 
@@ -45,12 +44,12 @@ export function useActiveSessions() {
       const res = await securityApi.revokeAllOtherSessions();
       if (res.success) {
         setSessions((prev) => prev.filter((s) => s.is_current));
-        toast.success(t('security.allOtherSessionsRevoked'));
+        toast.success(i18next.t('security.allOtherSessionsRevoked'));
       } else {
-        toast.error(res.message || t('security.revokeSessionError'));
+        toast.error(res.message || i18next.t('security.revokeSessionError'));
       }
     } catch (err: any) {
-      toast.error(err.message || t('toasts.networkError'));
+      toast.error(err.message || i18next.t('toasts.networkError'));
     }
   };
 

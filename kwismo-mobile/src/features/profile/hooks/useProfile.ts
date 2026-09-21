@@ -1,16 +1,37 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import { profileApi, UserMeResponse, UserUpdatePayload } from '../services/profile.api';
-import { useAuthStore } from '../../../shared/store/authStore';
+import { useAuthStore, User } from '../../../shared/store/authStore';
 import { toast } from '../../../shared/store/toastStore';
 
-export function useProfile() {
-  const [profile, setProfile] = useState<UserMeResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const { t } = useTranslation();
+function userToProfile(u: User): UserMeResponse {
+  return {
+    id: u.id,
+    email: u.email,
+    prenom: u.firstName || '',
+    nom: u.lastName || '',
+    langue: u.langue || 'fr',
+    role: u.role || 'user',
+    kpi: u.kpi,
+  };
+}
 
-  const fetchProfile = useCallback(async () => {
+export function useProfile() {
+  const cachedUser = useAuthStore((s) => s.user);
+  const [profile, setProfile] = useState<UserMeResponse | null>(
+    cachedUser ? userToProfile(cachedUser) : null
+  );
+  const [loading, setLoading] = useState<boolean>(!cachedUser);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchProfile = useCallback(async (forceRefresh = false) => {
+    const currentUser = useAuthStore.getState().user;
+    if (currentUser && !forceRefresh) {
+      setProfile(userToProfile(currentUser));
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
@@ -27,17 +48,17 @@ export function useProfile() {
           kpi: res.data.kpi,
         });
       } else {
-        setError(res.message || t('profile.fetchError'));
+        setError(res.message || i18next.t('profile.fetchError'));
       }
     } catch (err: any) {
-      setError(err.message || t('toasts.networkError'));
+      setError(err.message || i18next.t('toasts.networkError'));
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, []);
 
   useEffect(() => {
-    fetchProfile();
+    fetchProfile(false);
   }, [fetchProfile]);
 
   const updateProfile = async (payload: UserUpdatePayload) => {
@@ -55,13 +76,13 @@ export function useProfile() {
           langue: res.data.langue,
           kpi: res.data.kpi,
         });
-        toast.success(t('toasts.generalSuccess'));
+        toast.success(i18next.t('toasts.generalSuccess'));
       } else if (!res.success) {
-        toast.error(res.message || t('profile.updateError'));
+        toast.error(res.message || i18next.t('profile.updateError'));
       }
       return res;
     } catch (err: any) {
-      toast.error(err.message || t('toasts.networkError'));
+      toast.error(err.message || i18next.t('toasts.networkError'));
       return { success: false, message: err.message };
     } finally {
       setLoading(false);
@@ -79,7 +100,7 @@ export function useProfile() {
     profile,
     loading,
     error,
-    refresh: fetchProfile,
+    refresh: () => fetchProfile(true),
     updateProfile,
     logout: handleLogout,
   };

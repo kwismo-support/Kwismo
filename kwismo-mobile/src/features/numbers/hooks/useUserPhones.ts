@@ -1,6 +1,5 @@
-// Hook React pour gérer les numéros rattachés au compte utilisateur
 import { useState, useEffect, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import { numbersApi, UserPhoneItem } from '../services/numbers.api';
 import { toast } from '../../../shared/store/toastStore';
 
@@ -8,7 +7,6 @@ export function useUserPhones() {
   const [phones, setPhones] = useState<UserPhoneItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { t } = useTranslation();
 
   const fetchPhones = useCallback(async () => {
     setLoading(true);
@@ -18,10 +16,10 @@ export function useUserPhones() {
       if (res.success && res.data) {
         setPhones(res.data);
       } else {
-        setError(res.message || t('errors.generalMessage', 'Erreur de chargement des numéros.'));
+        setError(res.message || i18next.t('errors.generalMessage', 'Erreur de chargement des numéros.'));
       }
     } catch (err: any) {
-      setError(err.message || t('toasts.networkError', 'Erreur réseau.'));
+      setError(err.message || i18next.t('toasts.networkError', 'Erreur réseau.'));
     } finally {
       setLoading(false);
     }
@@ -36,7 +34,7 @@ export function useUserPhones() {
     try {
       const res = await numbersApi.addNumber(payload);
       if (res.success) {
-        toast.success(t('toasts.generalSuccess', 'Numéro ajouté avec succès !'));
+        toast.success(i18next.t('toasts.generalSuccess', 'Numéro ajouté avec succès !'));
         await fetchPhones();
       }
       return res;
@@ -50,7 +48,7 @@ export function useUserPhones() {
     try {
       const res = await numbersApi.deleteNumber(phoneId);
       if (res.success) {
-        toast.success(t('toasts.generalSuccess', 'Numéro retiré.'));
+        toast.success(i18next.t('toasts.generalSuccess', 'Numéro retiré.'));
         await fetchPhones();
       }
       return res;

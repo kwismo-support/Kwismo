@@ -12,6 +12,7 @@ export const notificationsApi = {
   async getPreferences() {
     return ApiClient.request<NotificationPreferences>('/users/me/notification-preferences', {
       method: 'GET',
+      silent: true,
     });
   },
 
@@ -19,6 +20,7 @@ export const notificationsApi = {
     return ApiClient.request<NotificationPreferences>('/users/me/notification-preferences', {
       method: 'PATCH',
       body: payload,
+      silent: true,
     });
   },
 
@@ -26,6 +28,7 @@ export const notificationsApi = {
     return ApiClient.request<{ message: string }>('/users/me/push-token', {
       method: 'POST',
       body: { token },
+      silent: true,
     });
   },
 
@@ -33,6 +36,7 @@ export const notificationsApi = {
     return ApiClient.request<{ message: string }>('/users/me/push-token', {
       method: 'DELETE',
       body: { token },
+      silent: true,
     });
   },
 };

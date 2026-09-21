@@ -142,7 +142,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   setUser: (user: User) => {
     set({ user });
     if (user.langue && (user.langue === 'fr' || user.langue === 'en')) {
-      i18next.changeLanguage(user.langue).catch(() => {});
+      if (i18next.language !== user.langue) {
+        i18next.changeLanguage(user.langue).catch(() => {});
+      }
     }
     storage.setItem(USER_STORAGE_KEY, JSON.stringify(user)).catch(() => {});
   },
