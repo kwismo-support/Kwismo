@@ -11,6 +11,7 @@ export interface ActionOption {
   label: string;
   description: string;
   ussdFormat: string;
+  operator_id?: string;
 }
 
 export const MOCK_REGISTERED_SENDERS: SenderNumberOption[] = [

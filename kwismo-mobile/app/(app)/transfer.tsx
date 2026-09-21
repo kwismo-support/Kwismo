@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Modal,
   Linking,
   Clipboard,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,7 +24,8 @@ import { Button } from '@/shared/ui/Button';
 import { CountryItem } from '@/shared/components/CountryPickerModal';
 import { toast } from '@/shared/store/toastStore';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
-
+import { numbersApi } from '@/features/numbers/services/numbers.api';
+import { transferApi } from '@/features/transfer/services/transfer.api';
 import {
   SenderNumberOption,
   ActionOption,
@@ -44,15 +46,17 @@ export default function TransferScreen() {
     callingCode: `+${getCountryCallingCode('CM')}`,
   };
 
-  const registeredSenders: SenderNumberOption[] = MOCK_REGISTERED_SENDERS;
-  const availableActions: ActionOption[] = MOCK_AVAILABLE_ACTIONS;
+  const [registeredSenders, setRegisteredSenders] = useState<SenderNumberOption[]>(MOCK_REGISTERED_SENDERS);
+  const [availableActions, setAvailableActions] = useState<ActionOption[]>(MOCK_AVAILABLE_ACTIONS);
+  const [isPreparing, setIsPreparing] = useState(false);
+  const [serverUssdCode, setServerUssdCode] = useState<string | null>(null);
 
   const [step, setStep] = useState<'form' | 'summary' | 'ussd'>('form');
   const [beneficiaryPhone, setBeneficiaryPhone] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<CountryItem>(defaultCountry);
   const [rawAmount, setRawAmount] = useState('');
-  const [selectedSender, setSelectedSender] = useState<SenderNumberOption>(registeredSenders[0]);
-  const [selectedAction, setSelectedAction] = useState<ActionOption>(availableActions[0]);
+  const [selectedSender, setSelectedSender] = useState<SenderNumberOption>(MOCK_REGISTERED_SENDERS[0]);
+  const [selectedAction, setSelectedAction] = useState<ActionOption>(MOCK_AVAILABLE_ACTIONS[0]);
 
   const [senderModalVisible, setSenderModalVisible] = useState(false);
   const [actionModalVisible, setActionModalVisible] = useState(false);
@@ -60,6 +64,41 @@ export default function TransferScreen() {
 
   const [phoneError, setPhoneError] = useState('');
   const [amountError, setAmountError] = useState('');
+
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        const phonesRes = await numbersApi.getMyNumbers();
+        if (phonesRes.success && phonesRes.data && phonesRes.data.length > 0) {
+          const mappedSenders: SenderNumberOption[] = phonesRes.data.map((p, idx) => ({
+            id: p.id,
+            label: `SIM ${idx + 1} (${p.numero_valeur.includes('69') || p.numero_valeur.includes('655') ? 'Orange' : 'MTN'})`,
+            phone: p.numero_valeur,
+            callingCode: selectedCountry.callingCode,
+            operator: p.numero_valeur.includes('69') || p.numero_valeur.includes('655') ? 'Orange' : 'MTN',
+          }));
+          setRegisteredSenders(mappedSenders);
+          setSelectedSender(mappedSenders[0]);
+        }
+      } catch {}
+
+      try {
+        const actionsRes = await transferApi.getActions();
+        if (actionsRes.success && actionsRes.data && actionsRes.data.length > 0) {
+          const mappedActions: ActionOption[] = actionsRes.data.map((a) => ({
+            id: a.id,
+            label: a.nom,
+            description: `Exécuter ${a.nom}`,
+            ussdFormat: a.pattern_code || '*126*{amount}*{dest}#',
+            operator_id: a.operator_id,
+          }));
+          setAvailableActions(mappedActions);
+          setSelectedAction(mappedActions[0]);
+        }
+      } catch {}
+    };
+    loadInitialData();
+  }, []);
 
   const formattedAmount = useMemo(() => {
     if (!rawAmount) return '';
@@ -80,11 +119,12 @@ export default function TransferScreen() {
   }, [beneficiaryPhone]);
 
   const generatedUssdCode = useMemo(() => {
+    if (serverUssdCode) return serverUssdCode;
     const cleanDest = beneficiaryPhone.replace(/\D/g, '');
     return selectedAction.ussdFormat
       .replace('{dest}', cleanDest)
       .replace('{amount}', rawAmount);
-  }, [selectedAction, beneficiaryPhone, rawAmount]);
+  }, [selectedAction, beneficiaryPhone, rawAmount, serverUssdCode]);
 
   const handleValidateForm = () => {
     let valid = true;
@@ -111,11 +151,42 @@ export default function TransferScreen() {
     return true;
   };
 
-  const handleProceedFromSummary = () => {
-    if (isBeneficiarySuspect) {
-      setWarningModalVisible(true);
-    } else {
-      setStep('ussd');
+  const handleProceedFromSummary = async () => {
+    setIsPreparing(true);
+    try {
+      const cleanPhone = `${selectedCountry.callingCode}${beneficiaryPhone.replace(/\D/g, '')}`;
+      const amountNum = parseFloat(rawAmount) || 0;
+
+      const res = await transferApi.prepareTransfer({
+        numero: cleanPhone,
+        montant: amountNum,
+        operator_id: selectedAction.operator_id || selectedSender.id || 'op-orange',
+        ussd_action_id: selectedAction.id || 'action-om-transfer',
+      });
+
+      if (res.data?.code_ussd_genere) {
+        setServerUssdCode(res.data.code_ussd_genere);
+      }
+
+      const isHighRisk =
+        res.data?.niveau_risque === 'eleve' ||
+        res.data?.niveau_risque === 'moyen' ||
+        res.data?.statut === 'frauduleux' ||
+        isBeneficiarySuspect;
+
+      if (isHighRisk) {
+        setWarningModalVisible(true);
+      } else {
+        setStep('ussd');
+      }
+    } catch {
+      if (isBeneficiarySuspect) {
+        setWarningModalVisible(true);
+      } else {
+        setStep('ussd');
+      }
+    } finally {
+      setIsPreparing(false);
     }
   };
 
@@ -124,25 +195,42 @@ export default function TransferScreen() {
     setStep('ussd');
   };
 
-  const handleLaunchUssd = async () => {
+  const handleLaunchPhoneApp = async () => {
     const telUrl = `tel:${encodeURIComponent(generatedUssdCode)}`;
     try {
       const supported = await Linking.canOpenURL(telUrl);
       if (supported) {
         await Linking.openURL(telUrl);
-        toast.success(t('toasts.ussdLaunched'));
+        toast.success(t('toasts.ussdLaunched', 'Ouverture de l’application Téléphone...'));
       } else {
         await Linking.openURL(telUrl);
       }
     } catch {
       Clipboard.setString(generatedUssdCode);
-      toast.info(t('toasts.ussdCopied'));
+      toast.info(t('toasts.ussdCopied', 'Code USSD copié dans le presse-papier !'));
+    }
+  };
+
+  const handleLaunchMaxIt = async () => {
+    const maxItDeepLink = 'orange-money://';
+    const maxItWebUrl = 'https://maxit.orange.com';
+    try {
+      const supported = await Linking.canOpenURL(maxItDeepLink);
+      if (supported) {
+        await Linking.openURL(maxItDeepLink);
+        toast.success(t('toasts.maxItLaunched', 'Ouverture de l’application Max It...'));
+      } else {
+        await Linking.openURL(maxItWebUrl);
+        toast.info(t('toasts.maxItWeb', 'Redirection vers le portail Max It...'));
+      }
+    } catch {
+      await Linking.openURL(maxItWebUrl);
     }
   };
 
   const handleCopyUssd = () => {
     Clipboard.setString(generatedUssdCode);
-    toast.success(t('toasts.copiedToClipboard'));
+    toast.success(t('toasts.copiedToClipboard', 'Code USSD copié dans le presse-papier !'));
   };
 
   const handleReset = () => {
@@ -150,6 +238,7 @@ export default function TransferScreen() {
     setRawAmount('');
     setPhoneError('');
     setAmountError('');
+    setServerUssdCode(null);
     setStep('form');
   };
 
@@ -158,8 +247,8 @@ export default function TransferScreen() {
       <StatusBar style={isDark ? 'light' : 'dark'} />
 
       <HeaderBar
-        title={t('common.transfer')}
-        subtitle={t('common.transferSubtitle', 'Initiation de vitre transaction')}
+        title={t('common.transfer', 'Transfert')}
+        subtitle={t('common.transferSubtitle', 'Initiation de votre transaction')}
         showBack={step !== 'form'}
         onBack={() => {
           if (step === 'summary') setStep('form');
@@ -200,7 +289,7 @@ export default function TransferScreen() {
 
             <Input
               label={t('transfer.amountLabel', 'Montant (en FCFA)')}
-              placeholder="Ex: 5 000 000"
+              placeholder="Ex: 5 000"
               value={formattedAmount}
               onChangeText={handleAmountChange}
               error={amountError}
@@ -295,7 +384,7 @@ export default function TransferScreen() {
                   <Text className="font-font-regular text-xs text-red-700 dark:text-red-400">
                     {t(
                       'transfer.riskSuspectSub',
-                      'Ce destinataire a fait l’objet de plusieurs signalements récents.'
+                      'Ce destinataire présente un risque potentiel selon nos informations.'
                     )}
                   </Text>
                 </View>
@@ -371,14 +460,18 @@ export default function TransferScreen() {
               />
               <Button
                 title={
-                  isBeneficiarySuspect
+                  isPreparing
+                    ? t('common.loading', 'Analyse en cours...')
+                    : isBeneficiarySuspect
                     ? t('transfer.proceedAnyway', 'Continuer malgré le risque')
                     : t('transfer.generateUssd', 'Générer le code USSD')
                 }
                 onPress={handleProceedFromSummary}
+                disabled={isPreparing}
                 variant={isBeneficiarySuspect ? 'danger' : 'primary'}
                 size="md"
                 style={{ flex: 1.5 }}
+                leftIcon={isPreparing ? <ActivityIndicator color="#FFFFFF" size="small" /> : undefined}
               />
             </View>
           </View>
@@ -387,17 +480,18 @@ export default function TransferScreen() {
         {step === 'ussd' && (
           <View className="w-full">
             <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1">
-              {t('transfer.ussdReadyTitle', 'Code USSD prêt !')}
+              {t('transfer.ussdReadyTitle', 'Validation du transfert')}
             </Text>
             <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mb-5 leading-5">
               {t(
                 'transfer.ussdReadySub',
-                'Touchez le bouton pour lancer automatiquement l’opération sur votre téléphone.'
+                'Choisissez l’option de votre choix pour finaliser le transfert en saisissant votre code secret.'
               )}
             </Text>
 
             <View className="p-6 rounded-3xl border-2 border-brand-green bg-white dark:bg-brand-cardDark items-center justify-center mb-6">
               <Icon name="solar:phone-calling-bold" color="#25B876" size={32} className="mb-3" />
+
               <Text className="font-font-bold text-2xl font-extrabold text-slate-900 dark:text-white tracking-wider mb-1.5 text-center">
                 {generatedUssdCode}
               </Text>
@@ -417,21 +511,32 @@ export default function TransferScreen() {
               </TouchableOpacity>
             </View>
 
-            <Button
-              title={t('transfer.launchPhoneApp', 'Lancer dans l’application Téléphone')}
-              onPress={handleLaunchUssd}
-              variant="primary"
-              size="lg"
-              leftIcon={<Icon name="solar:phone-calling-linear" color="#FFFFFF" size={22} />}
-              style={{ marginBottom: 14 }}
-            />
+            <View className="w-full space-y-3">
+              <Button
+                title={t('transfer.launchPhoneApp', 'Faire le transfert depuis votre téléphone')}
+                onPress={handleLaunchPhoneApp}
+                variant="primary"
+                size="lg"
+                leftIcon={<Icon name="solar:phone-calling-bold" color="#FFFFFF" size={22} />}
+                style={{ marginBottom: 12 }}
+              />
 
-            <Button
-              title={t('common.newTransfer', 'Faire un autre transfert')}
-              onPress={handleReset}
-              variant="secondary"
-              size="md"
-            />
+              <Button
+                title={t('transfer.launchMaxIt', 'Faire le transfert sur Max It')}
+                onPress={handleLaunchMaxIt}
+                variant="secondary"
+                size="lg"
+                leftIcon={<Icon name="solar:wallet-2-bold" color="#25B876" size={22} />}
+                style={{ marginBottom: 12 }}
+              />
+
+              <Button
+                title={t('common.newTransfer', 'Faire un autre transfert')}
+                onPress={handleReset}
+                variant="outline"
+                size="md"
+              />
+            </View>
           </View>
         )}
       </ScrollView>
@@ -553,7 +658,7 @@ export default function TransferScreen() {
             </View>
 
             <Text className="font-font-bold text-lg font-extrabold text-slate-900 dark:text-white text-center mb-2">
-              {t('transfer.warningModalTitle', 'Êtes-vous absolument sûr ?')}
+              {t('transfer.warningModalTitle', 'Attention : Numéro à risque !')}
             </Text>
 
             <Text className="font-font-regular text-xs text-slate-600 dark:text-slate-300 text-center leading-5 mb-5">
@@ -563,22 +668,22 @@ export default function TransferScreen() {
                 selectedCountry.callingCode +
                 ' ' +
                 beneficiaryPhone +
-                ' présente un risque élevé de fraude selon notre système. Continuer peut entraîner une perte définitive de vos fonds.'
+                ' présente un risque selon notre système. Continuer peut entraîner une perte de vos fonds.'
               )}
             </Text>
 
             <View className="w-full">
               <Button
-                title={t('common.cancel', 'Annuler le transfert')}
-                onPress={() => setWarningModalVisible(false)}
-                variant="secondary"
+                title={t('transfer.confirmAnyway', 'Continuer quand même')}
+                onPress={handleConfirmWarning}
+                variant="danger"
                 size="md"
                 style={{ marginBottom: 10 }}
               />
               <Button
-                title={t('transfer.confirmAnyway', 'Continuer quand même')}
-                onPress={handleConfirmWarning}
-                variant="danger"
+                title={t('common.cancel', 'Annuler le transfert')}
+                onPress={() => setWarningModalVisible(false)}
+                variant="secondary"
                 size="md"
               />
             </View>
@@ -590,4 +695,3 @@ export default function TransferScreen() {
     </View>
   );
 }
-
