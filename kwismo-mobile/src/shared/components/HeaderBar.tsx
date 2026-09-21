@@ -196,15 +196,15 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
         style={{
           backgroundColor,
           paddingTop: headerHeightTop,
-          paddingBottom: 30,
+          paddingBottom: showBack ? 24 : 30,
         }}
-        className="px-4 pb-3 relative overflow-hidden"
+        className="px-4 relative overflow-hidden"
       >
         <View className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
           <View className="absolute -top-10 -right-5 wx-55 hx-55 rounded-full border-[26px] border-white -rotate-25 scale-x-140" />
         </View>
 
-        <View className={`flex-row items-center justify-between min-h-7 ${!showBack || subtitle ? 'mb-6' : 'mb-2'}`}>
+        <View className={`flex-row items-center justify-between min-h-7 ${showBack ? 'mb-3' : 'mb-8'}`}>
           {showBack ? (
             <>
               <View className="w-10 flex-row items-center justify-start">
@@ -217,18 +217,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                 </TouchableOpacity>
               </View>
 
-              <View className="flex-1 items-center justify-center px-2">
-                {title ? (
-                  <Text
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                    style={{ color: textColor }}
-                    className="font-montserrat-bold text-lg font-bold text-center"
-                  >
-                    {title}
-                  </Text>
-                ) : null}
-              </View>
+              <View className="flex-1" />
 
               <View className="w-10 flex-row items-center justify-end">
                 {rightAction || null}
@@ -261,8 +250,21 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           )}
         </View>
 
+        {showBack && title ? (
+          <View className="items-center justify-center pb-1">
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={{ color: textColor }}
+              className="font-montserrat-bold text-2xl font-bold text-center"
+            >
+              {title}
+            </Text>
+          </View>
+        ) : null}
+
         {subtitle ? (
-          <View className="items-center justify-center">
+          <View className="items-center justify-center mt-1">
             <Text style={{ color: textColor }} className="font-semibold text-sm text-center">
               {subtitle}
             </Text>

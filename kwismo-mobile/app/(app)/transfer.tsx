@@ -425,7 +425,7 @@ export default function TransferScreen() {
         {step === 'form' ? (
           <View className="w-full">
             <PhoneCountryInput
-              label={t('transfer.beneficiaryLabel', 'Numéro du bénéficiaire')}
+              label={t('transfer.beneficiaryLabel')}
               phoneNumber={beneficiaryPhone}
               onPhoneNumberChange={(val) => {
                 setBeneficiaryPhone(val);
@@ -438,7 +438,7 @@ export default function TransferScreen() {
             />
 
             <Input
-              label={t('transfer.amountLabel', 'Montant (en FCFA)')}
+              label={t('transfer.amountLabel')}
               placeholder="Ex: 5 000"
               value={formattedAmount}
               onChangeText={handleAmountChange}
@@ -454,7 +454,7 @@ export default function TransferScreen() {
 
             <View className="mb-4">
               <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
-                {t('transfer.senderLabel', "Numéro d'expéditeur (SIM)")}
+                {t('transfer.senderLabel')}
               </Text>
               {isDataLoading ? (
                 <Skeleton height={56} borderRadius={12} className="w-full" />
@@ -463,17 +463,14 @@ export default function TransferScreen() {
                   <View className="flex-row items-center mb-2">
                     <Icon name="solar:sim-card-bold" color="#D97706" size={24} className="mr-2" />
                     <Text className="font-font-bold text-sm font-bold text-amber-800 dark:text-amber-300">
-                      {t('transfer.noSenderTitle', 'Aucun numéro SIM d’envoi disponible')}
+                      {t('transfer.noSenderTitle')}
                     </Text>
                   </View>
                   <Text className="font-font-regular text-xs text-amber-700 dark:text-amber-400 mb-3 leading-5">
-                    {t(
-                      'transfer.noSenderDesc',
-                      'Veuillez ajouter au moins un numéro dans votre compte pour effectuer des transferts.'
-                    )}
+                    {t('transfer.noSenderDesc')}
                   </Text>
                   <Button
-                    title={t('transfer.addSimAction', 'Ajouter un numéro SIM')}
+                    title={t('transfer.addSimAction')}
                     onPress={() => router.push('/(app)/management')}
                     variant="outline"
                     size="sm"
@@ -500,7 +497,7 @@ export default function TransferScreen() {
 
             <View className="mb-2">
               <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
-                {t('transfer.actionLabel', 'Action à exécuter')}
+                {t('transfer.actionLabel')}
               </Text>
               {isDataLoading || isActionLoading ? (
                 <Skeleton height={56} borderRadius={12} className="w-full" />
@@ -549,10 +546,10 @@ export default function TransferScreen() {
         ) : step === 'summary' ? (
           <View className="w-full">
             <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1">
-              {t('transfer.approveTitle', "Approuvez l'envoi")}
+              {t('transfer.approveTitle')}
             </Text>
             <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mb-5 leading-5">
-              {t('transfer.approveSub', 'Vérifiez les détails avant de générer le code USSD')}
+              {t('transfer.approveSub')}
             </Text>
 
             <View className="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark items-center justify-center mb-4">
@@ -569,13 +566,10 @@ export default function TransferScreen() {
                 <Icon name="solar:danger-triangle-bold" color="#DC2626" size={24} className="mr-3" />
                 <View className="flex-1">
                   <Text className="font-font-bold text-sm font-bold text-red-800 dark:text-red-300 mb-0.5">
-                    {t('transfer.riskSuspectTitle', 'Numéro suspect détecté !')}
+                    {t('transfer.riskSuspectTitle')}
                   </Text>
                   <Text className="font-font-regular text-xs text-red-700 dark:text-red-400">
-                    {t(
-                      'transfer.riskSuspectSub',
-                      'Ce destinataire présente un risque potentiel selon nos informations.'
-                    )}
+                    {t('transfer.riskSuspectSub')}
                   </Text>
                 </View>
               </View>
@@ -584,13 +578,10 @@ export default function TransferScreen() {
                 <Icon name="solar:verified-check-bold" color="#16A34A" size={24} className="mr-3" />
                 <View className="flex-1">
                   <Text className="font-font-bold text-sm font-bold text-emerald-800 dark:text-emerald-300 mb-0.5">
-                    {t('transfer.riskSafeTitle', 'Numéro vérifié et sûr')}
+                    {t('transfer.riskSafeTitle')}
                   </Text>
                   <Text className="font-font-regular text-xs text-brand-green dark:text-brand-green">
-                    {t(
-                      'transfer.riskSafeSub',
-                      'Aucune menace ou comportement suspect associé à ce numéro.'
-                    )}
+                    {t('transfer.riskSafeSub')}
                   </Text>
                 </View>
               </View>
@@ -599,7 +590,7 @@ export default function TransferScreen() {
             <View className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-4 mb-6">
               <View className="flex-row items-center justify-between py-2">
                 <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
-                  {t('transfer.recipientNumber', 'Numéro destinataire')}
+                  {t('transfer.recipientNumber')}
                 </Text>
                 <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
                   {selectedCountry.callingCode} {beneficiaryPhone}
@@ -610,7 +601,7 @@ export default function TransferScreen() {
 
               <View className="flex-row items-center justify-between py-2">
                 <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
-                  {t('transfer.countryLabel', 'Pays')}
+                  {t('transfer.countryLabel')}
                 </Text>
                 <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
                   {selectedCountry.name} ({selectedCountry.callingCode})
@@ -622,7 +613,7 @@ export default function TransferScreen() {
                   <View className="h-px w-full bg-slate-100 dark:bg-slate-800 my-1" />
                   <View className="flex-row items-center justify-between py-2">
                     <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
-                      {t('transfer.senderSim', 'SIM d’envoi')}
+                      {t('transfer.senderSim')}
                     </Text>
                     <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
                       {selectedSender.label}
@@ -635,7 +626,7 @@ export default function TransferScreen() {
 
               <View className="flex-row items-center justify-between py-2">
                 <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
-                  {t('common.amount', 'Montant total')}
+                  {t('common.amount')}
                 </Text>
                 <Text className="font-font-bold text-sm font-bold text-brand-green">
                   {formattedAmount} FCFA
@@ -645,7 +636,7 @@ export default function TransferScreen() {
 
             <View className="flex-row gap-3">
               <Button
-                title={t('common.back', 'Modifier')}
+                title={t('common.back')}
                 onPress={() => setStep('form')}
                 variant="outline"
                 size="md"
@@ -654,10 +645,10 @@ export default function TransferScreen() {
               <Button
                 title={
                   isPreparing
-                    ? t('common.loading', 'Analyse en cours...')
+                    ? t('common.loading')
                     : isBeneficiarySuspect
-                    ? t('transfer.proceedAnyway', 'Continuer malgré le risque')
-                    : t('transfer.generateUssd', 'Générer le code USSD')
+                    ? t('transfer.proceedAnyway')
+                    : t('transfer.generateUssd')
                 }
                 onPress={handleProceedFromSummary}
                 disabled={isPreparing}
@@ -671,13 +662,10 @@ export default function TransferScreen() {
         ) : (
           <View className="w-full">
             <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1">
-              {t('transfer.ussdReadyTitle', 'Validation du transfert')}
+              {t('transfer.ussdReadyTitle')}
             </Text>
             <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mb-5 leading-5">
-              {t(
-                'transfer.ussdReadySub',
-                'Choisissez l’option de votre choix pour finaliser le transfert en saisissant votre code secret.'
-              )}
+              {t('transfer.ussdReadySub')}
             </Text>
 
             <View className="p-6 rounded-3xl border-2 border-brand-green bg-white dark:bg-brand-cardDark items-center justify-center mb-6">
@@ -699,14 +687,14 @@ export default function TransferScreen() {
               >
                 <Icon name="solar:copy-bold" color="#25B876" size={16} className="mr-1.5" />
                 <Text className="font-font-bold text-xs text-brand-green font-semibold">
-                  {t('common.copy', 'Copier le code')}
+                  {t('common.copy')}
                 </Text>
               </TouchableOpacity>
             </View>
 
             <View className="w-full space-y-3">
               <Button
-                title={t('transfer.launchPhoneApp', 'Faire le transfert depuis votre téléphone')}
+                title={t('transfer.launchPhoneApp')}
                 onPress={handleLaunchPhoneApp}
                 variant="primary"
                 size="lg"
@@ -715,7 +703,7 @@ export default function TransferScreen() {
               />
 
               <Button
-                title={t('transfer.launchMaxIt', 'Faire le transfert sur l’application de l’opérateur')}
+                title={t('transfer.launchMaxIt')}
                 onPress={handleLaunchOperatorApp}
                 variant="secondary"
                 size="lg"
@@ -724,7 +712,7 @@ export default function TransferScreen() {
               />
 
               <Button
-                title={t('common.newTransfer', 'Faire un autre transfert')}
+                title={t('common.newTransfer')}
                 onPress={handleReset}
                 variant="outline"
                 size="md"
@@ -744,7 +732,7 @@ export default function TransferScreen() {
           <View className="rounded-t-3xl p-5 pb-9 bg-white dark:bg-brand-darkBg">
             <View className="flex-row items-center justify-between mb-4">
               <Text className="font-font-bold text-base font-bold text-slate-900 dark:text-white">
-                {t('transfer.selectSenderSim', "Sélectionner la SIM d'envoi")}
+                {t('transfer.selectSenderSim')}
               </Text>
               <TouchableOpacity onPress={() => setSenderModalVisible(false)}>
                 <Icon name="solar:close-circle-bold" color="#94A3B8" size={26} />
@@ -793,7 +781,7 @@ export default function TransferScreen() {
           <View className="rounded-t-3xl p-5 pb-9 bg-white dark:bg-brand-darkBg">
             <View className="flex-row items-center justify-between mb-4">
               <Text className="font-font-bold text-base font-bold text-slate-900 dark:text-white">
-                {t('transfer.selectAction', 'Sélectionner l’action')}
+                {t('transfer.selectAction')}
               </Text>
               <TouchableOpacity onPress={() => setActionModalVisible(false)}>
                 <Icon name="solar:close-circle-bold" color="#94A3B8" size={26} />
@@ -845,30 +833,23 @@ export default function TransferScreen() {
             </View>
 
             <Text className="font-font-bold text-lg font-extrabold text-slate-900 dark:text-white text-center mb-2">
-              {t('transfer.warningModalTitle', 'Attention : Numéro à risque !')}
+              {t('transfer.warningModalTitle')}
             </Text>
 
             <Text className="font-font-regular text-xs text-slate-600 dark:text-slate-300 text-center leading-5 mb-5">
-              {t(
-                'transfer.warningModalBody',
-                'Le numéro destinataire ' +
-                selectedCountry.callingCode +
-                ' ' +
-                beneficiaryPhone +
-                ' présente un risque selon notre système. Continuer peut entraîner une perte de vos fonds.'
-              )}
+              {t('transfer.warningModalBody')}
             </Text>
 
             <View className="w-full">
               <Button
-                title={t('transfer.confirmAnyway', 'Continuer quand même')}
+                title={t('transfer.confirmAnyway')}
                 onPress={handleConfirmWarning}
                 variant="danger"
                 size="md"
                 style={{ marginBottom: 10 }}
               />
               <Button
-                title={t('common.cancel', 'Annuler le transfert')}
+                title={t('common.cancel')}
                 onPress={() => setWarningModalVisible(false)}
                 variant="secondary"
                 size="md"

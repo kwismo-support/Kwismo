@@ -122,6 +122,7 @@
     "bioDisabled": "Authentification biométrique désactivée.",
     "twoFactorTitle": "Authentification à deux facteurs",
     "pinTitle": "Code PIN",
+    "pinConfiguredSuccess": "Code PIN configuré et sécurité biométrique activée avec succès !",
     "biometricsTitle": "Empreintes biométriques",
     "twoFactorEnabled": "Authentification 2FA activée avec succès.",
     "twoFactorDisabled": "Authentification 2FA désactivée.",
