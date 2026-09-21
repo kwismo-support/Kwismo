@@ -344,7 +344,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ gap: 8, paddingVertical: 6, paddingHorizontal: 4 }}
+                contentContainerStyle={{ gap: 8, paddingVertical: 8, paddingHorizontal: 8 }}
                 className="flex-row"
               >
                 {categoryChips.map((chip) => {
@@ -354,19 +354,22 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                       key={chip.id}
                       activeOpacity={0.8}
                       onPress={() => setSelectedCategory(isSelected ? 'all' : chip.id)}
-                      className={`px-3 py-1.5 rounded-full border flex-row items-center gap-1.5 mr-1 ${
+                      className={`px-2.5 py-1.5 rounded-full border flex-row items-center justify-center gap-1.5 mr-1 ${
                         isSelected
                           ? 'bg-emerald-50 dark:bg-emerald-950/50 border-brand-green'
                           : 'bg-transparent dark:bg-transparent border-slate-300 dark:border-slate-700'
                       }`}
                     >
-                      <Icon
-                        name={chip.icon}
-                        size={14}
-                        color={isSelected ? '#25B46E' : isDark ? '#94A3B8' : '#64748B'}
-                      />
+                      <View className="items-center justify-center">
+                        <Icon
+                          name={chip.icon}
+                          size={14}
+                          color={isSelected ? '#25B46E' : isDark ? '#94A3B8' : '#64748B'}
+                        />
+                      </View>
                       <Text
-                        className={`text-2xs font-medium ${
+                        style={{ includeFontPadding: false, textAlignVertical: 'center' }}
+                        className={`text-2xs font-medium leading-none ${
                           isSelected
                             ? 'text-brand-green'
                             : 'text-slate-500 dark:text-slate-400'
