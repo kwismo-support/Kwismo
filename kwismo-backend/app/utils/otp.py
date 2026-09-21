@@ -144,7 +144,7 @@ async def send_sms_otp(phone: str, code: str | None = None, email: str | None = 
 
     if email:
         try:
-            await send_otp_email(email, code_to_send)
+            await send_otp_email(email, code_to_send, phone=phone)
             return True
         except Exception as exc:
             logger.warning("Echec envoi email OTP a %s : %s", email, exc)

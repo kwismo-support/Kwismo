@@ -41,9 +41,9 @@ async def send_email(to: str, subject: str, body_html: str, dev_tag: str = "EMAI
                     logger.info("Email envoyé via Brevo API à %s (sujet: %s)", to, subject)
                     return True
                 else:
-                    logger.warning("Échec Brevo API (statut %s): %s — tentative fallback Brevo SMTP", res.status_code, res.text)
+                    logger.warning("Échec Brevo API (statut %s): %s", res.status_code, res.text)
         except Exception as exc:
-            logger.warning("Échec envoi email via Brevo API à %s : %s — tentative fallback Brevo SMTP", to, exc)
+            logger.warning("Échec envoi email via Brevo API à %s : %s", to, exc)
 
     if settings.brevo_smtp_user and settings.brevo_smtp_key:
         try:
@@ -70,7 +70,7 @@ async def send_email(to: str, subject: str, body_html: str, dev_tag: str = "EMAI
             logger.info("Email envoyé via Brevo SMTP à %s (sujet: %s)", to, subject)
             return True
         except Exception as exc:
-            logger.warning("Échec envoi email via Brevo SMTP à %s : %s — tentative fallback Resend API", to, exc)
+            logger.warning("Échec envoi email via Brevo SMTP à %s : %s", to, exc)
 
     if settings.resend_api_key:
         try:
@@ -85,7 +85,7 @@ async def send_email(to: str, subject: str, body_html: str, dev_tag: str = "EMAI
             logger.info("Email envoyé via Resend à %s (sujet: %s)", to, subject)
             return True
         except Exception as exc:
-            logger.warning("Échec envoi email via Resend à %s : %s — tentative fallback Dev Console", to, exc)
+            logger.warning("Échec envoi email via Resend à %s : %s", to, exc)
 
     logger.info("[%s] To: %s | Subject: %s | Body: %s", dev_tag, to, subject, body_html)
     return True
@@ -138,22 +138,32 @@ def _build_email_html(
 </html>"""
 
 
-async def send_otp_email(to: str, code: str, lang: str = "fr") -> None:
+async def send_otp_email(to: str, code: str, phone: str | None = None, lang: str = "fr") -> None:
     settings = get_settings()
     is_en = (lang or "").lower().startswith("en")
+    phone_display = phone or ""
 
     if is_en:
-        subject = f"Your KWISMO verification code: {code}"
+        phone_html = f"""
+        <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 16px; margin: 16px 0 24px 0; text-align: center;">
+          <span style="font-size: 12px; color: #64748B; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Target Phone Number:</span>
+          <div style="font-size: 18px; font-weight: 800; color: #161E33; margin-top: 4px;">{phone_display}</div>
+        </div>
+        """ if phone_display else ""
+
+        subject = f"Your KWISMO code for {phone_display}: {code}" if phone_display else f"Your KWISMO verification code: {code}"
         subtitle = "Mobile Identity & Data Security"
         content_html = f"""
         <p style="margin-top: 0;">Hello,</p>
-        <p>Use the verification code below to validate your action on <strong>KWISMO</strong>:</p>
+        <p>Use the verification code below to validate your phone number on <strong>KWISMO</strong>:</p>
         
-        <div style="background-color: #F0FDF4; border: 1.5px dashed #25B46E; border-radius: 12px; padding: 20px; text-align: center; margin: 28px 0;">
+        {phone_html}
+
+        <div style="background-color: #F0FDF4; border: 1.5px dashed #25B46E; border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0;">
           <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #166534; display: block; margin-bottom: 8px;">
             VERIFICATION CODE
           </span>
-          <div style="font-size: 34px; font-weight: 800; letter-spacing: 10px; color: #15803D; font-family: 'Courier New', monospace; margin: 6px 0;">
+          <div style="font-size: 36px; font-weight: 800; letter-spacing: 10px; color: #15803D; font-family: 'Courier New', monospace; margin: 6px 0;">
             {code}
           </div>
           <span style="font-size: 12px; color: #166534; opacity: 0.95; display: block; margin-top: 6px;">
@@ -168,17 +178,26 @@ async def send_otp_email(to: str, code: str, lang: str = "fr") -> None:
         """
         footer_text = "© 2026 KWISMO — Security & Privacy Systems."
     else:
-        subject = f"Votre code de vérification KWISMO : {code}"
+        phone_html = f"""
+        <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 12px 16px; margin: 16px 0 24px 0; text-align: center;">
+          <span style="font-size: 12px; color: #64748B; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Numéro de téléphone concerné :</span>
+          <div style="font-size: 18px; font-weight: 800; color: #161E33; margin-top: 4px;">{phone_display}</div>
+        </div>
+        """ if phone_display else ""
+
+        subject = f"Votre code KWISMO pour {phone_display} : {code}" if phone_display else f"Votre code de vérification KWISMO : {code}"
         subtitle = "Sécurisation de l'identité mobile"
         content_html = f"""
         <p style="margin-top: 0;">Bonjour,</p>
-        <p>Veuillez utiliser le code de vérification ci-dessous pour valider votre opération sur <strong>KWISMO</strong> :</p>
+        <p>Veuillez utiliser le code de vérification ci-dessous pour valider votre numéro de téléphone sur <strong>KWISMO</strong> :</p>
         
-        <div style="background-color: #F0FDF4; border: 1.5px dashed #25B46E; border-radius: 12px; padding: 20px; text-align: center; margin: 28px 0;">
+        {phone_html}
+
+        <div style="background-color: #F0FDF4; border: 1.5px dashed #25B46E; border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0;">
           <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #166534; display: block; margin-bottom: 8px;">
             CODE DE VÉRIFICATION
           </span>
-          <div style="font-size: 34px; font-weight: 800; letter-spacing: 10px; color: #15803D; font-family: 'Courier New', monospace; margin: 6px 0;">
+          <div style="font-size: 36px; font-weight: 800; letter-spacing: 10px; color: #15803D; font-family: 'Courier New', monospace; margin: 6px 0;">
             {code}
           </div>
           <span style="font-size: 12px; color: #166534; opacity: 0.95; display: block; margin-top: 6px;">
