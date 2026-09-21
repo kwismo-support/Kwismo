@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { parsePhoneNumberFromString, isValidPhoneNumber } from 'libphonenumber-js/min';
 import { contactsService } from '../services/contacts.service';
+import { contactsApi } from '../services/contacts.api';
 import { ContactItem, AddContactPayload } from '../types/contacts.types';
 import { storage } from '../../../shared/services/storage';
 
@@ -17,10 +18,44 @@ export function useContacts() {
   const loadContacts = useCallback(async (isManualRefresh = false) => {
     if (isManualRefresh) setLoading(true);
     try {
-      const result = await contactsService.requestPermissionAndFetch();
-      setPermissionGranted(result.granted);
-      setContactsList(result.contacts);
-      await storage.setItem(CONTACTS_CACHE_KEY, JSON.stringify(result.contacts)).catch(() => {});
+      // 1. Load phone device contacts
+      const deviceResult = await contactsService.requestPermissionAndFetch();
+      setPermissionGranted(deviceResult.granted);
+      const localDeviceContacts = deviceResult.contacts || [];
+
+      // 2. Prepare payload for online merging (POST /contacts/sync)
+      const syncPayload = localDeviceContacts.map((c) => ({
+        nom: c.name || c.phone,
+        numero: c.phone,
+      }));
+
+      // 3. Perform silent online sync with DB
+      if (syncPayload.length > 0) {
+        const syncRes = await contactsApi.syncContacts(syncPayload);
+        if (syncRes.success && Array.isArray(syncRes.data)) {
+          const onlineItems = syncRes.data.map((c: any) => ({
+            id: c.id,
+            name: c.nom || c.numero,
+            phone: c.numero,
+            hasKwismo: c.statut === 'securise',
+            kwismoStatus: c.statut || 'none',
+            countryCode: 'CM',
+          }));
+
+          // Merge local device contacts + online DB contacts without duplicates
+          const phoneMap = new Map<string, ContactItem>();
+          localDeviceContacts.forEach((item) => phoneMap.set(item.phone.replace(/\s+/g, ''), item));
+          onlineItems.forEach((item) => phoneMap.set(item.phone.replace(/\s+/g, ''), item));
+
+          const merged = Array.from(phoneMap.values());
+          setContactsList(merged);
+          await storage.setItem(CONTACTS_CACHE_KEY, JSON.stringify(merged)).catch(() => {});
+          return;
+        }
+      }
+
+      setContactsList(localDeviceContacts);
+      await storage.setItem(CONTACTS_CACHE_KEY, JSON.stringify(localDeviceContacts)).catch(() => {});
     } catch {} finally {
       setLoading(false);
     }
@@ -29,7 +64,7 @@ export function useContacts() {
   useEffect(() => {
     let isMounted = true;
     (async () => {
-      // 1. Instant local cache load (0ms)
+      // Instant 0ms load from local cache
       const cachedStr = await storage.getItem(CONTACTS_CACHE_KEY);
       if (cachedStr && isMounted) {
         try {
@@ -41,7 +76,7 @@ export function useContacts() {
         } catch {}
       }
 
-      // 2. Background sync
+      // Background sync with device + online DB
       await loadContacts(false);
       if (isMounted) setLoading(false);
     })();
@@ -51,7 +86,7 @@ export function useContacts() {
     };
   }, [loadContacts]);
 
-  const addContactLocally = (payload: AddContactPayload): { success: boolean; messageKey?: string; item?: ContactItem } => {
+  const addContactLocally = async (payload: AddContactPayload): Promise<{ success: boolean; messageKey?: string; item?: ContactItem }> => {
     const fullNumber = `${payload.callingCode}${payload.phone.replace(/\s+/g, '')}`;
     const isValid = isValidPhoneNumber(fullNumber, payload.countryCode as any);
 
@@ -77,6 +112,9 @@ export function useContacts() {
       storage.setItem(CONTACTS_CACHE_KEY, JSON.stringify(updated)).catch(() => {});
       return updated;
     });
+
+    // Also send online to backend DB
+    contactsApi.addContact({ nom: fullName, numero: formattedPhone }).catch(() => {});
 
     return { success: true, item: newContact };
   };
