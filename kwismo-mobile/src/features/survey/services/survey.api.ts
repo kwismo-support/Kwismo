@@ -1,35 +1,48 @@
-// Service API backend pour les enquêtes via FastAPI (/surveys)
 import { ApiClient } from '../../../shared/services/apiClient';
-
-export interface SurveyQuestion {
-  id: string;
-  texte_fr: string;
-  texte_en: string;
-  type_question: string;
-  options?: string[];
-}
 
 export interface SurveyItem {
   id: string;
-  titre_fr: string;
-  titre_en: string;
-  description_fr?: string;
-  description_en?: string;
-  questions: SurveyQuestion[];
+  question: string;
+  actif: boolean;
+}
+
+export interface SurveyResponseData {
+  id: string;
+  survey_id: string;
+  reponse: string;
+  date_reponse: string;
 }
 
 export const surveyApi = {
-  async getSurveys() {
-    return ApiClient.request<{ items: SurveyItem[] }>('/surveys', {
+  async getActiveSurveys() {
+    return ApiClient.request<SurveyItem[]>('/surveys/active', {
       method: 'GET',
     });
   },
 
-  async submitAnswers(survey_id: string, reponses: Array<{ question_id: string; valeur: string }>) {
-    return ApiClient.request<{ message: string }>(`/surveys/${survey_id}/answers`, {
+  async getSurveys() {
+    const res = await ApiClient.request<SurveyItem[]>('/surveys/active', {
+      method: 'GET',
+    });
+    return {
+      ...res,
+      data: res.data ? { items: res.data } : undefined,
+    };
+  },
+
+  async answerSurvey(surveyId: string, rating: number, comment?: string) {
+    const payload = JSON.stringify({ rating, comment: comment?.trim() || '' });
+    return ApiClient.request<SurveyResponseData>(`/surveys/${surveyId}/answer`, {
       method: 'POST',
-      body: { reponses },
+      body: { reponse: payload },
+    });
+  },
+
+  async submitAnswers(surveyId: string, answers: any) {
+    const payload = typeof answers === 'string' ? answers : JSON.stringify(answers);
+    return ApiClient.request<SurveyResponseData>(`/surveys/${surveyId}/answer`, {
+      method: 'POST',
+      body: { reponse: payload },
     });
   },
 };
-

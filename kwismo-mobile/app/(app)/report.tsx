@@ -32,9 +32,8 @@ const REPORT_REASONS = [
 ];
 
 const RECENT_CALLS_HISTORY = [
-  { phone: '+237 6 55 98 76 54', raw: '655987654', date: 'Il y a 5 minutes', duration: '18s', type: 'incoming' },
-  { phone: '+237 6 70 88 99 00', raw: '670889900', date: 'Il y a 18 minutes', duration: '45s', type: 'incoming' },
-  { phone: '+237 6 98 44 43 88', raw: '698444388', date: 'Il y a 28 minutes', duration: '2m 10s', type: 'incoming' },
+  { phone: '+237 6 55 98 76 54', raw: '655987654', date: 'Il y a 2 minutes', duration: '18s', type: 'incoming', timestamp: Date.now() - 2 * 60 * 1000 },
+  { phone: '+237 6 70 88 99 00', raw: '670889900', date: 'Il y a 4 minutes', duration: '45s', type: 'incoming', timestamp: Date.now() - 4 * 60 * 1000 },
 ];
 
 export default function ReportScreen() {
@@ -52,6 +51,10 @@ export default function ReportScreen() {
   const [showCallPickerModal, setShowCallPickerModal] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [successModalVisible, setSuccessModalVisible] = useState(false);
+
+  const filteredFiveMinCalls = RECENT_CALLS_HISTORY.filter(
+    (c) => Date.now() - c.timestamp <= 5 * 60 * 1000
+  );
 
   const handleGrantCallLogPermission = () => {
     setPermissionModalVisible(false);
@@ -103,7 +106,7 @@ export default function ReportScreen() {
           setSuccessModalVisible(true);
         }
       }
-    } catch (err: any) {
+    } catch {
       toast.error('Erreur lors du traitement du signalement.');
     } finally {
       setIsSubmitting(false);
@@ -165,7 +168,7 @@ export default function ReportScreen() {
             >
               <Icon name="solar:history-bold" color="#25B876" size={18} className="mr-1" />
               <Text className="font-font-bold text-xs text-brand-green font-bold">
-                {t('report.recentCalls', 'Appels (30min)')}
+                {t('report.recentCalls5min', 'Appels (< 5 min)')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -270,7 +273,7 @@ export default function ReportScreen() {
           <View className="rounded-t-3xl p-6 pb-9 bg-white dark:bg-brand-darkBg">
             <View className="flex-row items-center justify-between mb-2">
               <Text className="font-font-bold text-lg font-extrabold text-slate-900 dark:text-white">
-                Sélectionner un appel reçu
+                Appels reçus (Moins de 5 minutes)
               </Text>
               <TouchableOpacity onPress={() => setShowCallPickerModal(false)}>
                 <Icon name="solar:close-circle-bold" color="#94A3B8" size={26} />
@@ -278,31 +281,37 @@ export default function ReportScreen() {
             </View>
 
             <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mb-4">
-              Voici la liste des derniers numéros ayant contacté votre appareil :
+              Sélectionnez un numéro qui vous a appelé au cours des 5 dernières minutes :
             </Text>
 
             <View className="gap-1">
-              {RECENT_CALLS_HISTORY.map((call, idx) => (
-                <TouchableOpacity
-                  key={idx}
-                  activeOpacity={0.7}
-                  onPress={() => handleSelectRecentCall(call.phone)}
-                  className="flex-row items-center py-3 border-b border-slate-100 dark:border-slate-800"
-                >
-                  <View className="w-9 h-9 rounded-full bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center mr-3">
-                    <Icon name="solar:phone-calling-rounded-bold" color="#25B876" size={20} />
-                  </View>
-                  <View className="flex-1">
-                    <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">
-                      {call.phone}
-                    </Text>
-                    <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      {call.date} · Durée : {call.duration}
-                    </Text>
-                  </View>
-                  <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={18} />
-                </TouchableOpacity>
-              ))}
+              {filteredFiveMinCalls.length === 0 ? (
+                <View className="py-6 items-center">
+                  <Text className="text-xs text-slate-400">Aucun appel dans les 5 dernières minutes</Text>
+                </View>
+              ) : (
+                filteredFiveMinCalls.map((call, idx) => (
+                  <TouchableOpacity
+                    key={idx}
+                    activeOpacity={0.7}
+                    onPress={() => handleSelectRecentCall(call.phone)}
+                    className="flex-row items-center py-3 border-b border-slate-100 dark:border-slate-800"
+                  >
+                    <View className="w-9 h-9 rounded-full bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center mr-3">
+                      <Icon name="solar:phone-calling-rounded-bold" color="#25B876" size={20} />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">
+                        {call.phone}
+                      </Text>
+                      <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        {call.date} · Durée : {call.duration}
+                      </Text>
+                    </View>
+                    <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={18} />
+                  </TouchableOpacity>
+                ))
+              )}
             </View>
           </View>
         </View>
@@ -339,7 +348,7 @@ export default function ReportScreen() {
       <PermissionModal
         visible={permissionModalVisible}
         title="Accès au journal d'appels"
-        description="Kwismo a besoin d'analyser vos appels entrants des 30 dernières minutes pour vous permettre de sélectionner rapidement un numéro inconnu à signaler."
+        description="Kwismo a besoin d'analyser vos appels entrants des 5 dernières minutes pour vous permettre de sélectionner un numéro récent à signaler."
         iconName="solar:phone-calling-rounded-bold"
         iconColor="#25B876"
         confirmText="Autoriser l'accès"
@@ -350,4 +359,3 @@ export default function ReportScreen() {
     </View>
   );
 }
-

@@ -5,6 +5,7 @@ import ForgotPasswordForm from './components/ForgotPasswordForm';
 import ResetPasswordForm from './components/ResetPasswordForm';
 import PartnerRegisterForm from './components/PartnerRegisterForm';
 import Icon from '@/assets/logo/icon.png';
+import BackgroundAuth from '@/assets/illustrations/Background Auth.png';
 import { LanguageSwitcher } from '@/shared/components/LanguageSwitcher';
 import { ThemeToggle } from '@/shared/components/ThemeToggle';
 
@@ -30,10 +31,10 @@ export default function AuthPage() {
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
         style={{
-          backgroundImage: `radial-gradient(circle at 50% 50%, rgba(50, 176, 127, 0.15), transparent 70%), url('https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1920&q=80')`,
+          backgroundImage: `radial-gradient(circle at 10% 10%, rgba(50, 176, 127, 0.15), transparent 10%), url('${BackgroundAuth}')`,
         }}
       />
-      <div className="absolute inset-0 bg-[#161E33]/60 backdrop-blur-lg z-10" />
+      <div className="absolute inset-0 z-10" />
 
       <div className="absolute top-6 right-6 z-30 flex items-center gap-3">
         <LanguageSwitcher />

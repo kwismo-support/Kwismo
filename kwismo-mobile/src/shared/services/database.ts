@@ -157,3 +157,21 @@ export async function clearOutboxItem(id: string): Promise<void> {
     await AsyncStorage.setItem(STORAGE_OUTBOX_KEY, JSON.stringify(filtered));
   } catch {}
 }
+
+export async function syncOfflineOutbox(
+  handler: (item: OutboxItem) => Promise<boolean>
+): Promise<number> {
+  const items = await getOutboxItems();
+  if (items.length === 0) return 0;
+  let synced = 0;
+  for (const item of items) {
+    try {
+      const ok = await handler(item);
+      if (ok) {
+        await clearOutboxItem(item.id);
+        synced++;
+      }
+    } catch {}
+  }
+  return synced;
+}

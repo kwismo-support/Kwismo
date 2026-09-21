@@ -1,4 +1,3 @@
-// Hook React pour les enquêtes utilisateur
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { surveyApi, SurveyItem } from '../services/survey.api';
@@ -31,7 +30,7 @@ export function useSurvey() {
     fetchSurveys();
   }, [fetchSurveys]);
 
-  const submitAnswers = async (survey_id: string, answers: Array<{ question_id: string; valeur: string }>) => {
+  const submitAnswers = async (survey_id: string, answers: any) => {
     setLoading(true);
     try {
       const res = await surveyApi.submitAnswers(survey_id, answers);
