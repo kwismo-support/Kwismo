@@ -33,7 +33,7 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab }) => {
   const handleTabPress = (routePath: string, tabName: TabRoute) => {
     if (currentTab === tabName) return;
     setTabNavigation(tabName);
-    router.replace(routePath as any);
+    router.push(routePath as any);
   };
 
   return (

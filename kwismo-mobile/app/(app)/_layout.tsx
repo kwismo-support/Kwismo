@@ -3,12 +3,15 @@ import { View, ActivityIndicator } from 'react-native';
 import { Stack, Redirect } from 'expo-router';
 import { useAuthStore } from '@/shared/store/authStore';
 import { useNavAnimationStore } from '@/shared/store/navAnimationStore';
+import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { syncDelta, processOutbox } from '@/shared/services/syncEngine';
 
 import { colors } from '@/styles/tokens';
 
 export default function AppLayout() {
   const { isAuthenticated, isInitialized } = useAuthStore();
+  const { isDark } = useAppTheme();
+  const { stackAnimation } = useNavAnimationStore();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -29,13 +32,14 @@ export default function AppLayout() {
     return <Redirect href="/(auth)/login" />;
   }
 
-  const { stackAnimation } = useNavAnimationStore();
-
   return (
     <Stack
       screenOptions={{
         headerShown: false,
         animation: stackAnimation,
+        contentStyle: {
+          backgroundColor: isDark ? '#0F1626' : '#FFFFFF',
+        },
       }}
     />
   );
