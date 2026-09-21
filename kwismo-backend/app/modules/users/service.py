@@ -82,8 +82,11 @@ async def update_me(user_id: str, payload: UserUpdateIn, lang: str = "fr") -> Us
     if payload.langue is not None and payload.langue in ("fr", "en"):
         data["langue"] = payload.langue
 
-    if payload.photo_url is not None and payload.photo_url.strip():
+    fields_set = payload.model_fields_set
+    if "photo_url" in fields_set:
+        photo_val = payload.photo_url
         current_user = await db.user.find_unique(where={"id": user_id})
+        
         if current_user and getattr(current_user, "photo_url", None):
             old_photo = current_user.photo_url
             if old_photo and "/uploads/avatars/" in old_photo:
@@ -95,24 +98,41 @@ async def update_me(user_id: str, payload: UserUpdateIn, lang: str = "fr") -> Us
                     except Exception as e:
                         logger.warning(f"Could not remove old photo {old_path}: {e}")
 
-        image_uuid = str(uuid.uuid4())
-        ext = "jpg"
-        photo_str = payload.photo_url
-        if "data:image/" in photo_str and ";base64," in photo_str:
-            header, base64_data = photo_str.split(";base64,", 1)
-            if "png" in header:
-                ext = "png"
-            elif "webp" in header:
-                ext = "webp"
-            img_bytes = base64.b64decode(base64_data)
-            os.makedirs("uploads/avatars", exist_ok=True)
-            file_name = f"{image_uuid}.{ext}"
-            file_path = os.path.join("uploads", "avatars", file_name)
-            with open(file_path, "wb") as f:
-                f.write(img_bytes)
-            data["photo_url"] = f"/uploads/avatars/{file_name}"
+        if photo_val is None or not str(photo_val).strip() or str(photo_val).strip().lower() in ("null", "none"):
+            data["photo_url"] = None
         else:
-            data["photo_url"] = payload.photo_url
+            photo_str = str(photo_val).strip()
+            image_uuid = str(uuid.uuid4())
+            ext = "jpg"
+
+            if "base64," in photo_str:
+                header, base64_data = photo_str.split("base64,", 1)
+                if "png" in header:
+                    ext = "png"
+                elif "webp" in header:
+                    ext = "webp"
+                img_bytes = base64.b64decode(base64_data)
+                os.makedirs("uploads/avatars", exist_ok=True)
+                file_name = f"{image_uuid}.{ext}"
+                file_path = os.path.join("uploads", "avatars", file_name)
+                with open(file_path, "wb") as f:
+                    f.write(img_bytes)
+                data["photo_url"] = f"/uploads/avatars/{file_name}"
+            elif photo_str.startswith("data:image/"):
+                data["photo_url"] = photo_str
+            elif not photo_str.startswith("http://") and not photo_str.startswith("https://") and not photo_str.startswith("/uploads/"):
+                try:
+                    img_bytes = base64.b64decode(photo_str)
+                    os.makedirs("uploads/avatars", exist_ok=True)
+                    file_name = f"{image_uuid}.jpg"
+                    file_path = os.path.join("uploads", "avatars", file_name)
+                    with open(file_path, "wb") as f:
+                        f.write(img_bytes)
+                    data["photo_url"] = f"/uploads/avatars/{file_name}"
+                except Exception:
+                    data["photo_url"] = photo_str
+            else:
+                data["photo_url"] = photo_str
 
     if not data:
         raise HTTPException(
