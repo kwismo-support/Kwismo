@@ -62,12 +62,12 @@ export default function EditProfileScreen() {
 
   const handleSaveClick = () => {
     if (!firstName.trim() && !lastName.trim()) {
-      setNameError(t('validation.required', 'Au moins un nom ou prénom est requis'));
+      setNameError(t('validation.required'));
       return;
     }
 
     if (!email.trim() || !email.includes('@')) {
-      setEmailError(t('validation.invalidEmail', 'Adresse email invalide'));
+      setEmailError(t('validation.emailInvalid'));
       return;
     }
 
@@ -83,13 +83,13 @@ export default function EditProfileScreen() {
   const handleConfirmSendOtp = () => {
     setEmailWarningModalVisible(false);
     setOtpModalVisible(true);
-    toast.info(`Un code OTP de vérification a été envoyé à ${email.trim()}`);
+    toast.info(t('profile.otpSentToEmail', { email: email.trim() }));
   };
 
   const handleVerifyOtpAndSave = async (codeToVerify?: string) => {
     const finalCode = codeToVerify || otpCode;
     if (finalCode.length < 4) {
-      toast.error('Veuillez saisir le code OTP complet.');
+      toast.error(t('validation.otpIncomplete'));
       return;
     }
 
@@ -98,7 +98,7 @@ export default function EditProfileScreen() {
       await executeSaveProfile({ email: email.trim() });
       setOtpModalVisible(false);
     } catch {
-      toast.error('Erreur lors de la validation OTP.');
+      toast.error(t('profile.otpValidationError'));
     } finally {
       setOtpLoading(false);
     }
@@ -113,10 +113,10 @@ export default function EditProfileScreen() {
     });
 
     if (res.success) {
-      toast.success(t('profile.updatedSuccess', 'Profil mis à jour avec succès !'));
+      toast.success(t('profile.updatedSuccess'));
       router.back();
     } else {
-      toast.error((res as any).message || t('errors.generalMessage', 'Erreur de mise à jour'));
+      toast.error((res as any).message || t('errors.generalMessage'));
     }
   };
 
@@ -128,7 +128,7 @@ export default function EditProfileScreen() {
       <StatusBar style="light" />
 
       <HeaderBar
-        title={t('profile.personalInfo', 'Informations personnelles')}
+        title={t('profile.personalInfo')}
         showBack={true}
         onBack={() => router.back()}
         rightAction={
@@ -177,40 +177,40 @@ export default function EditProfileScreen() {
         </View>
 
         <Input
-          label={t('common.firstName', 'Prénom')}
+          label={t('common.firstName')}
           value={firstName}
           onChangeText={(val) => {
             setFirstName(val);
             if (nameError) setNameError('');
           }}
-          placeholder={t('common.firstNamePlaceholder', 'Votre prénom')}
+          placeholder={t('common.firstNamePlaceholder')}
           error={nameError}
           iconLeft="solar:user-linear"
         />
 
         <View className="mt-4">
           <Input
-            label={t('common.lastName', 'Nom')}
+            label={t('common.lastName')}
             value={lastName}
             onChangeText={(val) => {
               setLastName(val);
               if (nameError) setNameError('');
             }}
-            placeholder={t('common.lastNamePlaceholder', 'Votre nom')}
+            placeholder={t('common.lastNamePlaceholder')}
             iconLeft="solar:user-linear"
           />
         </View>
 
         <View className="mt-4">
           <Input
-            label={t('common.email', 'Adresse Email')}
+            label={t('common.email')}
             value={email}
             onChangeText={(val) => {
               setEmail(val);
               if (emailError) setEmailError('');
             }}
             keyboardType="email-address"
-            placeholder={t('common.emailPlaceholder', 'adresse@email.com')}
+            placeholder={t('common.emailPlaceholder')}
             error={emailError}
             iconLeft="solar:letter-linear"
           />
@@ -218,7 +218,7 @@ export default function EditProfileScreen() {
 
         <View className="mt-4">
           <CountrySelectInput
-            label={t('common.country', 'Pays')}
+            label={t('common.country')}
             value={countryName}
             countryCode={countryCode}
             onSelectCountry={(name, code) => {
@@ -243,11 +243,11 @@ export default function EditProfileScreen() {
             </View>
 
             <Text className="font-montserrat-bold text-lg font-bold text-slate-900 dark:text-white text-center mb-2">
-              Changement d'adresse email
+              {t('profile.emailChangeTitle')}
             </Text>
 
             <Text className="text-xs text-slate-600 dark:text-slate-300 text-center leading-5 mb-6">
-              Une vérification par code OTP est obligatoire pour modifier votre email. Un code de confirmation sera envoyé à <Text className="font-bold text-brand-green">{email}</Text>. Souhaitez-vous continuer ?
+              {t('profile.emailChangeWarning', { email })}
             </Text>
 
             <View className="flex-row gap-3">
@@ -257,7 +257,7 @@ export default function EditProfileScreen() {
                 className="flex-1 hx-11 rounded-xl bg-slate-100 dark:bg-slate-800 items-center justify-center"
               >
                 <Text className="font-bold text-xs text-slate-700 dark:text-slate-300">
-                  {t('common.cancel', 'Annuler')}
+                  {t('common.cancel')}
                 </Text>
               </TouchableOpacity>
 
@@ -267,7 +267,7 @@ export default function EditProfileScreen() {
                 className="flex-1 hx-11 rounded-xl bg-brand-green items-center justify-center"
               >
                 <Text className="font-bold text-xs text-white">
-                  Continuer
+                  {t('common.continue')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -283,7 +283,7 @@ export default function EditProfileScreen() {
           >
             <View className="flex-row items-center justify-between mb-4">
               <Text className="font-headline-bold text-base font-extrabold text-slate-900 dark:text-white">
-                Validation du nouvel email
+                {t('profile.otpModalTitle')}
               </Text>
               <TouchableOpacity onPress={() => setOtpModalVisible(false)}>
                 <Icon name="solar:close-circle-bold" color="#94A3B8" size={24} />
@@ -291,7 +291,7 @@ export default function EditProfileScreen() {
             </View>
 
             <Text className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-              Saisissez le code OTP à 6 chiffres envoyé à <Text className="font-bold text-slate-900 dark:text-white">{email}</Text>
+              {t('profile.otpModalSubtitle', { email })}
             </Text>
 
             <View className="mb-6">
@@ -322,7 +322,7 @@ export default function EditProfileScreen() {
                 <ActivityIndicator color="#FFFFFF" size="small" />
               ) : (
                 <Text className="font-bold text-sm text-white">
-                  Valider et sauvegarder
+                  {t('profile.validateAndSave')}
                 </Text>
               )}
             </TouchableOpacity>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface ProfileFormProps {
   initialValues: { fullName: string; email: string; phone: string };
@@ -8,19 +9,20 @@ interface ProfileFormProps {
 }
 
 export const ProfileForm: React.FC<ProfileFormProps> = ({ initialValues, onSubmit, loading }) => {
+  const { t } = useTranslation();
   const [fullName, setFullName] = useState(initialValues.fullName);
   const [email, setEmail] = useState(initialValues.email);
   const [phone, setPhone] = useState(initialValues.phone);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Nom complet</Text>
+      <Text style={styles.label}>{t('common.lastName')} / {t('common.firstName')}</Text>
       <TextInput style={styles.input} value={fullName} onChangeText={setFullName} />
 
-      <Text style={styles.label}>Adresse Email</Text>
+      <Text style={styles.label}>{t('common.email')}</Text>
       <TextInput style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" />
 
-      <Text style={styles.label}>Téléphone principal</Text>
+      <Text style={styles.label}>{t('common.phoneNumber')}</Text>
       <TextInput style={styles.input} value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
 
       <TouchableOpacity
@@ -28,7 +30,7 @@ export const ProfileForm: React.FC<ProfileFormProps> = ({ initialValues, onSubmi
         onPress={() => onSubmit({ fullName, email, phone })}
         disabled={loading}
       >
-        <Text style={styles.buttonText}>{loading ? 'Enregistrement...' : 'Enregistrer'}</Text>
+        <Text style={styles.buttonText}>{loading ? t('common.analyzing') : t('common.save')}</Text>
       </TouchableOpacity>
     </View>
   );

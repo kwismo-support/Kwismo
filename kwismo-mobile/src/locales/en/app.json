@@ -88,7 +88,15 @@
     "logout": "Log Out",
     "verifiedUser": "Verified user account",
     "fetchError": "Unable to load your profile data.",
-    "updateError": "Error updating profile."
+    "updateError": "Error updating profile.",
+    "updatedSuccess": "Profile updated successfully!",
+    "otpSentToEmail": "A verification OTP code was sent to {{email}}",
+    "otpValidationError": "Error during OTP validation.",
+    "emailChangeTitle": "Email Address Change",
+    "emailChangeWarning": "An OTP code verification is required to change your email. A confirmation code will be sent to {{email}}. Do you wish to proceed?",
+    "otpModalTitle": "New Email Verification",
+    "otpModalSubtitle": "Enter the 6-digit OTP code sent to {{email}}",
+    "validateAndSave": "Validate & Save"
   },
   "security": {
     "passwordCriteriaTitle": "Password strength criteria:",

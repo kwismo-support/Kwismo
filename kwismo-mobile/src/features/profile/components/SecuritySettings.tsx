@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface SecuritySettingsProps {
   biometricEnabled: boolean;
@@ -10,11 +11,13 @@ export const SecuritySettings: React.FC<SecuritySettingsProps> = ({
   biometricEnabled,
   onToggleBiometric,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sécurité & Authentification</Text>
+      <Text style={styles.title}>{t('twoFactor.securityHeader')}</Text>
       <View style={styles.row}>
-        <Text style={styles.label}>Authentification Biométrique</Text>
+        <Text style={styles.label}>{t('twoFactor.biometricsTitle')}</Text>
         <Switch value={biometricEnabled} onValueChange={onToggleBiometric} />
       </View>
     </View>

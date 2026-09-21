@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Switch } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface PreferencesSettingsProps {
   language?: string;
@@ -10,12 +11,13 @@ export const PreferencesSettings: React.FC<PreferencesSettingsProps> = ({
   language = 'fr',
   onLanguageChange,
 }) => {
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Préférences</Text>
+      <Text style={styles.title}>{t('common.preferences')}</Text>
       <View style={styles.row}>
-        <Text style={styles.label}>Langue active</Text>
-        <Text style={styles.value}>{language === 'fr' ? 'Français' : 'English'}</Text>
+        <Text style={styles.label}>{t('common.language')}</Text>
+        <Text style={styles.value}>{language === 'fr' ? t('common.french') : t('common.english')}</Text>
       </View>
     </View>
   );

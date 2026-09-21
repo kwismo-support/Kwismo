@@ -49,8 +49,8 @@ export default function ProfileScreen() {
   };
 
   const getLanguageLabel = (lang: string) => {
-    if (lang.startsWith('en')) return 'English';
-    return 'Français';
+    if (lang.startsWith('en')) return t('common.english');
+    return t('common.french');
   };
 
   const avatarPhoto = user?.avatarUrl || profile?.photo_url;

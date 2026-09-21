@@ -88,7 +88,15 @@
     "logout": "Se déconnecter",
     "verifiedUser": "Compte utilisateur vérifié",
     "fetchError": "Impossible de charger les données de votre profil.",
-    "updateError": "Erreur lors de la mise à jour du profil."
+    "updateError": "Erreur lors de la mise à jour du profil.",
+    "updatedSuccess": "Profil mis à jour avec succès !",
+    "otpSentToEmail": "Un code OTP de vérification a été envoyé à {{email}}",
+    "otpValidationError": "Erreur lors de la validation OTP.",
+    "emailChangeTitle": "Changement d'adresse email",
+    "emailChangeWarning": "Une vérification par code OTP est obligatoire pour modifier votre email. Un code de confirmation sera envoyé à {{email}}. Souhaitez-vous continuer ?",
+    "otpModalTitle": "Validation du nouvel email",
+    "otpModalSubtitle": "Saisissez le code OTP à 6 chiffres envoyé à {{email}}",
+    "validateAndSave": "Valider et sauvegarder"
   },
   "security": {
     "passwordCriteriaTitle": "Critères de robustesse du mot de passe :",
