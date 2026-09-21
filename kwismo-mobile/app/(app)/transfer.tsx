@@ -159,7 +159,7 @@ export default function TransferScreen() {
 
       <HeaderBar
         title={t('common.transfer')}
-        subtitle={t('common.transferSubtitle', 'Protégez et effectuez vos transferts Mobile Money')}
+        subtitle={t('common.transferSubtitle', 'Initiation de vitre transaction')}
         showBack={step !== 'form'}
         onBack={() => {
           if (step === 'summary') setStep('form');

@@ -17,6 +17,7 @@ import { Icon } from '@/shared/ui/Icon';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { CountryItem } from '@/shared/components/CountryPickerModal';
 import { getDeviceContacts, RawContact } from '@/shared/lib/contactsService';
+import { storage } from '@/shared/services/storage';
 
 interface ContactPickerModalProps {
   visible: boolean;
@@ -53,14 +54,39 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
     setPermissionDenied(false);
 
     try {
-      const { granted, contacts: list } = await getDeviceContacts();
-      if (!granted) {
+      const cachedStr = await storage.getItem('kwismo_contacts_cache');
+      let cachedList: RawContact[] = [];
+      if (cachedStr) {
+        try {
+          const parsed = JSON.parse(cachedStr);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            cachedList = parsed.map((item: any) => ({
+              id: item.id || String(Math.random()),
+              name: item.name || item.phone,
+              phone: item.phone,
+            }));
+          }
+        } catch {}
+      }
+
+      const { granted, contacts: deviceList } = await getDeviceContacts();
+
+      const phoneMap = new Map<string, RawContact>();
+      cachedList.forEach((c) => phoneMap.set(c.phone.replace(/[\s\-()]/g, ''), c));
+      deviceList.forEach((c) => phoneMap.set(c.phone.replace(/[\s\-()]/g, ''), c));
+
+      const merged = Array.from(phoneMap.values());
+
+      if (merged.length > 0) {
+        setContacts(merged);
+        setPermissionDenied(false);
+      } else if (!granted) {
         setPermissionDenied(true);
       } else {
-        setContacts(list);
+        setContacts([]);
       }
     } catch {
-      setPermissionDenied(true);
+      setPermissionDenied(false);
     } finally {
       setLoading(false);
     }
@@ -131,7 +157,7 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
             <TextInput
               style={Platform.OS === 'web' ? ({ outline: 'none' } as any) : {}}
               className="flex-1 font-medium text-sm text-slate-900 dark:text-white h-full"
-              placeholder={t('common.search')}
+              placeholder={t('common.search', 'Rechercher un contact...')}
               placeholderTextColor={themeColors.inputPlaceholder}
               value={search}
               onChangeText={setSearch}
@@ -147,7 +173,7 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
             <View className="flex-1 items-center justify-center p-6">
               <ActivityIndicator color="#25B46E" size="large" />
             </View>
-          ) : permissionDenied ? (
+          ) : permissionDenied && contacts.length === 0 ? (
             <View className="flex-1 items-center justify-center p-6">
               <Icon name="solar:shield-warning-bold" color="#FF9900" size={48} className="mb-3" />
               <Text className="font-medium text-sm text-slate-900 dark:text-white text-center">

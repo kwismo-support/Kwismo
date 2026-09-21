@@ -309,7 +309,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
 
             <View className="flex-row items-center justify-between min-h-7">
               <View className="flex-1 flex-row items-center bg-white/20 rounded-full px-3.5 py-2.5 mr-2">
-                <Icon name="solar:magnifer-linear" color="#FFFFFF" size={18} className="mr-2" />
+                <Icon name="bitcoin-icons:search-filled" color="#FFFFFF" size={24} className="mr-2" />
                 <TextInput
                   autoFocus
                   value={searchQuery}
@@ -319,8 +319,8 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                   className="flex-1 font-medium text-white text-sm py-0 h-7"
                 />
                 {searchQuery.length > 0 && (
-                  <TouchableOpacity onPress={() => setSearchQuery('')} className="p-1">
-                    <Icon name="solar:arrow-left-linear" color="#FFFFFF" size={16} />
+                  <TouchableOpacity onPress={() => setSearchQuery('')}>
+                    <Icon name="solar:close-circle-bold" color="#FFFFFF" size={24} />
                   </TouchableOpacity>
                 )}
               </View>
@@ -354,13 +354,13 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                       key={chip.id}
                       activeOpacity={0.8}
                       onPress={() => setSelectedCategory(isSelected ? 'all' : chip.id)}
-                      className={`px-2.5 py-1.5 rounded-full border flex-row items-center justify-center gap-1.5 mr-1 ${
+                      className={`px-2 py-1 rounded-full border flex-row items-center justify-center gap-1.5 mr-1 ${
                         isSelected
                           ? 'bg-emerald-50 dark:bg-emerald-950/50 border-brand-green'
                           : 'bg-transparent dark:bg-transparent border-slate-300 dark:border-slate-700'
                       }`}
                     >
-                      <View className="items-center justify-center">
+                      <View className="items-center justify-center mb-1">
                         <Icon
                           name={chip.icon}
                           size={14}
@@ -368,8 +368,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                         />
                       </View>
                       <Text
-                        style={{ includeFontPadding: false, textAlignVertical: 'center' }}
-                        className={`text-2xs font-medium leading-none ${
+                        className={`text-2xs font-medium leading-none mr-1 mb-1 ${
                           isSelected
                             ? 'text-brand-green'
                             : 'text-slate-500 dark:text-slate-400'

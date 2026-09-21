@@ -98,18 +98,18 @@ const ToastItem: React.FC<{ toast: ToastMessage }> = ({ toast }) => {
           opacity,
         },
       ]}
-      className="w-full max-w-sm px-4"
+      className="w-full max-w-sm px-4 flex items-center"
     >
       <TouchableOpacity
         activeOpacity={0.9}
         onPress={handleDismiss}
-        className="flex-row items-center p-4 rounded-3xl bg-white dark:bg-brand-cardDark border border-slate-100 dark:border-slate-800/80 shadow-2xl shadow-black/15 elevation-10 gap-3.5"
+        className="flex-row items-center px-2 rounded-3xl bg-white dark:bg-brand-cardDark border border-slate-100 dark:border-slate-800/80 shadow-2xl shadow-black/15 elevation-10 gap-3.5"
       >
-        <View className={`wx-12 hx-12 rounded-full items-center justify-center ${theme.badgeBgLight} ${theme.badgeBgDark}`}>
+        <View className={`wx-12 hx-12 rounded-full items-center justify-center my-4 ${theme.badgeBgLight} ${theme.badgeBgDark}`}>
           <Icon name={theme.iconName} color={theme.iconColor} size={28} />
         </View>
 
-        <View className="flex-1 justify-center">
+        <View className="flex-1 justify-center my-4">
           {toast.title && (
             <Text className="font-extrabold text-sm text-slate-900 dark:text-white mb-0.5 font-title">
               {toast.title}

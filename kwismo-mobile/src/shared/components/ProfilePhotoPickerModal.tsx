@@ -7,6 +7,7 @@ import {
   Pressable,
   Platform,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
@@ -26,7 +27,7 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
   const { t } = useTranslation();
   const { colors: themeColors } = useAppTheme();
 
-  const handlePickFromGallery = () => {
+  const handlePickFromGallery = async () => {
     if (Platform.OS === 'web') {
       const input = document.createElement('input');
       input.type = 'file';
@@ -40,19 +41,40 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
         }
       };
       input.click();
-    } else {
-      onSelectPhoto('https://via.placeholder.com/150');
-      toast.success(t('toasts.generalSuccess', 'Photo de profil sélectionnée !'));
+      onClose();
+      return;
     }
-    onClose();
+
+    try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        toast.error("Permission d'accès à la galerie refusée.");
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets?.[0]?.uri) {
+        onSelectPhoto(result.assets[0].uri);
+        toast.success(t('toasts.generalSuccess', 'Photo de profil sélectionnée !'));
+        onClose();
+      }
+    } catch {
+      toast.error('Erreur lors de la sélection de la photo.');
+    }
   };
 
-  const handleTakePhoto = () => {
+  const handleTakePhoto = async () => {
     if (Platform.OS === 'web') {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
-      input.capture = 'environment';
+      input.capture = 'user';
       input.onchange = (e: any) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -62,11 +84,31 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
         }
       };
       input.click();
-    } else {
-      onSelectPhoto('https://via.placeholder.com/150');
-      toast.success(t('toasts.generalSuccess', 'Photo prise avec succès !'));
+      onClose();
+      return;
     }
-    onClose();
+
+    try {
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        toast.error("Permission d'accès à la caméra refusée.");
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets?.[0]?.uri) {
+        onSelectPhoto(result.assets[0].uri);
+        toast.success(t('toasts.generalSuccess', 'Photo prise avec succès !'));
+        onClose();
+      }
+    } catch {
+      toast.error('Erreur lors de la prise de photo.');
+    }
   };
 
   return (
@@ -90,7 +132,7 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
             onPress={handleTakePhoto}
             className="flex-row items-center p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800"
           >
-            <View className="w-10 h-10 rounded-full bg-brand-green items-center justify-center">
+            <View className="wx-10 hx-10 rounded-full bg-brand-green items-center justify-center">
               <Icon name="solar:camera-bold" color="#FFFFFF" size={20} />
             </View>
             <View className="flex-1 ml-3.5">
@@ -108,7 +150,7 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
             onPress={handlePickFromGallery}
             className="flex-row items-center p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 mt-2.5"
           >
-            <View className="w-10 h-10 rounded-full bg-blue-500 items-center justify-center">
+            <View className="wx-10 hx-10 rounded-full bg-blue-500 items-center justify-center">
               <Icon name="solar:gallery-bold" color="#FFFFFF" size={20} />
             </View>
             <View className="flex-1 ml-3.5">
@@ -116,7 +158,7 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
                 Choisir dans la galerie / l'appareil
               </Text>
               <Text className="font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Sélectionner un fichier image (PC, Mac, Android, iOS)
+                Sélectionner un fichier image
               </Text>
             </View>
           </TouchableOpacity>
