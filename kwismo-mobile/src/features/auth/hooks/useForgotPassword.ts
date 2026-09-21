@@ -13,7 +13,7 @@ export function useForgotPassword() {
     try {
       const res = await authApi.forgotPassword(email.trim());
       if (res.success) {
-        toast.success(t('toasts.otpSent', 'Instructions envoyées par email.'));
+        toast.success(t('toasts.otpSent'));
         return { success: true, message: res.message };
       }
       return { success: false, message: res.message };
@@ -34,7 +34,7 @@ export function useResetPassword() {
     try {
       const res = await authApi.resetPassword(token, newPassword);
       if (res.success) {
-        toast.success(t('toasts.passwordResetSuccess', 'Mot de passe réinitialisé !'));
+        toast.success(t('toasts.passwordResetSuccess'));
         return { success: true };
       }
       return { success: false, message: res.message };

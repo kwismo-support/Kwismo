@@ -1,6 +1,7 @@
 // Composant de saisie de numéro de téléphone avec préfixe pays
 import React from 'react';
 import { View, TextInput, StyleSheet, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface PhoneInputProps {
   value: string;
@@ -9,6 +10,8 @@ interface PhoneInputProps {
 }
 
 export const PhoneInput: React.FC<PhoneInputProps> = ({ value, onChangeText, placeholder }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
       <Text style={styles.prefix}>+237</Text>
@@ -17,7 +20,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({ value, onChangeText, pla
         value={value}
         onChangeText={onChangeText}
         keyboardType="phone-pad"
-        placeholder={placeholder || '6XX XXX XXX'}
+        placeholder={placeholder || t('auth.phonePlaceholder')}
         placeholderTextColor="#94A3B8"
       />
     </View>

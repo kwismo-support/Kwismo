@@ -17,15 +17,15 @@ export function useRegister() {
       const res = await authApi.register(payload);
       if (res.success) {
         await storage.setItem('kwismo_pending_email', payload.email.trim());
-        toast.success(t('toasts.registerSuccess', 'Compte créé avec succès !'));
+        toast.success(t('toasts.registerSuccess'));
         return { success: true, message: res.message };
       } else {
-        const msg = res.message || t('errors.generalMessage', "Erreur lors de l'inscription.");
+        const msg = res.message || t('errors.generalMessage');
         setError(msg);
         return { success: false, message: msg };
       }
     } catch (err: any) {
-      const msg = err.message || t('toasts.networkError', 'Erreur réseau.');
+      const msg = err.message || t('toasts.networkError');
       setError(msg);
       return { success: false, message: msg };
     } finally {
