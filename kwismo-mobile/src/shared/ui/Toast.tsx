@@ -105,7 +105,7 @@ const ToastItem: React.FC<{ toast: ToastMessage }> = ({ toast }) => {
         onPress={handleDismiss}
         className="flex-row items-center p-4 rounded-3xl bg-white dark:bg-brand-cardDark border border-slate-100 dark:border-slate-800/80 shadow-2xl shadow-black/15 elevation-10 gap-3.5"
       >
-        <View className={`w-12 h-12 rounded-full items-center justify-center ${theme.badgeBgLight} ${theme.badgeBgDark}`}>
+        <View className={`wx-12 hx-12 rounded-full items-center justify-center ${theme.badgeBgLight} ${theme.badgeBgDark}`}>
           <Icon name={theme.iconName} color={theme.iconColor} size={28} />
         </View>
 

@@ -2,6 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/min';
 import { managementApi } from '../services/management.api';
 import { UserPhoneBackend, UserSimNumber, PhoneStatus } from '../types/management.types';
+import { storage } from '../../../shared/services/storage';
+
+const USER_PHONES_CACHE_KEY = 'kwismo_user_phones_cache';
 
 export function detectOperator(cleanPhone: string): string {
   const raw = cleanPhone.replace(/\s+/g, '').replace(/^\+237/, '');
@@ -63,23 +66,42 @@ export function useManagement() {
   const [error, setError] = useState<string | null>(null);
   const [numbers, setNumbers] = useState<UserSimNumber[]>([]);
 
-  const fetchNumbers = useCallback(async () => {
+  const fetchNumbers = useCallback(async (isManualRefresh = false) => {
     setError(null);
-    const res = await managementApi.listMyPhones();
-    if (res.success && res.data) {
-      setNumbers(res.data.map(transformBackendPhone));
-    } else {
-      setError(res.message || 'Failed to fetch numbers');
+    try {
+      const res = await managementApi.listMyPhones();
+      if (res.success && res.data) {
+        const transformed = res.data.map(transformBackendPhone);
+        setNumbers(transformed);
+        await storage.setItem(USER_PHONES_CACHE_KEY, JSON.stringify(transformed)).catch(() => {});
+      } else if (!isManualRefresh) {
+        setError(res.message || 'Failed to fetch numbers');
+      }
+    } catch (err: any) {
+      if (!isManualRefresh) setError(err.message || 'Network error');
     }
   }, []);
 
   useEffect(() => {
     let isMounted = true;
     (async () => {
-      setLoading(true);
-      await fetchNumbers();
+      // 1. Instant local cache load (0ms)
+      const cachedStr = await storage.getItem(USER_PHONES_CACHE_KEY);
+      if (cachedStr && isMounted) {
+        try {
+          const parsed = JSON.parse(cachedStr);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setNumbers(parsed);
+            setLoading(false);
+          }
+        } catch {}
+      }
+
+      // 2. Silent background sync with backend DB
+      await fetchNumbers(false);
       if (isMounted) setLoading(false);
     })();
+
     return () => {
       isMounted = false;
     };
@@ -87,15 +109,21 @@ export function useManagement() {
 
   const refresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchNumbers();
+    await fetchNumbers(true);
     setRefreshing(false);
   }, [fetchNumbers]);
+
+  const saveUpdatedNumbers = (updated: UserSimNumber[]) => {
+    setNumbers(updated);
+    storage.setItem(USER_PHONES_CACHE_KEY, JSON.stringify(updated)).catch(() => {});
+  };
 
   const addNumber = async (valeur: string) => {
     const res = await managementApi.addPhone(valeur);
     if (res.success && res.data) {
       const transformed = transformBackendPhone(res.data);
-      setNumbers((prev) => [...prev.filter((n) => n.id !== transformed.id), transformed]);
+      const updated = [...numbers.filter((n) => n.id !== transformed.id), transformed];
+      saveUpdatedNumbers(updated);
       return { success: true, data: transformed };
     }
     return { success: false, message: res.message };
@@ -104,9 +132,8 @@ export function useManagement() {
   const verifyOtp = async (phoneId: string, code: string) => {
     const res = await managementApi.verifyPhoneOtp(phoneId, code);
     if (res.success) {
-      setNumbers((prev) =>
-        prev.map((n) => (n.id === phoneId ? { ...n, status: 'verified' } : n))
-      );
+      const updated = numbers.map((n) => (n.id === phoneId ? { ...n, status: 'verified' as PhoneStatus } : n));
+      saveUpdatedNumbers(updated);
       return { success: true, message: res.message };
     }
     return { success: false, message: res.message };
@@ -119,7 +146,8 @@ export function useManagement() {
   const deleteNumber = async (phoneId: string) => {
     const res = await managementApi.removePhone(phoneId);
     if (res.success) {
-      setNumbers((prev) => prev.filter((n) => n.id !== phoneId));
+      const updated = numbers.filter((n) => n.id !== phoneId);
+      saveUpdatedNumbers(updated);
       return { success: true, message: res.message };
     }
     return { success: false, message: res.message };
@@ -128,9 +156,8 @@ export function useManagement() {
   const declareCompromised = async (phoneId: string) => {
     const res = await managementApi.declarePhoneCompromised(phoneId);
     if (res.success) {
-      setNumbers((prev) =>
-        prev.map((n) => (n.id === phoneId ? { ...n, status: 'compromised' } : n))
-      );
+      const updated = numbers.map((n) => (n.id === phoneId ? { ...n, status: 'compromised' as PhoneStatus } : n));
+      saveUpdatedNumbers(updated);
       return { success: true, message: res.message };
     }
     return { success: false, message: res.message };

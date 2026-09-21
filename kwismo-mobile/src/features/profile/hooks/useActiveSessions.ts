@@ -2,34 +2,61 @@ import { useState, useEffect, useCallback } from 'react';
 import i18next from 'i18next';
 import { securityApi, ActiveSessionResponse } from '../services/security.api';
 import { toast } from '../../../shared/store/toastStore';
+import { storage } from '../../../shared/services/storage';
+
+const DEVICES_CACHE_KEY = 'kwismo_devices_cache';
 
 export function useActiveSessions() {
   const [sessions, setSessions] = useState<ActiveSessionResponse[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchSessions = useCallback(async () => {
-    setLoading(true);
+  const fetchSessions = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const res = await securityApi.getActiveSessions();
       if (res.success && res.data) {
         setSessions(res.data);
+        await storage.setItem(DEVICES_CACHE_KEY, JSON.stringify(res.data)).catch(() => {});
       }
     } catch (err: any) {
-      toast.error(err.message || i18next.t('toasts.networkError'));
+      if (!silent) toast.error(err.message || i18next.t('toasts.networkError'));
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchSessions();
+    let isMounted = true;
+    (async () => {
+      // 1. Instant local cache load
+      const cachedStr = await storage.getItem(DEVICES_CACHE_KEY);
+      if (cachedStr && isMounted) {
+        try {
+          const parsed = JSON.parse(cachedStr);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setSessions(parsed);
+            setLoading(false);
+          }
+        } catch {}
+      }
+
+      // 2. Background sync
+      await fetchSessions(true);
+      if (isMounted) setLoading(false);
+    })();
+
+    return () => {
+      isMounted = false;
+    };
   }, [fetchSessions]);
 
   const revokeSession = async (sessionId: string, deviceName: string) => {
     try {
       const res = await securityApi.revokeSession(sessionId);
       if (res.success) {
-        setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+        const updated = sessions.filter((s) => s.id !== sessionId);
+        setSessions(updated);
+        storage.setItem(DEVICES_CACHE_KEY, JSON.stringify(updated)).catch(() => {});
         toast.success(i18next.t('security.sessionRevoked', { device: deviceName }));
       } else {
         toast.error(res.message || i18next.t('security.revokeSessionError'));
@@ -43,7 +70,9 @@ export function useActiveSessions() {
     try {
       const res = await securityApi.revokeAllOtherSessions();
       if (res.success) {
-        setSessions((prev) => prev.filter((s) => s.is_current));
+        const updated = sessions.filter((s) => s.is_current);
+        setSessions(updated);
+        storage.setItem(DEVICES_CACHE_KEY, JSON.stringify(updated)).catch(() => {});
         toast.success(i18next.t('security.allOtherSessionsRevoked'));
       } else {
         toast.error(res.message || i18next.t('security.revokeSessionError'));
@@ -56,7 +85,7 @@ export function useActiveSessions() {
   return {
     sessions,
     loading,
-    refresh: fetchSessions,
+    refresh: () => fetchSessions(false),
     revokeSession,
     revokeAllOthers,
   };
