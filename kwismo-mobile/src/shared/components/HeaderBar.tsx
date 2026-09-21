@@ -308,19 +308,19 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             </View>
 
             <View className="flex-row items-center justify-between min-h-7">
-              <View className="flex-1 flex-row items-center bg-white/20 rounded-full px-3.5 py-1.5 mr-2">
+              <View className="flex-1 flex-row items-center bg-white/20 rounded-full px-3.5 py-2.5 mr-2">
                 <Icon name="solar:magnifer-linear" color="#FFFFFF" size={18} className="mr-2" />
                 <TextInput
                   autoFocus
                   value={searchQuery}
                   onChangeText={setSearchQuery}
-                  placeholder={t('common.searchPlaceholder', 'Rechercher une fonction, un numéro...')}
+                  placeholder={t('common.searchPlaceholder')}
                   placeholderTextColor="rgba(255, 255, 255, 0.75)"
                   className="flex-1 font-medium text-white text-sm py-0 h-7"
                 />
                 {searchQuery.length > 0 && (
                   <TouchableOpacity onPress={() => setSearchQuery('')} className="p-1">
-                    <Icon name="solar:close-circle-bold" color="#FFFFFF" size={16} />
+                    <Icon name="solar:arrow-left-linear" color="#FFFFFF" size={16} />
                   </TouchableOpacity>
                 )}
               </View>
@@ -338,13 +338,13 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           <View className="flex-1 px-4 pt-4">
             <View className="mb-4">
               <Text className="font-headline-bold text-2xs text-slate-400 dark:text-slate-400 uppercase tracking-widest mb-2.5">
-                {t('common.quickSuggestions', 'Suggestions rapides')}
+                {t('common.quickSuggestions')}
               </Text>
 
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ gap: 8 }}
+                contentContainerStyle={{ gap: 8, paddingVertical: 6, paddingHorizontal: 4 }}
                 className="flex-row"
               >
                 {categoryChips.map((chip) => {
@@ -354,7 +354,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                       key={chip.id}
                       activeOpacity={0.8}
                       onPress={() => setSelectedCategory(isSelected ? 'all' : chip.id)}
-                      className={`px-3 py-1.5 rounded-full border flex-row items-center gap-1.5 ${
+                      className={`px-3 py-1.5 rounded-full border flex-row items-center gap-1.5 mr-1 ${
                         isSelected
                           ? 'bg-emerald-50 dark:bg-emerald-950/50 border-brand-green'
                           : 'bg-transparent dark:bg-transparent border-slate-300 dark:border-slate-700'
@@ -390,7 +390,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                   <View className="py-12 items-center justify-center">
                     <Icon name="solar:magnifer-bug-linear" size={40} color="#CBD5E1" />
                     <Text className="font-medium text-xs text-slate-400 mt-2 text-center">
-                      {t('common.noResultsFound', 'Aucun résultat trouvé pour cette recherche')}
+                      {t('common.noResultsFound')}
                     </Text>
                   </View>
                 ) : (
