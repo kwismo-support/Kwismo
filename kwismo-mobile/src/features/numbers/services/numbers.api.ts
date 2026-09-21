@@ -3,13 +3,17 @@ import { ApiClient } from '../../../shared/services/apiClient';
 
 export interface UserPhoneItem {
   id: string;
-  user_id: string;
+  user_id?: string;
   country_id: string;
-  operator_id: string;
-  numero_valeur: string;
+  country_code?: string;
+  country_name?: string;
+  operator_id?: string;
+  operator_name?: string;
+  numero_valeur?: string;
+  valeur?: string;
   est_verifie: boolean;
   est_compromis: boolean;
-  statut: string;
+  statut?: string;
 }
 
 export const numbersApi = {
@@ -37,5 +41,21 @@ export const numbersApi = {
       method: 'POST',
     });
   },
+
+  async verifyNumber(valeur: string, country_id?: string) {
+    return ApiClient.request<{
+      id: string;
+      valeur: string;
+      score_risque: number;
+      statut: string;
+      country_id?: string;
+      operator_id?: string;
+      operator_name?: string;
+    }>('/numbers/verify', {
+      method: 'POST',
+      body: { valeur, country_id },
+    });
+  },
 };
+
 

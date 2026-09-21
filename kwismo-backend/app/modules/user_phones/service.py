@@ -27,11 +27,17 @@ settings = get_settings()
 # ---------------------------------------------------------------------------
 
 def _to_out(p) -> UserPhoneOut:
+    c_code = p.country.codePays if getattr(p, "country", None) else None
+    c_nom = p.country.nom if getattr(p, "country", None) else None
+    op_nom = p.operator.nom if getattr(p, "operator", None) else None
     return UserPhoneOut(
         id=p.id,
         valeur=p.valeur,
         country_id=p.countryId,
+        country_code=c_code,
+        country_name=c_nom,
         operator_id=p.operatorId,
+        operator_name=op_nom,
         est_verifie=p.estVerifie,
         date_verification=p.dateVerification,
         est_compromis=p.estCompromis,
@@ -80,8 +86,10 @@ async def _create_sms_otp(user_id: str, user_phone_id: str, phone_valeur: str) -
 # ---------------------------------------------------------------------------
 
 async def list_my_phones(user_id: str) -> list[UserPhoneOut]:
+    await connect_db()
     phones = await db.userphone.find_many(
         where={"userId": user_id},
+        include={"country": True, "operator": True},
         order={"createdAt": "asc"},
     )
     return [_to_out(p) for p in phones]

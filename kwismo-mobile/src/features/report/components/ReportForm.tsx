@@ -1,6 +1,7 @@
 // Composant formulaire de signalement
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { ReportPayload } from '../services/report.api';
 
 interface ReportFormProps {
@@ -9,6 +10,7 @@ interface ReportFormProps {
 }
 
 export const ReportForm: React.FC<ReportFormProps> = ({ onSubmit, submitting }) => {
+  const { t } = useTranslation();
   const [phone, setPhone] = useState('');
   const [description, setDescription] = useState('');
 
@@ -19,7 +21,7 @@ export const ReportForm: React.FC<ReportFormProps> = ({ onSubmit, submitting }) 
         style={styles.input}
         value={phone}
         onChangeText={setPhone}
-        placeholder="+2376XXXXXX"
+        placeholder={t('common.phonePlaceholder')}
         keyboardType="phone-pad"
       />
 

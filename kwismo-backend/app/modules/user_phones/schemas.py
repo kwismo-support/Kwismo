@@ -17,12 +17,13 @@ class UserPhoneVerifyIn(BaseModel):
 
 
 class UserPhoneOut(BaseModel):
-    """Table UserPhone. / UserPhone table."""
-
     id: str
     valeur: str
     country_id: str
+    country_code: str | None = None
+    country_name: str | None = None
     operator_id: str | None = None
+    operator_name: str | None = None
     est_verifie: bool
     date_verification: datetime | None = None
     est_compromis: bool

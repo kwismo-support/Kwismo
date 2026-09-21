@@ -33,7 +33,8 @@ export interface SenderNumberOption {
   label: string;
   phone: string;
   callingCode: string;
-  operator: 'Orange' | 'MTN';
+  operator: string;
+  operator_id?: string;
 }
 
 export interface ActionOption {
@@ -71,6 +72,10 @@ export default function TransferScreen() {
   const [selectedCountry, setSelectedCountry] = useState<CountryItem>(defaultCountry);
   const [rawAmount, setRawAmount] = useState('');
 
+  const [beneficiaryRiskStatus, setBeneficiaryRiskStatus] = useState<string>('unknown');
+  const [beneficiaryOperatorName, setBeneficiaryOperatorName] = useState<string | null>(null);
+  const [beneficiaryRiskScore, setBeneficiaryRiskScore] = useState<number>(0);
+
   const [senderModalVisible, setSenderModalVisible] = useState(false);
   const [actionModalVisible, setActionModalVisible] = useState(false);
   const [warningModalVisible, setWarningModalVisible] = useState(false);
@@ -82,27 +87,25 @@ export default function TransferScreen() {
     let isMounted = true;
     const loadInitialData = async () => {
       setIsDataLoading(true);
+      let activeSender: SenderNumberOption | null = null;
       try {
         const phonesRes = await numbersApi.getMyNumbers();
         if (isMounted && phonesRes.success && phonesRes.data && phonesRes.data.length > 0) {
           const mappedSenders: SenderNumberOption[] = phonesRes.data.map((p, idx) => {
-            const isOrange =
-              p.numero_valeur.includes('69') ||
-              p.numero_valeur.includes('655') ||
-              p.numero_valeur.includes('656') ||
-              p.numero_valeur.includes('657') ||
-              p.numero_valeur.includes('658') ||
-              p.numero_valeur.includes('659');
+            const phoneVal = p.valeur || p.numero_valeur || '';
+            const opName = p.operator_name || (p.country_name ? `${p.country_name}` : `SIM ${idx + 1}`);
             return {
               id: p.id,
-              label: `SIM ${idx + 1} (${isOrange ? 'Orange' : 'MTN'})`,
-              phone: p.numero_valeur,
-              callingCode: selectedCountry.callingCode,
-              operator: isOrange ? 'Orange' : 'MTN',
+              label: `${opName} (${phoneVal})`,
+              phone: phoneVal,
+              callingCode: p.country_code || selectedCountry.callingCode,
+              operator: opName,
+              operator_id: p.operator_id,
             };
           });
           setRegisteredSenders(mappedSenders);
-          setSelectedSender(mappedSenders[0]);
+          activeSender = mappedSenders[0];
+          setSelectedSender(activeSender);
         } else if (isMounted) {
           const currentUser = useAuthStore.getState().user;
           if (currentUser) {
@@ -111,16 +114,17 @@ export default function TransferScreen() {
               label: 'SIM Principale',
               phone: currentUser.firstName || currentUser.email || 'Mon compte',
               callingCode: selectedCountry.callingCode,
-              operator: 'Orange',
+              operator: 'Opérateur',
             };
             setRegisteredSenders([defaultSender]);
+            activeSender = defaultSender;
             setSelectedSender(defaultSender);
           }
         }
       } catch {}
 
       try {
-        const actionsRes = await transferApi.getActions();
+        const actionsRes = await transferApi.getActions(activeSender?.operator_id);
         if (isMounted && actionsRes.success && actionsRes.data && actionsRes.data.length > 0) {
           const mappedActions: ActionOption[] = actionsRes.data.map((a: any) => ({
             id: a.id,
@@ -131,23 +135,6 @@ export default function TransferScreen() {
           }));
           setAvailableActions(mappedActions);
           setSelectedAction(mappedActions[0]);
-        } else if (isMounted) {
-          const defaultActions: ActionOption[] = [
-            {
-              id: 'om-transfer',
-              label: "Transfert Orange Money",
-              description: "Formule USSD d'envoi d'argent Orange",
-              ussdFormat: "#150*1*1*{dest}*{amount}#",
-            },
-            {
-              id: 'momo-transfer',
-              label: "Transfert MTN Mobile Money",
-              description: "Formule USSD d'envoi d'argent MTN",
-              ussdFormat: "*126*{amount}*{dest}#",
-            },
-          ];
-          setAvailableActions(defaultActions);
-          setSelectedAction(defaultActions[0]);
         }
       } catch {}
 
@@ -159,6 +146,25 @@ export default function TransferScreen() {
       isMounted = false;
     };
   }, []);
+
+  const handleSelectSender = async (sender: SenderNumberOption) => {
+    setSelectedSender(sender);
+    setSenderModalVisible(false);
+    try {
+      const actionsRes = await transferApi.getActions(sender.operator_id);
+      if (actionsRes.success && actionsRes.data && actionsRes.data.length > 0) {
+        const mappedActions: ActionOption[] = actionsRes.data.map((a: any) => ({
+          id: a.id,
+          label: a.nomAction || a.nom || 'Transfert d’argent',
+          description: a.format || a.pattern_code || 'Transfert via USSD',
+          ussdFormat: a.format || a.pattern_code || '*126*{montant}*{numero}#',
+          operator_id: a.operatorId || a.operator_id,
+        }));
+        setAvailableActions(mappedActions);
+        setSelectedAction(mappedActions[0]);
+      }
+    } catch {}
+  };
 
   const formattedAmount = useMemo(() => {
     if (!rawAmount) return '';
@@ -174,14 +180,17 @@ export default function TransferScreen() {
   };
 
   const isBeneficiarySuspect = useMemo(() => {
-    const clean = beneficiaryPhone.replace(/\D/g, '');
-    return clean.endsWith('99') || clean.endsWith('000') || clean === '690000000';
-  }, [beneficiaryPhone]);
+    return (
+      beneficiaryRiskStatus === 'a_signaler' ||
+      beneficiaryRiskStatus === 'frauduleux' ||
+      beneficiaryRiskScore >= 0.5
+    );
+  }, [beneficiaryRiskStatus, beneficiaryRiskScore]);
 
   const generatedUssdCode = useMemo(() => {
     if (serverUssdCode) return serverUssdCode;
     const cleanDest = beneficiaryPhone.replace(/\D/g, '');
-    const fmt = selectedAction?.ussdFormat || '*126*{amount}*{dest}#';
+    const fmt = selectedAction?.ussdFormat || '*126*{montant}*{numero}#';
     return fmt
       .replace('{dest}', cleanDest)
       .replace('{numero}', cleanDest)
@@ -189,7 +198,7 @@ export default function TransferScreen() {
       .replace('{montant}', rawAmount);
   }, [selectedAction, beneficiaryPhone, rawAmount, serverUssdCode]);
 
-  const handleValidateForm = () => {
+  const handleValidateForm = async () => {
     let valid = true;
     setPhoneError('');
     setAmountError('');
@@ -210,6 +219,18 @@ export default function TransferScreen() {
 
     if (!valid) return false;
 
+    const fullPhone = `${selectedCountry.callingCode}${cleanPhone}`;
+    try {
+      const verifyRes = await numbersApi.verifyNumber(fullPhone, selectedCountry.code);
+      if (verifyRes.success && verifyRes.data) {
+        setBeneficiaryRiskStatus(verifyRes.data.statut || 'securise');
+        setBeneficiaryRiskScore(verifyRes.data.score_risque || 0);
+        if (verifyRes.data.operator_name) {
+          setBeneficiaryOperatorName(verifyRes.data.operator_name);
+        }
+      }
+    } catch {}
+
     setStep('summary');
     return true;
   };
@@ -223,7 +244,7 @@ export default function TransferScreen() {
       const res = await transferApi.prepareTransfer({
         numero: cleanPhone,
         montant: amountNum,
-        operator_id: selectedAction?.operator_id || selectedSender?.id || 'op-default',
+        operator_id: selectedAction?.operator_id || selectedSender?.operator_id || 'op-default',
         ussd_action_id: selectedAction?.id || 'action-default',
       });
 
@@ -274,20 +295,27 @@ export default function TransferScreen() {
     }
   };
 
-  const handleLaunchMaxIt = async () => {
-    const maxItDeepLink = 'orange-money://';
-    const maxItWebUrl = 'https://maxit.orange.com';
+  const handleLaunchOperatorApp = async () => {
+    const opNameLower = (beneficiaryOperatorName || selectedSender?.operator || '').toLowerCase();
+    let deepLink = 'tel:';
+    if (opNameLower.includes('orange')) {
+      deepLink = 'orange-money://';
+    } else if (opNameLower.includes('mtn')) {
+      deepLink = 'momo://';
+    }
+
     try {
-      const supported = await Linking.canOpenURL(maxItDeepLink);
+      const supported = await Linking.canOpenURL(deepLink);
       if (supported) {
-        await Linking.openURL(maxItDeepLink);
-        toast.success(t('toasts.maxItLaunched', 'Ouverture de l’application Max It...'));
+        await Linking.openURL(deepLink);
+        toast.success(t('toasts.operatorAppLaunched', 'Ouverture de l’application de transfert...'));
       } else {
-        await Linking.openURL(maxItWebUrl);
-        toast.info(t('toasts.maxItWeb', 'Redirection vers le portail Max It...'));
+        Clipboard.setString(generatedUssdCode);
+        toast.info(t('toasts.ussdCopied', 'Code USSD copié dans le presse-papier !'));
       }
     } catch {
-      await Linking.openURL(maxItWebUrl);
+      Clipboard.setString(generatedUssdCode);
+      toast.info(t('toasts.ussdCopied', 'Code USSD copié dans le presse-papier !'));
     }
   };
 
@@ -301,6 +329,9 @@ export default function TransferScreen() {
     setRawAmount('');
     setPhoneError('');
     setAmountError('');
+    setBeneficiaryRiskStatus('unknown');
+    setBeneficiaryOperatorName(null);
+    setBeneficiaryRiskScore(0);
     setServerUssdCode(null);
     setStep('form');
   };
@@ -383,10 +414,7 @@ export default function TransferScreen() {
                   className="flex-row items-center justify-between hx-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-3.5"
                 >
                   <View className="flex-row items-center flex-1">
-                    <View
-                      className={`px-2 py-1 rounded-lg mr-2.5 ${selectedSender.operator === 'Orange' ? 'bg-orange-500' : 'bg-yellow-500'
-                        }`}
-                    >
+                    <View className="px-2 py-1 rounded-lg mr-2.5 bg-emerald-600">
                       <Text className="font-font-bold text-xs text-white">{selectedSender.operator}</Text>
                     </View>
                     <Text className="font-font-medium text-sm text-slate-900 dark:text-white flex-1">
@@ -570,7 +598,7 @@ export default function TransferScreen() {
               </Text>
               {selectedSender && (
                 <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400 mb-4">
-                  {selectedSender.operator} Money ({selectedSender.callingCode} {selectedSender.phone})
+                  {selectedSender.operator} ({selectedSender.phone})
                 </Text>
               )}
 
@@ -597,8 +625,8 @@ export default function TransferScreen() {
               />
 
               <Button
-                title={t('transfer.launchMaxIt', 'Faire le transfert sur Max It')}
-                onPress={handleLaunchMaxIt}
+                title={t('transfer.launchMaxIt', 'Faire le transfert sur l’application de l’opérateur')}
+                onPress={handleLaunchOperatorApp}
                 variant="secondary"
                 size="lg"
                 leftIcon={<Icon name="solar:wallet-2-bold" color="#25B876" size={22} />}
@@ -637,19 +665,13 @@ export default function TransferScreen() {
               <TouchableOpacity
                 key={sender.id}
                 activeOpacity={0.8}
-                onPress={() => {
-                  setSelectedSender(sender);
-                  setSenderModalVisible(false);
-                }}
+                onPress={() => handleSelectSender(sender)}
                 className={`flex-row items-center p-3.5 rounded-xl mb-2.5 border ${selectedSender?.id === sender.id
                   ? 'border-2 border-brand-green bg-emerald-50 dark:bg-emerald-950/30'
                   : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark'
                   }`}
               >
-                <View
-                  className={`px-2 py-1 rounded-lg ${sender.operator === 'Orange' ? 'bg-orange-500' : 'bg-yellow-500'
-                    }`}
-                >
+                <View className="px-2 py-1 rounded-lg bg-emerald-600">
                   <Text className="font-font-bold text-xs text-white">{sender.operator}</Text>
                 </View>
 
