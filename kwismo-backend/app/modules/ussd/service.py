@@ -186,20 +186,16 @@ async def delete_operator(operator_id: str, lang: str = "fr"):
 # USSD actions
 # ---------------------------------------------------------------------------
 
-async def list_ussd_actions(operator_id: str, lang: str = "fr") -> list[UssdActionOut]:
-    op = await db.operator.find_unique(where={"id": operator_id})
-    if op is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("operator_not_found", lang))
-
-    async def _fetch():
-        actions = await db.ussdaction.find_many(
-            where={"operatorId": operator_id},
-            order={"nomAction": "asc"},
-        )
-        return [_action_out(a).__dict__ for a in actions]
-
-    cached = await get_cached(f"ussd:operator:{operator_id}", _fetch, ttl=3600)
-    return [UssdActionOut(**a) for a in cached]
+async def list_ussd_actions(operator_id: str | None = None, lang: str = "fr") -> list[UssdActionOut]:
+    await connect_db()
+    where = {}
+    if operator_id:
+        where["operatorId"] = operator_id
+    actions = await db.ussdaction.find_many(
+        where=where,
+        order={"nomAction": "asc"},
+    )
+    return [_action_out(a) for a in actions]
 
 
 async def create_ussd_action(payload: UssdActionIn, lang: str = "fr") -> UssdActionOut:

@@ -40,7 +40,7 @@ export const transferApi = {
   },
 
   async getActions(operator_id?: string) {
-    const endpoint = operator_id ? `/ussd/actions?operator_id=${operator_id}` : '/ussd/actions';
+    const endpoint = operator_id ? `/ussd-actions?operator=${operator_id}` : '/ussd-actions';
     return ApiClient.request<UssdAction[]>(endpoint, {
       method: 'GET',
     });

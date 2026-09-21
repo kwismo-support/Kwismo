@@ -26,12 +26,23 @@ import { toast } from '@/shared/store/toastStore';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { numbersApi } from '@/features/numbers/services/numbers.api';
 import { transferApi } from '@/features/transfer/services/transfer.api';
-import {
-  SenderNumberOption,
-  ActionOption,
-  MOCK_REGISTERED_SENDERS,
-  MOCK_AVAILABLE_ACTIONS,
-} from '@/shared/mock/transactionsMock';
+import { useAuthStore } from '@/shared/store/authStore';
+
+export interface SenderNumberOption {
+  id: string;
+  label: string;
+  phone: string;
+  callingCode: string;
+  operator: 'Orange' | 'MTN';
+}
+
+export interface ActionOption {
+  id: string;
+  label: string;
+  description: string;
+  ussdFormat: string;
+  operator_id?: string;
+}
 
 export default function TransferScreen() {
   const router = useRouter();
@@ -46,8 +57,12 @@ export default function TransferScreen() {
     callingCode: `+${getCountryCallingCode('CM')}`,
   };
 
-  const [registeredSenders, setRegisteredSenders] = useState<SenderNumberOption[]>(MOCK_REGISTERED_SENDERS);
-  const [availableActions, setAvailableActions] = useState<ActionOption[]>(MOCK_AVAILABLE_ACTIONS);
+  const [registeredSenders, setRegisteredSenders] = useState<SenderNumberOption[]>([]);
+  const [availableActions, setAvailableActions] = useState<ActionOption[]>([]);
+  const [selectedSender, setSelectedSender] = useState<SenderNumberOption | null>(null);
+  const [selectedAction, setSelectedAction] = useState<ActionOption | null>(null);
+
+  const [isDataLoading, setIsDataLoading] = useState(true);
   const [isPreparing, setIsPreparing] = useState(false);
   const [serverUssdCode, setServerUssdCode] = useState<string | null>(null);
 
@@ -55,8 +70,6 @@ export default function TransferScreen() {
   const [beneficiaryPhone, setBeneficiaryPhone] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<CountryItem>(defaultCountry);
   const [rawAmount, setRawAmount] = useState('');
-  const [selectedSender, setSelectedSender] = useState<SenderNumberOption>(MOCK_REGISTERED_SENDERS[0]);
-  const [selectedAction, setSelectedAction] = useState<ActionOption>(MOCK_AVAILABLE_ACTIONS[0]);
 
   const [senderModalVisible, setSenderModalVisible] = useState(false);
   const [actionModalVisible, setActionModalVisible] = useState(false);
@@ -66,38 +79,85 @@ export default function TransferScreen() {
   const [amountError, setAmountError] = useState('');
 
   useEffect(() => {
+    let isMounted = true;
     const loadInitialData = async () => {
+      setIsDataLoading(true);
       try {
         const phonesRes = await numbersApi.getMyNumbers();
-        if (phonesRes.success && phonesRes.data && phonesRes.data.length > 0) {
-          const mappedSenders: SenderNumberOption[] = phonesRes.data.map((p, idx) => ({
-            id: p.id,
-            label: `SIM ${idx + 1} (${p.numero_valeur.includes('69') || p.numero_valeur.includes('655') ? 'Orange' : 'MTN'})`,
-            phone: p.numero_valeur,
-            callingCode: selectedCountry.callingCode,
-            operator: p.numero_valeur.includes('69') || p.numero_valeur.includes('655') ? 'Orange' : 'MTN',
-          }));
+        if (isMounted && phonesRes.success && phonesRes.data && phonesRes.data.length > 0) {
+          const mappedSenders: SenderNumberOption[] = phonesRes.data.map((p, idx) => {
+            const isOrange =
+              p.numero_valeur.includes('69') ||
+              p.numero_valeur.includes('655') ||
+              p.numero_valeur.includes('656') ||
+              p.numero_valeur.includes('657') ||
+              p.numero_valeur.includes('658') ||
+              p.numero_valeur.includes('659');
+            return {
+              id: p.id,
+              label: `SIM ${idx + 1} (${isOrange ? 'Orange' : 'MTN'})`,
+              phone: p.numero_valeur,
+              callingCode: selectedCountry.callingCode,
+              operator: isOrange ? 'Orange' : 'MTN',
+            };
+          });
           setRegisteredSenders(mappedSenders);
           setSelectedSender(mappedSenders[0]);
+        } else if (isMounted) {
+          const currentUser = useAuthStore.getState().user;
+          if (currentUser) {
+            const defaultSender: SenderNumberOption = {
+              id: currentUser.id || 'sim-main',
+              label: 'SIM Principale',
+              phone: currentUser.firstName || currentUser.email || 'Mon compte',
+              callingCode: selectedCountry.callingCode,
+              operator: 'Orange',
+            };
+            setRegisteredSenders([defaultSender]);
+            setSelectedSender(defaultSender);
+          }
         }
       } catch {}
 
       try {
         const actionsRes = await transferApi.getActions();
-        if (actionsRes.success && actionsRes.data && actionsRes.data.length > 0) {
-          const mappedActions: ActionOption[] = actionsRes.data.map((a) => ({
+        if (isMounted && actionsRes.success && actionsRes.data && actionsRes.data.length > 0) {
+          const mappedActions: ActionOption[] = actionsRes.data.map((a: any) => ({
             id: a.id,
-            label: a.nom,
-            description: `Exécuter ${a.nom}`,
-            ussdFormat: a.pattern_code || '*126*{amount}*{dest}#',
-            operator_id: a.operator_id,
+            label: a.nomAction || a.nom || 'Transfert d’argent',
+            description: a.format || a.pattern_code || 'Transfert via USSD',
+            ussdFormat: a.format || a.pattern_code || '*126*{montant}*{numero}#',
+            operator_id: a.operatorId || a.operator_id,
           }));
           setAvailableActions(mappedActions);
           setSelectedAction(mappedActions[0]);
+        } else if (isMounted) {
+          const defaultActions: ActionOption[] = [
+            {
+              id: 'om-transfer',
+              label: "Transfert Orange Money",
+              description: "Formule USSD d'envoi d'argent Orange",
+              ussdFormat: "#150*1*1*{dest}*{amount}#",
+            },
+            {
+              id: 'momo-transfer',
+              label: "Transfert MTN Mobile Money",
+              description: "Formule USSD d'envoi d'argent MTN",
+              ussdFormat: "*126*{amount}*{dest}#",
+            },
+          ];
+          setAvailableActions(defaultActions);
+          setSelectedAction(defaultActions[0]);
         }
       } catch {}
+
+      if (isMounted) setIsDataLoading(false);
     };
+
     loadInitialData();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const formattedAmount = useMemo(() => {
@@ -121,9 +181,12 @@ export default function TransferScreen() {
   const generatedUssdCode = useMemo(() => {
     if (serverUssdCode) return serverUssdCode;
     const cleanDest = beneficiaryPhone.replace(/\D/g, '');
-    return selectedAction.ussdFormat
+    const fmt = selectedAction?.ussdFormat || '*126*{amount}*{dest}#';
+    return fmt
       .replace('{dest}', cleanDest)
-      .replace('{amount}', rawAmount);
+      .replace('{numero}', cleanDest)
+      .replace('{amount}', rawAmount)
+      .replace('{montant}', rawAmount);
   }, [selectedAction, beneficiaryPhone, rawAmount, serverUssdCode]);
 
   const handleValidateForm = () => {
@@ -160,8 +223,8 @@ export default function TransferScreen() {
       const res = await transferApi.prepareTransfer({
         numero: cleanPhone,
         montant: amountNum,
-        operator_id: selectedAction.operator_id || selectedSender.id || 'op-orange',
-        ussd_action_id: selectedAction.id || 'action-om-transfer',
+        operator_id: selectedAction?.operator_id || selectedSender?.id || 'op-default',
+        ussd_action_id: selectedAction?.id || 'action-default',
       });
 
       if (res.data?.code_ussd_genere) {
@@ -265,7 +328,14 @@ export default function TransferScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {step === 'form' && (
+        {isDataLoading ? (
+          <View className="py-12 items-center justify-center">
+            <ActivityIndicator color="#25B876" size="large" />
+            <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400 mt-3">
+              Chargement des données de transfert...
+            </Text>
+          </View>
+        ) : step === 'form' ? (
           <View className="w-full">
             <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1">
               {t('transfer.enterDetails', 'Détails du transfert')}
@@ -302,48 +372,52 @@ export default function TransferScreen() {
               }
             />
 
-            <View className="mb-4">
-              <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
-                {t('transfer.senderLabel', "Numéro d'expéditeur (SIM)")}
-              </Text>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() => setSenderModalVisible(true)}
-                className="flex-row items-center justify-between hx-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-3.5"
-              >
-                <View className="flex-row items-center flex-1">
-                  <View
-                    className={`px-2 py-1 rounded-lg mr-2.5 ${selectedSender.operator === 'Orange' ? 'bg-orange-500' : 'bg-yellow-500'
-                      }`}
-                  >
-                    <Text className="font-font-bold text-xs text-white">{selectedSender.operator}</Text>
+            {selectedSender && (
+              <View className="mb-4">
+                <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
+                  {t('transfer.senderLabel', "Numéro d'expéditeur (SIM)")}
+                </Text>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => setSenderModalVisible(true)}
+                  className="flex-row items-center justify-between hx-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-3.5"
+                >
+                  <View className="flex-row items-center flex-1">
+                    <View
+                      className={`px-2 py-1 rounded-lg mr-2.5 ${selectedSender.operator === 'Orange' ? 'bg-orange-500' : 'bg-yellow-500'
+                        }`}
+                    >
+                      <Text className="font-font-bold text-xs text-white">{selectedSender.operator}</Text>
+                    </View>
+                    <Text className="font-font-medium text-sm text-slate-900 dark:text-white flex-1">
+                      {selectedSender.callingCode} {selectedSender.phone}
+                    </Text>
                   </View>
-                  <Text className="font-font-medium text-sm text-slate-900 dark:text-white flex-1">
-                    {selectedSender.callingCode} {selectedSender.phone}
-                  </Text>
-                </View>
-                <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={20} />
-              </TouchableOpacity>
-            </View>
+                  <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={20} />
+                </TouchableOpacity>
+              </View>
+            )}
 
-            <View className="mb-4">
-              <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
-                {t('transfer.actionLabel', 'Action à exécuter')}
-              </Text>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() => setActionModalVisible(true)}
-                className="flex-row items-center justify-between hx-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-3.5"
-              >
-                <View className="flex-row items-center flex-1">
-                  <Icon name="solar:card-transfer-linear" color="#25B876" size={20} className="mr-2.5" />
-                  <Text className="font-font-medium text-sm text-slate-900 dark:text-white flex-1">
-                    {selectedAction.label}
-                  </Text>
-                </View>
-                <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={20} />
-              </TouchableOpacity>
-            </View>
+            {selectedAction && (
+              <View className="mb-4">
+                <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
+                  {t('transfer.actionLabel', 'Action à exécuter')}
+                </Text>
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() => setActionModalVisible(true)}
+                  className="flex-row items-center justify-between hx-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-3.5"
+                >
+                  <View className="flex-row items-center flex-1">
+                    <Icon name="solar:card-transfer-linear" color="#25B876" size={20} className="mr-2.5" />
+                    <Text className="font-font-medium text-sm text-slate-900 dark:text-white flex-1">
+                      {selectedAction.label}
+                    </Text>
+                  </View>
+                  <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={20} />
+                </TouchableOpacity>
+              </View>
+            )}
 
             <Button
               title={t('common.continue', 'Continuer vers le récapitulatif')}
@@ -354,9 +428,7 @@ export default function TransferScreen() {
               style={{ marginTop: 12 }}
             />
           </View>
-        )}
-
-        {step === 'summary' && (
+        ) : step === 'summary' ? (
           <View className="w-full">
             <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1">
               {t('transfer.approveTitle', "Approuvez l'envoi")}
@@ -370,7 +442,7 @@ export default function TransferScreen() {
                 {formattedAmount} <Text className="text-lg">FCFA</Text>
               </Text>
               <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
-                {selectedAction.label}
+                {selectedAction?.label || 'Transfert'}
               </Text>
             </View>
 
@@ -427,16 +499,19 @@ export default function TransferScreen() {
                 </Text>
               </View>
 
-              <View className="h-px w-full bg-slate-100 dark:bg-slate-800 my-1" />
-
-              <View className="flex-row items-center justify-between py-2">
-                <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
-                  {t('transfer.senderSim', 'SIM d’envoi')}
-                </Text>
-                <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
-                  {selectedSender.label}
-                </Text>
-              </View>
+              {selectedSender && (
+                <>
+                  <View className="h-px w-full bg-slate-100 dark:bg-slate-800 my-1" />
+                  <View className="flex-row items-center justify-between py-2">
+                    <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
+                      {t('transfer.senderSim', 'SIM d’envoi')}
+                    </Text>
+                    <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
+                      {selectedSender.label}
+                    </Text>
+                  </View>
+                </>
+              )}
 
               <View className="h-px w-full bg-slate-100 dark:bg-slate-800 my-1" />
 
@@ -475,9 +550,7 @@ export default function TransferScreen() {
               />
             </View>
           </View>
-        )}
-
-        {step === 'ussd' && (
+        ) : (
           <View className="w-full">
             <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1">
               {t('transfer.ussdReadyTitle', 'Validation du transfert')}
@@ -495,9 +568,11 @@ export default function TransferScreen() {
               <Text className="font-font-bold text-2xl font-extrabold text-slate-900 dark:text-white tracking-wider mb-1.5 text-center">
                 {generatedUssdCode}
               </Text>
-              <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400 mb-4">
-                {selectedSender.operator} Money ({selectedSender.callingCode} {selectedSender.phone})
-              </Text>
+              {selectedSender && (
+                <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400 mb-4">
+                  {selectedSender.operator} Money ({selectedSender.callingCode} {selectedSender.phone})
+                </Text>
+              )}
 
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -566,7 +641,7 @@ export default function TransferScreen() {
                   setSelectedSender(sender);
                   setSenderModalVisible(false);
                 }}
-                className={`flex-row items-center p-3.5 rounded-xl mb-2.5 border ${selectedSender.id === sender.id
+                className={`flex-row items-center p-3.5 rounded-xl mb-2.5 border ${selectedSender?.id === sender.id
                   ? 'border-2 border-brand-green bg-emerald-50 dark:bg-emerald-950/30'
                   : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark'
                   }`}
@@ -587,7 +662,7 @@ export default function TransferScreen() {
                   </Text>
                 </View>
 
-                {selectedSender.id === sender.id && (
+                {selectedSender?.id === sender.id && (
                   <Icon name="solar:check-circle-bold" color="#25B876" size={22} />
                 )}
               </TouchableOpacity>
@@ -621,7 +696,7 @@ export default function TransferScreen() {
                   setSelectedAction(action);
                   setActionModalVisible(false);
                 }}
-                className={`flex-row items-center p-3.5 rounded-xl mb-2.5 border ${selectedAction.id === action.id
+                className={`flex-row items-center p-3.5 rounded-xl mb-2.5 border ${selectedAction?.id === action.id
                   ? 'border-2 border-brand-green bg-emerald-50 dark:bg-emerald-950/30'
                   : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark'
                   }`}
@@ -636,7 +711,7 @@ export default function TransferScreen() {
                   </Text>
                 </View>
 
-                {selectedAction.id === action.id && (
+                {selectedAction?.id === action.id && (
                   <Icon name="solar:check-circle-bold" color="#25B876" size={22} />
                 )}
               </TouchableOpacity>

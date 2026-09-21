@@ -130,7 +130,7 @@ async def delete_operator(operator_id: str, user=Depends(require_roles("admin"))
     ),
 )
 async def list_ussd_actions(
-    operator: str = Query(..., description="ID de l'opérateur / Operator id"),
+    operator: str | None = Query(None, description="ID de l'opérateur / Operator id"),
 ) -> list[UssdActionOut]:
     return await service.list_ussd_actions(operator)
 
