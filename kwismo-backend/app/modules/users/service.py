@@ -13,6 +13,7 @@ from app.modules.users.schemas import (
     UserKpiOut,
     UserListItemOut,
     UserMeOut,
+    UserPasswordChangeIn,
     UserPhoneSummaryOut,
     UserStatusIn,
     UserUpdateIn,
@@ -126,9 +127,32 @@ async def update_me(user_id: str, payload: UserUpdateIn, lang: str = "fr") -> Us
     return await _build_me(user)
 
 
+async def change_password(user_id: str, payload: UserPasswordChangeIn, lang: str = "fr") -> Message:
+    from app.core.schemas import Message
+    from app.core.security import hash_password, verify_password
+    user = await db.user.find_unique(where={"id": user_id})
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=t("user_not_found", lang),
+        )
+    if not verify_password(payload.ancien_mot_de_passe, user.motDePasse):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=t("invalid_current_password", lang),
+        )
+    new_hashed = hash_password(payload.nouveau_mot_de_passe)
+    await db.user.update(
+        where={"id": user_id},
+        data={"motDePasse": new_hashed},
+    )
+    return Message(message=t("password_changed_success", lang))
+
+
 # ---------------------------------------------------------------------------
 # list_users
 # ---------------------------------------------------------------------------
+
 
 async def list_users(page: int, page_size: int, partner_id: str | None = None):
     from app.core.schemas import Page

@@ -16,10 +16,10 @@ export function useUserPhones() {
       if (res.success && res.data) {
         setPhones(res.data);
       } else {
-        setError(res.message || i18next.t('errors.generalMessage', 'Erreur de chargement des numéros.'));
+        setError(res.message || i18next.t('errors.generalMessage'));
       }
     } catch (err: any) {
-      setError(err.message || i18next.t('toasts.networkError', 'Erreur réseau.'));
+      setError(err.message || i18next.t('toasts.networkError'));
     } finally {
       setLoading(false);
     }
@@ -34,7 +34,7 @@ export function useUserPhones() {
     try {
       const res = await numbersApi.addNumber(payload);
       if (res.success) {
-        toast.success(i18next.t('toasts.generalSuccess', 'Numéro ajouté avec succès !'));
+        toast.success(i18next.t('toasts.generalSuccess'));
         await fetchPhones();
       }
       return res;
@@ -48,7 +48,7 @@ export function useUserPhones() {
     try {
       const res = await numbersApi.deleteNumber(phoneId);
       if (res.success) {
-        toast.success(i18next.t('toasts.generalSuccess', 'Numéro retiré.'));
+        toast.success(i18next.t('toasts.generalSuccess'));
         await fetchPhones();
       }
       return res;

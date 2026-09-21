@@ -339,7 +339,7 @@ export default function ManagementScreen() {
 
               <TextInput
                 className="flex-1 px-3 font-font-semibold text-base text-slate-900 dark:text-white"
-                placeholder="6 98 44 43 88"
+                placeholder={t('common.phonePlaceholder')}
                 placeholderTextColor="#94A3B8"
                 keyboardType="phone-pad"
                 value={newPhoneNumber}

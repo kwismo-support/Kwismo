@@ -9,6 +9,8 @@ import {
   Modal,
   Pressable,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -102,33 +104,27 @@ export default function EditProfileScreen() {
     }
   };
 
-  const executeSaveProfile = async (overrides?: { email?: string }) => {
-    const targetEmail = overrides?.email || email.trim();
-
+  const executeSaveProfile = async (overrides: { email?: string } = {}) => {
     const res = await updateProfile({
       nom: lastName.trim(),
       prenom: firstName.trim(),
-      email: targetEmail,
-      indicatif_pays: countryCode,
+      email: overrides.email || email.trim(),
       photo_url: profilePhoto || undefined,
     });
 
     if (res.success) {
-      const currentUser = useAuthStore.getState().user;
-      if (currentUser) {
-        useAuthStore.getState().setUser({
-          ...currentUser,
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
-          email: targetEmail,
-        });
-      }
+      toast.success(t('profile.updatedSuccess', 'Profil mis à jour avec succès !'));
       router.back();
+    } else {
+      toast.error(res.message || t('errors.generalMessage', 'Erreur de mise à jour'));
     }
   };
 
   return (
-    <View className="flex-1 bg-white dark:bg-brand-darkBg">
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1 bg-white dark:bg-brand-darkBg"
+    >
       <StatusBar style="light" />
 
       <HeaderBar
@@ -155,8 +151,9 @@ export default function EditProfileScreen() {
         contentContainerStyle={{
           paddingHorizontal: 20,
           paddingTop: 24,
-          paddingBottom: insets.bottom + 40,
+          paddingBottom: insets.bottom + 80,
         }}
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         <View className="self-center relative mb-6">

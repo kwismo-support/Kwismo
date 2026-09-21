@@ -44,6 +44,26 @@ async def update_me(payload: UserUpdateIn, user=Depends(require_roles("user", "a
     return await service.update_me(user.id, payload, user.langue)
 
 
+@router.put(
+    "/me/password",
+    response_model=Message,
+    responses=AUTH_RESPONSES,
+    summary="Change password / Modifier le mot de passe",
+)
+@router.patch(
+    "/me/password",
+    response_model=Message,
+    responses=AUTH_RESPONSES,
+    summary="Change password / Modifier le mot de passe",
+)
+async def change_password(
+    payload: service.UserPasswordChangeIn,
+    user=Depends(require_roles("user", "admin", "partner", "superadmin")),
+) -> Message:
+    return await service.change_password(user.id, payload, user.langue)
+
+
+
 @router.get(
     "",
     response_model=Page[UserListItemOut],

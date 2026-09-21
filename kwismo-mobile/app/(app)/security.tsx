@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -82,7 +84,10 @@ export default function SecurityScreen() {
   };
 
   return (
-    <View className="flex-1 bg-white dark:bg-brand-darkBg">
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1 bg-white dark:bg-brand-darkBg"
+    >
       <StatusBar style="light" />
 
       <HeaderBar
@@ -109,8 +114,9 @@ export default function SecurityScreen() {
         contentContainerStyle={{
           paddingHorizontal: 20,
           paddingTop: 20,
-          paddingBottom: insets.bottom + 40,
+          paddingBottom: insets.bottom + 80,
         }}
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         <View className="mt-3">
@@ -189,6 +195,7 @@ export default function SecurityScreen() {
           />
         </View>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
+

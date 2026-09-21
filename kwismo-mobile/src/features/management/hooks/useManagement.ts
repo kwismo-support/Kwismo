@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/min';
 import { managementApi } from '../services/management.api';
 import { UserPhoneBackend, UserSimNumber, PhoneStatus } from '../types/management.types';
@@ -61,6 +62,7 @@ export function transformBackendPhone(item: UserPhoneBackend): UserSimNumber {
 }
 
 export function useManagement() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,12 +77,12 @@ export function useManagement() {
         setNumbers(transformed);
         await storage.setItem(USER_PHONES_CACHE_KEY, JSON.stringify(transformed)).catch(() => {});
       } else if (isManualRefresh) {
-        setError(res.message || 'Failed to fetch numbers');
+        setError(res.message || t('errors.generalMessage'));
       }
     } catch (err: any) {
-      if (isManualRefresh) setError(err.message || 'Network error');
+      if (isManualRefresh) setError(err.message || t('toasts.networkError'));
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     let isMounted = true;

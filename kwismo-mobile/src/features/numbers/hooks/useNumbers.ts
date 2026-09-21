@@ -18,10 +18,10 @@ export function useNumbers() {
       if (res.success && res.data) {
         setNumbers(res.data);
       } else {
-        setError(res.message || t('errors.generalMessage', 'Erreur de chargement des numéros'));
+        setError(res.message || t('errors.generalMessage'));
       }
     } catch (err: any) {
-      setError(err.message || t('toasts.networkError', 'Erreur réseau'));
+      setError(err.message || t('toasts.networkError'));
     } finally {
       setLoading(false);
     }
@@ -36,7 +36,7 @@ export function useNumbers() {
     try {
       const res = await numbersApi.addNumber({ numero_valeur, country_id, operator_id });
       if (res.success && res.data) {
-        toast.success(t('toasts.generalSuccess', 'Numéro ajouté !'));
+        toast.success(t('toasts.generalSuccess'));
         await fetchNumbers();
       }
       return res;
@@ -50,7 +50,7 @@ export function useNumbers() {
     try {
       const res = await numbersApi.markAsCompromised(id);
       if (res.success) {
-        toast.success(t('toasts.generalSuccess', 'Incident déclaré !'));
+        toast.success(t('toasts.generalSuccess'));
         await fetchNumbers();
       }
       return res;

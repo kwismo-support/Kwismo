@@ -80,3 +80,9 @@ class UserPermissionsUpdateIn(BaseModel):
 class UserStatusIn(BaseModel):
     statut: str = Field(..., examples=["suspended"], description="'active' ou 'suspended' / 'active' or 'suspended'.")
 
+
+class UserPasswordChangeIn(BaseModel):
+    ancien_mot_de_passe: str
+    nouveau_mot_de_passe: str
+
+

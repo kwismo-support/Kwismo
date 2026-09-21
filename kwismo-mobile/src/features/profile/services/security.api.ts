@@ -1,5 +1,5 @@
 import { ApiClient } from '../../../shared/services/apiClient';
-import { getRealDeviceName, getDevicePhysicalLocation } from '../../../shared/utils/deviceHelper';
+import { getRealDeviceName, getDevicePhysicalLocation, formatDeviceName } from '../../../shared/utils/deviceHelper';
 
 export interface ChangePasswordPayload {
   ancien_mot_de_passe: string;
@@ -59,9 +59,10 @@ export const securityApi = {
         const isMobile = true; // On the mobile app, device is a phone
         return {
           id: dev.id,
-          device_name: isCurrent ? getRealDeviceName() : (dev.nom && dev.nom !== 'Appareil verifie' ? dev.nom : 'Android Mobile'),
+          device_name: isCurrent ? getRealDeviceName() : formatDeviceName(dev.nom || dev.identifiant),
           device_type: 'mobile',
           location: isCurrent ? getDevicePhysicalLocation() : 'Appareil vérifié',
+
           ip_address: isCurrent ? 'Localisation GPS Appareil' : (dev.identifiant && !dev.identifiant.includes('kwismo-device') ? dev.identifiant : 'Cameroun'),
           last_active: isCurrent ? 'En cours (Maintenant)' : (dev.date_derniere_connexion ? new Date(dev.date_derniere_connexion).toLocaleString('fr-FR') : 'Récemment'),
           is_current: isCurrent,
