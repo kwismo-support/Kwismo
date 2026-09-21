@@ -23,7 +23,14 @@ interface PinPadProps {
   onBiometric?: () => void;
 }
 
-const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'bio', '0', 'del'] as const;
+const KEY_ROWS = [
+  ['1', '2', '3'],
+  ['4', '5', '6'],
+  ['7', '8', '9'],
+  ['bio', '0', 'del'],
+] as const;
+
+type KeyType = (typeof KEY_ROWS)[number][number];
 
 export const PinPad: React.FC<PinPadProps> = ({
   mode,
@@ -66,7 +73,7 @@ export const PinPad: React.FC<PinPadProps> = ({
           saveUserPin(pin);
           onSuccess(pin);
         } else {
-          setError(t('security.pinMismatch', 'Les codes PIN ne correspondent pas. Réessayez.'));
+          setError(t('pinPad.pinMismatch'));
           setPin('');
           setFirstPin('');
           setStep('enter');
@@ -82,7 +89,7 @@ export const PinPad: React.FC<PinPadProps> = ({
       if (ok) {
         onSuccess(pin);
       } else {
-        setError(t('security.pinWrong', 'Code PIN incorrect. Veuillez réessayer.'));
+        setError(t('pinPad.invalidPin'));
         setPin('');
       }
     };
@@ -90,7 +97,7 @@ export const PinPad: React.FC<PinPadProps> = ({
   }, [pin, firstPin, mode, step, onSuccess, t]);
 
   const press = useCallback(
-    (k: (typeof KEYS)[number]) => {
+    (k: KeyType) => {
       if (loading) return;
       setError('');
       if (k === 'del') {
@@ -132,7 +139,7 @@ export const PinPad: React.FC<PinPadProps> = ({
         </Text>
       </View>
 
-      <View className="flex-row gap-4 mb-6">
+      <View className="flex-row gap-4 mb-4">
         {Array.from({ length: PIN_LEN }).map((_, i) => {
           const filled = i < pin.length;
           return (
@@ -156,49 +163,53 @@ export const PinPad: React.FC<PinPadProps> = ({
 
       {loading && <ActivityIndicator color="#25B46E" className="mb-3" />}
 
-      <View className="flex-row flex-wrap w-72 justify-center gap-4 mt-2">
-        {KEYS.map((k) => {
-          if (k === 'bio') {
-            return showBiometric && mode === 'verify' ? (
-              <TouchableOpacity
-                key="bio"
-                className="wx-18 hx-18 rounded-full border border-slate-200 dark:border-slate-700 items-center justify-center"
-                onPress={() => press('bio')}
-                activeOpacity={0.7}
-              >
-                <Icon name="solar:fingerprint-bold" size={28} color="#25B46E" />
-              </TouchableOpacity>
-            ) : (
-              <View key="bio" className="wx-18 hx-18" />
-            );
-          }
+      <View className="w-full items-center mt-2">
+        {KEY_ROWS.map((row, rowIndex) => (
+          <View key={rowIndex} className="flex-row justify-center gap-5 mb-3.5">
+            {row.map((k) => {
+              if (k === 'bio') {
+                return showBiometric && mode === 'verify' ? (
+                  <TouchableOpacity
+                    key="bio"
+                    className="wx-16 hx-16 rounded-full border border-slate-200 dark:border-slate-700 items-center justify-center"
+                    onPress={() => press('bio')}
+                    activeOpacity={0.7}
+                  >
+                    <Icon name="solar:fingerprint-bold" size={28} color="#25B46E" />
+                  </TouchableOpacity>
+                ) : (
+                  <View key="bio" className="wx-16 hx-16" />
+                );
+              }
 
-          if (k === 'del') {
-            return (
-              <TouchableOpacity
-                key="del"
-                className="wx-18 hx-18 rounded-full border border-slate-200 dark:border-slate-700 items-center justify-center"
-                onPress={() => press('del')}
-                activeOpacity={0.7}
-              >
-                <Icon name="solar:backspace-linear" size={26} color={themeColors.textPrimary} />
-              </TouchableOpacity>
-            );
-          }
+              if (k === 'del') {
+                return (
+                  <TouchableOpacity
+                    key="del"
+                    className="wx-16 hx-16 rounded-full border border-slate-200 dark:border-slate-700 items-center justify-center"
+                    onPress={() => press('del')}
+                    activeOpacity={0.7}
+                  >
+                    <Icon name="solar:backspace-linear" size={26} color={themeColors.textPrimary} />
+                  </TouchableOpacity>
+                );
+              }
 
-          return (
-            <TouchableOpacity
-              key={k}
-              className="wx-18 hx-18 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark items-center justify-center"
-              onPress={() => press(k)}
-              activeOpacity={0.7}
-            >
-              <Text className="font-montserrat-bold text-2xl font-bold text-slate-900 dark:text-white">
-                {k}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+              return (
+                <TouchableOpacity
+                  key={k}
+                  className="wx-16 hx-16 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark items-center justify-center"
+                  onPress={() => press(k)}
+                  activeOpacity={0.7}
+                >
+                  <Text className="font-montserrat-bold text-2xl font-bold text-slate-900 dark:text-white">
+                    {k}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        ))}
       </View>
     </View>
   );
