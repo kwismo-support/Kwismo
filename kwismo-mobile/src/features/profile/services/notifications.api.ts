@@ -42,6 +42,18 @@ export const notificationsApi = {
     );
   },
 
+  async getNotificationById(id: string) {
+    return ApiClient.request<NotificationBackendItem>(`/notifications/${id}`, {
+      method: 'GET',
+    });
+  },
+
+  async deleteNotification(id: string) {
+    return ApiClient.request<{ message: string }>(`/notifications/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
   async markAsRead(id: string) {
     return ApiClient.request<{ message: string }>(`/notifications/${id}/read`, {
       method: 'PATCH',

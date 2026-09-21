@@ -215,7 +215,14 @@
     "forbiddenTitle": "Accès non autorisé",
     "forbiddenMessage": "Vous n'avez pas les permissions nécessaires pour accéder à cette zone.",
     "generalTitle": "Une erreur est survenue",
-    "generalMessage": "Impossible de charger la ressource. Veuillez réessayer."
+    "generalMessage": "Impossible de charger la ressource. Veuillez réessayer.",
+    "accountBlocked": "Votre compte a été suspendu ou bloqué par un administrateur.",
+    "sessionExpired": "Session expirée. Veuillez vous reconnecter.",
+    "accessDenied": "Accès restreint.",
+    "notFound": "Service ou ressource introuvable.",
+    "serverError": "Erreur serveur. Veuillez réessayer.",
+    "generic": "Une erreur est survenue.",
+    "networkError": "Connexion au serveur impossible. Vérifiez votre réseau."
   },
   "pinPad": {
     "setupTitlePhase1": "Entrer le nouveau code PIN",

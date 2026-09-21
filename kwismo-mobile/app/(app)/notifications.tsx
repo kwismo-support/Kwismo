@@ -13,20 +13,19 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
-import { CustomSwitch } from '@/shared/ui/CustomSwitch';
-import { useNotificationSettings } from '@/features/profile/hooks/useNotificationSettings';
-import { useNotifications } from '@/features/profile/hooks/useNotifications';
+import { useNotifications, NotificationTabFilter } from '@/features/profile/hooks/useNotifications';
 
 export default function NotificationsScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { preferences, updatePreference } = useNotificationSettings();
   const {
     notifications,
     loading,
     refreshing,
     unreadCount,
+    activeTab,
+    setActiveTab,
     fetchNotifications,
     markAsRead,
     markAllAsRead,
@@ -46,17 +45,37 @@ export default function NotificationsScreen() {
     }
   };
 
+  const handleSelectNotification = async (id: string, lu: boolean) => {
+    if (!lu) {
+      await markAsRead(id);
+    }
+    router.push({
+      pathname: '/(app)/notification-detail',
+      params: { id },
+    });
+  };
+
   return (
     <View className="flex-1 bg-brand-green">
       <StatusBar style="light" />
 
+      {/* Header with Settings Gear icon as rightAction */}
       <HeaderBar
         title={t('common.notificationItem')}
         showBack={true}
         onBack={() => router.back()}
+        rightAction={
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => router.push('/(app)/notification-settings')}
+            className="p-1"
+          >
+            <Icon name="solar:settings-bold" color="#FFFFFF" size={22} />
+          </TouchableOpacity>
+        }
       />
 
-      <View className="flex-1 bg-white dark:bg-brand-darkBg rounded-t-[28px] overflow-hidden pt-5 px-5">
+      <View className="flex-1 bg-white dark:bg-brand-darkBg rounded-t-[28px] overflow-hidden pt-4 px-5">
         <ScrollView
           contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
           showsVerticalScrollIndicator={false}
@@ -70,29 +89,75 @@ export default function NotificationsScreen() {
           }
           className="gap-y-4"
         >
-          {/* Unread banner and Mark all read button */}
-          <View className="flex-row items-center justify-between py-1">
+          {/* Tab Filters and Mark All Read Button */}
+          <View className="flex-row items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+            {/* Filter Tabs */}
             <View className="flex-row items-center space-x-2">
-              <Text className="font-montserrat-bold text-base font-bold text-slate-900 dark:text-white">
-                {t('notifications.tabAll')}
-              </Text>
-              {unreadCount > 0 && (
-                <View className="bg-brand-orange px-2.5 py-0.5 rounded-full">
-                  <Text className="text-white text-xs font-semibold font-caption">
-                    {unreadCount} {t('notifications.tabUnread').toLowerCase()}
-                  </Text>
-                </View>
-              )}
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => setActiveTab('all')}
+                className={`px-3.5 py-1.5 rounded-full border ${
+                  activeTab === 'all'
+                    ? 'bg-brand-green border-brand-green'
+                    : 'bg-slate-100 dark:bg-slate-800 border-transparent'
+                }`}
+              >
+                <Text
+                  className={`text-xs font-semibold ${
+                    activeTab === 'all'
+                      ? 'text-white'
+                      : 'text-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  {t('notifications.tabAll')}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => setActiveTab('unread')}
+                className={`px-3.5 py-1.5 rounded-full border flex-row items-center space-x-1.5 ${
+                  activeTab === 'unread'
+                    ? 'bg-brand-orange border-brand-orange'
+                    : 'bg-slate-100 dark:bg-slate-800 border-transparent'
+                }`}
+              >
+                <Text
+                  className={`text-xs font-semibold ${
+                    activeTab === 'unread'
+                      ? 'text-white'
+                      : 'text-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  {t('notifications.tabUnread')}
+                </Text>
+                {unreadCount > 0 && (
+                  <View
+                    className={`wx-4 hx-4 rounded-full items-center justify-center ${
+                      activeTab === 'unread' ? 'bg-white' : 'bg-brand-orange'
+                    }`}
+                  >
+                    <Text
+                      className={`text-[10px] font-bold ${
+                        activeTab === 'unread' ? 'text-brand-orange' : 'text-white'
+                      }`}
+                    >
+                      {unreadCount}
+                    </Text>
+                  </View>
+                )}
+              </TouchableOpacity>
             </View>
 
+            {/* Tout marquer comme lu button - ONLY visible if unreadCount > 0 */}
             {unreadCount > 0 && (
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={markAllAsRead}
-                className="flex-row items-center space-x-1 py-1 px-2 rounded-lg bg-slate-100 dark:bg-slate-800"
+                className="flex-row items-center space-x-1 py-1.5 px-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-brand-orange/30"
               >
                 <Icon name="solar:check-read-linear" size={16} color="#FF9500" />
-                <Text className="text-xs font-semibold text-brand-orange">
+                <Text className="text-xs font-bold text-brand-orange">
                   {t('notifications.markAll')}
                 </Text>
               </TouchableOpacity>
@@ -101,12 +166,12 @@ export default function NotificationsScreen() {
 
           {/* Activity Feed */}
           {loading ? (
-            <View className="py-12 items-center justify-center">
+            <View className="py-16 items-center justify-center">
               <ActivityIndicator size="large" color="#00A859" />
             </View>
           ) : notifications.length === 0 ? (
-            <View className="bg-slate-50 dark:bg-brand-cardDark rounded-2xl p-8 items-center justify-center text-center my-2 border border-slate-100 dark:border-slate-800">
-              <View className="w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-950/40 items-center justify-center mb-3">
+            <View className="bg-slate-50 dark:bg-brand-cardDark rounded-2xl p-8 items-center justify-center my-4 border border-slate-100 dark:border-slate-800">
+              <View className="wx-14 hx-14 rounded-full bg-emerald-100 dark:bg-emerald-950/40 items-center justify-center mb-3">
                 <Icon name="solar:bell-bing-bold" color="#00A859" size={28} />
               </View>
               <Text className="font-montserrat-bold text-base font-bold text-slate-900 dark:text-white text-center mb-1">
@@ -117,21 +182,21 @@ export default function NotificationsScreen() {
               </Text>
             </View>
           ) : (
-            <View className="gap-y-3">
+            <View className="gap-y-3 pt-1">
               {notifications.map((item) => (
                 <TouchableOpacity
                   key={item.id}
                   activeOpacity={0.8}
-                  onPress={() => markAsRead(item.id)}
+                  onPress={() => handleSelectNotification(item.id, item.lu)}
                   className={`p-4 rounded-2xl border transition-all ${
                     !item.lu
-                      ? 'bg-amber-50/60 dark:bg-amber-950/20 border-brand-orange/30'
+                      ? 'bg-amber-50/70 dark:bg-amber-950/25 border-brand-orange/35 shadow-sm'
                       : 'bg-slate-50 dark:bg-brand-cardDark border-slate-100 dark:border-slate-800'
                   }`}
                 >
                   <View className="flex-row items-start space-x-3">
                     <View
-                      className={`w-9 h-9 rounded-full items-center justify-center ${
+                      className={`wx-9 hx-9 rounded-full items-center justify-center ${
                         !item.lu
                           ? 'bg-brand-orange/20'
                           : 'bg-slate-200/70 dark:bg-slate-800'
@@ -160,99 +225,13 @@ export default function NotificationsScreen() {
                     </View>
 
                     {!item.lu && (
-                      <View className="w-2.5 h-2.5 rounded-full bg-brand-orange mt-1" />
+                      <View className="wx-2.5 hx-2.5 rounded-full bg-brand-orange mt-1" />
                     )}
                   </View>
                 </TouchableOpacity>
               ))}
             </View>
           )}
-
-          {/* Info Banner */}
-          <View className="flex-row items-start p-4 rounded-2xl border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-950/30 mt-2">
-            <Icon name="solar:bell-bing-bold" color="#3B82F6" size={24} className="mr-3" />
-            <View className="flex-1">
-              <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white mb-1">
-                {t('notifications.infoTitle')}
-              </Text>
-              <Text className="text-xs text-slate-600 dark:text-slate-300 leading-4.5">
-                {preferences.push_enabled
-                  ? t('notifications.pushEnabledInfo')
-                  : t('notifications.inAppOnlyInfo')}
-              </Text>
-            </View>
-          </View>
-
-          {/* Notification Preferences Settings */}
-          <View className="bg-slate-50 dark:bg-brand-cardDark rounded-2xl p-4 border border-slate-100 dark:border-slate-800 gap-y-4">
-            <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white border-b border-slate-200/60 dark:border-slate-800 pb-2">
-              {t('notifications.preferencesTitle')}
-            </Text>
-
-            <View className="flex-row items-center justify-between pb-3 border-b border-slate-200/60 dark:border-slate-800">
-              <View className="flex-1 pr-3">
-                <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white">
-                  {t('notifications.pushTitle')}
-                </Text>
-                <Text className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  {t('notifications.pushDesc')}
-                </Text>
-              </View>
-              <CustomSwitch
-                value={preferences.push_enabled}
-                onValueChange={(val) => updatePreference('push_enabled', val)}
-                activeColor="#FF9500"
-              />
-            </View>
-
-            <View className="flex-row items-center justify-between pb-3 border-b border-slate-200/60 dark:border-slate-800">
-              <View className="flex-1 pr-3">
-                <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white">
-                  {t('notifications.securityAlertsTitle')}
-                </Text>
-                <Text className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  {t('notifications.securityAlertsDesc')}
-                </Text>
-              </View>
-              <CustomSwitch
-                value={preferences.alertes_securite}
-                onValueChange={(val) => updatePreference('alertes_securite', val)}
-                activeColor="#FF9500"
-              />
-            </View>
-
-            <View className="flex-row items-center justify-between pb-3 border-b border-slate-200/60 dark:border-slate-800">
-              <View className="flex-1 pr-3">
-                <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white">
-                  {t('notifications.emailTitle')}
-                </Text>
-                <Text className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  {t('notifications.emailDesc')}
-                </Text>
-              </View>
-              <CustomSwitch
-                value={preferences.email_enabled}
-                onValueChange={(val) => updatePreference('email_enabled', val)}
-                activeColor="#FF9500"
-              />
-            </View>
-
-            <View className="flex-row items-center justify-between">
-              <View className="flex-1 pr-3">
-                <Text className="font-montserrat-bold text-sm font-bold text-slate-900 dark:text-white">
-                  {t('notifications.smsTitle')}
-                </Text>
-                <Text className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  {t('notifications.smsDesc')}
-                </Text>
-              </View>
-              <CustomSwitch
-                value={preferences.sms_enabled}
-                onValueChange={(val) => updatePreference('sms_enabled', val)}
-                activeColor="#FF9500"
-              />
-            </View>
-          </View>
         </ScrollView>
       </View>
     </View>

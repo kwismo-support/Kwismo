@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderSearchModal } from '@/shared/components/HeaderSearchModal';
+import { useNotifications } from '@/features/profile/hooks/useNotifications';
 
 interface HeaderActionsProps {
   unreadNotificationsCount?: number;
@@ -13,7 +14,7 @@ interface HeaderActionsProps {
 }
 
 export const HeaderActions: React.FC<HeaderActionsProps> = ({
-  unreadNotificationsCount = 0,
+  unreadNotificationsCount,
   iconColor = '#FFFFFF',
   onPressNotifications,
   onPressSearch,
@@ -21,8 +22,11 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
 }) => {
   const router = useRouter();
   const [searchModalVisible, setSearchModalVisible] = useState(false);
+  const { unreadCount: liveUnreadCount } = useNotifications();
 
-  const hasUnread = unreadNotificationsCount > 0;
+  const finalUnreadCount =
+    unreadNotificationsCount !== undefined ? unreadNotificationsCount : liveUnreadCount;
+  const hasUnread = finalUnreadCount > 0;
 
   const handleNotificationsPress = () => {
     if (onPressNotifications) {
@@ -56,7 +60,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({
           {hasUnread && (
             <View className="absolute top-0.5 right-0.5 min-w-[16px] h-4 rounded-full bg-red-500 items-center justify-center px-1">
               <Text className="font-montserrat-bold text-[9px] text-white font-bold">
-                {unreadNotificationsCount > 99 ? '99+' : unreadNotificationsCount}
+                {finalUnreadCount > 99 ? '99+' : finalUnreadCount}
               </Text>
             </View>
           )}

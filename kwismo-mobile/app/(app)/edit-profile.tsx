@@ -167,13 +167,35 @@ export default function EditProfileScreen() {
             )}
           </View>
 
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={() => setIsPhotoPickerOpen(true)}
-            className="absolute bottom-0.5 right-0.5 wx-8 hx-8 rounded-full bg-brand-green items-center justify-center border-2 border-white dark:border-slate-800 shadow-md"
-          >
-            <Icon name="solar:camera-bold" color={colors.white} size={18} />
-          </TouchableOpacity>
+          {profilePhoto ? (
+            <>
+              {/* Delete photo button */}
+              <TouchableOpacity
+                activeOpacity={0.85}
+                onPress={() => setProfilePhoto(null)}
+                className="absolute bottom-0.5 left-0.5 wx-8 hx-8 rounded-full bg-red-500 items-center justify-center border-2 border-white dark:border-slate-800 shadow-md"
+              >
+                <Icon name="solar:trash-bin-trash-bold" color={colors.white} size={16} />
+              </TouchableOpacity>
+
+              {/* Change photo button */}
+              <TouchableOpacity
+                activeOpacity={0.85}
+                onPress={() => setIsPhotoPickerOpen(true)}
+                className="absolute bottom-0.5 right-0.5 wx-8 hx-8 rounded-full bg-brand-green items-center justify-center border-2 border-white dark:border-slate-800 shadow-md"
+              >
+                <Icon name="solar:pen-bold" color={colors.white} size={16} />
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => setIsPhotoPickerOpen(true)}
+              className="absolute bottom-0.5 right-0.5 wx-8 hx-8 rounded-full bg-brand-green items-center justify-center border-2 border-white dark:border-slate-800 shadow-md"
+            >
+              <Icon name="solar:camera-bold" color={colors.white} size={18} />
+            </TouchableOpacity>
+          )}
         </View>
 
         <Input

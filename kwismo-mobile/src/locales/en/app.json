@@ -215,7 +215,14 @@
     "forbiddenTitle": "Unauthorized access",
     "forbiddenMessage": "You do not have permission to access this section.",
     "generalTitle": "An error occurred",
-    "generalMessage": "Unable to load resource. Please try again."
+    "generalMessage": "Unable to load resource. Please try again.",
+    "accountBlocked": "Your account has been suspended or blocked by an administrator.",
+    "sessionExpired": "Session expired. Please log in again.",
+    "accessDenied": "Access denied.",
+    "notFound": "Service or resource not found.",
+    "serverError": "Server error. Please try again.",
+    "generic": "An error occurred.",
+    "networkError": "Unable to connect to server. Check your network connection."
   },
   "pinPad": {
     "setupTitlePhase1": "Enter new PIN code",

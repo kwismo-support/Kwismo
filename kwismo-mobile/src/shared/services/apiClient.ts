@@ -33,7 +33,7 @@ export class ApiClient {
       return {
         success: true,
         data: mockDataFallback,
-        message: i18next.t('common.mockSuccess', 'Données chargées'),
+        message: i18next.t('common.mockSuccess'),
       };
     }
 
@@ -79,19 +79,19 @@ export class ApiClient {
 
         if (response.status === 401 || isAccountBlocked) {
           if (isAccountBlocked) {
-            errorMsg = i18next.t('errors.accountBlocked', 'Votre compte a été suspendu ou bloqué par un administrateur.');
+            errorMsg = i18next.t('errors.accountBlocked');
           } else {
-            errorMsg = i18next.t('errors.sessionExpired', 'Session expirée. Veuillez vous reconnecter.');
+            errorMsg = i18next.t('errors.sessionExpired');
           }
           useAuthStore.getState().logout();
         } else if (response.status === 403) {
-          errorMsg = errorMsg || i18next.t('errors.accessDenied', 'Accès restreint.');
+          errorMsg = errorMsg || i18next.t('errors.accessDenied');
         } else if (response.status === 404 || errorMsg === 'Not Found') {
-          errorMsg = i18next.t('errors.notFound', 'Service ou ressource introuvable.');
+          errorMsg = i18next.t('errors.notFound');
         } else if (response.status >= 500) {
-          errorMsg = i18next.t('errors.serverError', 'Erreur serveur. Veuillez réessayer.');
+          errorMsg = i18next.t('errors.serverError');
         } else if (!errorMsg) {
-          errorMsg = i18next.t('errors.generic', 'Une erreur est survenue.');
+          errorMsg = i18next.t('errors.generic');
         }
 
         if (env.IS_DEV && !silent) {
@@ -121,10 +121,7 @@ export class ApiClient {
         status: response.status,
       };
     } catch (err: any) {
-      const fallbackMsg = i18next.t(
-        'errors.networkError',
-        'Connexion au serveur impossible. Vérifiez votre réseau.'
-      );
+      const fallbackMsg = i18next.t('errors.networkError');
 
       if (env.IS_DEV) {
         console.error(`\x1b[31m[API NETWORK ERROR]\x1b[0m ${endpoint}:`, err);
@@ -138,7 +135,7 @@ export class ApiClient {
         return {
           success: true,
           data: mockDataFallback,
-          message: i18next.t('common.localFallback', 'Données locales chargées'),
+          message: i18next.t('common.localFallback'),
         };
       }
 
