@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 
 from app.core.config import get_settings
 from app.core.schemas import Message
-from app.db.prisma_client import db
+from app.db.prisma_client import connect_db, db
 from app.modules.user_phones.schemas import (
     CompromiseIncidentOut,
     UserPhoneAddIn,
