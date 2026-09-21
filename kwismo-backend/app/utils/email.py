@@ -1,11 +1,3 @@
-"""Email sending with automatic fallback (Resend -> Google SMTP -> Console Dev). / Envoi d'emails avec chaîne de secours.
-
-FR — Permet d'envoyer des emails via Resend. Si Resend échoue ou n'est pas configuré,
-     bascule automatiquement sur Google SMTP. Si aucun n'est configuré, logge en console.
-EN — Sends emails via Resend. If Resend fails or is unconfigured, automatically
-     falls back to Google SMTP. Logs to console if neither is configured.
-"""
-
 import asyncio
 import logging
 
@@ -15,11 +7,9 @@ logger = logging.getLogger("kwismo.backend")
 
 
 async def send_email(to: str, subject: str, body_html: str, dev_tag: str = "EMAIL-DEV") -> bool:
-    """Envoie un email via la chaîne de secours stricte issue de .env : Brevo API -> Brevo SMTP -> Resend API -> Console log."""
     settings = get_settings()
     sender_email = settings.email_from or "KWISMO <noreply@kwismo.com>"
 
-    # 1. Priorité 1a : Brevo API (via .env BREVO_API_KEY)
     if settings.brevo_api_key:
         try:
             import httpx
@@ -55,7 +45,6 @@ async def send_email(to: str, subject: str, body_html: str, dev_tag: str = "EMAI
         except Exception as exc:
             logger.warning("Échec envoi email via Brevo API à %s : %s — tentative fallback Brevo SMTP", to, exc)
 
-    # 2. Priorité 1b : Brevo SMTP (via .env BREVO_SMTP_USER & BREVO_SMTP_KEY)
     if settings.brevo_smtp_user and settings.brevo_smtp_key:
         try:
             import smtplib
@@ -83,7 +72,6 @@ async def send_email(to: str, subject: str, body_html: str, dev_tag: str = "EMAI
         except Exception as exc:
             logger.warning("Échec envoi email via Brevo SMTP à %s : %s — tentative fallback Resend API", to, exc)
 
-    # 3. Priorité 2 : Resend API (via .env RESEND_API_KEY)
     if settings.resend_api_key:
         try:
             import resend
@@ -99,7 +87,6 @@ async def send_email(to: str, subject: str, body_html: str, dev_tag: str = "EMAI
         except Exception as exc:
             logger.warning("Échec envoi email via Resend à %s : %s — tentative fallback Dev Console", to, exc)
 
-    # 4. Fallback Dev Mode (console log)
     logger.info("[%s] To: %s | Subject: %s | Body: %s", dev_tag, to, subject, body_html)
     return True
 
@@ -110,7 +97,6 @@ def _build_email_html(
     content_html: str,
     footer_text: str = "© 2026 KWISMO — Protection & Sécurité des données.",
 ) -> str:
-    """Génère un modèle HTML d'email haut de gamme responsive aux couleurs de KWISMO."""
     return f"""<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -123,7 +109,6 @@ def _build_email_html(
     <tr>
       <td align="center">
         <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 520px; background-color: #FFFFFF; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #E2E8F0;">
-          <!-- HEADER DE MARQUE KWISMO -->
           <tr>
             <td style="background-color: #161E33; padding: 32px 24px; text-align: center; border-bottom: 4px solid #25B46E;">
               <h1 style="margin: 0; font-size: 28px; font-weight: 800; letter-spacing: 2px; color: #FFFFFF; font-family: Arial, sans-serif;">
@@ -134,13 +119,11 @@ def _build_email_html(
               </p>
             </td>
           </tr>
-          <!-- CONTENU DU MESSAGE -->
           <tr>
             <td style="padding: 36px 28px; color: #2D3748; font-size: 15px; line-height: 1.6;">
               {content_html}
             </td>
           </tr>
-          <!-- PIED DE PAGE -->
           <tr>
             <td style="background-color: #F8FAFC; border-top: 1px solid #EDF2F7; padding: 20px 24px; text-align: center; font-size: 12px; color: #94A3B8; line-height: 1.5;">
               <p style="margin: 0 0 4px 0; font-weight: 600; color: #64748B;">{footer_text}</p>
@@ -156,7 +139,6 @@ def _build_email_html(
 
 
 async def send_otp_email(to: str, code: str, lang: str = "fr") -> None:
-    """Envoie un email OTP avec design HTML haut de gamme en FR ou EN."""
     settings = get_settings()
     is_en = (lang or "").lower().startswith("en")
 
@@ -222,7 +204,6 @@ async def send_otp_email(to: str, code: str, lang: str = "fr") -> None:
 
 
 async def send_password_reset_email(to: str, reset_token: str, lang: str = "fr") -> None:
-    """Envoie un email de réinitialisation de mot de passe HTML responsive."""
     settings = get_settings()
     reset_url = f"{settings.frontend_url}/reset-password?token={reset_token}"
     is_en = (lang or "").lower().startswith("en")
@@ -280,4 +261,3 @@ async def send_password_reset_email(to: str, reset_token: str, lang: str = "fr")
     )
 
     await send_email(to, subject, body_html, dev_tag="EMAIL-RESET-DEV")
-
