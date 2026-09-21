@@ -31,6 +31,28 @@ const STORAGE_NUMBERS_KEY = 'kwismo_sqlite_numbers_cache';
 const STORAGE_CONFIG_KEY = 'kwismo_sqlite_system_config';
 const STORAGE_OUTBOX_KEY = 'kwismo_sqlite_offline_outbox';
 const STORAGE_RECENTS_KEY = 'kwismo_recent_verifications';
+const SECRET_KEY = 'KWISMO_CACHE_KEY_2026';
+
+function encryptPayload(data: any): string {
+  const json = JSON.stringify(data);
+  let hex = '';
+  for (let i = 0; i < json.length; i++) {
+    const code = json.charCodeAt(i) ^ SECRET_KEY.charCodeAt(i % SECRET_KEY.length);
+    hex += code.toString(16).padStart(2, '0');
+  }
+  return 'ENC:' + hex;
+}
+
+function decryptPayload(raw: string): any {
+  if (!raw.startsWith('ENC:')) return JSON.parse(raw);
+  const hex = raw.substring(4);
+  let str = '';
+  for (let i = 0; i < hex.length; i += 2) {
+    const code = parseInt(hex.substring(i, i + 2), 16) ^ SECRET_KEY.charCodeAt((i / 2) % SECRET_KEY.length);
+    str += String.fromCharCode(code);
+  }
+  return JSON.parse(str);
+}
 
 const DEFAULT_LOCAL_RULES: ThresholdRuleLocal[] = [
   { zone: 'securise', min_value: 0.0, min_operator: '>=', max_value: 0.3, max_operator: '<', label_fr: 'Sécurisé', label_en: 'Safe' },
@@ -52,14 +74,14 @@ export async function initDatabase(): Promise<void> {
 export async function getStoredRules(): Promise<ThresholdRuleLocal[]> {
   try {
     const raw = await AsyncStorage.getItem(STORAGE_CONFIG_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return decryptPayload(raw);
   } catch {}
   return DEFAULT_LOCAL_RULES;
 }
 
 export async function saveStoredRules(rules: ThresholdRuleLocal[]): Promise<void> {
   try {
-    await AsyncStorage.setItem(STORAGE_CONFIG_KEY, JSON.stringify(rules));
+    await AsyncStorage.setItem(STORAGE_CONFIG_KEY, encryptPayload(rules));
   } catch {}
 }
 
@@ -71,7 +93,7 @@ export async function cacheNumbers(numbers: CachedNumber[]): Promise<void> {
     numbers.forEach((item) => map.set(item.valeur, item));
 
     const updatedList = Array.from(map.values());
-    await AsyncStorage.setItem(STORAGE_NUMBERS_KEY, JSON.stringify(updatedList));
+    await AsyncStorage.setItem(STORAGE_NUMBERS_KEY, encryptPayload(updatedList));
   } catch (err) {
     console.warn('Erreur mise en cache numéros:', err);
   }
@@ -80,7 +102,7 @@ export async function cacheNumbers(numbers: CachedNumber[]): Promise<void> {
 export async function getAllCachedNumbers(): Promise<CachedNumber[]> {
   try {
     const raw = await AsyncStorage.getItem(STORAGE_NUMBERS_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return decryptPayload(raw);
   } catch {}
   return [];
 }
@@ -112,7 +134,7 @@ export function evaluateScoreOffline(score: number, rules: ThresholdRuleLocal[])
 export async function getRecentVerifications(): Promise<string[]> {
   try {
     const raw = await AsyncStorage.getItem(STORAGE_RECENTS_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return decryptPayload(raw);
   } catch {}
   return [];
 }
@@ -122,7 +144,7 @@ export async function addRecentVerification(phone: string): Promise<void> {
     const current = await getRecentVerifications();
     const filtered = current.filter((p) => p !== phone);
     const updated = [phone, ...filtered].slice(0, 5);
-    await AsyncStorage.setItem(STORAGE_RECENTS_KEY, JSON.stringify(updated));
+    await AsyncStorage.setItem(STORAGE_RECENTS_KEY, encryptPayload(updated));
   } catch {}
 }
 
@@ -136,7 +158,7 @@ export async function enqueueOutboxItem(action_type: string, payload: any): Prom
       created_at: new Date().toISOString(),
     };
     current.push(newItem);
-    await AsyncStorage.setItem(STORAGE_OUTBOX_KEY, JSON.stringify(current));
+    await AsyncStorage.setItem(STORAGE_OUTBOX_KEY, encryptPayload(current));
   } catch (err) {
     console.warn('Erreur ajout outbox:', err);
   }
@@ -145,7 +167,7 @@ export async function enqueueOutboxItem(action_type: string, payload: any): Prom
 export async function getOutboxItems(): Promise<OutboxItem[]> {
   try {
     const raw = await AsyncStorage.getItem(STORAGE_OUTBOX_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) return decryptPayload(raw);
   } catch {}
   return [];
 }
@@ -154,7 +176,7 @@ export async function clearOutboxItem(id: string): Promise<void> {
   try {
     const current = await getOutboxItems();
     const filtered = current.filter((item) => item.id !== id);
-    await AsyncStorage.setItem(STORAGE_OUTBOX_KEY, JSON.stringify(filtered));
+    await AsyncStorage.setItem(STORAGE_OUTBOX_KEY, encryptPayload(filtered));
   } catch {}
 }
 

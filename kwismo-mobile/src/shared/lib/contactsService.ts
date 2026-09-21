@@ -46,9 +46,11 @@ export const getDeviceContacts = async (): Promise<{
         if (c.phoneNumbers && c.phoneNumbers.length > 0) {
           c.phoneNumbers.forEach((p: any, idx: number) => {
             if (p.number) {
+              const nameParts = [c.firstName, c.middleName, c.lastName].filter(Boolean).join(' ');
+              const displayName = c.name || (nameParts.length > 0 ? nameParts : (c.company || c.nickname || p.number || 'Contact'));
               results.push({
                 id: `${c.id || Math.random()}-${idx}`,
-                name: c.name || 'Contact',
+                name: displayName,
                 phone: p.number,
               });
             }

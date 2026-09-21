@@ -69,11 +69,25 @@ export default function OtpScreen() {
 
   const handleOtpChange = (text: string, index: number) => {
     if (otpError) setOtpError('');
+    const clean = text.replace(/[^0-9]/g, '');
+
+    if (clean.length > 1) {
+      const digits = clean.slice(0, 6).split('');
+      const newOtp = ['', '', '', '', '', ''];
+      digits.forEach((d, i) => {
+        if (i < 6) newOtp[i] = d;
+      });
+      setOtpDigits(newOtp);
+      const nextIndex = Math.min(digits.length, 5);
+      inputRefs.current[nextIndex]?.focus();
+      return;
+    }
+
     const newOtp = [...otpDigits];
-    newOtp[index] = text;
+    newOtp[index] = clean;
     setOtpDigits(newOtp);
 
-    if (text && index < 5) {
+    if (clean && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   };
@@ -186,7 +200,7 @@ export default function OtpScreen() {
                       className="font-bold text-center text-slate-900 dark:text-white w-full h-full text-xl"
                       style={Platform.OS === 'web' ? ({ outline: 'none', outlineStyle: 'none' } as any) : {}}
                       keyboardType="number-pad"
-                      maxLength={1}
+                      maxLength={6}
                       value={digit}
                       onChangeText={(text) => handleOtpChange(text, index)}
                       onKeyPress={(e) => handleKeyPress(e, index)}

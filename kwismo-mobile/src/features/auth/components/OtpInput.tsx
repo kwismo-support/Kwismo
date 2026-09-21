@@ -1,4 +1,3 @@
-// Composant de saisie du code OTP
 import React, { useRef } from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
 
@@ -12,12 +11,22 @@ export const OtpInput: React.FC<OtpInputProps> = ({ length = 6, value, onChange 
   const inputs = useRef<Array<TextInput | null>>([]);
 
   const handleChange = (text: string, index: number) => {
-    const newCode = value.split('');
-    newCode[index] = text;
-    const codeStr = newCode.join('');
+    const clean = text.replace(/[^0-9]/g, '');
+
+    if (clean.length > 1) {
+      const digits = clean.slice(0, length);
+      onChange(digits);
+      const nextIndex = Math.min(digits.length, length - 1);
+      inputs.current[nextIndex]?.focus();
+      return;
+    }
+
+    const currentArray = (value || '').padEnd(length, ' ').split('');
+    currentArray[index] = clean || ' ';
+    const codeStr = currentArray.join('').trimEnd();
     onChange(codeStr);
 
-    if (text && index < length - 1) {
+    if (clean && index < length - 1) {
       inputs.current[index + 1]?.focus();
     }
   };
@@ -30,7 +39,7 @@ export const OtpInput: React.FC<OtpInputProps> = ({ length = 6, value, onChange 
           ref={(ref) => { inputs.current[i] = ref; }}
           style={styles.box}
           keyboardType="number-pad"
-          maxLength={1}
+          maxLength={length}
           value={value[i] || ''}
           onChangeText={(val) => handleChange(val, i)}
         />

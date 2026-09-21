@@ -40,7 +40,8 @@ export const contactsService = {
         .filter((c) => c.phoneNumbers && c.phoneNumbers.length > 0)
         .map((c, idx) => {
           const rawPhone = c.phoneNumbers![0].number || '';
-          const displayName = c.name || rawPhone;
+          const nameParts = [(c as any).firstName, (c as any).middleName, (c as any).lastName].filter(Boolean).join(' ');
+          const displayName = c.name || (nameParts.length > 0 ? nameParts : ((c as any).company || (c as any).nickname || rawPhone));
           const parsed = parsePhoneNumberFromString(rawPhone, 'CM');
 
           const formattedPhone = parsed ? parsed.formatInternational() : rawPhone;

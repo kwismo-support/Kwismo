@@ -123,12 +123,26 @@ export default function ManagementScreen() {
   };
 
   const handleOtpInput = (text: string, index: number) => {
-    const digit = text.slice(-1);
+    const clean = text.replace(/[^0-9]/g, '');
+
+    if (clean.length > 1) {
+      const digits = clean.slice(0, 6).split('');
+      const newCode = ['', '', '', '', '', ''];
+      digits.forEach((d, i) => {
+        if (i < 6) newCode[i] = d;
+      });
+      setOtpCode(newCode);
+      if (newCode.every((c) => c !== '')) {
+        handleConfirmOtp(newCode.join(''));
+      }
+      return;
+    }
+
     const newCode = [...otpCode];
-    newCode[index] = digit;
+    newCode[index] = clean;
     setOtpCode(newCode);
 
-    if (digit && index === 5 && newCode.every((c) => c !== '')) {
+    if (clean && index === 5 && newCode.every((c) => c !== '')) {
       handleConfirmOtp(newCode.join(''));
     }
   };
@@ -400,7 +414,7 @@ export default function ManagementScreen() {
                   className={`wx-11 hx-13 rounded-xl border-2 text-center font-font-bold text-xl font-extrabold bg-white dark:bg-brand-cardDark text-slate-900 dark:text-white ${
                     digit ? 'border-brand-green' : 'border-slate-200 dark:border-slate-700'
                   }`}
-                  maxLength={1}
+                  maxLength={6}
                   keyboardType="number-pad"
                   value={digit}
                   onChangeText={(txt) => handleOtpInput(txt, idx)}

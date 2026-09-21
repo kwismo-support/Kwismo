@@ -107,11 +107,12 @@ export default function VerifyScreen() {
             .filter((c) => c.phoneNumbers && c.phoneNumbers.length > 0)
             .map((c, idx) => {
               const rawPhone = c.phoneNumbers![0].number || '';
-              const displayName = c.name || rawPhone;
+              const nameParts = [(c as any).firstName, (c as any).middleName, (c as any).lastName].filter(Boolean).join(' ');
+              const displayName = c.name || (nameParts.length > 0 ? nameParts : ((c as any).company || (c as any).nickname || rawPhone));
               const bgColors = ['#25B46E', '#F97316', '#3B82F6', '#6366F1'];
               let initials = '';
-              if (c.name) {
-                const parts = c.name.trim().split(' ');
+              if (displayName && displayName !== rawPhone) {
+                const parts = displayName.trim().split(' ');
                 initials = parts[0][0];
                 if (parts.length > 1) initials += parts[1][0];
                 initials = initials.toUpperCase();
@@ -332,7 +333,7 @@ export default function VerifyScreen() {
                     key={c.id}
                     activeOpacity={0.7}
                     onPress={() => handleSelectContact(c.phone, c.name)}
-                    className="flex-row items-center py-2.5 border-b border-slate-100 dark:border-slate-800/60"
+                    className="flex-row items-center py-2.5"
                   >
                     <View
                       style={{ backgroundColor: c.initialBg || '#CBD5E1' }}

@@ -16,7 +16,7 @@ import { HeaderBar } from '@/shared/components/HeaderBar';
 import { toast } from '@/shared/store/toastStore';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
-import * as Contacts from 'expo-contacts';
+import * as Contacts from 'expo-contacts/legacy';
 
 interface ContactItem {
   id: string;
@@ -60,10 +60,11 @@ export default function AlertWhatsappScreen() {
               .filter((c) => c.phoneNumbers && c.phoneNumbers.length > 0)
               .map((c, idx) => {
                 const phone = c.phoneNumbers![0].number || '';
-                const name = c.name || phone;
+                const nameParts = [(c as any).firstName, (c as any).middleName, (c as any).lastName].filter(Boolean).join(' ');
+                const name = c.name || (nameParts.length > 0 ? nameParts : ((c as any).company || (c as any).nickname || phone));
                 let initials = '';
-                if (c.name) {
-                  const parts = c.name.trim().split(' ');
+                if (name) {
+                  const parts = name.trim().split(' ');
                   initials = parts[0][0];
                   if (parts.length > 1) initials += parts[1][0];
                   initials = initials.toUpperCase();
