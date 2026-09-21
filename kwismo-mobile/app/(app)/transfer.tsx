@@ -27,7 +27,7 @@ import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { numbersApi } from '@/features/numbers/services/numbers.api';
 import { Skeleton } from '@/shared/ui/Skeleton';
 import { transferApi } from '@/features/transfer/services/transfer.api';
-import { useAuthStore } from '@/shared/store/authStore';
+import { transferCache } from '@/features/transfer/services/transferCache';
 
 export interface SenderNumberOption {
   id: string;
@@ -91,6 +91,15 @@ export default function TransferScreen() {
       setSelectedAction(null);
       return;
     }
+
+    const cachedActions = transferCache.getCachedActions(opId);
+    if (cachedActions && cachedActions.length > 0) {
+      setAvailableActions(cachedActions);
+      setSelectedAction(cachedActions[0]);
+      setIsActionLoading(false);
+      return;
+    }
+
     setIsActionLoading(true);
     try {
       const actionsRes = await transferApi.getActions(opId);
@@ -102,6 +111,7 @@ export default function TransferScreen() {
           ussdFormat: a.format || a.pattern_code || '*126*{montant}*{numero}#',
           operator_id: a.operatorId || a.operator_id,
         }));
+        transferCache.setCachedActions(opId, mappedActions);
         setAvailableActions(mappedActions);
         setSelectedAction(mappedActions[0]);
       } else {
@@ -119,10 +129,34 @@ export default function TransferScreen() {
   useEffect(() => {
     let isMounted = true;
     const loadInitialData = async () => {
+      const cachedPhones = transferCache.getCachedMyNumbers();
+      if (cachedPhones && cachedPhones.length > 0) {
+        const mappedSenders: SenderNumberOption[] = cachedPhones.map((p, idx) => {
+          const phoneVal = p.valeur || p.numero_valeur || '';
+          const opName = p.operator_name || (p.country_name ? `${p.country_name}` : `SIM ${idx + 1}`);
+          return {
+            id: p.id,
+            label: `${opName} (${phoneVal})`,
+            phone: phoneVal,
+            callingCode: p.country_code || selectedCountry.callingCode,
+            operator: opName,
+            operator_id: p.operator_id,
+          };
+        });
+        setRegisteredSenders(mappedSenders);
+        setSelectedSender(mappedSenders[0]);
+        setIsDataLoading(false);
+        if (mappedSenders[0]?.operator_id) {
+          await fetchActionsForOperator(mappedSenders[0].operator_id);
+        }
+        return;
+      }
+
       setIsDataLoading(true);
       try {
         const phonesRes = await numbersApi.getMyNumbers();
         if (isMounted && phonesRes.success && phonesRes.data && phonesRes.data.length > 0) {
+          transferCache.setCachedMyNumbers(phonesRes.data);
           const mappedSenders: SenderNumberOption[] = phonesRes.data.map((p, idx) => {
             const phoneVal = p.valeur || p.numero_valeur || '';
             const opName = p.operator_name || (p.country_name ? `${p.country_name}` : `SIM ${idx + 1}`);
@@ -153,9 +187,9 @@ export default function TransferScreen() {
           setAvailableActions([]);
           setSelectedAction(null);
         }
+      } finally {
+        if (isMounted) setIsDataLoading(false);
       }
-
-      if (isMounted) setIsDataLoading(false);
     };
 
     loadInitialData();
@@ -229,21 +263,36 @@ export default function TransferScreen() {
     if (!valid) return false;
 
     const fullPhone = `${selectedCountry.callingCode}${cleanPhone}`;
-    try {
-      const verifyRes = await numbersApi.verifyNumber(fullPhone, selectedCountry.code);
-      if (verifyRes.success && verifyRes.data) {
-        setBeneficiaryRiskStatus(verifyRes.data.statut || 'securise');
-        setBeneficiaryRiskScore(verifyRes.data.score_risque || 0);
-        if (verifyRes.data.operator_name) {
-          setBeneficiaryOperatorName(verifyRes.data.operator_name);
-        }
-        if (verifyRes.data.operator_id) {
-          await fetchActionsForOperator(verifyRes.data.operator_id);
-        } else if (selectedSender?.operator_id) {
-          await fetchActionsForOperator(selectedSender.operator_id);
-        }
+    const cachedVerify = transferCache.getCachedVerifiedNumber(fullPhone);
+    if (cachedVerify) {
+      setBeneficiaryRiskStatus(cachedVerify.statut || 'securise');
+      setBeneficiaryRiskScore(cachedVerify.score_risque || 0);
+      if (cachedVerify.operator_name) {
+        setBeneficiaryOperatorName(cachedVerify.operator_name);
       }
-    } catch {}
+      if (cachedVerify.operator_id) {
+        await fetchActionsForOperator(cachedVerify.operator_id);
+      } else if (selectedSender?.operator_id) {
+        await fetchActionsForOperator(selectedSender.operator_id);
+      }
+    } else {
+      try {
+        const verifyRes = await numbersApi.verifyNumber(fullPhone, selectedCountry.code);
+        if (verifyRes.success && verifyRes.data) {
+          transferCache.setCachedVerifiedNumber(fullPhone, verifyRes.data);
+          setBeneficiaryRiskStatus(verifyRes.data.statut || 'securise');
+          setBeneficiaryRiskScore(verifyRes.data.score_risque || 0);
+          if (verifyRes.data.operator_name) {
+            setBeneficiaryOperatorName(verifyRes.data.operator_name);
+          }
+          if (verifyRes.data.operator_id) {
+            await fetchActionsForOperator(verifyRes.data.operator_id);
+          } else if (selectedSender?.operator_id) {
+            await fetchActionsForOperator(selectedSender.operator_id);
+          }
+        }
+      } catch {}
+    }
 
     setStep('summary');
     return true;
@@ -351,7 +400,7 @@ export default function TransferScreen() {
   };
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg">
+    <View className="flex-1 bg-white dark:bg-brand-darkBg">
       <StatusBar style={isDark ? 'light' : 'dark'} />
 
       <HeaderBar
@@ -375,13 +424,6 @@ export default function TransferScreen() {
       >
         {step === 'form' ? (
           <View className="w-full">
-            <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1">
-              {t('transfer.enterDetails', 'Détails du transfert')}
-            </Text>
-            <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mb-5 leading-5">
-              {t('transfer.enterDetailsSub', 'Transférez des fonds en toute sécurité via USSD')}
-            </Text>
-
             <PhoneCountryInput
               label={t('transfer.beneficiaryLabel', 'Numéro du bénéficiaire')}
               phoneNumber={beneficiaryPhone}
@@ -417,7 +459,7 @@ export default function TransferScreen() {
               {isDataLoading ? (
                 <Skeleton height={56} borderRadius={12} className="w-full" />
               ) : registeredSenders.length === 0 ? (
-                <View className="p-4 rounded-2xl mb-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
+                <View className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
                   <View className="flex-row items-center mb-2">
                     <Icon name="solar:sim-card-bold" color="#D97706" size={24} className="mr-2" />
                     <Text className="font-font-bold text-sm font-bold text-amber-800 dark:text-amber-300">
@@ -427,7 +469,7 @@ export default function TransferScreen() {
                   <Text className="font-font-regular text-xs text-amber-700 dark:text-amber-400 mb-3 leading-5">
                     {t(
                       'transfer.noSenderDesc',
-                      'Vous n’avez enregistré aucun numéro d’expéditeur. Veuillez ajouter au moins une puce SIM dans votre compte pour effectuer des transferts.'
+                      'Veuillez ajouter au moins un numéro dans votre compte pour effectuer des transferts.'
                     )}
                   </Text>
                   <Button
@@ -456,7 +498,7 @@ export default function TransferScreen() {
               ) : null}
             </View>
 
-            <View className="mb-4">
+            <View className="mb-2">
               <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
                 {t('transfer.actionLabel', 'Action à exécuter')}
               </Text>
@@ -480,14 +522,21 @@ export default function TransferScreen() {
                 <View className="p-3.5 rounded-xl mb-4 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex-row items-center">
                   <Icon name="solar:info-circle-linear" color="#94A3B8" size={20} className="mr-2.5" />
                   <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 flex-1 leading-4">
-                    {t('transfer.actionsPendingHint', 'Les actions USSD s’afficheront selon l’opérateur du bénéficiaire ou la SIM d’envoi.')}
+                    {t('transfer.actionsPendingHint')}
                   </Text>
                 </View>
-              ) : null}
+              ) : 
+                <View className="p-3.5 rounded-xl mb-4 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex-row items-center">
+                  <Icon name="solar:info-circle-linear" color="#94A3B8" size={20} className="mr-2.5" />
+                  <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 flex-1 leading-4">
+                    {t('transfer.noActionHint')}
+                  </Text>
+                </View>
+              }
             </View>
 
             <Button
-              title={t('common.continue', 'Continuer vers le récapitulatif')}
+              title={t('common.continue')}
               onPress={handleValidateForm}
               variant="primary"
               size="md"
