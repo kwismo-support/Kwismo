@@ -38,15 +38,7 @@ const DEFAULT_COUNTRY: CountryItem = {
   callingCode: '+237',
 };
 
-const MOCK_FALLBACK_CONTACTS: DeviceContactItem[] = [
-  { id: 'c1', name: 'Inconnu', phone: '+237 6 98 00 40 12', initialBg: '#CBD5E1', initials: '' },
-  { id: 'c2', name: 'Lysette Orleanne', phone: '+221 233 16 71 88', initialBg: '#25B46E', initials: 'LO' },
-  { id: 'c3', name: 'Superviseur NJS', phone: '+221 233 16 71 88', initialBg: '#F97316', initials: 'S' },
-  { id: 'c4', name: 'Inconnu', phone: '+221 233 16 71 88', initialBg: '#CBD5E1', initials: '' },
-  { id: 'c5', name: 'Inconnu', phone: '+237 6 98 00 40 12', initialBg: '#CBD5E1', initials: '' },
-  { id: 'c6', name: 'Inconnu', phone: '+237 6 40 43 01 00', initialBg: '#CBD5E1', initials: '' },
-  { id: 'c7', name: 'Inconnu', phone: '+237 6 98 44 43 88', initialBg: '#CBD5E1', initials: '' },
-];
+
 
 export default function VerifyScreen() {
   const router = useRouter();
@@ -66,7 +58,7 @@ export default function VerifyScreen() {
   // Contacts & Permission state
   const [permissionGranted, setPermissionGranted] = useState<boolean | null>(null);
   const [contactsLoading, setContactsLoading] = useState(true);
-  const [contactsList, setContactsList] = useState<DeviceContactItem[]>(MOCK_FALLBACK_CONTACTS);
+  const [contactsList, setContactsList] = useState<DeviceContactItem[]>([]);
 
   // Result state
   const [testResultType, setTestResultType] = useState<'secure' | 'warning' | 'danger'>('secure');

@@ -16,6 +16,8 @@ import { HeaderBar } from '@/shared/components/HeaderBar';
 import { toast } from '@/shared/store/toastStore';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
+import * as Contacts from 'expo-contacts';
+
 interface ContactItem {
   id: string;
   name: string;
@@ -25,18 +27,6 @@ interface ContactItem {
   initials?: string;
 }
 
-const MOCK_CONTACTS: ContactItem[] = [
-  { id: '1', name: 'Maxime', phone: '+237 6 98 00 40 12', initialBg: '#CBD5E1', initials: '' },
-  { id: '2', name: 'Lysette Orleanne', phone: '+237 6 98 00 40 12', badge: 'Alerte menace', initialBg: '#25B46E', initials: 'LO' },
-  { id: '3', name: 'Superviseur NJS', phone: '#150*1*695 12 34 36*1...', initialBg: '#F97316', initials: 'S' },
-  { id: '4', name: 'Billy', phone: '+221 233 16 71 88', initialBg: '#CBD5E1', initials: '' },
-  { id: '5', name: 'William', phone: '+237 6 98 00 40 12', initialBg: '#CBD5E1', initials: '' },
-  { id: '6', name: 'Leonnie Beyina', phone: '+237 6 40 43 01 00', initialBg: '#CBD5E1', initials: '' },
-  { id: '7', name: 'M. Gabin', phone: '+237 6 98 44 43 88', initialBg: '#CBD5E1', initials: '' },
-  { id: '8', name: 'Lysette Orleanne', phone: '+237 6 98 00 40 12', badge: 'Alerte menace', initialBg: '#25B46E', initials: 'LO' },
-  { id: '9', name: 'T. Sonia', phone: '+237 6 98 44 43 88', initialBg: '#CBD5E1', initials: '' },
-];
-
 type Step = 'select_contacts' | 'configure_message' | 'broadcasting' | 'success' | 'failure';
 
 export default function AlertWhatsappScreen() {
@@ -45,16 +35,59 @@ export default function AlertWhatsappScreen() {
   const { t } = useTranslation();
   const { isDark } = useAppTheme();
 
+  const [contacts, setContacts] = useState<ContactItem[]>([]);
+  const [loadingContacts, setLoadingContacts] = useState(true);
   const [step, setStep] = useState<Step>('select_contacts');
   const [search, setSearch] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [messageText, setMessageText] = useState(
-    'ALERTE : Mon compte WhatsApp sur le numéro +237 690 77 88 47 a été piraté. Ne répondez à aucun message et ne validez aucun transfert d’argent provenant de ce numéro.'
+    'ALERTE : Mon compte WhatsApp a été piraté. Ne répondez à aucun message et ne validez aucun transfert d’argent provenant de ce numéro.'
   );
   const [alertType, setAlertType] = useState('Piratage de compte');
   const [progress, setProgress] = useState(0);
 
-  const filteredContacts = MOCK_CONTACTS.filter(
+  useEffect(() => {
+    (async () => {
+      try {
+        const { status } = await Contacts.requestPermissionsAsync();
+        if (status === 'granted') {
+          const { data } = await Contacts.getContactsAsync({
+            fields: [Contacts.Fields.PhoneNumbers],
+          });
+          if (data && data.length > 0) {
+            const bgColors = ['#25B46E', '#F97316', '#3B82F6', '#6366F1'];
+            const loaded: ContactItem[] = data
+              .filter((c) => c.phoneNumbers && c.phoneNumbers.length > 0)
+              .map((c, idx) => {
+                const phone = c.phoneNumbers![0].number || '';
+                const name = c.name || phone;
+                let initials = '';
+                if (c.name) {
+                  const parts = c.name.trim().split(' ');
+                  initials = parts[0][0];
+                  if (parts.length > 1) initials += parts[1][0];
+                  initials = initials.toUpperCase();
+                }
+                return {
+                  id: c.id || `contact-${idx}`,
+                  name,
+                  phone,
+                  initials,
+                  initialBg: initials ? bgColors[idx % bgColors.length] : '#CBD5E1',
+                };
+              });
+            setContacts(loaded);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching contacts for WhatsApp alert:', err);
+      } finally {
+        setLoadingContacts(false);
+      }
+    })();
+  }, []);
+
+  const filteredContacts = contacts.filter(
     (c) =>
       c.name.toLowerCase().includes(search.toLowerCase()) ||
       c.phone.toLowerCase().includes(search.toLowerCase())
@@ -183,7 +216,18 @@ export default function AlertWhatsappScreen() {
 
             {/* Contacts list */}
             <View className="gap-y-1 mb-6">
-              {filteredContacts.map((contact) => {
+              {loadingContacts ? (
+                <View className="py-8 items-center justify-center">
+                  <ActivityIndicator size="small" color="#00A859" />
+                </View>
+              ) : filteredContacts.length === 0 ? (
+                <View className="py-8 items-center justify-center">
+                  <Text className="text-xs text-slate-500 dark:text-slate-400">
+                    Aucun contact disponible.
+                  </Text>
+                </View>
+              ) : (
+                filteredContacts.map((contact) => {
                 const isSelected = selectedIds.has(contact.id);
                 return (
                   <TouchableOpacity
@@ -225,7 +269,7 @@ export default function AlertWhatsappScreen() {
                     </View>
                   </TouchableOpacity>
                 );
-              })}
+              }))}
             </View>
 
             {/* Suivant Button */}

@@ -1,4 +1,20 @@
+import { ApiClient } from '../../../shared/services/apiClient';
 import { storage } from '../../../shared/services/storage';
+
+export interface NotificationBackendItem {
+  id: string;
+  texte: string;
+  lu: boolean;
+  date: string;
+}
+
+export interface PaginatedNotifications {
+  items: NotificationBackendItem[];
+  total: number;
+  page: number;
+  size: number;
+  pages: number;
+}
 
 export interface NotificationPreferences {
   push_enabled: boolean;
@@ -19,6 +35,25 @@ const defaultPrefs: NotificationPreferences = {
 };
 
 export const notificationsApi = {
+  async getNotifications(page = 1, pageSize = 20) {
+    return ApiClient.request<PaginatedNotifications>(
+      `/notifications?page=${page}&page_size=${pageSize}`,
+      { method: 'GET' }
+    );
+  },
+
+  async markAsRead(id: string) {
+    return ApiClient.request<{ message: string }>(`/notifications/${id}/read`, {
+      method: 'PATCH',
+    });
+  },
+
+  async markAllAsRead() {
+    return ApiClient.request<{ message: string }>('/notifications/read-all', {
+      method: 'PATCH',
+    });
+  },
+
   async getPreferences() {
     try {
       const savedStr = await storage.getItem(NOTIF_PREFS_KEY);
