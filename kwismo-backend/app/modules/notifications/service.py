@@ -1,6 +1,7 @@
 """Logique metier du module notifications. / Business logic for the notifications module."""
 
 import logging
+from fastapi import HTTPException, status
 
 from app.db.prisma_client import db
 from app.modules.notifications.schemas import NotificationOut
@@ -29,6 +30,34 @@ async def list_notifications(user_id: str, page: int, page_size: int):
         for n in items
     ]
     return Page(items=out, total=total, page=page, page_size=page_size)
+
+
+# ---------------------------------------------------------------------------
+# get_notification_detail & delete_notification
+# ---------------------------------------------------------------------------
+
+async def get_notification_detail(notif_id: str, user_id: str) -> NotificationOut:
+    notif = await db.notification.find_first(where={"id": notif_id, "userId": user_id})
+    if not notif:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Notification introuvable.",
+        )
+    if not notif.lu:
+        await db.notification.update(where={"id": notif_id}, data={"lu": True})
+        notif.lu = True
+
+    return NotificationOut(id=notif.id, texte=notif.texte, lu=notif.lu, date=notif.date)
+
+
+async def delete_notification(notif_id: str, user_id: str) -> None:
+    notif = await db.notification.find_first(where={"id": notif_id, "userId": user_id})
+    if not notif:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Notification introuvable.",
+        )
+    await db.notification.delete(where={"id": notif_id})
 
 
 # ---------------------------------------------------------------------------

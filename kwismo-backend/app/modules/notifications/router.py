@@ -1,9 +1,9 @@
 """Routes /notifications. / Notification routes."""
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, status
 
 from app.core.permissions import require_roles
-from app.core.schemas import AUTH_RESPONSES, Message, Page
+from app.core.schemas import AUTH_RESPONSES, Message, Page, NOT_FOUND_RESPONSE
 from app.modules.notifications import service
 from app.modules.notifications.schemas import NotificationOut
 
@@ -26,6 +26,33 @@ async def list_notifications(
     user=Depends(require_roles("user", "admin", "partner", "superadmin")),
 ) -> Page[NotificationOut]:
     return await service.list_notifications(user.id, page, page_size)
+
+
+@router.get(
+    "/{notif_id}",
+    response_model=NotificationOut,
+    responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
+    summary="Get notification detail / Obtenir le détail d'une notification",
+)
+async def get_notification_detail(
+    notif_id: str,
+    user=Depends(require_roles("user", "admin", "partner", "superadmin")),
+) -> NotificationOut:
+    return await service.get_notification_detail(notif_id, user.id)
+
+
+@router.delete(
+    "/{notif_id}",
+    response_model=Message,
+    responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
+    summary="Delete a notification / Supprimer une notification",
+)
+async def delete_notification(
+    notif_id: str,
+    user=Depends(require_roles("user", "admin", "partner", "superadmin")),
+) -> Message:
+    await service.delete_notification(notif_id, user.id)
+    return Message(message="Notification supprimée.")
 
 
 @router.patch(
