@@ -13,3 +13,6 @@ dependencies = { file = ["requirements.txt"] }
 
 [tool.setuptools.packages.find]
 include = ["src*"]
+
+[tool.pyright]
+extraPaths = ["."]

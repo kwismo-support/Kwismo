@@ -16,6 +16,8 @@ export interface TransactionOut {
   statut: string;
   niveau_risque?: string;
   code_ussd_genere?: string;
+  numero_telephone?: string;
+  operator_name?: string;
 }
 
 export interface UssdOperator {
@@ -76,9 +78,12 @@ export const transferApi = {
     return res;
   },
 
-  async getTransactions() {
-    return ApiClient.request<{ items: TransactionOut[] }>('/transactions', {
-      method: 'GET',
-    });
+  async getTransactions(page: number = 1, pageSize: number = 50) {
+    return ApiClient.request<{ items: TransactionOut[]; total: number }>(
+      `/transactions?page=${page}&page_size=${pageSize}`,
+      {
+        method: 'GET',
+      }
+    );
   },
 };

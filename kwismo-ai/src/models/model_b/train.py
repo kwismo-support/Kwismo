@@ -9,6 +9,7 @@ Lit data/processed/model_b_augmented.jsonl (ou model_b_clean.jsonl), auto-catég
 import json
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 import joblib
 
 from src.config import get_settings
@@ -63,7 +64,11 @@ def train_and_save_fallback(version: str = "v1") -> Path:
 
     # Mise à jour du registre
     registry_path = Path(settings.model_dir) / "registry.json"
-    registry = json.loads(registry_path.read_text(encoding="utf-8")) if registry_path.exists() else {"history": []}
+    registry: dict[str, Any] = (
+        json.loads(registry_path.read_text(encoding="utf-8"))
+        if registry_path.exists()
+        else {"history": []}
+    )
     
     # Historique de versioning pour le rollback
     if "history" not in registry:

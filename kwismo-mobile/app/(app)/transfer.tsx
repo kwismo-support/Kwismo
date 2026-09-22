@@ -1,865 +1,554 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
+  RefreshControl,
   Modal,
   Linking,
   Clipboard,
-  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
-import { getCountryCallingCode } from 'libphonenumber-js/min';
-import countries from 'i18n-iso-countries';
 import { Icon } from '@/shared/ui/Icon';
-import { TabBar } from '@/shared/components/TabBar';
 import { HeaderBar } from '@/shared/components/HeaderBar';
-import { PhoneCountryInput } from '@/shared/components/PhoneCountryInput';
-import { Input } from '@/shared/ui/Input';
+import { TabBar } from '@/shared/components/TabBar';
+import { Skeleton, SkeletonLoader } from '@/shared/ui/Skeleton';
 import { Button } from '@/shared/ui/Button';
-import { CountryItem } from '@/shared/components/CountryPickerModal';
-import { toast } from '@/shared/store/toastStore';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
-import { numbersApi } from '@/features/numbers/services/numbers.api';
-import { Skeleton } from '@/shared/ui/Skeleton';
-import { transferApi } from '@/features/transfer/services/transfer.api';
-import { transferCache } from '@/features/transfer/services/transferCache';
+import { toast } from '@/shared/store/toastStore';
+import { transferApi, TransactionOut } from '@/features/transfer/services/transfer.api';
 
-export interface SenderNumberOption {
-  id: string;
-  label: string;
-  phone: string;
-  callingCode: string;
-  operator: string;
-  operator_id?: string;
-}
-
-export interface ActionOption {
-  id: string;
-  label: string;
-  description: string;
-  ussdFormat: string;
-  operator_id?: string;
-}
+type DateFilter = 'all' | '24h' | '7d' | '30d' | '90d';
 
 export default function TransferScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { i18n, t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isDark } = useAppTheme();
-  const isFr = i18n.language.startsWith('fr');
 
-  const defaultCountry: CountryItem = {
-    code: 'CM',
-    name: countries.getName('CM', isFr ? 'fr' : 'en') || 'Cameroun',
-    callingCode: `+${getCountryCallingCode('CM')}`,
-  };
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [transactions, setTransactions] = useState<TransactionOut[]>([]);
+  const [activeFilter, setActiveFilter] = useState<DateFilter>('all');
+  const [selectedTx, setSelectedTx] = useState<TransactionOut | null>(null);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
 
-  const [registeredSenders, setRegisteredSenders] = useState<SenderNumberOption[]>([]);
-  const [availableActions, setAvailableActions] = useState<ActionOption[]>([]);
-  const [selectedSender, setSelectedSender] = useState<SenderNumberOption | null>(null);
-  const [selectedAction, setSelectedAction] = useState<ActionOption | null>(null);
+  const fetchTransactions = useCallback(async (isRefresh = false) => {
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
 
-  const [isDataLoading, setIsDataLoading] = useState(true);
-  const [isActionLoading, setIsActionLoading] = useState(false);
-  const [isPreparing, setIsPreparing] = useState(false);
-  const [serverUssdCode, setServerUssdCode] = useState<string | null>(null);
-
-  const [step, setStep] = useState<'form' | 'summary' | 'ussd'>('form');
-  const [beneficiaryPhone, setBeneficiaryPhone] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState<CountryItem>(defaultCountry);
-  const [rawAmount, setRawAmount] = useState('');
-
-  const [beneficiaryRiskStatus, setBeneficiaryRiskStatus] = useState<string>('unknown');
-  const [beneficiaryOperatorName, setBeneficiaryOperatorName] = useState<string | null>(null);
-  const [beneficiaryRiskScore, setBeneficiaryRiskScore] = useState<number>(0);
-
-  const [senderModalVisible, setSenderModalVisible] = useState(false);
-  const [actionModalVisible, setActionModalVisible] = useState(false);
-  const [warningModalVisible, setWarningModalVisible] = useState(false);
-
-  const [phoneError, setPhoneError] = useState('');
-  const [amountError, setAmountError] = useState('');
-
-  const fetchActionsForOperator = async (opId?: string) => {
-    if (!opId) {
-      setAvailableActions([]);
-      setSelectedAction(null);
-      return;
-    }
-
-    const cachedActions = transferCache.getCachedActions(opId);
-    if (cachedActions && cachedActions.length > 0) {
-      setAvailableActions(cachedActions);
-      setSelectedAction(cachedActions[0]);
-      setIsActionLoading(false);
-      return;
-    }
-
-    setIsActionLoading(true);
     try {
-      const actionsRes = await transferApi.getActions(opId);
-      if (actionsRes.success && actionsRes.data && actionsRes.data.length > 0) {
-        const mappedActions: ActionOption[] = actionsRes.data.map((a: any) => ({
-          id: a.id,
-          label: a.nomAction || a.nom || 'Transfert d’argent',
-          description: a.format || a.pattern_code || 'Transfert via USSD',
-          ussdFormat: a.format || a.pattern_code || '*126*{montant}*{numero}#',
-          operator_id: a.operatorId || a.operator_id,
-        }));
-        transferCache.setCachedActions(opId, mappedActions);
-        setAvailableActions(mappedActions);
-        setSelectedAction(mappedActions[0]);
+      const res = await transferApi.getTransactions(1, 100);
+      if (res.success && res.data) {
+        const list = Array.isArray(res.data)
+          ? res.data
+          : Array.isArray((res.data as any).items)
+          ? (res.data as any).items
+          : [];
+        setTransactions(list);
       } else {
-        setAvailableActions([]);
-        setSelectedAction(null);
+        setTransactions([]);
       }
     } catch {
-      setAvailableActions([]);
-      setSelectedAction(null);
+      setTransactions([]);
     } finally {
-      setIsActionLoading(false);
+      setLoading(false);
+      setRefreshing(false);
     }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-    const loadInitialData = async () => {
-      const cachedPhones = transferCache.getCachedMyNumbers();
-      if (cachedPhones && cachedPhones.length > 0) {
-        const mappedSenders: SenderNumberOption[] = cachedPhones.map((p, idx) => {
-          const phoneVal = p.valeur || p.numero_valeur || '';
-          const opName = p.operator_name || (p.country_name ? `${p.country_name}` : `SIM ${idx + 1}`);
-          return {
-            id: p.id,
-            label: `${opName} (${phoneVal})`,
-            phone: phoneVal,
-            callingCode: p.country_code || selectedCountry.callingCode,
-            operator: opName,
-            operator_id: p.operator_id,
-          };
-        });
-        setRegisteredSenders(mappedSenders);
-        setSelectedSender(mappedSenders[0]);
-        setIsDataLoading(false);
-        if (mappedSenders[0]?.operator_id) {
-          await fetchActionsForOperator(mappedSenders[0].operator_id);
-        }
-        return;
-      }
-
-      setIsDataLoading(true);
-      try {
-        const phonesRes = await numbersApi.getMyNumbers();
-        if (isMounted && phonesRes.success && phonesRes.data && phonesRes.data.length > 0) {
-          transferCache.setCachedMyNumbers(phonesRes.data);
-          const mappedSenders: SenderNumberOption[] = phonesRes.data.map((p, idx) => {
-            const phoneVal = p.valeur || p.numero_valeur || '';
-            const opName = p.operator_name || (p.country_name ? `${p.country_name}` : `SIM ${idx + 1}`);
-            return {
-              id: p.id,
-              label: `${opName} (${phoneVal})`,
-              phone: phoneVal,
-              callingCode: p.country_code || selectedCountry.callingCode,
-              operator: opName,
-              operator_id: p.operator_id,
-            };
-          });
-          setRegisteredSenders(mappedSenders);
-          setSelectedSender(mappedSenders[0]);
-          if (mappedSenders[0]?.operator_id) {
-            await fetchActionsForOperator(mappedSenders[0].operator_id);
-          }
-        } else if (isMounted) {
-          setRegisteredSenders([]);
-          setSelectedSender(null);
-          setAvailableActions([]);
-          setSelectedAction(null);
-        }
-      } catch {
-        if (isMounted) {
-          setRegisteredSenders([]);
-          setSelectedSender(null);
-          setAvailableActions([]);
-          setSelectedAction(null);
-        }
-      } finally {
-        if (isMounted) setIsDataLoading(false);
-      }
-    };
-
-    loadInitialData();
-    return () => {
-      isMounted = false;
-    };
   }, []);
 
-  const handleSelectSender = async (sender: SenderNumberOption) => {
-    setSelectedSender(sender);
-    setSenderModalVisible(false);
-    await fetchActionsForOperator(sender.operator_id);
+  useEffect(() => {
+    fetchTransactions();
+  }, [fetchTransactions]);
+
+  const dateFilterOptions: { key: DateFilter; labelKey: string }[] = useMemo(
+    () => [
+      { key: 'all', labelKey: 'transfer.filterAll' },
+      { key: '24h', labelKey: 'transfer.filter24h' },
+      { key: '7d', labelKey: 'transfer.filter7d' },
+      { key: '30d', labelKey: 'transfer.filter30d' },
+      { key: '90d', labelKey: 'transfer.filter90d' },
+    ],
+    []
+  );
+
+  const filteredTransactions = useMemo(() => {
+    if (activeFilter === 'all') return transactions;
+    const now = Date.now();
+    const limits: Record<Exclude<DateFilter, 'all'>, number> = {
+      '24h': 24 * 60 * 60 * 1000,
+      '7d': 7 * 24 * 60 * 60 * 1000,
+      '30d': 30 * 24 * 60 * 60 * 1000,
+      '90d': 90 * 24 * 60 * 60 * 1000,
+    };
+    const maxDiff = limits[activeFilter];
+    return transactions.filter((tx) => {
+      const txTime = new Date(tx.date_transaction).getTime();
+      return !isNaN(txTime) && now - txTime <= maxDiff;
+    });
+  }, [transactions, activeFilter]);
+
+  const formatAmount = (amount: number) => {
+    if (typeof amount !== 'number') return '0';
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   };
 
-  const formattedAmount = useMemo(() => {
-    if (!rawAmount) return '';
-    const cleanDigits = rawAmount.replace(/\D/g, '');
-    if (!cleanDigits) return '';
-    return cleanDigits.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-  }, [rawAmount]);
-
-  const handleAmountChange = (val: string) => {
-    const cleanDigits = val.replace(/\D/g, '');
-    setRawAmount(cleanDigits);
-    if (amountError) setAmountError('');
-  };
-
-  const isBeneficiarySuspect = useMemo(() => {
-    return (
-      beneficiaryRiskStatus === 'a_signaler' ||
-      beneficiaryRiskStatus === 'frauduleux' ||
-      beneficiaryRiskScore >= 0.5
-    );
-  }, [beneficiaryRiskStatus, beneficiaryRiskScore]);
-
-  const generatedUssdCode = useMemo(() => {
-    if (serverUssdCode) return serverUssdCode;
-    const cleanDest = beneficiaryPhone.replace(/\D/g, '');
-    const fmt = selectedAction?.ussdFormat || '*126*{montant}*{numero}#';
-    return fmt
-      .replace('{dest}', cleanDest)
-      .replace('{numero}', cleanDest)
-      .replace('{amount}', rawAmount)
-      .replace('{montant}', rawAmount);
-  }, [selectedAction, beneficiaryPhone, rawAmount, serverUssdCode]);
-
-  const handleValidateForm = async () => {
-    let valid = true;
-    setPhoneError('');
-    setAmountError('');
-
-    if (registeredSenders.length === 0) {
-      toast.error(t('transfer.noSenderError'));
-      return false;
-    }
-
-    const cleanPhone = beneficiaryPhone.replace(/\D/g, '');
-    if (!cleanPhone) {
-      setPhoneError(t('validation.phoneRequired'));
-      valid = false;
-    } else if (cleanPhone.length < 8) {
-      setPhoneError(t('validation.phoneNumberInvalid'));
-      valid = false;
-    }
-
-    if (!rawAmount || parseInt(rawAmount, 10) <= 0) {
-      setAmountError(t('validation.amountRequired'));
-      valid = false;
-    }
-
-    if (!valid) return false;
-
-    const fullPhone = `${selectedCountry.callingCode}${cleanPhone}`;
-    const cachedVerify = transferCache.getCachedVerifiedNumber(fullPhone);
-    if (cachedVerify) {
-      setBeneficiaryRiskStatus(cachedVerify.statut || 'securise');
-      setBeneficiaryRiskScore(cachedVerify.score_risque || 0);
-      if (cachedVerify.operator_name) {
-        setBeneficiaryOperatorName(cachedVerify.operator_name);
-      }
-      if (cachedVerify.operator_id) {
-        await fetchActionsForOperator(cachedVerify.operator_id);
-      } else if (selectedSender?.operator_id) {
-        await fetchActionsForOperator(selectedSender.operator_id);
-      }
-    } else {
-      try {
-        const verifyRes = await numbersApi.verifyNumber(fullPhone, selectedCountry.code);
-        if (verifyRes.success && verifyRes.data) {
-          transferCache.setCachedVerifiedNumber(fullPhone, verifyRes.data);
-          setBeneficiaryRiskStatus(verifyRes.data.statut || 'securise');
-          setBeneficiaryRiskScore(verifyRes.data.score_risque || 0);
-          if (verifyRes.data.operator_name) {
-            setBeneficiaryOperatorName(verifyRes.data.operator_name);
-          }
-          if (verifyRes.data.operator_id) {
-            await fetchActionsForOperator(verifyRes.data.operator_id);
-          } else if (selectedSender?.operator_id) {
-            await fetchActionsForOperator(selectedSender.operator_id);
-          }
-        }
-      } catch {}
-    }
-
-    setStep('summary');
-    return true;
-  };
-
-  const handleProceedFromSummary = async () => {
-    setIsPreparing(true);
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
     try {
-      const cleanPhone = `${selectedCountry.callingCode}${beneficiaryPhone.replace(/\D/g, '')}`;
-      const amountNum = parseFloat(rawAmount) || 0;
-
-      const res = await transferApi.prepareTransfer({
-        numero: cleanPhone,
-        montant: amountNum,
-        operator_id: selectedAction?.operator_id || selectedSender?.operator_id || 'op-default',
-        ussd_action_id: selectedAction?.id || 'action-default',
+      const d = new Date(dateString);
+      if (isNaN(d.getTime())) return dateString;
+      return d.toLocaleDateString(i18n.language.startsWith('en') ? 'en-US' : 'fr-FR', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
       });
-
-      if (res.data?.code_ussd_genere) {
-        setServerUssdCode(res.data.code_ussd_genere);
-      }
-
-      const isHighRisk =
-        res.data?.niveau_risque === 'eleve' ||
-        res.data?.niveau_risque === 'moyen' ||
-        res.data?.statut === 'frauduleux' ||
-        isBeneficiarySuspect;
-
-      if (isHighRisk) {
-        setWarningModalVisible(true);
-      } else {
-        setStep('ussd');
-      }
     } catch {
-      if (isBeneficiarySuspect) {
-        setWarningModalVisible(true);
-      } else {
-        setStep('ussd');
-      }
-    } finally {
-      setIsPreparing(false);
+      return dateString;
     }
   };
 
-  const handleConfirmWarning = () => {
-    setWarningModalVisible(false);
-    setStep('ussd');
+  const getStatusInfo = (statut?: string, niveauRisque?: string) => {
+    const isHighRisk =
+      niveauRisque === 'eleve' ||
+      statut === 'blocked' ||
+      statut === 'frauduleux' ||
+      statut === 'cancelled';
+    const isPending = statut === 'prepared' || statut === 'pending_offline';
+
+    if (isHighRisk) {
+      return {
+        labelKey: statut === 'cancelled' ? 'transfer.statusCancelled' : 'transfer.statusBlocked',
+        badgeBg: 'bg-red-50 dark:bg-red-950/40',
+        badgeBorder: 'border-red-200 dark:border-red-800',
+        badgeText: 'text-red-600 dark:text-red-400',
+        icon: 'solar:danger-triangle-bold',
+        iconColor: '#DC2626',
+        riskLabelKey: 'transfer.riskHigh',
+        riskTextColor: 'text-red-600 dark:text-red-400',
+      };
+    }
+
+    if (isPending) {
+      return {
+        labelKey: 'transfer.statusPrepared',
+        badgeBg: 'bg-amber-50 dark:bg-amber-950/40',
+        badgeBorder: 'border-amber-200 dark:border-amber-800',
+        badgeText: 'text-amber-700 dark:text-amber-400',
+        icon: 'solar:clock-circle-bold',
+        iconColor: '#D97706',
+        riskLabelKey:
+          niveauRisque === 'moyen' ? 'transfer.riskMedium' : 'transfer.riskLow',
+        riskTextColor: 'text-amber-600 dark:text-amber-400',
+      };
+    }
+
+    return {
+      labelKey: 'transfer.statusConfirmed',
+      badgeBg: 'bg-emerald-50 dark:bg-emerald-950/40',
+      badgeBorder: 'border-emerald-200 dark:border-emerald-800',
+      badgeText: 'text-brand-green',
+      icon: 'solar:verified-check-bold',
+      iconColor: '#16A34A',
+      riskLabelKey: 'transfer.riskSecure',
+      riskTextColor: 'text-brand-green',
+    };
   };
 
-  const handleLaunchPhoneApp = async () => {
-    const telUrl = `tel:${encodeURIComponent(generatedUssdCode)}`;
+  const handleOpenDetail = (tx: TransactionOut) => {
+    setSelectedTx(tx);
+    setDetailModalVisible(true);
+  };
+
+  const handleCopyUssd = (code: string) => {
+    Clipboard.setString(code);
+    toast.success(t('transfer.ussdCopied'));
+  };
+
+  const handleDialUssd = async (code: string) => {
+    const telUrl = `tel:${encodeURIComponent(code)}`;
     try {
       const supported = await Linking.canOpenURL(telUrl);
       if (supported) {
         await Linking.openURL(telUrl);
-        toast.success(t('toasts.ussdLaunched'));
       } else {
-        await Linking.openURL(telUrl);
+        Clipboard.setString(code);
+        toast.info(t('transfer.ussdCopied'));
       }
     } catch {
-      Clipboard.setString(generatedUssdCode);
-      toast.info(t('toasts.ussdCopied'));
+      Clipboard.setString(code);
+      toast.info(t('transfer.ussdCopied'));
     }
-  };
-
-  const handleLaunchOperatorApp = async () => {
-    const opNameLower = (beneficiaryOperatorName || selectedSender?.operator || '').toLowerCase();
-    let deepLink = 'tel:';
-    if (opNameLower.includes('orange')) {
-      deepLink = 'orange-money://';
-    } else if (opNameLower.includes('mtn')) {
-      deepLink = 'momo://';
-    }
-
-    try {
-      const supported = await Linking.canOpenURL(deepLink);
-      if (supported) {
-        await Linking.openURL(deepLink);
-        toast.success(t('toasts.operatorAppLaunched'));
-      } else {
-        Clipboard.setString(generatedUssdCode);
-        toast.info(t('toasts.ussdCopied'));
-      }
-    } catch {
-      Clipboard.setString(generatedUssdCode);
-      toast.info(t('toasts.ussdCopied'));
-    }
-  };
-
-  const handleCopyUssd = () => {
-    Clipboard.setString(generatedUssdCode);
-    toast.success(t('toasts.copiedToClipboard'));
-  };
-
-  const handleReset = () => {
-    setBeneficiaryPhone('');
-    setRawAmount('');
-    setPhoneError('');
-    setAmountError('');
-    setBeneficiaryRiskStatus('unknown');
-    setBeneficiaryOperatorName(null);
-    setBeneficiaryRiskScore(0);
-    setServerUssdCode(null);
-    setStep('form');
   };
 
   return (
     <View className="flex-1 bg-white dark:bg-brand-darkBg">
-      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <StatusBar style="light" />
 
       <HeaderBar
-        title={t('common.transfer')}
-        subtitle={t('common.transferSubtitle')}
-        showBack={step !== 'form'}
-        onBack={() => {
-          if (step === 'summary') setStep('form');
-          else if (step === 'ussd') setStep('summary');
-        }}
+        title={t('transfer.title')}
+        subtitle={t('transfer.subtitle')}
+        showBack={false}
       />
 
       <ScrollView
         contentContainerStyle={{
-          paddingBottom: Math.max(insets.bottom + 100, 110),
-          paddingHorizontal: 20,
-          paddingTop: 16,
+          paddingBottom: Math.max(insets.bottom + 110, 120),
+          paddingHorizontal: 16,
+          paddingTop: 12,
         }}
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => fetchTransactions(true)}
+            colors={['#25B46E', '#F97316']}
+          />
+        }
       >
-        {step === 'form' ? (
-          <View className="w-full">
-            <PhoneCountryInput
-              label={t('transfer.beneficiaryLabel')}
-              phoneNumber={beneficiaryPhone}
-              onPhoneNumberChange={(val) => {
-                setBeneficiaryPhone(val);
-                if (phoneError) setPhoneError('');
-              }}
-              selectedCountry={selectedCountry}
-              onCountryChange={setSelectedCountry}
-              error={phoneError}
-              placeholder="Ex: 6 98 44 43 88"
-            />
-
-            <Input
-              label={t('transfer.amountLabel')}
-              placeholder="Ex: 5 000"
-              value={formattedAmount}
-              onChangeText={handleAmountChange}
-              error={amountError}
-              keyboardType="numeric"
-              leftIcon={<Icon name="solar:wallet-money-linear" color="#94A3B8" size={20} />}
-              rightIcon={
-                formattedAmount ? (
-                  <Text className="font-font-bold text-xs font-bold text-brand-green ml-1.5">FCFA</Text>
-                ) : undefined
-              }
-            />
-
-            <View className="mb-4">
-              <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
-                {t('transfer.senderLabel')}
-              </Text>
-              {isDataLoading ? (
-                <Skeleton height={56} borderRadius={12} className="w-full" />
-              ) : registeredSenders.length === 0 ? (
-                <View className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
-                  <View className="flex-row items-center mb-2">
-                    <Icon name="solar:sim-card-bold" color="#D97706" size={24} className="mr-2" />
-                    <Text className="font-font-bold text-sm font-bold text-amber-800 dark:text-amber-300">
-                      {t('transfer.noSenderTitle')}
-                    </Text>
-                  </View>
-                  <Text className="font-font-regular text-xs text-amber-700 dark:text-amber-400 mb-3 leading-5">
-                    {t('transfer.noSenderDesc')}
-                  </Text>
-                  <Button
-                    title={t('transfer.addSimAction')}
-                    onPress={() => router.push('/(app)/management')}
-                    variant="outline"
-                    size="sm"
-                  />
-                </View>
-              ) : selectedSender ? (
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => setSenderModalVisible(true)}
-                  className="flex-row items-center justify-between hx-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-3.5"
+        {loading ? (
+          <SkeletonLoader>
+            <View className="gap-y-3 pt-2">
+              {[1, 2, 3, 4].map((key) => (
+                <View
+                  key={key}
+                  className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark p-4"
                 >
-                  <View className="flex-row items-center flex-1">
-                    <View className="px-2 py-1 rounded-lg mr-2.5 bg-emerald-600">
-                      <Text className="font-font-bold text-xs text-white">{selectedSender.operator}</Text>
-                    </View>
-                    <Text className="font-font-medium text-sm text-slate-900 dark:text-white flex-1">
-                      {selectedSender.callingCode} {selectedSender.phone}
-                    </Text>
+                  <View className="flex-row items-center justify-between mb-2">
+                    <Skeleton width={140} height={18} borderRadius={4} />
+                    <Skeleton width={90} height={20} borderRadius={6} />
                   </View>
-                  <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={20} />
-                </TouchableOpacity>
-              ) : null}
+                  <Skeleton width={100} height={14} borderRadius={4} />
+                  <View className="my-3 border-t border-slate-100 dark:border-slate-800" />
+                  <View className="flex-row items-center justify-between">
+                    <Skeleton width={80} height={24} borderRadius={12} />
+                    <Skeleton width={20} height={20} borderRadius={10} />
+                  </View>
+                </View>
+              ))}
+            </View>
+          </SkeletonLoader>
+        ) : transactions.length === 0 ? (
+          /* Empty State : aucun élément, pas de filtre affiché */
+          <View className="py-12 px-4 items-center justify-center">
+            <View className="wx-20 hx-20 rounded-full bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center mb-5 border border-emerald-200/60 dark:border-emerald-800/60">
+              <Icon name="solar:card-transfer-linear" size={40} color="#25B46E" />
             </View>
 
-            <View className="mb-2">
-              <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white mb-1.5">
-                {t('transfer.actionLabel')}
-              </Text>
-              {isDataLoading || isActionLoading ? (
-                <Skeleton height={56} borderRadius={12} className="w-full" />
-              ) : availableActions.length > 0 && selectedAction ? (
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  onPress={() => setActionModalVisible(true)}
-                  className="flex-row items-center justify-between hx-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-3.5"
-                >
-                  <View className="flex-row items-center flex-1">
-                    <Icon name="solar:card-transfer-linear" color="#25B876" size={20} className="mr-2.5" />
-                    <Text className="font-font-medium text-sm text-slate-900 dark:text-white flex-1">
-                      {selectedAction.label}
-                    </Text>
-                  </View>
-                  <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={20} />
-                </TouchableOpacity>
-              ) : registeredSenders.length > 0 ? (
-                <View className="p-3.5 rounded-xl mb-4 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex-row items-center">
-                  <Icon name="solar:info-circle-linear" color="#94A3B8" size={20} className="mr-2.5" />
-                  <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 flex-1 leading-4">
-                    {t('transfer.actionsPendingHint')}
-                  </Text>
-                </View>
-              ) : 
-                <View className="p-3.5 rounded-xl mb-4 bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex-row items-center">
-                  <Icon name="solar:info-circle-linear" color="#94A3B8" size={20} className="mr-2.5" />
-                  <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 flex-1 leading-4">
-                    {t('transfer.noActionHint')}
-                  </Text>
-                </View>
-              }
-            </View>
+            <Text className="font-font-bold text-lg font-bold text-slate-900 dark:text-white text-center mb-2">
+              {t('transfer.emptyHistoryTitle')}
+            </Text>
+
+            <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 text-center leading-5 mb-8 max-w-[280px]">
+              {t('transfer.emptyHistoryDesc')}
+            </Text>
 
             <Button
-              title={t('common.continue')}
-              onPress={handleValidateForm}
+              title={t('transfer.initiateTransferBtn')}
+              onPress={() => router.push('/(app)/new-transfer')}
               variant="primary"
               size="md"
-              disabled={isDataLoading || registeredSenders.length === 0}
-              leftIcon={<Icon name="solar:shield-check-bold" color="#FFFFFF" size={20} />}
-              style={{ marginTop: 12 }}
+              leftIcon={<Icon name="solar:add-linear" color="#FFFFFF" size={20} />}
             />
-
-          </View>
-        ) : step === 'summary' ? (
-          <View className="w-full">
-            <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1">
-              {t('transfer.approveTitle')}
-            </Text>
-            <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mb-5 leading-5">
-              {t('transfer.approveSub')}
-            </Text>
-
-            <View className="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark items-center justify-center mb-4">
-              <Text className="font-font-bold text-3xl font-extrabold text-brand-green mb-1">
-                {formattedAmount} <Text className="text-lg">FCFA</Text>
-              </Text>
-              <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
-                {selectedAction?.label || 'Transfert'}
-              </Text>
-            </View>
-
-            {isBeneficiarySuspect ? (
-              <View className="flex-row items-center p-4 rounded-2xl mb-4 bg-red-100 dark:bg-red-950/50 border border-red-300 dark:border-red-800">
-                <Icon name="solar:danger-triangle-bold" color="#DC2626" size={24} className="mr-3" />
-                <View className="flex-1">
-                  <Text className="font-font-bold text-sm font-bold text-red-800 dark:text-red-300 mb-0.5">
-                    {t('transfer.riskSuspectTitle')}
-                  </Text>
-                  <Text className="font-font-regular text-xs text-red-700 dark:text-red-400">
-                    {t('transfer.riskSuspectSub')}
-                  </Text>
-                </View>
-              </View>
-            ) : (
-              <View className="flex-row items-center p-4 rounded-2xl mb-4 bg-emerald-100 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-800">
-                <Icon name="solar:verified-check-bold" color="#16A34A" size={24} className="mr-3" />
-                <View className="flex-1">
-                  <Text className="font-font-bold text-sm font-bold text-emerald-800 dark:text-emerald-300 mb-0.5">
-                    {t('transfer.riskSafeTitle')}
-                  </Text>
-                  <Text className="font-font-regular text-xs text-brand-green dark:text-brand-green">
-                    {t('transfer.riskSafeSub')}
-                  </Text>
-                </View>
-              </View>
-            )}
-
-            <View className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-4 mb-6">
-              <View className="flex-row items-center justify-between py-2">
-                <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
-                  {t('transfer.recipientNumber')}
-                </Text>
-                <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
-                  {selectedCountry.callingCode} {beneficiaryPhone}
-                </Text>
-              </View>
-
-              <View className="h-px w-full bg-slate-100 dark:bg-slate-800 my-1" />
-
-              <View className="flex-row items-center justify-between py-2">
-                <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
-                  {t('transfer.countryLabel')}
-                </Text>
-                <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
-                  {selectedCountry.name} ({selectedCountry.callingCode})
-                </Text>
-              </View>
-
-              {selectedSender && (
-                <>
-                  <View className="h-px w-full bg-slate-100 dark:bg-slate-800 my-1" />
-                  <View className="flex-row items-center justify-between py-2">
-                    <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
-                      {t('transfer.senderSim')}
-                    </Text>
-                    <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
-                      {selectedSender.label}
-                    </Text>
-                  </View>
-                </>
-              )}
-
-              <View className="h-px w-full bg-slate-100 dark:bg-slate-800 my-1" />
-
-              <View className="flex-row items-center justify-between py-2">
-                <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
-                  {t('common.amount')}
-                </Text>
-                <Text className="font-font-bold text-sm font-bold text-brand-green">
-                  {formattedAmount} FCFA
-                </Text>
-              </View>
-            </View>
-
-            <View className="flex-row gap-3">
-              <Button
-                title={t('common.back')}
-                onPress={() => setStep('form')}
-                variant="outline"
-                size="md"
-                style={{ flex: 1 }}
-              />
-              <Button
-                title={
-                  isPreparing
-                    ? t('common.loading')
-                    : isBeneficiarySuspect
-                    ? t('transfer.proceedAnyway')
-                    : t('transfer.generateUssd')
-                }
-                onPress={handleProceedFromSummary}
-                disabled={isPreparing}
-                variant={isBeneficiarySuspect ? 'danger' : 'primary'}
-                size="md"
-                style={{ flex: 1.5 }}
-                leftIcon={isPreparing ? <ActivityIndicator color="#FFFFFF" size="small" /> : undefined}
-              />
-            </View>
           </View>
         ) : (
-          <View className="w-full">
-            <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1">
-              {t('transfer.ussdReadyTitle')}
-            </Text>
-            <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mb-5 leading-5">
-              {t('transfer.ussdReadySub')}
-            </Text>
-
-            <View className="p-6 rounded-3xl border-2 border-brand-green bg-white dark:bg-brand-cardDark items-center justify-center mb-6">
-              <Icon name="solar:phone-calling-bold" color="#25B876" size={32} className="mb-3" />
-
-              <Text className="font-font-bold text-2xl font-extrabold text-slate-900 dark:text-white tracking-wider mb-1.5 text-center">
-                {generatedUssdCode}
+          /* Liste avec filtres de date */
+          <View>
+            <View className="mb-3">
+              <Text className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
+                {t('transfer.historyTitle')}
               </Text>
-              {selectedSender && (
-                <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400 mb-4">
-                  {selectedSender.operator} ({selectedSender.phone})
-                </Text>
-              )}
 
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={handleCopyUssd}
-                className="flex-row items-center px-3 py-1.5 rounded-lg bg-emerald-500/10"
+              {/* Filtres de date horizontaux (affichés uniquement quand des transactions existent) */}
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ gap: 8, paddingVertical: 4 }}
               >
-                <Icon name="solar:copy-bold" color="#25B876" size={16} className="mr-1.5" />
-                <Text className="font-font-bold text-xs text-brand-green font-semibold">
-                  {t('common.copy')}
+                {dateFilterOptions.map((opt) => {
+                  const isSelected = activeFilter === opt.key;
+                  return (
+                    <TouchableOpacity
+                      key={opt.key}
+                      activeOpacity={0.8}
+                      onPress={() => setActiveFilter(opt.key)}
+                      className={`px-3.5 py-1.5 rounded-full border ${
+                        isSelected
+                          ? 'bg-emerald-50 dark:bg-emerald-950/50 border-brand-green'
+                          : 'bg-slate-50 dark:bg-brand-cardDark border-slate-200 dark:border-slate-800'
+                      }`}
+                    >
+                      <Text
+                        className={`text-xs font-medium ${
+                          isSelected
+                            ? 'text-brand-green font-bold'
+                            : 'text-slate-600 dark:text-slate-400'
+                        }`}
+                      >
+                        {t(opt.labelKey)}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </View>
+
+            {filteredTransactions.length === 0 ? (
+              <View className="py-12 items-center justify-center">
+                <Icon name="solar:filter-bold" size={32} color="#94A3B8" />
+                <Text className="font-medium text-xs text-slate-500 dark:text-slate-400 mt-2 text-center">
+                  {t('transfer.noTransactionsForPeriod')}
                 </Text>
-              </TouchableOpacity>
-            </View>
+                <TouchableOpacity
+                  onPress={() => setActiveFilter('all')}
+                  className="mt-3 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800"
+                >
+                  <Text className="text-xs font-medium text-brand-green">
+                    {t('transfer.filterAll')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View className="gap-y-3">
+                {filteredTransactions.map((tx) => {
+                  const phoneDisplay = tx.numero_telephone || tx.numero_id || '';
+                  const statusInfo = getStatusInfo(tx.statut, tx.niveau_risque);
 
-            <View className="w-full space-y-3">
-              <Button
-                title={t('transfer.launchPhoneApp')}
-                onPress={handleLaunchPhoneApp}
-                variant="primary"
-                size="lg"
-                leftIcon={<Icon name="solar:phone-calling-bold" color="#FFFFFF" size={22} />}
-                style={{ marginBottom: 12 }}
-              />
+                  return (
+                    <TouchableOpacity
+                      key={tx.id}
+                      activeOpacity={0.75}
+                      onPress={() => handleOpenDetail(tx)}
+                      className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark p-4 shadow-sm"
+                    >
+                      <View className="flex-row items-center justify-between mb-1.5">
+                        <View className="flex-row items-center flex-1 mr-2">
+                          <View className="wx-10 hx-10 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center mr-3">
+                            <Icon name={statusInfo.icon} size={20} color={statusInfo.iconColor} />
+                          </View>
+                          <View className="flex-1">
+                            <Text
+                              numberOfLines={1}
+                              className="font-font-bold text-sm font-bold text-slate-900 dark:text-white"
+                            >
+                              {phoneDisplay}
+                            </Text>
+                            <Text className="font-font-regular text-2xs text-slate-400 dark:text-slate-500">
+                              {formatDate(tx.date_transaction)}
+                            </Text>
+                          </View>
+                        </View>
 
-              <Button
-                title={t('transfer.launchMaxIt')}
-                onPress={handleLaunchOperatorApp}
-                variant="secondary"
-                size="lg"
-                leftIcon={<Icon name="solar:wallet-2-bold" color="#25B876" size={22} />}
-                style={{ marginBottom: 12 }}
-              />
+                        <Text className="font-font-bold text-base font-extrabold text-brand-green">
+                          {formatAmount(tx.montant)} <Text className="text-xs font-semibold">FCFA</Text>
+                        </Text>
+                      </View>
 
-              <Button
-                title={t('common.newTransfer')}
-                onPress={handleReset}
-                variant="outline"
-                size="md"
-              />
-            </View>
+                      <View className="h-px bg-slate-100 dark:bg-slate-800/80 my-2" />
+
+                      <View className="flex-row items-center justify-between">
+                        <View
+                          className={`px-2.5 py-0.5 rounded-full border ${statusInfo.badgeBg} ${statusInfo.badgeBorder}`}
+                        >
+                          <Text className={`text-2xs font-bold ${statusInfo.badgeText}`}>
+                            {t(statusInfo.labelKey)}
+                          </Text>
+                        </View>
+
+                        <View className="flex-row items-center">
+                          {tx.operator_name ? (
+                            <Text className="text-2xs font-medium text-slate-400 dark:text-slate-500 mr-2">
+                              {tx.operator_name}
+                            </Text>
+                          ) : null}
+                          <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={16} />
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            )}
           </View>
         )}
       </ScrollView>
 
-      <Modal
-        visible={senderModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setSenderModalVisible(false)}
+      {/* Floating Action Button "+" pour initier un nouveau transfert */}
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={() => router.push('/(app)/new-transfer')}
+        style={{ bottom: Math.max(insets.bottom + 72, 84) }}
+        className="absolute right-5 wx-14 hx-14 rounded-full items-center justify-center bg-orange-500 shadow-lg shadow-orange-500/40 z-50"
       >
-        <View className="flex-1 bg-black/60 justify-end">
-          <View className="rounded-t-3xl p-5 pb-9 bg-white dark:bg-brand-darkBg">
-            <View className="flex-row items-center justify-between mb-4">
-              <Text className="font-font-bold text-base font-bold text-slate-900 dark:text-white">
-                {t('transfer.selectSenderSim')}
-              </Text>
-              <TouchableOpacity onPress={() => setSenderModalVisible(false)}>
-                <Icon name="solar:close-circle-bold" color="#94A3B8" size={26} />
-              </TouchableOpacity>
-            </View>
+        <Icon name="solar:add-linear" color="#FFFFFF" size={28} />
+      </TouchableOpacity>
 
-            {registeredSenders.map((sender) => (
-              <TouchableOpacity
-                key={sender.id}
-                activeOpacity={0.8}
-                onPress={() => handleSelectSender(sender)}
-                className={`flex-row items-center p-3.5 rounded-xl mb-2.5 border ${selectedSender?.id === sender.id
-                  ? 'border-2 border-brand-green bg-emerald-50 dark:bg-emerald-950/30'
-                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark'
-                  }`}
-              >
-                <View className="px-2 py-1 rounded-lg bg-emerald-600">
-                  <Text className="font-font-bold text-xs text-white">{sender.operator}</Text>
-                </View>
-
-                <View className="flex-1 ml-3">
-                  <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">
-                    {sender.label}
-                  </Text>
-                  <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    {sender.callingCode} {sender.phone}
-                  </Text>
-                </View>
-
-                {selectedSender?.id === sender.id && (
-                  <Icon name="solar:check-circle-bold" color="#25B876" size={22} />
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      </Modal>
-
-      <Modal
-        visible={actionModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setActionModalVisible(false)}
-      >
-        <View className="flex-1 bg-black/60 justify-end">
-          <View className="rounded-t-3xl p-5 pb-9 bg-white dark:bg-brand-darkBg">
-            <View className="flex-row items-center justify-between mb-4">
-              <Text className="font-font-bold text-base font-bold text-slate-900 dark:text-white">
-                {t('transfer.selectAction')}
-              </Text>
-              <TouchableOpacity onPress={() => setActionModalVisible(false)}>
-                <Icon name="solar:close-circle-bold" color="#94A3B8" size={26} />
-              </TouchableOpacity>
-            </View>
-
-            {availableActions.map((action) => (
-              <TouchableOpacity
-                key={action.id}
-                activeOpacity={0.8}
-                onPress={() => {
-                  setSelectedAction(action);
-                  setActionModalVisible(false);
-                }}
-                className={`flex-row items-center p-3.5 rounded-xl mb-2.5 border ${selectedAction?.id === action.id
-                  ? 'border-2 border-brand-green bg-emerald-50 dark:bg-emerald-950/30'
-                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark'
-                  }`}
-              >
-                <Icon name="solar:card-transfer-bold" color="#25B876" size={24} className="mr-3" />
-                <View className="flex-1">
-                  <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">
-                    {action.label}
-                  </Text>
-                  <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    {action.description}
-                  </Text>
-                </View>
-
-                {selectedAction?.id === action.id && (
-                  <Icon name="solar:check-circle-bold" color="#25B876" size={22} />
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      </Modal>
-
-      <Modal
-        visible={warningModalVisible}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setWarningModalVisible(false)}
-      >
-        <View className="flex-1 bg-black/70 items-center justify-center p-5">
-          <View className="w-full rounded-3xl p-6 items-center bg-white dark:bg-brand-cardDark">
-            <View className="wx-16 hx-16 rounded-full bg-red-100 dark:bg-red-950/50 items-center justify-center mb-4">
-              <Icon name="solar:shield-warning-bold" color="#DC2626" size={48} />
-            </View>
-
-            <Text className="font-font-bold text-lg font-extrabold text-slate-900 dark:text-white text-center mb-2">
-              {t('transfer.warningModalTitle')}
-            </Text>
-
-            <Text className="font-font-regular text-xs text-slate-600 dark:text-slate-300 text-center leading-5 mb-5">
-              {t('transfer.warningModalBody')}
-            </Text>
-
-            <View className="w-full">
-              <Button
-                title={t('transfer.confirmAnyway')}
-                onPress={handleConfirmWarning}
-                variant="danger"
-                size="md"
-                style={{ marginBottom: 10 }}
-              />
-              <Button
-                title={t('common.cancel')}
-                onPress={() => setWarningModalVisible(false)}
-                variant="secondary"
-                size="md"
-              />
-            </View>
-          </View>
-        </View>
-      </Modal>
-
+      {/* TabBar active */}
       <TabBar activeTab="transfer" />
+
+      {/* Modal de détail d'une transaction */}
+      <Modal
+        visible={detailModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setDetailModalVisible(false)}
+      >
+        <View className="flex-1 bg-black/60 justify-end">
+          <View className="rounded-t-3xl p-6 pb-9 bg-white dark:bg-brand-darkBg max-h-[85%]">
+            <View className="flex-row items-center justify-between mb-5">
+              <Text className="font-font-bold text-lg font-bold text-slate-900 dark:text-white">
+                {t('transfer.detailTitle')}
+              </Text>
+              <TouchableOpacity onPress={() => setDetailModalVisible(false)}>
+                <Icon name="solar:close-circle-bold" color="#94A3B8" size={26} />
+              </TouchableOpacity>
+            </View>
+
+            {selectedTx && (
+              <ScrollView showsVerticalScrollIndicator={false}>
+                {/* Carte Montant */}
+                <View className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-brand-cardDark items-center justify-center mb-5">
+                  <Text className="font-font-bold text-3xl font-extrabold text-brand-green mb-1">
+                    {formatAmount(selectedTx.montant)} <Text className="text-lg">FCFA</Text>
+                  </Text>
+                  <View
+                    className={`px-3 py-1 rounded-full border mt-1.5 ${
+                      getStatusInfo(selectedTx.statut, selectedTx.niveau_risque).badgeBg
+                    } ${
+                      getStatusInfo(selectedTx.statut, selectedTx.niveau_risque).badgeBorder
+                    }`}
+                  >
+                    <Text
+                      className={`text-xs font-bold ${
+                        getStatusInfo(selectedTx.statut, selectedTx.niveau_risque).badgeText
+                      }`}
+                    >
+                      {t(getStatusInfo(selectedTx.statut, selectedTx.niveau_risque).labelKey)}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Données de la transaction */}
+                <View className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark p-4 mb-5">
+                  <View className="flex-row items-center justify-between py-2">
+                    <Text className="font-medium text-xs text-slate-500 dark:text-slate-400">
+                      {t('transfer.detailRecipient')}
+                    </Text>
+                    <Text className="font-bold text-sm text-slate-900 dark:text-white">
+                      {selectedTx.numero_telephone || selectedTx.numero_id}
+                    </Text>
+                  </View>
+
+                  <View className="h-px w-full bg-slate-100 dark:bg-slate-800 my-1" />
+
+                  <View className="flex-row items-center justify-between py-2">
+                    <Text className="font-medium text-xs text-slate-500 dark:text-slate-400">
+                      {t('transfer.detailDate')}
+                    </Text>
+                    <Text className="font-semibold text-xs text-slate-800 dark:text-slate-200">
+                      {formatDate(selectedTx.date_transaction)}
+                    </Text>
+                  </View>
+
+                  {selectedTx.operator_name && (
+                    <>
+                      <View className="h-px w-full bg-slate-100 dark:bg-slate-800 my-1" />
+                      <View className="flex-row items-center justify-between py-2">
+                        <Text className="font-medium text-xs text-slate-500 dark:text-slate-400">
+                          {t('transfer.detailOperator')}
+                        </Text>
+                        <Text className="font-semibold text-xs text-slate-800 dark:text-slate-200">
+                          {selectedTx.operator_name}
+                        </Text>
+                      </View>
+                    </>
+                  )}
+
+                  <View className="h-px w-full bg-slate-100 dark:bg-slate-800 my-1" />
+
+                  <View className="flex-row items-center justify-between py-2">
+                    <Text className="font-medium text-xs text-slate-500 dark:text-slate-400">
+                      {t('transfer.detailRiskLevel')}
+                    </Text>
+                    <Text
+                      className={`font-bold text-xs ${
+                        getStatusInfo(selectedTx.statut, selectedTx.niveau_risque).riskTextColor
+                      }`}
+                    >
+                      {t(
+                        getStatusInfo(selectedTx.statut, selectedTx.niveau_risque).riskLabelKey
+                      )}
+                    </Text>
+                  </View>
+
+                  <View className="h-px w-full bg-slate-100 dark:bg-slate-800 my-1" />
+
+                  <View className="flex-row items-center justify-between py-2">
+                    <Text className="font-medium text-xs text-slate-500 dark:text-slate-400">
+                      {t('transfer.detailRef')}
+                    </Text>
+                    <Text
+                      numberOfLines={1}
+                      className="font-medium text-2xs text-slate-400 dark:text-slate-500 max-w-[180px]"
+                    >
+                      {selectedTx.id}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Code USSD associé si généré */}
+                {selectedTx.code_ussd_genere && (
+                  <View className="p-4 rounded-2xl border border-brand-green/40 bg-emerald-500/5 dark:bg-emerald-950/20 mb-5">
+                    <Text className="font-bold text-xs text-slate-500 dark:text-slate-400 mb-1.5">
+                      {t('transfer.detailUssdCode')}
+                    </Text>
+                    <Text className="font-bold text-xl text-slate-900 dark:text-white tracking-wider mb-3">
+                      {selectedTx.code_ussd_genere}
+                    </Text>
+
+                    <View className="flex-row gap-2">
+                      <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={() => handleCopyUssd(selectedTx.code_ussd_genere!)}
+                        className="flex-1 flex-row items-center justify-center py-2.5 px-3 rounded-xl bg-slate-200 dark:bg-slate-700"
+                      >
+                        <Icon name="solar:copy-bold" size={16} color={isDark ? '#FFF' : '#161E33'} />
+                        <Text className="text-xs font-bold ml-1.5 text-slate-900 dark:text-white">
+                          {t('transfer.copyUssd')}
+                        </Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={() => handleDialUssd(selectedTx.code_ussd_genere!)}
+                        className="flex-1 flex-row items-center justify-center py-2.5 px-3 rounded-xl bg-brand-green"
+                      >
+                        <Icon name="solar:phone-calling-bold" size={16} color="#FFFFFF" />
+                        <Text className="text-xs font-bold ml-1.5 text-white">
+                          {t('transfer.dialUssd')}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+
+                <Button
+                  title={t('common.close')}
+                  onPress={() => setDetailModalVisible(false)}
+                  variant="secondary"
+                  size="md"
+                />
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }

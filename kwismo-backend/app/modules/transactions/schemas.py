@@ -31,3 +31,5 @@ class TransactionOut(BaseModel):
     statut: str = Field(..., examples=["prepared"], description="prepared | confirmed | cancelled")
     niveau_risque: str | None = None
     code_ussd_genere: str | None = None
+    numero_telephone: str | None = None
+    operator_name: str | None = None

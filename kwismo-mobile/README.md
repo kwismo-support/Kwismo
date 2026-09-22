@@ -152,7 +152,8 @@ kwismo-mobile/
 │     ├─ _layout.tsx
 │     ├─ index.tsx                  # Dashboard principal (KPI & Actions rapides)
 │     ├─ verify.tsx                 # Vérification instantanée de numéro suspect
-│     ├─ transfer.tsx               # Transfert USSD & Mobile Money sécurisé
+│     ├─ transfer.tsx               # Historique des transferts sécurisés & filtres de date
+│     ├─ new-transfer.tsx           # Initiation d'un nouveau transfert USSD sécurisé par étapes
 │     ├─ contacts.tsx               # Liste des contacts & badges de risque
 │     ├─ alert-whatsapp.tsx         # Alerte WhatsApp (compte piraté)
 │     ├─ report.tsx                 # Formulaire de signalement de fraude

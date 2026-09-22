@@ -30,6 +30,10 @@ RISK_THRESHOLDS = {
 
 
 def _to_out(t) -> TransactionOut:
+    num_val = getattr(t, "numero", None)
+    num_str = num_val.valeur if num_val else t.numeroId
+    op_val = getattr(t, "operator", None)
+    op_name = op_val.nom if op_val else None
     return TransactionOut(
         id=t.id,
         numero_id=t.numeroId,
@@ -38,6 +42,8 @@ def _to_out(t) -> TransactionOut:
         statut=t.statut,
         niveau_risque=t.niveauRisque,
         code_ussd_genere=t.codeUSSDGenere,
+        numero_telephone=num_str,
+        operator_name=op_name,
     )
 
 
@@ -113,6 +119,7 @@ async def list_transactions(user_id: str, page: int, page_size: int):
     total = await db.transaction.count(where={"userId": user_id})
     items = await db.transaction.find_many(
         where={"userId": user_id},
+        include={"numero": True, "operator": True},
         skip=skip,
         take=page_size,
         order={"dateTransaction": "desc"},
@@ -125,7 +132,10 @@ async def list_transactions(user_id: str, page: int, page_size: int):
 # ---------------------------------------------------------------------------
 
 async def get_transaction(user_id: str, transaction_id: str, lang: str = "fr") -> TransactionOut:
-    transaction = await db.transaction.find_unique(where={"id": transaction_id})
+    transaction = await db.transaction.find_unique(
+        where={"id": transaction_id},
+        include={"numero": True, "operator": True},
+    )
     if transaction is None or transaction.userId != user_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

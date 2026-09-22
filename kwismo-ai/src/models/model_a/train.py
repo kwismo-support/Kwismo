@@ -21,7 +21,7 @@ from src.data.generate_model_a_data import generate_dataset, OUTPUT_PATH
 settings = get_settings()
 
 
-def train_model_a(df: pd.DataFrame = None) -> CalibratedClassifierCV:
+def train_model_a(df: pd.DataFrame | None = None) -> CalibratedClassifierCV:
     """Entraîne et calibre le Modèle A LightGBM sur le jeu de données comportemental."""
     if df is None:
         if not OUTPUT_PATH.exists():
@@ -66,7 +66,7 @@ def train_model_a(df: pd.DataFrame = None) -> CalibratedClassifierCV:
     return calibrated_model
 
 
-def save_model_a(model: CalibratedClassifierCV, version: str = "v1", metrics: dict = None) -> None:
+def save_model_a(model: CalibratedClassifierCV, version: str = "v1", metrics: dict | None = None) -> None:
     """Sauvegarde le modèle sous models/model_a/model_a_v1.joblib et met à jour registry.json."""
     model_dir = Path(settings.model_dir) / "model_a"
     model_dir.mkdir(parents=True, exist_ok=True)
