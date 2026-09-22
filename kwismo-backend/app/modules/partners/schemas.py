@@ -76,3 +76,12 @@ class PartnerScopeKpiOut(BaseModel):
     nom_indicateur: str
     valeur: float
     periode: str
+
+
+class PartnerRequestIn(BaseModel):
+    nomContact: str
+    email: str
+    nomEntreprise: str
+    typePartenariat: str
+    telephone: str
+    message: str | None = None

@@ -152,7 +152,7 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
             </TouchableOpacity>
           </View>
 
-          <View className="flex-row items-center h-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-brand-cardDark px-3.5 mb-3.5">
+          <View className="flex-row items-center hx-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-brand-cardDark px-3.5 mb-3.5">
             <Icon name="solar:magnifer-linear" color={themeColors.inputPlaceholder} size={20} className="mr-2.5" />
             <TextInput
               style={Platform.OS === 'web' ? ({ outline: 'none' } as any) : {}}
@@ -196,9 +196,9 @@ export const ContactPickerModal: React.FC<ContactPickerModalProps> = ({
                 <TouchableOpacity
                   activeOpacity={0.7}
                   onPress={() => handleSelectContact(item)}
-                  className="flex-row items-center p-3 rounded-xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-brand-cardDark mb-2"
+                  className="flex-row items-center py-2 px-1 rounded-xl bg-white dark:bg-brand-cardDark mb-2"
                 >
-                  <View className="w-10 h-10 rounded-full bg-brand-green items-center justify-center mr-3">
+                  <View className="wx-10 hx-10 rounded-full bg-brand-green items-center justify-center mr-3">
                     <Text className="font-bold text-base text-white">{item.name[0] || '?'}</Text>
                   </View>
                   <View className="flex-1">

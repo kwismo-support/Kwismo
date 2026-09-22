@@ -12,7 +12,7 @@ export function useLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { login } = useAuthStore();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const getDeviceInfo = () => {
     const deviceId =
@@ -38,7 +38,9 @@ export function useLogin() {
       if (res.success && res.data) {
         const data: any = res.data;
         if (data.requires_device_verification) {
-          toast.error(t('auth.secureAccountOtpSubtitle'));
+          const isFr = i18n.language.startsWith('fr');
+          const serverMessage = isFr ? data.message_fr : data.message_en;
+          toast.error(serverMessage || t('auth.secureAccountOtpSubtitle'));
           return { success: false, requiresDeviceVerification: true };
         }
 

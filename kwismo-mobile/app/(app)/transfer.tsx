@@ -235,7 +235,6 @@ export default function TransferScreen() {
             </View>
           </SkeletonLoader>
         ) : transactions.length === 0 ? (
-          /* Empty State : aucun élément, pas de filtre affiché */
           <View className="py-12 px-4 items-center justify-center">
             <View className="wx-20 hx-20 rounded-full bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center mb-5 border border-emerald-200/60 dark:border-emerald-800/60">
               <Icon name="solar:card-transfer-linear" size={40} color="#25B46E" />
@@ -258,14 +257,8 @@ export default function TransferScreen() {
             />
           </View>
         ) : (
-          /* Liste avec filtres de date */
           <View>
             <View className="mb-3">
-              <Text className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
-                {t('transfer.historyTitle')}
-              </Text>
-
-              {/* Filtres de date horizontaux (affichés uniquement quand des transactions existent) */}
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -379,7 +372,6 @@ export default function TransferScreen() {
         )}
       </ScrollView>
 
-      {/* Floating Action Button "+" pour initier un nouveau transfert */}
       <TouchableOpacity
         activeOpacity={0.85}
         onPress={() => router.push('/(app)/new-transfer')}
@@ -389,10 +381,8 @@ export default function TransferScreen() {
         <Icon name="solar:add-linear" color="#FFFFFF" size={28} />
       </TouchableOpacity>
 
-      {/* TabBar active */}
       <TabBar activeTab="transfer" />
 
-      {/* Modal de détail d'une transaction */}
       <Modal
         visible={detailModalVisible}
         transparent={true}
@@ -412,7 +402,6 @@ export default function TransferScreen() {
 
             {selectedTx && (
               <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Carte Montant */}
                 <View className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-brand-cardDark items-center justify-center mb-5">
                   <Text className="font-font-bold text-3xl font-extrabold text-brand-green mb-1">
                     {formatAmount(selectedTx.montant)} <Text className="text-lg">FCFA</Text>
@@ -434,7 +423,6 @@ export default function TransferScreen() {
                   </View>
                 </View>
 
-                {/* Données de la transaction */}
                 <View className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark p-4 mb-5">
                   <View className="flex-row items-center justify-between py-2">
                     <Text className="font-medium text-xs text-slate-500 dark:text-slate-400">
@@ -502,7 +490,6 @@ export default function TransferScreen() {
                   </View>
                 </View>
 
-                {/* Code USSD associé si généré */}
                 {selectedTx.code_ussd_genere && (
                   <View className="p-4 rounded-2xl border border-brand-green/40 bg-emerald-500/5 dark:bg-emerald-950/20 mb-5">
                     <Text className="font-bold text-xs text-slate-500 dark:text-slate-400 mb-1.5">

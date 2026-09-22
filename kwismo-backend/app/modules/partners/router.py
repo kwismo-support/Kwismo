@@ -10,7 +10,7 @@ their own scope (affiliation rules); an admin can view everything.
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.core.permissions import require_roles
-from app.core.schemas import AUTH_RESPONSES, NOT_FOUND_RESPONSE, Page
+from app.core.schemas import AUTH_RESPONSES, NOT_FOUND_RESPONSE, Page, Message
 from app.modules.partners import service
 from app.modules.partners.schemas import (
     AffiliationRuleCreateIn,
@@ -21,9 +21,20 @@ from app.modules.partners.schemas import (
     PartnerScopeKpiOut,
     PartnerScopeNumberOut,
     PartnerScopeUserOut,
+    PartnerRequestIn,
 )
 
 router = APIRouter(tags=["Partners"])
+
+@router.post(
+    "/partners/request",
+    response_model=Message,
+    status_code=status.HTTP_201_CREATED,
+    summary="Submit a partner request / Soumettre une demande de partenariat",
+)
+async def submit_partner_request(payload: PartnerRequestIn) -> Message:
+    # TODO: Save to DB when PartnerRequest model is added
+    return Message(message="Demande de partenariat reçue avec succès.")
 
 
 @router.get(

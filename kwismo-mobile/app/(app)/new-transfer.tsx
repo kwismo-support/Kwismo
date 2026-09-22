@@ -105,9 +105,9 @@ export default function NewTransferScreen() {
       if (actionsRes.success && actionsRes.data && actionsRes.data.length > 0) {
         const mappedActions: ActionOption[] = actionsRes.data.map((a: any) => ({
           id: a.id,
-          label: a.nomAction || a.nom || 'Transfert d’argent',
-          description: a.format || a.pattern_code || 'Transfert via USSD',
-          ussdFormat: a.format || a.pattern_code || '*126*{montant}*{numero}#',
+          label: a.nomAction || a.nom,
+          description: a.format || a.pattern_code,
+          ussdFormat: a.format || a.pattern_code,
           operator_id: a.operatorId || a.operator_id,
         }));
         transferCache.setCachedActions(opId, mappedActions);
@@ -396,7 +396,6 @@ export default function NewTransferScreen() {
 
       <HeaderBar
         title={t('transfer.newTransfer')}
-        subtitle={t('transfer.enterDetailsSub')}
         showBack={true}
         onBack={() => {
           if (step === 'summary') setStep('form');
@@ -426,7 +425,7 @@ export default function NewTransferScreen() {
               selectedCountry={selectedCountry}
               onCountryChange={setSelectedCountry}
               error={phoneError}
-              placeholder="Ex: 6 98 44 43 88"
+              placeholder={t('common.phoneNumber')}
             />
 
             <Input
@@ -453,7 +452,7 @@ export default function NewTransferScreen() {
               ) : registeredSenders.length === 0 ? (
                 <View className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
                   <View className="flex-row items-center mb-2">
-                    <Icon name="solar:sim-card-bold" color="#D97706" size={24} className="mr-2" />
+                    <Icon name="solar:sim-card-bold" size={24} className="mr-2" />
                     <Text className="font-font-bold text-sm font-bold text-amber-800 dark:text-amber-300">
                       {t('transfer.noSenderTitle')}
                     </Text>
@@ -500,7 +499,7 @@ export default function NewTransferScreen() {
                   className="flex-row items-center justify-between hx-14 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark px-3.5"
                 >
                   <View className="flex-row items-center flex-1">
-                    <Icon name="solar:card-transfer-linear" color="#25B876" size={20} className="mr-2.5" />
+                    <Icon name="solar:card-transfer-linear" size={20} className="mr-2.5" />
                     <Text className="font-font-medium text-sm text-slate-900 dark:text-white flex-1">
                       {selectedAction.label}
                     </Text>
