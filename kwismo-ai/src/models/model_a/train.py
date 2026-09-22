@@ -81,7 +81,7 @@ def save_model_a(model: CalibratedClassifierCV, version: str = "v1", metrics: di
     registry["model_a"] = {
         "version": version,
         "type": "lightgbm_calibrated",
-        "path": str(model_path),
+        "path": model_path.as_posix(),
         "metrics": metrics or {},
         "trained_at": datetime.now(timezone.utc).isoformat(),
     }

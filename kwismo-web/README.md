@@ -311,8 +311,22 @@ kwismo-web/
 ## 9. Internationalisation
 
 - **i18next** : langue par défaut FR, bascule à chaud via `LanguageSwitcher`.
-- Fichiers dans `src/locales/{fr,en}/` découpés par namespace (`common`, `landing`, `auth`, `admin`, `partner`).
-- **Aucun texte en dur** : tout passe par une clé de traduction.
+- Fichiers dans `src/locales/{fr,en}/` découpés par namespace :
+
+| Namespace       | Contenu                                                      |
+|----------------|--------------------------------------------------------------|
+| `common`       | Labels partagés, actions, navigation, progression, export PDF|
+| `landing`      | Textes de la page publique                                   |
+| `auth`         | Formulaires d'authentification                               |
+| `admin`        | Interface d'administration                                   |
+| `partner`      | Interface partenaire                                         |
+| `partnerRequest` | Formulaire de demande partenariat                          |
+| `errors`       | Messages d'erreur                                            |
+| `user`         | Espace utilisateur                                           |
+
+- **Aucun texte en dur** dans le JSX : tout passe par `t('clé')` ou `useTranslation()`.
+- **PDF Export** (`features/reports/services/reportsExport.ts`) : la fonction `generatePDFReport` accepte un paramètre `labels: PDFReportLabels` — passer les traductions `t('common:reportExport.*')` depuis le composant appelant pour un export multilingue.
+- **KpiCard** : le label "Progression" utilise `t('common:progression')`.
 
 ---
 

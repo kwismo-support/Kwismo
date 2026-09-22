@@ -1,7 +1,9 @@
 """Logique metier du module numbers. / Business logic for the numbers module.
 
-FR — Appelle fallback_rules directement (l'IA sera branchee plus tard).
-EN — Calls fallback_rules directly (AI will be wired later).
+FR — Appelle predict_full_analysis (kwismo-ai) pour scorer les numeros.
+     En cas d'indisponibilite de l'IA, repli automatique sur les regles expertes.
+EN — Calls predict_full_analysis (kwismo-ai) to score numbers.
+     Graceful fallback to expert rules if the AI service is unavailable.
 """
 
 import logging
@@ -12,6 +14,8 @@ from app.core.cache import get_cached, invalidate_cache
 from app.db.prisma_client import db
 from app.db.repositories.number_repository import NumberRepository
 from app.modules.ai_gateway.fallback_rules import score_number_fallback
+from app.modules.ai_gateway.client import predict_full_analysis
+from app.modules.ai_gateway.schemas import FullAnalysisIn, ReportItemIn
 from app.modules.numbers.schemas import (
     NumberBatchVerifyIn,
     NumberDetailOut,
@@ -75,7 +79,7 @@ async def _statut_from_score(score: float) -> str:
 
 
 async def _score_and_upsert(valeur: str, country_id: str | None = None) -> NumberOut:
-    """Evalue le score du numero (fallback rules) et upsert dans Numero."""
+    """Evalue le score du numero via kwismo-ai (avec repli sur regles expertes) et upsert dans Numero."""
     # Detecter le pays et l'operateur si non fournis via cache.
     resolved_country_id = country_id
     resolved_operator_id: str | None = None
@@ -127,17 +131,58 @@ async def _score_and_upsert(valeur: str, country_id: str | None = None) -> Numbe
     existing = await db.numero.find_unique(where={"valeur": valeur})
     if existing:
         nombre_signalements = await db.report.count(where={"numeroId": existing.id})
+        existing_reports = await db.report.find_many(where={"numeroId": existing.id})
     else:
         nombre_signalements = 0
-    
+        existing_reports = []
+
     coherence_ok = True
     if resolved_country_id:
         country = await db.country.find_unique(where={"id": resolved_country_id})
         if country and not valeur.startswith(country.codePays):
             coherence_ok = False
 
-    prediction = score_number_fallback(nombre_signalements, coherence_ok)
-    statut = await _statut_from_score(prediction.score_risque)
+    # --- Appel IA (kwismo-ai) avec repli sur regles expertes ---
+    score_risque: float
+    try:
+        horodatages_signalements = [
+            r.dateSignalement.isoformat() for r in existing_reports
+        ]
+        horodatages_verifications = (
+            [existing.dateDerniereVerification.isoformat()]
+            if existing and existing.dateDerniereVerification
+            else []
+        )
+        report_items = [
+            ReportItemIn(id_signalement=r.id, description=r.motif)
+            for r in existing_reports
+        ]
+        payload_ia = FullAnalysisIn(
+            numero=valeur,
+            nombre_verifications=1 if existing and existing.dateDerniereVerification else 0,
+            horodatages_verifications=horodatages_verifications,
+            nombre_signalements=nombre_signalements,
+            horodatages_signalements=horodatages_signalements,
+            reports=report_items,
+        )
+        ai_result = await predict_full_analysis(payload_ia)
+        score_risque = ai_result.score_risque
+        logger.info(
+            "Score IA pour %s : %.3f (modele=%s)",
+            valeur,
+            score_risque,
+            ai_result.modele_utilise,
+        )
+    except Exception as exc:
+        logger.warning(
+            "kwismo-ai indisponible pour %s (%s) — repli sur regles expertes",
+            valeur,
+            exc,
+        )
+        fallback = score_number_fallback(nombre_signalements, coherence_ok)
+        score_risque = fallback.score_risque
+
+    statut = await _statut_from_score(score_risque)
     now = utcnow()
 
     # Upsert dans le registre Numero.
@@ -145,7 +190,7 @@ async def _score_and_upsert(valeur: str, country_id: str | None = None) -> Numbe
         numero = await db.numero.update(
             where={"valeur": valeur},
             data={
-                "scoreRisque": prediction.score_risque,
+                "scoreRisque": score_risque,
                 "statut": statut,
                 "dateDerniereVerification": now,
                 "countryId": resolved_country_id,
@@ -156,7 +201,7 @@ async def _score_and_upsert(valeur: str, country_id: str | None = None) -> Numbe
         numero = await db.numero.create(
             data={
                 "valeur": valeur,
-                "scoreRisque": prediction.score_risque,
+                "scoreRisque": score_risque,
                 "statut": statut,
                 "dateDerniereVerification": now,
                 "countryId": resolved_country_id,
@@ -267,7 +312,7 @@ async def set_number_status(number_id: str, payload: NumberStatusIn, lang: str =
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("number_not_found", lang))
 
     if payload.reanalyser:
-        # Relancer l'evaluation (fallback rules pour l'instant).
+        # Relancer l'evaluation via kwismo-ai (avec repli automatique si IA indisponible).
         out = await _score_and_upsert(numero.valeur)
         nombre_signalements = await db.report.count(where={"numeroId": number_id})
         numero = await db.numero.find_unique(where={"id": number_id})

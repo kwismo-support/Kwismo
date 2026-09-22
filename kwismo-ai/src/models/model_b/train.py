@@ -74,7 +74,7 @@ def train_and_save_fallback(version: str = "v1") -> Path:
     registry["model_b"] = {
         "version": version,
         "type": "fallback_tfidf",
-        "path": str(fallback_path),
+        "path": fallback_path.as_posix(),
         "total_samples": len(texts),
         "trained_at": datetime.now(UTC).isoformat(),
     }

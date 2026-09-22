@@ -1,4 +1,5 @@
 import { Icon } from '@iconify/react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/shared/lib/utils';
 import { Badge } from '@/shared/ui/badge';
 
@@ -39,6 +40,7 @@ export function KpiCard({
   onClick,
   className,
 }: KpiCardProps) {
+  const { t } = useTranslation('common');
   const activeIconBg = iconBgColor || color;
 
   if (isLoading) {
@@ -160,7 +162,7 @@ export function KpiCard({
       {progress !== undefined && (
         <div className="mt-4 pt-2 border-t border-slate-100 dark:border-white/5">
           <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1.5">
-            <span>Progression</span>
+          <span>{t('progression')}</span>
             <span className="font-bold">{progress}%</span>
           </div>
           <div className="h-1.5 w-full bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden">

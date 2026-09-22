@@ -25,24 +25,52 @@ export function generateCSVReport(filenameTitle: string, items: ReportItem[]) {
   URL.revokeObjectURL(url);
 }
 
-export function generatePDFReport(title: string, items: ReportItem[]) {
+export interface PDFReportLabels {
+  officialDoc?: string;
+  generated?: string;
+  at?: string;
+  meta?: string;
+  colId?: string;
+  colMotif?: string;
+  colStatut?: string;
+  colDate?: string;
+  footer?: string;
+  empty?: string;
+  lang?: string;
+}
+
+export function generatePDFReport(title: string, items: ReportItem[], labels: PDFReportLabels = {}) {
+  const {
+    officialDoc = 'Document Officiel Anti-Fraude',
+    generated = 'Généré le',
+    at = 'à',
+    meta = "Rapport d'analyse de sécurité Mobile Money — KWISMO Platform",
+    colId = 'Identifiant',
+    colMotif = 'Motif du Signalement',
+    colStatut = 'Statut',
+    colDate = 'Date',
+    footer = 'KWISMO Anti-Fraud Intelligence Platform — Document généré automatiquement pour contrôle d\'audit.',
+    empty = 'Aucun signalement enregistré dans le rapport',
+    lang = 'fr',
+  } = labels;
+
   const printWindow = window.open('', '_blank');
   if (!printWindow) return;
 
   const rowsHtml = items.length === 0
-    ? `<tr><td colspan="4" style="text-align:center; padding:12px; color:#888;">Aucun signalement enregistré dans le rapport</td></tr>`
+    ? `<tr><td colspan="4" style="text-align:center; padding:12px; color:#888;">${empty}</td></tr>`
     : items.map((item, idx) => `
       <tr style="background-color: ${idx % 2 === 0 ? '#f9fafb' : '#ffffff'};">
         <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 12px; font-family: monospace;">${item.id || '-'}</td>
         <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 12px;">${item.motif || '-'}</td>
-        <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 12px; font-weight: bold; color: ${item.statut === 'validated' ? '#059669' : item.statut === 'rejected' ? '#dc2626' : '#d97706'};">${item.statut || 'En attente'}</td>
-        <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 12px; font-family: monospace;">${item.date_signalement ? new Date(item.date_signalement).toLocaleString('fr-FR') : '-'}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 12px; font-weight: bold; color: ${item.statut === 'validated' ? '#059669' : item.statut === 'rejected' ? '#dc2626' : '#d97706'};">${item.statut || '-'}</td>
+        <td style="padding: 10px; border-bottom: 1px solid #e5e7eb; font-size: 12px; font-family: monospace;">${item.date_signalement ? new Date(item.date_signalement).toLocaleString(lang === 'en' ? 'en-GB' : 'fr-FR') : '-'}</td>
       </tr>
     `).join('');
 
   const htmlContent = `
     <!DOCTYPE html>
-    <html lang="fr">
+    <html lang="${lang}">
     <head>
       <meta charset="UTF-8">
       <title>KWISMO — ${title}</title>
@@ -62,19 +90,19 @@ export function generatePDFReport(title: string, items: ReportItem[]) {
       <div class="header">
         <div class="logo">KWISMO <span>SECURITY</span></div>
         <div style="font-size: 12px; text-align: right; color: #4b5563;">
-          Document Officiel Anti-Fraude<br>
-          Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}
+          ${officialDoc}<br>
+          ${generated} ${new Date().toLocaleDateString(lang === 'en' ? 'en-GB' : 'fr-FR')} ${at} ${new Date().toLocaleTimeString(lang === 'en' ? 'en-GB' : 'fr-FR')}
         </div>
       </div>
       <div class="title">${title}</div>
-      <div class="meta">Rapport d'analyse de sécurité Mobile Money — KWISMO Platform</div>
+      <div class="meta">${meta}</div>
       <table>
         <thead>
           <tr>
-            <th>Identifiant</th>
-            <th>Motif du Signalement</th>
-            <th>Statut</th>
-            <th>Date</th>
+            <th>${colId}</th>
+            <th>${colMotif}</th>
+            <th>${colStatut}</th>
+            <th>${colDate}</th>
           </tr>
         </thead>
         <tbody>
@@ -82,7 +110,7 @@ export function generatePDFReport(title: string, items: ReportItem[]) {
         </tbody>
       </table>
       <div class="footer">
-        KWISMO Anti-Fraud Intelligence Platform — Document généré automatiquement pour contrôle d'audit.
+        ${footer}
       </div>
       <script>
         window.onload = function() {

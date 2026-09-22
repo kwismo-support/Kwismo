@@ -145,4 +145,23 @@ async def validate_report(report_id: str, payload: ReportValidateIn, admin_user_
     feedback_msg = f"Report {payload.statut}: {report.motif}"
     await enqueue_feedback(report.userId, "report", feedback_msg, report_id=report_id)
 
+    # Transmet le feedback au modele IA pour alimenter l'auto-retraining.
+    if numero:
+        import asyncio
+        from app.modules.ai_gateway.client import send_feedback
+        from app.modules.ai_gateway.schemas import FeedbackIn
+        _label = "frauduleux" if payload.statut == "validated" else "securise"
+        _feedback_payload = FeedbackIn(
+            type="number",
+            label=_label,
+            source="admin_validation",
+            numero=numero.valeur,
+        )
+        async def _send_ai_feedback() -> None:
+            try:
+                await send_feedback(_feedback_payload)
+            except Exception as _exc:
+                logger.debug("Feedback IA non transmis (non bloquant) : %s", _exc)
+        asyncio.create_task(_send_ai_feedback())
+
     return _to_out(updated)

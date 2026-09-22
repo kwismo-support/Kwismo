@@ -324,12 +324,36 @@ Les logs et détails de l'audit sont consultables directement dans : `logs/test_
 
 ---
 
-## 12. Intégration avec le backend
+## 12. Intégration avec le backend (kwismo-backend)
 
-- Le **backend appelle** le service IA (`POST /predict/*`) — l'IA ne parle jamais à l'app ni à la base directement.
-- **Contrat partagé** : `src/api/schemas.py` (IA) doit rester **identique** à `app/modules/ai_gateway/schemas.py` (backend).
-- **Repli** : si l'IA est indisponible, le backend applique ses règles expertes → l'utilisateur n'est jamais bloqué.
-- **Orchestration** : le `docker-compose.yml` à la racine du monorepo démarre backend + base + IA ensemble, avec `AI_SERVICE_URL` et `MODEL_DIR` déjà câblés.
+Le backend est **entièrement connecté** à kwismo-ai depuis la version actuelle. Chaque vérification de numéro passe par l'IA.
+
+### Flux complet
+
+```
+kwismo-backend  →  POST /predict/full_analysis  →  kwismo-ai
+  · Envoie : numéro, horodatages, signalements (motifs), nb vérifications
+  · Reçoit : score_risque (0.0–1.0), categories (par report), explications, modele_utilise
+
+kwismo-backend  →  POST /feedback              →  kwismo-ai
+  · Envoyé après chaque validation admin de signalement
+  · label = "frauduleux" | "securise"
+  · Auto-retraining Modèle A déclenché si ≥ 10 feedbacks accumulés
+```
+
+### Contrats partagés
+
+`src/api/schemas.py` doit rester **strictement synchronisé** avec `kwismo-backend/app/modules/ai_gateway/schemas.py`.
+
+Types partagés : `FullAnalysisIn`, `FullAnalysisOut`, `FeedbackIn`, `FeedbackAck`, `NumberFeaturesIn`, `PredictNumberOut`, `ReportItemIn`, `TextIn`, `TextOut`.
+
+### Repli automatique (côté backend)
+
+Si kwismo-ai est **indisponible** (cold-start, timeout, erreur réseau), le backend bascule automatiquement sur ses règles expertes (`fallback_rules.py`) — sans erreur pour l'utilisateur. Le timeout est configuré via `AI_SERVICE_TIMEOUT_SECONDS` (défaut : 5s).
+
+### Portabilité Linux/Docker — chemins POSIX
+
+Les chemins dans `models/registry.json` et dans `train.py` utilisent désormais `as_posix()` (slashs `/`) au lieu de backslashes Windows. Le service fonctionne identiquement sur Windows (dev) et Linux/Docker (prod).
 
 ---
 

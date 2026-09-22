@@ -103,5 +103,18 @@
     "expand": "Expand menu",
     "collapse": "Collapse menu",
     "closeMenu": "Close menu"
+  },
+  "progression": "Progress",
+  "reportExport": {
+    "officialDoc": "Official Anti-Fraud Document",
+    "generated": "Generated on",
+    "at": "at",
+    "meta": "Mobile Money Security Analysis Report — KWISMO Platform",
+    "colId": "Identifier",
+    "colMotif": "Report Reason",
+    "colStatut": "Status",
+    "colDate": "Date",
+    "footer": "KWISMO Anti-Fraud Intelligence Platform — Document automatically generated for audit control.",
+    "empty": "No reports recorded in this document"
   }
 }

@@ -475,12 +475,55 @@ La langue est déterminée par l'en-tête `Accept-Language` ou la préférence d
 
 ---
 
-## 12. Communication avec le service IA
+## 12. Communication avec le service IA (kwismo-ai)
 
-- **Synchrone** : `numbers/service.py` → `ai_gateway/client.py` → `POST {AI_SERVICE_URL}/predict/number` → score renvoyé.
-- **Asynchrone** : les signalements sont transmis via `ai_gateway/queue.py` → `POST /feedback` (apprentissage continu).
-- **Repli** : si l'IA ne répond pas, `ai_gateway/fallback_rules.py` prend le relais → l'utilisateur n'est jamais bloqué.
-- **Contrat partagé** : `ai_gateway/schemas.py` doit rester **identique** aux schémas côté IA (`kwismo-ai/src/api/schemas.py`).
+Le backend est **entièrement connecté** à `kwismo-ai` depuis la version actuelle.
+
+### Flux de vérification d'un numéro
+
+```
+Mobile → POST /numbers/verify
+  → numbers/service._score_and_upsert()
+    → ai_gateway/client.predict_full_analysis()
+      → POST {AI_SERVICE_URL}/predict/full_analysis   ← kwismo-ai
+        · Modèle B (NLP) catégorise les descriptions des signalements
+        · Modèle A (LightGBM calibré) calcule le score de risque réel (0.0–1.0)
+      ← FullAnalysisOut { score_risque, categories, explications, modele_utilise }
+    → sync_discovered_categories()   # persiste les catégories découvertes en BD
+    → upsert Numero { scoreRisque, statut, dateDerniereVerification }
+  ← NumberOut  → Mobile
+```
+
+### Flux de feedback (auto-retraining)
+
+```
+Admin → PATCH /reports/{id}/validate
+  → reports/service.validate_report()
+    → asyncio.create_task(_send_ai_feedback())
+      → ai_gateway/client.send_feedback()
+        → POST {AI_SERVICE_URL}/feedback   ← kwismo-ai
+          · Stocke le feedback dans feedback_store.jsonl
+          · Auto-retraining Modèle A déclenché si ≥ 10 feedbacks
+```
+
+### Repli automatique (graceful fallback)
+
+Si `kwismo-ai` est **indisponible** (timeout, erreur réseau, démarrage lent) :
+- La vérification continue sans interruption via `ai_gateway/fallback_rules.py`
+- L'utilisateur reçoit un score issu des règles expertes
+- Un log `WARNING` est émis pour surveiller l'état de l'IA
+
+### Contrats partagés
+
+`ai_gateway/schemas.py` doit rester **strictement synchronisé** avec `kwismo-ai/src/api/schemas.py`.
+Les types partagés : `FullAnalysisIn`, `FullAnalysisOut`, `FeedbackIn`, `NumberFeaturesIn`, `PredictNumberOut`, `ReportItemIn`.
+
+### Variables d'environnement liées
+
+| Variable               | Valeur par défaut      | Rôle                           |
+| ---------------------- | ---------------------- | ------------------------------ |
+| `AI_SERVICE_URL`       | `http://localhost:8001`| URL de kwismo-ai               |
+| `AI_SERVICE_TIMEOUT`   | `5.0`                  | Timeout en secondes (fallback) |
 
 ---
 

@@ -293,7 +293,17 @@ La navigation est **basée sur les fichiers** : chaque fichier dans `app/` devie
 ## 10. Internationalisation
 
 - **i18next** : défaut FR, bascule à chaud, persistance ; détection de la langue de l'appareil au premier lancement.
-- Fichiers dans `src/locales/{fr,en}/` par namespace (`common`, `auth`, `app`).
+- Fichiers dans `src/locales/{fr,en}/` par namespace :
+
+| Namespace | Contenu                                                            |
+|-----------|--------------------------------------------------------------------|
+| `common`  | Actions, labels, statuts, navigation, messages d'erreur génériques |
+| `auth`    | Onboarding, connexion, OTP, reset                                  |
+| `app`     | Toutes les écrans de l'application (vérif, contacts, signalement…) |
+
+- **Aucun texte en dur dans le JSX** : 0 string littérale détectée dans `src/` (vérifiée par scan automatisé).
+- **Sans fallback** : tous les appels à `t('clé')` ont une clé existante dans les deux langues — aucun fallback en dur.
+- Ajout de clés : toujours dans **les deux fichiers** (`fr/app.json` et `en/app.json`) simultanément.
 
 ---
 
