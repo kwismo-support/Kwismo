@@ -1,25 +1,88 @@
-# Local mobile build artifacts
+# ============================================================
+# EAS Build ignore patterns - kwismo-mobile
+# ============================================================
+
+# Git
+.git
+.git/**
+**/.git
+**/.git/**
+
+# Local build artifacts & caches
 node_modules/
+node_modules/**
+**/node_modules/**
 .expo/
+.expo/**
+**/.expo/**
 dist/
+dist/**
+**/dist/**
 web-build/
+web-build/**
+**/web-build/**
 *.log
-.git/
+**/*.log
+coverage/
+**/coverage/**
+.DS_Store
+Thumbs.db
+
+# Tests
+__tests__/
+**/__tests__/**
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
 
 # Parent monorepo directories
 ../kwismo-web/
+../kwismo-web/**
 ../kwismo-backend/
+../kwismo-backend/**
 ../kwismo-ai/
+../kwismo-ai/**
+../shared/
+../shared/**
+../scratch/
+../scratch/**
 ../maquettes/
+../maquettes/**
 ../marketing/
+../marketing/**
 ../plan economique/
+../plan economique/**
 ../plan strategique/
+../plan strategique/**
 ../cahiers des charges/
+../cahiers des charges/**
 ../cadrage/
+../cadrage/**
 ../diagrammes/
+../diagrammes/**
 ../reunions/
+../reunions/**
 ../branding/
+../branding/**
 ../docs/
+../docs/**
+../.github/
+../.github/**
+../.vscode/
+../.vscode/**
+../.claude/
+../.claude/**
+../.vercel/
+../.vercel/**
+../.idea/
+../.idea/**
+../.git/
+../.git/**
+../node_modules/
+../node_modules/**
+../.venv/
+../.venv/**
 ../*.pdf
 ../*.zip
 ../*.rar

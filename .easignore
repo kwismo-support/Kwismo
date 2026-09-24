@@ -1,22 +1,118 @@
-# Exclude non-mobile monorepo folders from EAS CLI archive
-.git/
+# ============================================================
+# EAS Build ignore patterns - Monorepo root
+# Only files needed to build kwismo-mobile should be included
+# ============================================================
+
+# Git repository & history
 .git
+.git/**
+**/.git
+**/.git/**
+
+# Editor / IDE tools
+.github/
+.github/**
+.vscode/
+.vscode/**
+.claude/
+.claude/**
+.vercel/
+.vercel/**
+.idea/
+.idea/**
+scratch/
+scratch/**
+
+# Other non-mobile monorepo projects
 kwismo-web/
+kwismo-web/**
 kwismo-backend/
+kwismo-backend/**
 kwismo-ai/
-maquettes/
-marketing/
-plan economique/
-plan strategique/
-cahiers des charges/
-cadrage/
-diagrammes/
-reunions/
+kwismo-ai/**
+shared/
+shared/**
+
+# Documentation, marketing & design files
 branding/
+branding/**
+cadrage/
+cadrage/**
+cahiers des charges/
+cahiers des charges/**
+diagrammes/
+diagrammes/**
 docs/
+docs/**
+maquettes/
+maquettes/**
+marketing/
+marketing/**
+plan economique/
+plan economique/**
+plan strategique/
+plan strategique/**
+reunions/
+reunions/**
 *.pdf
 *.zip
 *.rar
 *.tar.gz
-node_modules/
+
+# Build outputs & caches (anywhere)
+dist/
+dist/**
+**/dist
+**/dist/**
 .expo/
+.expo/**
+**/.expo
+**/.expo/**
+node_modules/
+node_modules/**
+**/node_modules
+**/node_modules/**
+web-build/
+web-build/**
+**/web-build
+**/web-build/**
+coverage/
+coverage/**
+**/coverage
+**/coverage/**
+
+# Logs & temp files
+*.log
+**/*.log
+.DS_Store
+Thumbs.db
+
+# Python & Backend leftovers
+.venv/
+.venv/**
+**/.venv
+**/.venv/**
+__pycache__/
+__pycache__/**
+**/__pycache__
+**/__pycache__/**
+*.pyc
+**/*.pyc
+*.db
+**/*.db
+*.sqlite*
+**/*.sqlite*
+.pytest_cache/
+**/.pytest_cache/
+.ruff_cache/
+**/.ruff_cache/
+.mypy_cache/
+**/.mypy_cache/
+
+# Test files not needed for production build
+**/__tests__
+**/__tests__/**
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
