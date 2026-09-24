@@ -41,11 +41,35 @@ jobs:
         working-directory: kwismo-mobile
         run: npm run optimize
 
+      # Génère le fichier .env avec les vraies valeurs pour le build Metro/EAS
+      - name: Write .env for Preview build
+        if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/staging'
+        working-directory: kwismo-mobile
+        run: |
+          echo "EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL_PREVIEW || 'https://api.kwismo.com/api/v1' }}" > .env
+          echo "EXPO_PUBLIC_USE_MOCK_DATA=false" >> .env
+          echo "EXPO_PUBLIC_APP_ENV=preview" >> .env
+          echo "EXPO_PUBLIC_APP_NAME=KWISMO" >> .env
+          echo "EXPO_PUBLIC_DEFAULT_LANG=fr" >> .env
+
+      - name: Write .env for Production build
+        if: github.ref == 'refs/heads/main'
+        working-directory: kwismo-mobile
+        run: |
+          echo "EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL || 'https://api.kwismo.com/api/v1' }}" > .env
+          echo "EXPO_PUBLIC_USE_MOCK_DATA=false" >> .env
+          echo "EXPO_PUBLIC_APP_ENV=production" >> .env
+          echo "EXPO_PUBLIC_APP_NAME=KWISMO" >> .env
+          echo "EXPO_PUBLIC_DEFAULT_LANG=fr" >> .env
+
       - name: Publish Preview Update (Kwismo-Test / Preview Channel)
         if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/staging'
         working-directory: kwismo-mobile
         env:
           APP_ENV: preview
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL_PREVIEW || 'https://api.kwismo.com/api/v1' }}
+          EXPO_PUBLIC_APP_ENV: preview
+          EXPO_PUBLIC_USE_MOCK_DATA: 'false'
         run: eas update --auto --branch preview --non-interactive
 
       - name: Publish Production Update (Kwismo / Production Channel)
@@ -53,5 +77,8 @@ jobs:
         working-directory: kwismo-mobile
         env:
           APP_ENV: production
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL || 'https://api.kwismo.com/api/v1' }}
+          EXPO_PUBLIC_APP_ENV: production
+          EXPO_PUBLIC_USE_MOCK_DATA: 'false'
         run: eas update --auto --branch production --non-interactive
 
