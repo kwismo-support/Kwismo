@@ -6,7 +6,7 @@
   },
   "build": {
     "development": {
-      "node": "20.19.4",
+      "node": "22.14.0",
       "developmentClient": true,
       "distribution": "internal",
       "channel": "preview",
@@ -16,7 +16,7 @@
       }
     },
     "preview": {
-      "node": "20.19.4",
+      "node": "22.14.0",
       "distribution": "internal",
       "channel": "preview",
       "android": {
@@ -31,7 +31,7 @@
       }
     },
     "staging": {
-      "node": "20.19.4",
+      "node": "22.14.0",
       "distribution": "internal",
       "channel": "staging",
       "android": {
@@ -46,7 +46,7 @@
       }
     },
     "production": {
-      "node": "20.19.4",
+      "node": "22.14.0",
       "channel": "production",
       "android": {
         "buildType": "apk"
