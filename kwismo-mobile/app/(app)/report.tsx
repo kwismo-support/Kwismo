@@ -22,6 +22,7 @@ import { toast } from '@/shared/store/toastStore';
 import { getDeviceFingerprint } from '@/shared/services/device';
 import { apiClient } from '@/shared/services/apiClient';
 import { enqueueOutboxItem } from '@/shared/services/database';
+import { callListenerService } from '@/features/call-detection/services/callListenerService';
 
 const REPORT_REASONS = [
   { id: 'scam', labelKey: 'report.reasonScam', label: "Tentative d'arnaque / Fraude", icon: 'solar:danger-triangle-bold' },
@@ -49,16 +50,41 @@ export default function ReportScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [permissionModalVisible, setPermissionModalVisible] = useState(false);
   const [showCallPickerModal, setShowCallPickerModal] = useState(false);
+  const [recentCallsList, setRecentCallsList] = useState<Array<{ phone: string; dateStr: string; duration: string }>>([]);
+  const [loadingCalls, setLoadingCalls] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [successModalVisible, setSuccessModalVisible] = useState(false);
 
-  const filteredFiveMinCalls = RECENT_CALLS_HISTORY.filter(
-    (c) => Date.now() - c.timestamp <= 5 * 60 * 1000
-  );
+  React.useEffect(() => {
+    if (params.phone) {
+      setTargetPhone(params.phone);
+    }
+  }, [params.phone]);
+
+  const handleOpenCallPicker = async () => {
+    setLoadingCalls(true);
+    try {
+      const calls = await callListenerService.getRecentUnknownCalls(10);
+      if (calls && calls.length > 0) {
+        setRecentCallsList(calls.map((c) => ({
+          phone: c.phone,
+          dateStr: c.dateStr,
+          duration: c.duration,
+        })));
+      } else {
+        setRecentCallsList([]);
+      }
+    } catch {
+      setRecentCallsList([]);
+    } finally {
+      setLoadingCalls(false);
+    }
+    setShowCallPickerModal(true);
+  };
 
   const handleGrantCallLogPermission = () => {
     setPermissionModalVisible(false);
-    setShowCallPickerModal(true);
+    handleOpenCallPicker();
   };
 
   const handleSelectRecentCall = (phone: string) => {
@@ -163,12 +189,12 @@ export default function ReportScreen() {
 
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={() => setPermissionModalVisible(true)}
+              onPress={handleOpenCallPicker}
               className="flex-row items-center px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40"
             >
               <Icon name="solar:history-bold" color="#25B876" size={18} className="mr-1" />
               <Text className="font-font-bold text-xs text-brand-green font-bold">
-                {t('report.recentCalls5min')}
+                Appels inconnus (10 min)
               </Text>
             </TouchableOpacity>
           </View>
@@ -285,12 +311,16 @@ export default function ReportScreen() {
             </Text>
 
             <View className="gap-1">
-              {filteredFiveMinCalls.length === 0 ? (
+              {loadingCalls ? (
                 <View className="py-6 items-center">
-                  <Text className="text-xs text-slate-400">{t('report.noRecent5minCalls')}</Text>
+                  <ActivityIndicator size="small" color="#25B46E" />
+                </View>
+              ) : recentCallsList.length === 0 ? (
+                <View className="py-6 items-center">
+                  <Text className="text-xs text-slate-400">Aucun numéro inconnu n'a appelé au cours des 10 dernières minutes.</Text>
                 </View>
               ) : (
-                filteredFiveMinCalls.map((call, idx) => (
+                recentCallsList.map((call, idx) => (
                   <TouchableOpacity
                     key={idx}
                     activeOpacity={0.7}
@@ -305,7 +335,7 @@ export default function ReportScreen() {
                         {call.phone}
                       </Text>
                       <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        {call.date} · Durée : {call.duration}
+                        {call.dateStr} · Durée : {call.duration}
                       </Text>
                     </View>
                     <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={18} />

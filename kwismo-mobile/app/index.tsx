@@ -17,6 +17,7 @@ import { BrandGradientBackground } from '@/shared/components/BrandGradientBackgr
 import { Icon } from '@/shared/ui/Icon';
 import { useAuthStore } from '@/shared/store/authStore';
 import { storage } from '@/shared/services/storage';
+import { CustomAnimatedSplash } from '@/shared/components/CustomAnimatedSplash';
 import { colors } from '@/styles/tokens';
 
 interface LanguageOption {
@@ -92,14 +93,7 @@ export default function LanguageSelectionScreen() {
   };
 
   if (!isInitialized || checkingStatus) {
-    return (
-      <BrandGradientBackground>
-        <StatusBar style="light" />
-        <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color={colors.green} />
-        </View>
-      </BrandGradientBackground>
-    );
+    return <CustomAnimatedSplash />;
   }
 
   const currentOption = LANGUAGES.find((l) => l.code === selectedLang);

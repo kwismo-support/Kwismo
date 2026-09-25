@@ -1,4 +1,3 @@
-// Hook personnalisé React pour gérer la connexion avec le backend FastAPI
 import { useState } from 'react';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
@@ -7,6 +6,7 @@ import { authApi } from '../services/auth.api';
 import { useAuthStore } from '../../../shared/store/authStore';
 import { toast } from '../../../shared/store/toastStore';
 import { storage } from '../../../shared/services/storage';
+import { getDeviceFingerprint } from '../../../shared/services/device';
 
 export function useLogin() {
   const [loading, setLoading] = useState(false);
@@ -14,11 +14,8 @@ export function useLogin() {
   const { login } = useAuthStore();
   const { t, i18n } = useTranslation();
 
-  const getDeviceInfo = () => {
-    const deviceId =
-      Constants.deviceId ||
-      Constants.installationId ||
-      `dev-${Platform.OS}-${Date.now().toString(36)}`;
+  const getDeviceInfo = async () => {
+    const deviceId = await getDeviceFingerprint();
     const deviceName = `${Platform.OS.toUpperCase()} Mobile App`;
     return { deviceId, deviceName };
   };
@@ -27,7 +24,7 @@ export function useLogin() {
     setLoading(true);
     setError(null);
     try {
-      const { deviceId, deviceName } = getDeviceInfo();
+      const { deviceId, deviceName } = await getDeviceInfo();
       const res = await authApi.login({
         email: email.trim(),
         mot_de_passe: password,

@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import i18next from 'i18next';
 import { env } from '../config/env';
 import { storage } from '../services/storage';
-
 import { deleteUserPin } from '../lib/secureStore';
 
 export interface User {
@@ -38,7 +37,7 @@ const USER_STORAGE_KEY = 'kwismo_user_session';
 const REFRESH_TOKEN_KEY = 'kwismo_refresh_token';
 const REMEMBER_ME_KEY = 'kwismo_remember_me';
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   isInitialized: false,
   user: null,
@@ -48,24 +47,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   initializeAuth: async () => {
     try {
-      const savedRememberMe = await storage.getItem(REMEMBER_ME_KEY);
-      const isRemembered = savedRememberMe !== 'false';
-
-      if (!isRemembered) {
-        await storage.removeItem(env.AUTH_TOKEN_KEY);
-        await storage.removeItem(USER_STORAGE_KEY);
-        await storage.removeItem(REFRESH_TOKEN_KEY);
-        set({
-          isAuthenticated: false,
-          isInitialized: true,
-          user: null,
-          token: null,
-          refreshToken: null,
-          rememberMe: false,
-        });
-        return;
-      }
-
       const savedToken = await storage.getItem(env.AUTH_TOKEN_KEY);
       const savedUserStr = await storage.getItem(USER_STORAGE_KEY);
       const savedRefreshToken = await storage.getItem(REFRESH_TOKEN_KEY);
@@ -149,5 +130,3 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     storage.setItem(USER_STORAGE_KEY, JSON.stringify(user)).catch(() => {});
   },
 }));
-
-
