@@ -1,6 +1,6 @@
-// Composant de confirmation de lancement du code USSD
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface UssdConfirmProps {
   code: string;
@@ -8,13 +8,15 @@ interface UssdConfirmProps {
 }
 
 export const UssdConfirm: React.FC<UssdConfirmProps> = ({ code, onLaunch }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Code USSD généré</Text>
+      <Text style={styles.title}>{t('transfer.ussdReadyTitle')}</Text>
       <Text style={styles.code}>{code}</Text>
-      <Text style={styles.help}>Cliquez ci-dessous pour lancer la transaction directement depuis votre téléphone.</Text>
+      <Text style={styles.help}>{t('transfer.ussdReadySub')}</Text>
       <TouchableOpacity style={styles.button} onPress={onLaunch}>
-        <Text style={styles.buttonText}>Exécuter USSD</Text>
+        <Text style={styles.buttonText}>{t('transfer.dialUssd')}</Text>
       </TouchableOpacity>
     </View>
   );

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Modal, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 
 export interface PostCallPromptModalProps {
@@ -15,6 +16,8 @@ export function PostCallPromptModal({
   onReport,
   onDismiss,
 }: PostCallPromptModalProps) {
+  const { t } = useTranslation();
+
   if (!visible) return null;
 
   return (
@@ -27,7 +30,7 @@ export function PostCallPromptModal({
                 <Icon name="solar:phone-calling-rounded-bold" color="#F97316" size={22} />
               </View>
               <Text className="font-bold text-base text-slate-900 dark:text-white">
-                Fin d'appel récent
+                {t('postCall.title')}
               </Text>
             </View>
             <TouchableOpacity onPress={onDismiss}>
@@ -36,9 +39,7 @@ export function PostCallPromptModal({
           </View>
 
           <Text className="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-5">
-            Vous venez de terminer un appel avec le numéro{' '}
-            <Text className="font-bold text-slate-900 dark:text-white">{phoneNumber}</Text>.
-            Souhaitez-vous le signaler s'il s'agit d'une tentative d'arnaque ?
+            {t('postCall.promptMessage', { phone: phoneNumber })}
           </Text>
 
           <View className="flex-row gap-3">
@@ -48,7 +49,7 @@ export function PostCallPromptModal({
               className="flex-1 h-12 rounded-xl border border-slate-200 dark:border-slate-700 items-center justify-center bg-slate-50 dark:bg-brand-cardDark"
             >
               <Text className="font-bold text-sm text-slate-700 dark:text-slate-300">
-                Ignorer
+                {t('postCall.ignore')}
               </Text>
             </TouchableOpacity>
 
@@ -57,7 +58,7 @@ export function PostCallPromptModal({
               onPress={() => onReport(phoneNumber)}
               className="flex-1 h-12 rounded-xl bg-orange-500 items-center justify-center shadow-md shadow-orange-500/30"
             >
-              <Text className="font-bold text-sm text-white">Signaler l'appel</Text>
+              <Text className="font-bold text-sm text-white">{t('postCall.reportCall')}</Text>
             </TouchableOpacity>
           </View>
         </View>

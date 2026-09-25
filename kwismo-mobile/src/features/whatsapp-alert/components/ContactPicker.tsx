@@ -1,6 +1,6 @@
-// Composant de sélection des contacts destinataires de l'alerte
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface ContactItem {
   id: string;
@@ -19,9 +19,11 @@ export const ContactPicker: React.FC<ContactPickerProps> = ({
   selectedIds,
   onToggleSelect,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sélectionner les destinataires</Text>
+      <Text style={styles.title}>{t('whatsapp.selectNumberLabel')}</Text>
       {contacts.map((item) => {
         const isSelected = selectedIds.includes(item.id);
         return (

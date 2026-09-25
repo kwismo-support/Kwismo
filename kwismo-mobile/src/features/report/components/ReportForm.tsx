@@ -1,4 +1,3 @@
-// Composant formulaire de signalement
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -16,23 +15,23 @@ export const ReportForm: React.FC<ReportFormProps> = ({ onSubmit, submitting }) 
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Numéro suspect</Text>
+      <Text style={styles.label}>{t('report.phoneLabel')}</Text>
       <TextInput
         style={styles.input}
         value={phone}
         onChangeText={setPhone}
-        placeholder={t('common.phonePlaceholder')}
+        placeholder={t('auth.phonePlaceholder')}
         keyboardType="phone-pad"
       />
 
-      <Text style={styles.label}>Description du problème</Text>
+      <Text style={styles.label}>{t('report.detailsLabel')}</Text>
       <TextInput
         style={[styles.input, styles.textArea]}
         value={description}
         onChangeText={setDescription}
         multiline
         numberOfLines={4}
-        placeholder="Détails du problème ou tentative d'arnaque..."
+        placeholder={t('report.detailsPlaceholder')}
       />
 
       <TouchableOpacity
@@ -40,7 +39,7 @@ export const ReportForm: React.FC<ReportFormProps> = ({ onSubmit, submitting }) 
         onPress={() => onSubmit({ numero: phone, motif: description })}
         disabled={submitting}
       >
-        <Text style={styles.buttonText}>{submitting ? 'Envoi...' : 'Envoyer le signalement'}</Text>
+        <Text style={styles.buttonText}>{submitting ? '...' : t('report.submitReport')}</Text>
       </TouchableOpacity>
     </View>
   );

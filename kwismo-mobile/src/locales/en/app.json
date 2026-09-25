@@ -360,5 +360,44 @@
     "warningNotice": "⚠️ Without these permissions, your call safety is not optimal.",
     "enableProtections": "Enable protections now",
     "continueRestricted": "Continue in restricted mode"
+  },
+  "callDetection": {
+    "title": "Suspect Call Detection",
+    "realtimeTitle": "Real-time Protection",
+    "realtimeDesc": "Automatic analysis of incoming calls against the KWISMO database.",
+    "simulatorTitle": "Incoming Scam Call Simulator",
+    "simulatorDesc": "Test the alert modal live by simulating an incoming call.",
+    "simulating": "Analyzing...",
+    "simulateButton": "Simulate a Scam Call (+237 690 000 999)",
+    "historyTitle": "Analyzed Call History",
+    "emptyHistory": "No calls analyzed yet.",
+    "overlayTitle": "⚠️ SUSPECTED SPAM CALL",
+    "riskScore": "Risk score: {{score}}%",
+    "dismiss": "Close",
+    "warningTitleScam": "WARNING: SUSPECT CALL!",
+    "warningTitleVerify": "CALL TO VERIFY",
+    "unknownNumber": "Unknown Number",
+    "aiRiskLevel": "AI Risk Level:",
+    "descScam": "This number is identified as fraudulent in the KWISMO registry. Do not share any OTP code or password.",
+    "descWarning": "This number presents a moderate level of risk. Stay vigilant during your call.",
+    "reportNumber": "Report this Number",
+    "ignoreContinue": "Ignore & Continue"
+  },
+  "survey": {
+    "title": "Satisfaction Survey",
+    "bannerTitle": "Your opinion matters to us!",
+    "bannerDesc": "Help us improve call protection and security by completing our short satisfaction survey.",
+    "openSurvey": "Open survey",
+    "next": "Next",
+    "finish": "Finish",
+    "noticeText": "Your feedback helps us improve, tap a star to rate your experience.",
+    "commentLabel": "Leave us a comment? (Optional)",
+    "commentPlaceholder": "Your feedback helps us improve..."
+  },
+  "postCall": {
+    "title": "Recent call ended",
+    "promptMessage": "You just ended a call with number {{phone}}. Would you like to report it if it was a scam attempt?",
+    "ignore": "Ignore",
+    "reportCall": "Report call"
   }
 }

@@ -1,6 +1,6 @@
-// Formulaire de saisie du message personnalisé d'alerte WhatsApp
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface AlertMessageFormProps {
   message: string;
@@ -8,9 +8,11 @@ interface AlertMessageFormProps {
 }
 
 export const AlertMessageForm: React.FC<AlertMessageFormProps> = ({ message, onChangeMessage }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Message d'avertissement</Text>
+      <Text style={styles.label}>{t('whatsapp.alertMessageTitle')}</Text>
       <TextInput
         style={styles.textArea}
         value={message}

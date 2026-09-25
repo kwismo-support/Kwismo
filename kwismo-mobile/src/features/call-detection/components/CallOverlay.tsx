@@ -1,6 +1,6 @@
-// Composant d'affichage flottant (Overlay) lors d'un appel entrant suspect
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { CallDetectionResult } from '../services/call.api';
 
 interface CallOverlayProps {
@@ -9,13 +9,15 @@ interface CallOverlayProps {
 }
 
 export const CallOverlay: React.FC<CallOverlayProps> = ({ result, onDismiss }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.overlay}>
-      <Text style={styles.warningTitle}>⚠️ APPEL SPAM SUSPECTÉ</Text>
-      <Text style={styles.caller}>{result.callerName || 'Inconnu'}</Text>
-      <Text style={styles.score}>Score de risque: {result.riskScore}%</Text>
+      <Text style={styles.warningTitle}>{t('callDetection.overlayTitle')}</Text>
+      <Text style={styles.caller}>{result.callerName || t('callDetection.unknownNumber')}</Text>
+      <Text style={styles.score}>{t('callDetection.riskScore', { score: result.riskScore })}</Text>
       <TouchableOpacity style={styles.dismissBtn} onPress={onDismiss}>
-        <Text style={styles.dismissText}>Fermer</Text>
+        <Text style={styles.dismissText}>{t('callDetection.dismiss')}</Text>
       </TouchableOpacity>
     </View>
   );

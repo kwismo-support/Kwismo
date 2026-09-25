@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { useCallDetection } from '@/features/call-detection/hooks/useCallDetection';
 import { CallWarningModal } from '@/features/call-detection/components/CallWarningModal';
 import { CustomSwitch } from '@/shared/ui/CustomSwitch';
 
 export default function CallDetectionScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const {
     isEnabled,
     toggleProtection,
@@ -33,15 +35,15 @@ export default function CallDetectionScreen() {
         <TouchableOpacity className="p-2 mr-3" onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} className="text-slate-900 dark:text-white" color="#FFFFFF" />
         </TouchableOpacity>
-        <Text className="text-xl font-extrabold text-slate-900 dark:text-white">Détection d'Appels Suspects</Text>
+        <Text className="text-xl font-extrabold text-slate-900 dark:text-white">{t('callDetection.title')}</Text>
       </View>
 
       <View className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-5 mb-5 border border-slate-200 dark:border-slate-700/60">
         <View className="flex-row justify-between items-center">
           <View className="flex-1 mr-3">
-            <Text className="text-base font-bold text-slate-900 dark:text-white mb-1">Protection Temps Réel</Text>
+            <Text className="text-base font-bold text-slate-900 dark:text-white mb-1">{t('callDetection.realtimeTitle')}</Text>
             <Text className="text-xs text-slate-500 dark:text-slate-400 leading-4">
-              Analyse automatique des appels entrants contre la base de données KWISMO.
+              {t('callDetection.realtimeDesc')}
             </Text>
           </View>
           <CustomSwitch
@@ -53,9 +55,9 @@ export default function CallDetectionScreen() {
       </View>
 
       <View className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-5 mb-5 border border-slate-200 dark:border-slate-700/60">
-        <Text className="text-base font-bold text-slate-900 dark:text-white mb-1.5">Simulateur d'Appel Entrant Suspect</Text>
+        <Text className="text-base font-bold text-slate-900 dark:text-white mb-1.5">{t('callDetection.simulatorTitle')}</Text>
         <Text className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-4">
-          Testez l'apparition de la modale d'alerte en direct en simulant un appel entrant.
+          {t('callDetection.simulatorDesc')}
         </Text>
 
         <TouchableOpacity
@@ -65,15 +67,15 @@ export default function CallDetectionScreen() {
         >
           <Ionicons name="call" size={20} color="#FFFFFF" />
           <Text className="text-white font-bold text-2xs">
-            {loading ? 'Analyse en cours...' : 'Simuler un Appel Arnaqueur (+237 690 000 999)'}
+            {loading ? t('callDetection.simulating') : t('callDetection.simulateButton')}
           </Text>
         </TouchableOpacity>
       </View>
 
       <View className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-5 mb-5 border border-slate-200 dark:border-slate-700/60">
-        <Text className="text-base font-bold text-slate-900 dark:text-white mb-1.5">Historique des Appels Analysés</Text>
+        <Text className="text-base font-bold text-slate-900 dark:text-white mb-1.5">{t('callDetection.historyTitle')}</Text>
         {callHistory.length === 0 ? (
-          <Text className="text-slate-400 dark:text-slate-500 text-2xs italic">Aucun appel analysé pour le moment.</Text>
+          <Text className="text-slate-400 dark:text-slate-500 text-2xs italic">{t('callDetection.emptyHistory')}</Text>
         ) : (
           callHistory.map((item) => (
             <View key={item.id} className="flex-row justify-between items-center py-3 border-b border-slate-200 dark:border-slate-700/40">

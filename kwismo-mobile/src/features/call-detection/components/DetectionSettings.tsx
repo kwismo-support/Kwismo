@@ -1,6 +1,6 @@
-// Composant de configuration de la détection automatique d'appels
 import React from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface DetectionSettingsProps {
   enabled: boolean;
@@ -8,11 +8,13 @@ interface DetectionSettingsProps {
 }
 
 export const DetectionSettings: React.FC<DetectionSettingsProps> = ({ enabled, onToggle }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Détection automatique d'appels</Text>
+      <Text style={styles.title}>{t('callDetection.title')}</Text>
       <View style={styles.row}>
-        <Text style={styles.label}>Activer la protection en temps réel</Text>
+        <Text style={styles.label}>{t('callDetection.realtimeTitle')}</Text>
         <Switch value={enabled} onValueChange={onToggle} />
       </View>
     </View>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { CallLogItem } from '../services/callDetection.api';
 
 interface CallWarningModalProps {
@@ -16,6 +17,8 @@ export const CallWarningModal: React.FC<CallWarningModalProps> = ({
   onDismiss,
   onReport,
 }) => {
+  const { t } = useTranslation();
+
   if (!callData) return null;
 
   const isHighRisk = callData.statut === 'frauduleux' || callData.risk_score >= 0.7;
@@ -33,15 +36,15 @@ export const CallWarningModal: React.FC<CallWarningModalProps> = ({
               />
             </View>
             <Text style={styles.alertTitle}>
-              {isHighRisk ? 'ATTENTION : APPEL SUSPECT !' : 'APPEL À VÉRIFIER'}
+              {isHighRisk ? t('callDetection.warningTitleScam') : t('callDetection.warningTitleVerify')}
             </Text>
           </View>
 
           <Text style={styles.phoneNumber}>{callData.phone_number}</Text>
-          <Text style={styles.callerName}>{callData.caller_name || 'Numéro Inconnu'}</Text>
+          <Text style={styles.callerName}>{callData.caller_name || t('callDetection.unknownNumber')}</Text>
 
           <View style={styles.scoreBox}>
-            <Text style={styles.scoreLabel}>Niveau de Risque IA :</Text>
+            <Text style={styles.scoreLabel}>{t('callDetection.aiRiskLevel')}</Text>
             <Text style={[styles.scoreValue, isHighRisk ? styles.textRed : styles.textAmber]}>
               {Math.round(callData.risk_score * 100)}% ({callData.statut.toUpperCase()})
             </Text>
@@ -49,8 +52,8 @@ export const CallWarningModal: React.FC<CallWarningModalProps> = ({
 
           <Text style={styles.warningDesc}>
             {isHighRisk
-              ? 'Ce numéro est identifié comme frauduleux dans le registre KWISMO. Ne communiquez aucun code OTP ni mot de passe.'
-              : 'Ce numéro présente un niveau de risque modéré. Soyez vigilant lors de votre conversation.'}
+              ? t('callDetection.descScam')
+              : t('callDetection.descWarning')}
           </Text>
 
           <View style={styles.actionButtons}>
@@ -62,11 +65,11 @@ export const CallWarningModal: React.FC<CallWarningModalProps> = ({
               }}
             >
               <Ionicons name="flag-outline" size={18} color="#FFF" style={styles.btnIcon} />
-              <Text style={styles.btnTextWhite}>Signaler ce Numéro</Text>
+              <Text style={styles.btnTextWhite}>{t('callDetection.reportNumber')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={[styles.btn, styles.btnSecondary]} onPress={onDismiss}>
-              <Text style={styles.btnTextSecondary}>Ignorer & Continuer</Text>
+              <Text style={styles.btnTextSecondary}>{t('callDetection.ignoreContinue')}</Text>
             </TouchableOpacity>
           </View>
         </View>

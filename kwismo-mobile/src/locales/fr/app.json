@@ -360,5 +360,44 @@
     "warningNotice": "⚠️ Sans ces autorisations, la sécurité de vos appels n'est pas optimale.",
     "enableProtections": "Activer les protections maintenant",
     "continueRestricted": "Continuer en mode restreint"
+  },
+  "callDetection": {
+    "title": "Détection d'Appels Suspects",
+    "realtimeTitle": "Protection Temps Réel",
+    "realtimeDesc": "Analyse automatique des appels entrants contre la base de données KWISMO.",
+    "simulatorTitle": "Simulateur d'Appel Entrant Suspect",
+    "simulatorDesc": "Testez l'apparition de la modale d'alerte en direct en simulant un appel entrant.",
+    "simulating": "Analyse en cours...",
+    "simulateButton": "Simuler un Appel Arnaqueur (+237 690 000 999)",
+    "historyTitle": "Historique des Appels Analysés",
+    "emptyHistory": "Aucun appel analysé pour le moment.",
+    "overlayTitle": "⚠️ APPEL SPAM SUSPECTÉ",
+    "riskScore": "Score de risque: {{score}}%",
+    "dismiss": "Fermer",
+    "warningTitleScam": "ATTENTION : APPEL SUSPECT !",
+    "warningTitleVerify": "APPEL À VÉRIFIER",
+    "unknownNumber": "Numéro Inconnu",
+    "aiRiskLevel": "Niveau de Risque IA :",
+    "descScam": "Ce numéro est identifié comme frauduleux dans le registre KWISMO. Ne communiquez aucun code OTP ni mot de passe.",
+    "descWarning": "Ce numéro présente un niveau de risque modéré. Soyez vigilant lors de votre conversation.",
+    "reportNumber": "Signaler ce Numéro",
+    "ignoreContinue": "Ignorer & Continuer"
+  },
+  "survey": {
+    "title": "Enquête de satisfaction",
+    "bannerTitle": "Votre avis compte pour nous !",
+    "bannerDesc": "Aidez-nous à améliorer la protection et la sécurité des appels en répondant à notre courte enquête de satisfaction.",
+    "openSurvey": "Ouvrir l'enquête",
+    "next": "Suivant",
+    "finish": "Terminer",
+    "noticeText": "Votre avis nous aide à nous améliorer, appuyez sur une étoile pour noter votre expérience.",
+    "commentLabel": "Laissez nous un commentaire ? (Optionnel)",
+    "commentPlaceholder": "Votre avis nous aide à nous améliorer..."
+  },
+  "postCall": {
+    "title": "Fin d'appel récent",
+    "promptMessage": "Vous venez de terminer un appel avec le numéro {{phone}}. Souhaitez-vous le signaler s'il s'agit d'une tentative d'arnaque ?",
+    "ignore": "Ignorer",
+    "reportCall": "Signaler l'appel"
   }
 }

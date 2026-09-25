@@ -7,6 +7,7 @@ import {
   TextInput,
   ActivityIndicator,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { toast } from '@/shared/store/toastStore';
 import { surveyApi } from '../services/survey.api';
@@ -24,6 +25,7 @@ export function SatisfactionSurveyModal({
   onClose,
   onSnooze,
 }: SatisfactionSurveyModalProps) {
+  const { t } = useTranslation();
   const [step, setStep] = useState<1 | 2>(1);
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState<string>('');
@@ -45,10 +47,10 @@ export function SatisfactionSurveyModal({
       if (surveyId) {
         await surveyApi.answerSurvey(surveyId, rating, comment);
       }
-      toast.success('Merci pour votre avis ! Votre retour nous aide à nous améliorer.');
+      toast.success(t('toasts.generalSuccess'));
       onClose();
     } catch {
-      toast.success('Merci pour votre avis !');
+      toast.success(t('toasts.generalSuccess'));
       onClose();
     } finally {
       setIsSubmitting(false);
@@ -68,7 +70,7 @@ export function SatisfactionSurveyModal({
         <View className="w-11/12 max-w-sm rounded-3xl p-6 bg-white dark:bg-brand-cardDark shadow-xl">
           <View className="flex-row items-center justify-between mb-4">
             <Text className="font-extrabold text-base text-slate-900 dark:text-white">
-              Nous avons besoin de vous
+              {t('survey.title')}
             </Text>
 
             <TouchableOpacity
@@ -78,7 +80,7 @@ export function SatisfactionSurveyModal({
             >
               <Icon name="solar:clock-circle-bold" color="#94A3B8" size={14} className="mr-1" />
               <Text className="text-xs font-medium text-slate-400 dark:text-slate-400">
-                Reporter
+                {t('postCall.ignore')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -86,7 +88,7 @@ export function SatisfactionSurveyModal({
           {step === 1 ? (
             <View>
               <Text className="text-xs font-medium text-slate-600 dark:text-slate-300 mb-6 leading-5">
-                Globalement , comment est ce que vous trouvez votre expérience de KWISMO ?
+                {t('survey.bannerDesc')}
               </Text>
 
               <View className="flex-row items-center justify-center gap-2 mb-7">
@@ -111,23 +113,23 @@ export function SatisfactionSurveyModal({
                 onPress={handleNextStep}
                 className="w-full h-12 rounded-2xl bg-brand-orange justify-center items-center shadow-md shadow-brand-orange/30 mb-4"
               >
-                <Text className="text-white text-base font-bold">Suivant</Text>
+                <Text className="text-white text-base font-bold">{t('survey.next')}</Text>
               </TouchableOpacity>
 
               <Text className="text-[10px] text-slate-400 dark:text-slate-500 text-center leading-4">
-                Votre avis nous aide à nous améliorer, appuyez sur une étoile pour noter votre expérience.
+                {t('survey.noticeText')}
               </Text>
             </View>
           ) : (
             <View>
               <Text className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-3">
-                Laissez nous un commentaire ? (Optionnel)
+                {t('survey.commentLabel')}
               </Text>
 
               <View className="relative mb-5">
                 <TextInput
                   className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 p-3.5 text-xs text-slate-900 dark:text-white min-h-[110px]"
-                  placeholder="Votre avis nous aide a nous ameliorer..."
+                  placeholder={t('survey.commentPlaceholder')}
                   placeholderTextColor="#CBD5E1"
                   multiline
                   numberOfLines={4}
@@ -149,12 +151,12 @@ export function SatisfactionSurveyModal({
                 {isSubmitting ? (
                   <ActivityIndicator color="#FFFFFF" />
                 ) : (
-                  <Text className="text-white text-base font-bold">Terminer</Text>
+                  <Text className="text-white text-base font-bold">{t('survey.finish')}</Text>
                 )}
               </TouchableOpacity>
 
               <Text className="text-[10px] text-slate-400 dark:text-slate-500 text-center leading-4">
-                Votre avis nous aide à nous améliorer, appuyez sur une étoile pour noter votre expérience.
+                {t('survey.noticeText')}
               </Text>
             </View>
           )}
