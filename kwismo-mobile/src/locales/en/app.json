@@ -399,5 +399,8 @@
     "promptMessage": "You just ended a call with number {{phone}}. Would you like to report it if it was a scam attempt?",
     "ignore": "Ignore",
     "reportCall": "Report call"
+  },
+  "splash": {
+    "subtitle": "Mobile Money Protection & Scam Prevention"
   }
 }

@@ -399,5 +399,8 @@
     "promptMessage": "Vous venez de terminer un appel avec le numéro {{phone}}. Souhaitez-vous le signaler s'il s'agit d'une tentative d'arnaque ?",
     "ignore": "Ignorer",
     "reportCall": "Signaler l'appel"
+  },
+  "splash": {
+    "subtitle": "Protection Mobile Money & Anti-Arnaque"
   }
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, StyleSheet, useColorScheme } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { KwismoLogo } from './KwismoLogo';
 
 interface CustomAnimatedSplashProps {
@@ -7,6 +8,7 @@ interface CustomAnimatedSplashProps {
 }
 
 export const CustomAnimatedSplash: React.FC<CustomAnimatedSplashProps> = ({ onFinish }) => {
+  const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -78,7 +80,7 @@ export const CustomAnimatedSplash: React.FC<CustomAnimatedSplashProps> = ({ onFi
       >
         <Text style={[styles.title, { color: textColor }]}>KWISMO</Text>
         <Text style={[styles.subtitle, { color: subtitleColor }]}>
-          Protection Mobile Money & Anti-Arnaque
+          {t('splash.subtitle')}
         </Text>
       </Animated.View>
     </View>

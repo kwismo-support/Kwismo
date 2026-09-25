@@ -1,6 +1,6 @@
-// Hook personnalisé React pour l'authentification biométrique (Empreinte / FaceID)
 import { useCallback, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
+import i18n from 'i18next';
 
 export type BiometricType = 'face' | 'fingerprint' | 'none';
 
@@ -69,12 +69,12 @@ export function useBiometricLock(): UseBiometricLockReturn {
 
       try {
         const LocalAuth = require('expo-local-authentication');
-        const promptMessage = reason ?? 'Déverrouillez KWISMO pour continuer';
+        const promptMessage = reason ?? i18n.t('security.biometricPrompt');
 
         const result = await LocalAuth.authenticateAsync({
           promptMessage,
-          fallbackLabel: 'Utiliser le code PIN',
-          cancelLabel: 'Annuler',
+          fallbackLabel: i18n.t('security.pinTitle'),
+          cancelLabel: i18n.t('common.cancel'),
           disableDeviceFallback: false,
         });
 
