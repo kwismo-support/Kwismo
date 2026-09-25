@@ -347,5 +347,18 @@
     "noRecentCallsSub": "Your recent incoming calls from unknown numbers will appear here automatically.",
     "noSearchResults": "No results found",
     "noSearchResultsSub": "Check the spelling or phone number entered."
+  },
+  "permissions": {
+    "guardTitle": "Kwismo Security",
+    "guardSub": "Enable the 3 essential protections to detect scams and secure your transactions:",
+    "permCallLogTitle": "Call Log",
+    "permCallLogDesc": "Detect scam calls in real time",
+    "permContactsTitle": "Contacts",
+    "permContactsDesc": "Filter fake profiles and recognize relatives",
+    "permNotifTitle": "Notifications",
+    "permNotifDesc": "Receive immediate safety alerts",
+    "warningNotice": "⚠️ Without these permissions, your call safety is not optimal.",
+    "enableProtections": "Enable protections now",
+    "continueRestricted": "Continue in restricted mode"
   }
 }

@@ -347,5 +347,18 @@
     "noRecentCallsSub": "Vos appels entrants de numéros inconnus s'afficheront ici automatiquement.",
     "noSearchResults": "Aucun résultat trouvé",
     "noSearchResultsSub": "Vérifiez l'orthographe ou le numéro saisi."
+  },
+  "permissions": {
+    "guardTitle": "Sécurité Kwismo",
+    "guardSub": "Activez les 3 protections indispensables pour détecter les arnaques et sécuriser vos transactions :",
+    "permCallLogTitle": "Journal d'appels",
+    "permCallLogDesc": "Détecter les appels d'arnaqueurs en temps réel",
+    "permContactsTitle": "Contacts",
+    "permContactsDesc": "Écarter les faux profils et reconnaître vos proches",
+    "permNotifTitle": "Notifications",
+    "permNotifDesc": "Recevoir des alertes de sécurité immédiates",
+    "warningNotice": "⚠️ Sans ces autorisations, la sécurité de vos appels n'est pas optimale.",
+    "enableProtections": "Activer les protections maintenant",
+    "continueRestricted": "Continuer en mode restreint"
   }
 }
