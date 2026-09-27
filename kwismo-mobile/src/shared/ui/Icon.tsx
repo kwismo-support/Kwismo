@@ -1,35 +1,10 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import { SvgXml } from 'react-native-svg';
-import { addCollection, Icon as IconifyWeb } from '@iconify/react';
-import { getIconData, iconToSVG } from '@iconify/utils';
+import { Icon as IconifyWeb } from '@iconify/react';
+import { iconToSVG } from '@iconify/utils';
 import { Ionicons } from '@expo/vector-icons';
-
-import bitcoinIconsCollection from '@iconify/json/json/bitcoin-icons.json';
-import solarCollection from '@iconify/json/json/solar.json';
-import evaCollection from '@iconify/json/json/eva.json';
-import phCollection from '@iconify/json/json/ph.json';
-import ggCollection from '@iconify/json/json/gg.json';
-
-const collectionsMap: Record<string, any> = {
-  'bitcoin-icons': bitcoinIconsCollection,
-  solar: solarCollection,
-  eva: evaCollection,
-  ph: phCollection,
-  gg: ggCollection,
-};
-
-function getCollectionData(prefix: string) {
-  return collectionsMap[prefix] || null;
-}
-
-if (Platform.OS === 'web') {
-  Object.values(collectionsMap).forEach((col) => {
-    try {
-      addCollection(col as any);
-    } catch (e) {}
-  });
-}
+import { extractedIconsData } from './extractedIcons';
 
 export interface IconProps {
   name: string;
@@ -86,14 +61,11 @@ const ionicNameMap: Record<string, keyof typeof Ionicons.glyphMap> = {
   'gg:spinner': 'sync',
 };
 
-function renderSvgIcon(prefix: string, iconName: string, size: number, color: string, style?: any) {
-  const collection = getCollectionData(prefix);
-  if (!collection) return null;
+function renderExtractedIcon(name: string, size: number, color: string, style?: any) {
+  const iconData = extractedIconsData[name];
+  if (!iconData) return null;
 
   try {
-    const iconData = getIconData(collection, iconName);
-    if (!iconData) return null;
-
     const renderData = iconToSVG(iconData, { height: size, width: size });
     const viewBox = renderData.attributes.viewBox || '0 0 24 24';
 
@@ -126,15 +98,9 @@ export const Icon: React.FC<IconProps> = ({
     );
   }
 
-  if (name && name.includes(':')) {
-    const parts = name.split(':');
-    const prefix = parts[0];
-    const iconName = parts.slice(1).join(':');
-
-    const svgResult = renderSvgIcon(prefix, iconName, size, color, style);
-    if (svgResult) {
-      return svgResult;
-    }
+  const svgResult = renderExtractedIcon(name, size, color, style);
+  if (svgResult) {
+    return svgResult;
   }
 
   const mappedName = ionicNameMap[name] || (name.includes(':') ? 'help-circle-outline' : (name as any));
