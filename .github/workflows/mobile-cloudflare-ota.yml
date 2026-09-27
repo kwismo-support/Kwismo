@@ -49,9 +49,13 @@ jobs:
           echo "EXPO_PUBLIC_APP_NAME=Kwismo" >> .env
           echo "EXPO_PUBLIC_DEFAULT_LANG=fr" >> .env
 
-      - name: Export Metro JS Bundle
+      - name: Export Optimized Metro JS Bundle
         working-directory: kwismo-mobile
-        run: npx expo export --output-dir dist
+        env:
+          NODE_ENV: production
+        run: |
+          npx expo export --clear --output-dir dist
+          find dist -name "*.map" -type f -delete || true
 
       - name: Deploy JS Bundle & Assets to Cloudflare Pages
         env:
