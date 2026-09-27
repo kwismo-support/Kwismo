@@ -58,7 +58,9 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy kwismo-mobile/dist --project-name=kwismo-mobile-ota --branch=${{ github.ref_name }}
+          command: |
+            npx wrangler pages project create kwismo-mobile-ota --production-branch=main || true
+            npx wrangler pages deploy kwismo-mobile/dist --project-name=kwismo-mobile-ota --branch=${{ github.ref_name }} --commit-dirty=true
 
       - name: Publish Update Manifest to Cloudflare Edge Worker
         env:
