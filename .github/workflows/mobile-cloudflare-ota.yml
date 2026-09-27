@@ -54,13 +54,11 @@ jobs:
         run: npx expo export --output-dir dist
 
       - name: Deploy JS Bundle & Assets to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: kwismo-mobile-ota
-          directory: kwismo-mobile/dist
-          gitBranch: ${{ github.ref_name }}
+          command: pages deploy kwismo-mobile/dist --project-name=kwismo-mobile-ota --branch=${{ github.ref_name }}
 
       - name: Publish Update Manifest to Cloudflare Edge Worker
         env:
