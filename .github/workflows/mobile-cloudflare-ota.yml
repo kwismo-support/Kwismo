@@ -67,12 +67,16 @@ jobs:
 
       - name: Publish Update Manifest to Cloudflare Edge Worker
         env:
-          OTA_WORKER_URL: ${{ secrets.CLOUDFLARE_OTA_WORKER_URL || 'https://kwismo-mobile-ota-worker.kwismo.workers.dev' }}
+          OTA_WORKER_URL: ${{ secrets.CLOUDFLARE_OTA_WORKER_URL }}
           OTA_SECRET_TOKEN: ${{ secrets.CLOUDFLARE_OTA_SECRET_TOKEN || 'kwismo-ota-secret-key-2026' }}
         run: |
-          BRANCH_NAME="${{ github.ref_name }}"
-          TIMESTAMP=$(date +%s%3N)
-          curl -X POST "$OTA_WORKER_URL/api/publish-manifest" \
-            -H "Content-Type: application/json" \
-            -H "X-Cloudflare-OTA-Token: $OTA_SECRET_TOKEN" \
-            -d "{\"branch\":\"$BRANCH_NAME\",\"version\":\"1.0.0\",\"bundleUrl\":\"https://kwismo-mobile-ota.pages.dev/index.bundle\",\"timestamp\":$TIMESTAMP}"
+          if [ -n "$OTA_WORKER_URL" ]; then
+            BRANCH_NAME="${{ github.ref_name }}"
+            TIMESTAMP=$(date +%s%3N)
+            curl -s -f -X POST "$OTA_WORKER_URL/api/publish-manifest" \
+              -H "Content-Type: application/json" \
+              -H "X-Cloudflare-OTA-Token: $OTA_SECRET_TOKEN" \
+              -d "{\"branch\":\"$BRANCH_NAME\",\"version\":\"1.0.0\",\"bundleUrl\":\"https://kwismo-mobile-ota.pages.dev/index.bundle\",\"timestamp\":$TIMESTAMP}" || true
+          else
+            echo "CLOUDFLARE_OTA_WORKER_URL is not set. Skipping Worker notification."
+          fi

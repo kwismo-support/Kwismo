@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { Icon as IconifyWeb } from '@iconify/react';
@@ -13,6 +13,41 @@ export interface IconProps {
   strokeWidth?: number;
   style?: any;
   className?: string;
+}
+
+const dynamicIconCache: Record<string, any> = {};
+const pendingFetches: Record<string, Promise<any>> = {};
+
+function fetchIconData(name: string): Promise<any> {
+  if (extractedIconsData[name]) {
+    return Promise.resolve(extractedIconsData[name]);
+  }
+  if (dynamicIconCache[name]) {
+    return Promise.resolve(dynamicIconCache[name]);
+  }
+  if (name in pendingFetches) {
+    return pendingFetches[name];
+  }
+
+  const parts = name.split(':');
+  if (parts.length !== 2) return Promise.resolve(null);
+  const [prefix, iconName] = parts;
+
+  const url = `https://api.iconify.design/${prefix}.json?icons=${iconName}`;
+  const promise = fetch(url)
+    .then((res) => res.json())
+    .then((data) => {
+      if (data && data.icons && data.icons[iconName]) {
+        const iconData = data.icons[iconName];
+        dynamicIconCache[name] = iconData;
+        return iconData;
+      }
+      return null;
+    })
+    .catch(() => null);
+
+  pendingFetches[name] = promise;
+  return promise;
 }
 
 const ionicNameMap: Record<string, keyof typeof Ionicons.glyphMap> = {
@@ -61,32 +96,32 @@ const ionicNameMap: Record<string, keyof typeof Ionicons.glyphMap> = {
   'gg:spinner': 'sync',
 };
 
-function renderExtractedIcon(name: string, size: number, color: string, style?: any) {
-  const iconData = extractedIconsData[name];
-  if (!iconData) return null;
-
-  try {
-    const renderData = iconToSVG(iconData, { height: size, width: size });
-    const viewBox = renderData.attributes.viewBox || '0 0 24 24';
-
-    let body = renderData.body || '';
-    if (color) {
-      body = body.replace(/currentColor/g, color);
-    }
-
-    const xml = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${viewBox}" fill="${color}">${body}</svg>`;
-    return <SvgXml xml={xml} width={size} height={size} style={style} />;
-  } catch (err) {
-    return null;
-  }
-}
-
 export const Icon: React.FC<IconProps> = ({
   name,
   size = 24,
   color = '#000000',
   style,
 }) => {
+  const [asyncIconData, setAsyncIconData] = useState<any>(
+    extractedIconsData[name] || dynamicIconCache[name] || null
+  );
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' && name && name.includes(':')) {
+      if (!extractedIconsData[name] && !dynamicIconCache[name]) {
+        let isMounted = true;
+        fetchIconData(name).then((data) => {
+          if (isMounted && data) {
+            setAsyncIconData(data);
+          }
+        });
+        return () => {
+          isMounted = false;
+        };
+      }
+    }
+  }, [name]);
+
   if (Platform.OS === 'web') {
     return (
       <IconifyWeb
@@ -98,9 +133,20 @@ export const Icon: React.FC<IconProps> = ({
     );
   }
 
-  const svgResult = renderExtractedIcon(name, size, color, style);
-  if (svgResult) {
-    return svgResult;
+  const iconData = extractedIconsData[name] || dynamicIconCache[name] || asyncIconData;
+  if (iconData) {
+    try {
+      const renderData = iconToSVG(iconData, { height: size, width: size });
+      const viewBox = renderData.attributes.viewBox || '0 0 24 24';
+      let body = renderData.body || '';
+      if (color) {
+        body = body.replace(/currentColor/g, color);
+      }
+      const xml = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${viewBox}" fill="${color}">${body}</svg>`;
+      return <SvgXml xml={xml} width={size} height={size} style={style} />;
+    } catch (err) {
+      return null;
+    }
   }
 
   const mappedName = ionicNameMap[name] || (name.includes(':') ? 'help-circle-outline' : (name as any));
