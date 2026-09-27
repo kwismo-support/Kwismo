@@ -8,51 +8,15 @@ import { Ionicons } from '@expo/vector-icons';
 import bitcoinIconsCollection from '@iconify/json/json/bitcoin-icons.json';
 import solarCollection from '@iconify/json/json/solar.json';
 import evaCollection from '@iconify/json/json/eva.json';
-import mdiCollection from '@iconify/json/json/mdi.json';
-import lucideCollection from '@iconify/json/json/lucide.json';
-import heroiconsCollection from '@iconify/json/json/heroicons.json';
 import phCollection from '@iconify/json/json/ph.json';
-import biCollection from '@iconify/json/json/bi.json';
-import tablerCollection from '@iconify/json/json/tabler.json';
-import icCollection from '@iconify/json/json/ic.json';
 import ggCollection from '@iconify/json/json/gg.json';
-import f7Collection from '@iconify/json/json/f7.json';
-import hugeiconsCollection from '@iconify/json/json/hugeicons.json';
-import mageCollection from '@iconify/json/json/mage.json';
-import basilCollection from '@iconify/json/json/basil.json';
-import reiconCollection from '@iconify/json/json/reicon.json';
-import famiconsCollection from '@iconify/json/json/famicons.json';
-import gravityUiCollection from '@iconify/json/json/gravity-ui.json';
-import fontistoCollection from '@iconify/json/json/fontisto.json';
-import antDesignCollection from '@iconify/json/json/ant-design.json';
-import siCollection from '@iconify/json/json/si.json';
-import fluentCollection from '@iconify/json/json/fluent.json';
-import dashiconsCollection from '@iconify/json/json/dashicons.json';
 
 const collectionsMap: Record<string, any> = {
   'bitcoin-icons': bitcoinIconsCollection,
   solar: solarCollection,
   eva: evaCollection,
-  mdi: mdiCollection,
-  lucide: lucideCollection,
-  heroicons: heroiconsCollection,
   ph: phCollection,
-  bi: biCollection,
-  tabler: tablerCollection,
-  ic: icCollection,
   gg: ggCollection,
-  f7: f7Collection,
-  hugeicons: hugeiconsCollection,
-  mage: mageCollection,
-  basil: basilCollection,
-  reicon: reiconCollection,
-  famicons: famiconsCollection,
-  'gravity-ui': gravityUiCollection,
-  fontisto: fontistoCollection,
-  'ant-design': antDesignCollection,
-  si: siCollection,
-  fluent: fluentCollection,
-  dashicons: dashiconsCollection,
 };
 
 function getCollectionData(prefix: string) {
@@ -67,8 +31,6 @@ if (Platform.OS === 'web') {
   });
 }
 
-
-
 export interface IconProps {
   name: string;
   size?: number;
@@ -78,7 +40,6 @@ export interface IconProps {
   className?: string;
 }
 
-// Ionicons fallback dictionary
 const ionicNameMap: Record<string, keyof typeof Ionicons.glyphMap> = {
   'eva:arrow-down-fill': 'caret-down',
   'solar:arrow-right-linear': 'arrow-forward',
@@ -128,7 +89,6 @@ const ionicNameMap: Record<string, keyof typeof Ionicons.glyphMap> = {
 function renderSvgIcon(prefix: string, iconName: string, size: number, color: string, style?: any) {
   const collection = getCollectionData(prefix);
   if (!collection) return null;
-
 
   try {
     const iconData = getIconData(collection, iconName);
