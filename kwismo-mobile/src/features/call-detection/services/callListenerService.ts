@@ -2,11 +2,7 @@ import { Platform } from 'react-native';
 import { callDetectionApi, CallLogItem } from './callDetection.api';
 import { storage } from '@/shared/services/storage';
 import { getDeviceContacts } from '@/shared/lib/contactsService';
-
-let Notifications: any = null;
-try {
-  Notifications = require('expo-notifications');
-} catch {}
+import { PushNotificationService } from '@/shared/services/pushNotificationService';
 
 const RECENT_CALLS_KEY = 'kwismo_recent_call_log_v1';
 
@@ -25,15 +21,7 @@ export interface SavedCallLog {
 export const callListenerService = {
   async initListener(onIncomingCallAlert?: (call: CallLogItem) => void) {
     try {
-      Notifications?.setNotificationHandler?.({
-        handleNotification: async () => ({
-          shouldShowAlert: true,
-          shouldPlaySound: true,
-          shouldSetBadge: true,
-          shouldShowBanner: true,
-          shouldShowList: true,
-        }),
-      });
+      await PushNotificationService.requestPermissions();
     } catch {}
   },
 
@@ -74,16 +62,11 @@ export const callListenerService = {
     } catch {}
 
     try {
-      if (Notifications?.scheduleNotificationAsync) {
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: "Appel terminé — Kwismo Anti-Arnaque 🛡️",
-            body: `Appel avec ${callRecord.phone}. Ce numéro est-il suspect ? Touchez pour vérifier ou signaler.`,
-            data: { route: '/(app)/report', phone: callRecord.phone },
-          },
-          trigger: null,
-        });
-      }
+      await PushNotificationService.sendLocalNotification(
+        "Appel terminé — Kwismo Anti-Arnaque 🛡️",
+        `Appel avec ${callRecord.phone}. Ce numéro est-il suspect ? Touchez pour vérifier ou signaler.`,
+        { route: '/(app)/report', phone: callRecord.phone }
+      );
     } catch {}
 
     return callRecord;
