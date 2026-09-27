@@ -1,0 +1,56 @@
+name: KWISMO Mobile — Cloudflare Real-Time OTA Updates
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - dev
+    paths:
+      - 'kwismo-mobile/**'
+      - '.github/workflows/mobile-cloudflare-ota.yml'
+  workflow_dispatch:
+
+jobs:
+  publish-cloudflare-ota:
+    name: Publish Instant Cloudflare OTA Edge Update
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: kwismo-mobile/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: kwismo-mobile
+        run: npm ci
+
+      - name: Export Metro JS Bundle
+        working-directory: kwismo-mobile
+        run: npx expo export --output-dir dist
+
+      - name: Deploy JS Bundle & Assets to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: kwismo-mobile-ota
+          directory: kwismo-mobile/dist
+          gitBranch: ${{ github.ref_name }}
+
+      - name: Publish Update Manifest to Cloudflare Edge Worker
+        env:
+          OTA_WORKER_URL: ${{ secrets.CLOUDFLARE_OTA_WORKER_URL || 'https://kwismo-mobile-ota-worker.kwismo.workers.dev' }}
+          OTA_SECRET_TOKEN: ${{ secrets.CLOUDFLARE_OTA_SECRET_TOKEN || 'kwismo-ota-secret-key-2026' }}
+        run: |
+          BRANCH_NAME="${{ github.ref_name }}"
+          TIMESTAMP=$(date +%s%3N)
+          curl -X POST "$OTA_WORKER_URL/api/publish-manifest" \
+            -H "Content-Type: application/json" \
+            -H "X-Cloudflare-OTA-Token: $OTA_SECRET_TOKEN" \
+            -d "{\"branch\":\"$BRANCH_NAME\",\"version\":\"1.0.0\",\"bundleUrl\":\"https://kwismo-mobile-ota.pages.dev/index.bundle\",\"timestamp\":$TIMESTAMP}"

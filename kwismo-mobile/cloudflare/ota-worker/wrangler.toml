@@ -1,0 +1,11 @@
+name = "kwismo-mobile-ota-worker"
+main = "src/index.js"
+compatibility_date = "2024-09-01"
+
+[vars]
+ENVIRONMENT = "production"
+
+[env.preview]
+name = "kwismo-mobile-ota-worker-preview"
+[env.preview.vars]
+ENVIRONMENT = "preview"
