@@ -1,6 +1,5 @@
 import { Platform, PermissionsAndroid } from 'react-native';
 import * as Contacts from 'expo-contacts/legacy';
-import * as Notifications from 'expo-notifications';
 
 export interface PermissionStatusResult {
   hasAll: boolean;
@@ -9,6 +8,11 @@ export interface PermissionStatusResult {
   callLog: boolean;
   missingPermissions: string[];
 }
+
+let Notifications: any = null;
+try {
+  Notifications = require('expo-notifications');
+} catch {}
 
 export const permissionManager = {
   async checkPermissions(): Promise<PermissionStatusResult> {
@@ -27,12 +31,15 @@ export const permissionManager = {
     }
 
     try {
-      const notifRes = await Notifications.getPermissionsAsync();
-      notificationsGranted = notifRes.status === 'granted' || notifRes.granted;
+      if (Notifications && typeof Notifications.getPermissionsAsync === 'function') {
+        const notifRes = await Notifications.getPermissionsAsync();
+        notificationsGranted = notifRes.status === 'granted' || notifRes.granted;
+      } else {
+        notificationsGranted = true;
+      }
       if (!notificationsGranted) missingPermissions.push('notifications');
     } catch {
-      notificationsGranted = false;
-      missingPermissions.push('notifications');
+      notificationsGranted = true;
     }
 
     if (Platform.OS === 'android') {
@@ -70,7 +77,9 @@ export const permissionManager = {
     } catch {}
 
     try {
-      await Notifications.requestPermissionsAsync();
+      if (Notifications && typeof Notifications.requestPermissionsAsync === 'function') {
+        await Notifications.requestPermissionsAsync();
+      }
     } catch {}
 
     if (Platform.OS === 'android') {
