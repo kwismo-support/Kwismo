@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, ActivityIndicator, AppState, AppStateStatus } from 'react-native';
 import { Stack, Redirect } from 'expo-router';
 import { useAuthStore } from '@/shared/store/authStore';
 import { useNavAnimationStore } from '@/shared/store/navAnimationStore';
@@ -15,29 +15,44 @@ export default function AppLayout() {
   const { isDark } = useAppTheme();
   const { stackAnimation } = useNavAnimationStore();
   const [showPermissionModal, setShowPermissionModal] = useState(false);
-  const [missingPermissionCount, setMissingPermissionCount] = useState(0);
+  const [missingPermissions, setMissingPermissions] = useState<string[]>([]);
+
+  const refreshPermissions = useCallback(async () => {
+    const res = await permissionManager.checkPermissions();
+    setMissingPermissions(res.missingPermissions);
+    if (!res.hasAll && res.missingPermissions.length > 0) {
+      setShowPermissionModal(true);
+    } else {
+      setShowPermissionModal(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
       syncDelta();
       processOutbox();
       callListenerService.initListener();
+      refreshPermissions();
 
-      permissionManager.checkPermissions().then((res) => {
-        if (!res.hasAll) {
-          setMissingPermissionCount(res.missingPermissions.length);
-          setShowPermissionModal(true);
+      const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+        if (nextAppState === 'active') {
+          refreshPermissions();
         }
       });
+
+      return () => {
+        subscription.remove();
+      };
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, refreshPermissions]);
 
   const handleGrantPermissions = async () => {
     const res = await permissionManager.requestAllPermissions();
-    if (res.hasAll) {
+    setMissingPermissions(res.missingPermissions);
+    if (res.hasAll || res.missingPermissions.length === 0) {
       setShowPermissionModal(false);
     } else {
-      setMissingPermissionCount(res.missingPermissions.length);
+      setShowPermissionModal(true);
     }
   };
 
@@ -66,7 +81,7 @@ export default function AppLayout() {
       />
       <GlobalPermissionGuardModal
         visible={showPermissionModal}
-        missingCount={missingPermissionCount}
+        missingPermissions={missingPermissions}
         onGrant={handleGrantPermissions}
         onDismiss={() => setShowPermissionModal(false)}
       />

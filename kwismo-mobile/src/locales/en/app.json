@@ -357,7 +357,7 @@
     "permContactsDesc": "Filter fake profiles and recognize relatives",
     "permNotifTitle": "Notifications",
     "permNotifDesc": "Receive immediate safety alerts",
-    "warningNotice": "⚠️ Without these permissions, your call safety is not optimal.",
+    "warningNotice": "Without these permissions, your call safety is not optimal.",
     "enableProtections": "Enable protections now",
     "continueRestricted": "Continue in restricted mode"
   },
@@ -371,7 +371,7 @@
     "simulateButton": "Simulate a Scam Call (+237 690 000 999)",
     "historyTitle": "Analyzed Call History",
     "emptyHistory": "No calls analyzed yet.",
-    "overlayTitle": "⚠️ SUSPECTED SPAM CALL",
+    "overlayTitle": "SUSPECTED SPAM CALL",
     "riskScore": "Risk score: {{score}}%",
     "dismiss": "Close",
     "warningTitleScam": "WARNING: SUSPECT CALL!",
