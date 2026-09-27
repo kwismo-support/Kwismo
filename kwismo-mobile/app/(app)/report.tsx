@@ -8,6 +8,7 @@ import {
   Modal,
   Platform,
   ActivityIndicator,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,16 +26,11 @@ import { enqueueOutboxItem } from '@/shared/services/database';
 import { callListenerService } from '@/features/call-detection/services/callListenerService';
 
 const REPORT_REASONS = [
-  { id: 'scam', labelKey: 'report.reasonScam', label: "Tentative d'arnaque / Fraude", icon: 'solar:danger-triangle-bold' },
-  { id: 'fake_agent', labelKey: 'report.reasonFakeAgent', label: "Faux agent d'opérateur (Orange / MTN)", icon: 'solar:user-cross-bold' },
-  { id: 'phishing', labelKey: 'report.reasonPhishing', label: 'Message frauduleux / Phishing', icon: 'solar:link-broken-bold' },
-  { id: 'harassment', labelKey: 'report.reasonHarassment', label: 'Appels répétés suspects / Harcèlement', icon: 'solar:phone-calling-rounded-bold' },
-  { id: 'wrong_transfer', labelKey: 'report.reasonWrongTransfer', label: 'Faux transfert ou demande de remboursement', icon: 'solar:card-transfer-bold' },
-];
-
-const RECENT_CALLS_HISTORY = [
-  { phone: '+237 6 55 98 76 54', raw: '655987654', date: 'Il y a 2 minutes', duration: '18s', type: 'incoming', timestamp: Date.now() - 2 * 60 * 1000 },
-  { phone: '+237 6 70 88 99 00', raw: '670889900', date: 'Il y a 4 minutes', duration: '45s', type: 'incoming', timestamp: Date.now() - 4 * 60 * 1000 },
+  { id: 'scam', labelKey: 'report.reasonScam', icon: 'solar:danger-triangle-bold' },
+  { id: 'fake_agent', labelKey: 'report.reasonFakeAgent', icon: 'solar:user-cross-bold' },
+  { id: 'phishing', labelKey: 'report.reasonPhishing', icon: 'solar:link-broken-bold' },
+  { id: 'harassment', labelKey: 'report.reasonHarassment', icon: 'solar:phone-calling-rounded-bold' },
+  { id: 'wrong_transfer', labelKey: 'report.reasonWrongTransfer', icon: 'solar:card-transfer-bold' },
 ];
 
 export default function ReportScreen() {
@@ -110,7 +106,8 @@ export default function ReportScreen() {
     try {
       const fingerprint = await getDeviceFingerprint();
       const selectedReasonObj = REPORT_REASONS.find((r) => r.id === selectedReason);
-      const motifText = `${selectedReasonObj?.label || selectedReason}${description.trim() ? ' - ' + description.trim() : ''}`;
+      const translatedReason = selectedReasonObj ? t(selectedReasonObj.labelKey) : selectedReason;
+      const motifText = `${translatedReason}${description.trim() ? ' - ' + description.trim() : ''}`;
       
       const payload = {
         numero: targetPhone.trim(),
@@ -123,17 +120,17 @@ export default function ReportScreen() {
         setSuccessModalVisible(true);
       } catch (apiErr: any) {
         if (apiErr?.response?.status === 409) {
-          const detail = apiErr.response.data?.detail || 'Cet appareil a déjà effectué un signalement pour ce numéro.';
+          const detail = apiErr.response.data?.detail || t('report.duplicateReportError');
           setValidationError(detail);
           toast.error(detail);
         } else {
           await enqueueOutboxItem('report', payload);
-          toast.info('Signalement enregistré en local (sera envoyé automatiquement dès reconnexion).');
+          toast.info(t('report.localReportSaved'));
           setSuccessModalVisible(true);
         }
       }
     } catch {
-      toast.error('Erreur lors du traitement du signalement.');
+      toast.error(t('report.reportError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -148,10 +145,16 @@ export default function ReportScreen() {
         showBack={true}
       />
 
-      <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg rounded-tl-3xl overflow-hidden">
+      <KeyboardAvoidingView
+        className="flex-1 bg-slate-50 dark:bg-brand-darkBg rounded-tl-3xl overflow-hidden"
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
         <ScrollView
-          contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
+          contentContainerStyle={{ paddingBottom: insets.bottom + 60, flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets={true}
           className="px-5 pt-6"
         >
           <View className="flex-row items-center p-3.5 rounded-xl mb-5 bg-amber-100 dark:bg-slate-800">
@@ -166,7 +169,7 @@ export default function ReportScreen() {
           </Text>
 
           <View
-            className={`flex-row items-center h-13 rounded-xl border px-3.5 bg-white dark:bg-brand-cardDark ${
+            className={`flex-row items-center hx-13 rounded-xl border px-3.5 bg-white dark:bg-brand-cardDark ${
               validationError ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
             }`}
           >
@@ -194,7 +197,7 @@ export default function ReportScreen() {
             >
               <Icon name="solar:history-bold" color="#25B876" size={18} className="mr-1" />
               <Text className="font-font-bold text-xs text-brand-green font-bold">
-                Appels inconnus (10 min)
+                {t('report.recentCalls10min')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -243,7 +246,7 @@ export default function ReportScreen() {
                   </View>
 
                   <View
-                    className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
+                    className={`wx-5 hx-5 rounded-full border-2 items-center justify-center ${
                       isSelected
                         ? 'border-brand-green bg-brand-green'
                         : 'border-slate-300 dark:border-slate-600'
@@ -261,7 +264,7 @@ export default function ReportScreen() {
           </Text>
 
           <TextInput
-            className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-3.5 font-font-regular text-xs text-slate-900 dark:text-white min-h-24 text-top"
+            className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-3.5 font-font-regular text-xs text-slate-900 dark:text-white min-hx-24 text-top"
             placeholder={t('report.detailsPlaceholder')}
             placeholderTextColor="#94A3B8"
             multiline
@@ -274,7 +277,7 @@ export default function ReportScreen() {
             activeOpacity={0.85}
             disabled={isSubmitting || !targetPhone.trim() || !selectedReason}
             onPress={handleSubmitReport}
-            className={`flex-row items-center justify-center h-13 rounded-xl mt-8 shadow-sm ${
+            className={`flex-row items-center justify-center hx-13 rounded-xl mt-8 shadow-sm ${
               targetPhone.trim() && selectedReason
                 ? 'bg-orange-500'
                 : 'bg-slate-300 dark:bg-slate-700'
@@ -292,7 +295,7 @@ export default function ReportScreen() {
             )}
           </TouchableOpacity>
         </ScrollView>
-      </View>
+      </KeyboardAvoidingView>
 
       <Modal visible={showCallPickerModal} transparent animationType="slide">
         <View className="flex-1 bg-black/60 justify-end">
@@ -317,7 +320,7 @@ export default function ReportScreen() {
                 </View>
               ) : recentCallsList.length === 0 ? (
                 <View className="py-6 items-center">
-                  <Text className="text-xs text-slate-400">Aucun numéro inconnu n'a appelé au cours des 10 dernières minutes.</Text>
+                  <Text className="text-xs text-slate-400">{t('report.noRecentUnknownCalls')}</Text>
                 </View>
               ) : (
                 recentCallsList.map((call, idx) => (
@@ -335,7 +338,7 @@ export default function ReportScreen() {
                         {call.phone}
                       </Text>
                       <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        {call.dateStr} · Durée : {call.duration}
+                        {call.dateStr} · {t('report.durationPrefix')}{call.duration}
                       </Text>
                     </View>
                     <Icon name="solar:alt-arrow-right-linear" color="#94A3B8" size={18} />
