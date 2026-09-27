@@ -20,7 +20,13 @@
         "backgroundColor": "#FFFFFF",
         "monochromeImage": "./assets/adaptive-icon-monochrome.png"
       },
-      "package": "com.kwismo.mobile"
+      "package": "com.kwismo.mobile",
+      "permissions": [
+        "READ_CALL_LOG",
+        "READ_PHONE_STATE",
+        "READ_CONTACTS",
+        "POST_NOTIFICATIONS"
+      ]
     },
     "web": {
       "favicon": "./assets/icon.png",

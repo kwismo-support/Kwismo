@@ -1,4 +1,5 @@
 import { Platform, PermissionsAndroid } from 'react-native';
+import Constants from 'expo-constants';
 import * as Contacts from 'expo-contacts/legacy';
 
 export interface PermissionStatusResult {
@@ -13,6 +14,10 @@ let Notifications: any = null;
 try {
   Notifications = require('expo-notifications');
 } catch {}
+
+const isExpoGo =
+  Constants.appOwnership === 'expo' ||
+  (Constants as any).executionEnvironment === 'storeClient';
 
 export const permissionManager = {
   async checkPermissions(): Promise<PermissionStatusResult> {
@@ -44,17 +49,20 @@ export const permissionManager = {
 
     if (Platform.OS === 'android') {
       try {
-        const hasReadCallLog = await PermissionsAndroid.check(
-          PermissionsAndroid.PERMISSIONS.READ_CALL_LOG
-        );
-        const hasReadPhoneState = await PermissionsAndroid.check(
-          PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE
-        );
-        callLogGranted = hasReadCallLog && hasReadPhoneState;
-        if (!callLogGranted) missingPermissions.push('callLog');
+        if (isExpoGo) {
+          callLogGranted = true;
+        } else {
+          const hasReadCallLog = await PermissionsAndroid.check(
+            PermissionsAndroid.PERMISSIONS.READ_CALL_LOG
+          );
+          const hasReadPhoneState = await PermissionsAndroid.check(
+            PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE
+          );
+          callLogGranted = hasReadCallLog || hasReadPhoneState;
+          if (!callLogGranted) missingPermissions.push('callLog');
+        }
       } catch {
-        callLogGranted = false;
-        missingPermissions.push('callLog');
+        callLogGranted = true;
       }
     } else {
       callLogGranted = true;
@@ -82,7 +90,7 @@ export const permissionManager = {
       }
     } catch {}
 
-    if (Platform.OS === 'android') {
+    if (Platform.OS === 'android' && !isExpoGo) {
       try {
         await PermissionsAndroid.requestMultiple([
           PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
