@@ -12,7 +12,8 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kwismo.mobile"
+      "bundleIdentifier": "com.kwismo.mobile",
+      "icon": "./assets/icon.png"
     },
     "android": {
       "adaptiveIcon": {
