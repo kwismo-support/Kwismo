@@ -10,12 +10,6 @@ import {
   MontserratAlternates_600SemiBold,
   MontserratAlternates_700Bold,
 } from '@expo-google-fonts/montserrat-alternates';
-import {
-  PlusJakartaSans_400Regular,
-  PlusJakartaSans_500Medium,
-  PlusJakartaSans_600SemiBold,
-  PlusJakartaSans_700Bold,
-} from '@expo-google-fonts/plus-jakarta-sans';
 import * as SplashScreen from 'expo-splash-screen';
 import '@/locales/i18n';
 import { ToastContainer } from '@/shared/ui/Toast';
@@ -164,10 +158,10 @@ export default function RootLayout() {
     'MontserratAlternates-Medium': MontserratAlternates_500Medium,
     'MontserratAlternates-SemiBold': MontserratAlternates_600SemiBold,
     'MontserratAlternates-Bold': MontserratAlternates_700Bold,
-    'Ageo-Regular': PlusJakartaSans_400Regular,
-    'Ageo-Medium': PlusJakartaSans_500Medium,
-    'Ageo-SemiBold': PlusJakartaSans_600SemiBold,
-    'Ageo-Bold': PlusJakartaSans_700Bold,
+    'Ageo-Regular': require('../assets/fonts/Ageo-Regular.ttf'),
+    'Ageo-Medium': require('../assets/fonts/Ageo-Medium.ttf'),
+    'Ageo-SemiBold': require('../assets/fonts/Ageo-SemiBold.ttf'),
+    'Ageo-Bold': require('../assets/fonts/Ageo-Bold.ttf'),
   });
 
   const initializeAuth = useAuthStore((state) => state.initializeAuth);

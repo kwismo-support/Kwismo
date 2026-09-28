@@ -1,11 +1,8 @@
 import { Platform } from 'react-native';
-import Constants from 'expo-constants';
+import { getDeviceFingerprint } from '../services/device';
 
-export const getDeviceInfo = () => {
-  const deviceId =
-    Constants.deviceId ||
-    Constants.installationId ||
-    `kwismo-device-${Platform.OS}`;
+export const getDeviceInfo = async () => {
+  const deviceId = await getDeviceFingerprint();
   const deviceName = `${Platform.OS.toUpperCase()} Mobile App`;
   return { deviceId, deviceName };
 };

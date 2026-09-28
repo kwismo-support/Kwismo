@@ -14,8 +14,61 @@ export interface ApiResponse<T = any> {
 }
 
 export class ApiClient {
+  private static isRefreshing = false;
+  private static refreshSubscribers: ((newToken: string) => void)[] = [];
+
   private static async getAuthToken(): Promise<string | null> {
     return storage.getItem(env.AUTH_TOKEN_KEY);
+  }
+
+  private static onRefreshed(newToken: string) {
+    this.refreshSubscribers.forEach((cb) => cb(newToken));
+    this.refreshSubscribers = [];
+  }
+
+  private static addRefreshSubscriber(cb: (newToken: string) => void) {
+    this.refreshSubscribers.push(cb);
+  }
+
+  private static async tryRefreshToken(): Promise<string | null> {
+    try {
+      const storedRefreshToken = await storage.getItem('kwismo_refresh_token');
+      if (!storedRefreshToken) {
+        return null;
+      }
+
+      const res = await fetch(`${env.API_BASE_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({ refresh_token: storedRefreshToken }),
+      });
+
+      if (!res.ok) {
+        return null;
+      }
+
+      const json = await res.json().catch(() => ({}));
+      const newAccessToken = json.data?.access_token || json.access_token;
+      const newRefreshToken = json.data?.refresh_token || json.refresh_token;
+
+      if (newAccessToken) {
+        await storage.setItem(env.AUTH_TOKEN_KEY, newAccessToken);
+        if (newRefreshToken) {
+          await storage.setItem('kwismo_refresh_token', newRefreshToken);
+        }
+        useAuthStore.setState({
+          token: newAccessToken,
+          refreshToken: newRefreshToken || storedRefreshToken,
+        });
+        return newAccessToken;
+      }
+    } catch {
+      return null;
+    }
+    return null;
   }
 
   public static async request<T = any>(
@@ -77,7 +130,33 @@ export class ApiClient {
           json.status === 'BLOCKED' ||
           json.user_status === 'BLOCKED';
 
-        if (response.status === 401 || isAccountBlocked) {
+        if (
+          response.status === 401 &&
+          !cleanEndpoint.includes('/auth/refresh') &&
+          !cleanEndpoint.includes('/auth/login') &&
+          !isAccountBlocked
+        ) {
+          if (!this.isRefreshing) {
+            this.isRefreshing = true;
+            const newToken = await this.tryRefreshToken();
+            this.isRefreshing = false;
+
+            if (newToken) {
+              this.onRefreshed(newToken);
+              return this.request<T>(endpoint, options);
+            } else {
+              this.refreshSubscribers = [];
+              errorMsg = i18next.t('errors.sessionExpired');
+              useAuthStore.getState().logout();
+            }
+          } else {
+            return new Promise<ApiResponse<T>>((resolve) => {
+              this.addRefreshSubscriber((newToken: string) => {
+                resolve(this.request<T>(endpoint, options));
+              });
+            });
+          }
+        } else if (response.status === 401 || isAccountBlocked) {
           if (isAccountBlocked) {
             errorMsg = i18next.t('errors.accountBlocked');
           } else {

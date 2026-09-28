@@ -1,24 +1,16 @@
 import { useState } from 'react';
-import { Platform } from 'react-native';
-import Constants from 'expo-constants';
 import { useTranslation } from 'react-i18next';
 import { authApi } from '../services/auth.api';
 import { useAuthStore } from '../../../shared/store/authStore';
 import { toast } from '../../../shared/store/toastStore';
 import { storage } from '../../../shared/services/storage';
-import { getDeviceFingerprint } from '../../../shared/services/device';
+import { getDeviceInfo } from '../../../shared/utils/deviceInfo';
 
 export function useLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { login } = useAuthStore();
   const { t, i18n } = useTranslation();
-
-  const getDeviceInfo = async () => {
-    const deviceId = await getDeviceFingerprint();
-    const deviceName = `${Platform.OS.toUpperCase()} Mobile App`;
-    return { deviceId, deviceName };
-  };
 
   const handleLogin = async (email: string, password: string, rememberMe: boolean = true) => {
     setLoading(true);

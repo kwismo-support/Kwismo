@@ -28,7 +28,7 @@ export function useOtp(initialEmail: string = '') {
     setLoading(true);
     try {
       const email = (emailTarget || initialEmail).trim();
-      const { deviceId } = getDeviceInfo();
+      const { deviceId } = await getDeviceInfo();
 
       let res = await authApi.verifyDevice({ email, code: code.trim(), device_id: deviceId });
       if (!res.success) {
