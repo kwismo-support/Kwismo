@@ -158,7 +158,7 @@ if (Platform.OS === 'web' && typeof document !== 'undefined') {
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
-  useAppTheme();
+  const { isDark } = useAppTheme();
   const [fontsLoaded] = useFonts({
     'MontserratAlternates-Regular': MontserratAlternates_400Regular,
     'MontserratAlternates-Medium': MontserratAlternates_500Medium,
@@ -200,7 +200,7 @@ export default function RootLayout() {
             gestureEnabled: true,
             fullScreenGestureEnabled: true,
             animationDuration: 200,
-            contentStyle: { backgroundColor: '#161E33' },
+            contentStyle: { backgroundColor: isDark ? '#0F1626' : '#FFFFFF' },
           }}
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />

@@ -14,7 +14,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
-import { TabBar } from '@/shared/components/TabBar';
 import { Skeleton, SkeletonLoader } from '@/shared/ui/Skeleton';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { useAuthStore } from '@/shared/store/authStore';
@@ -400,8 +399,6 @@ export default function HomeScreen() {
       >
         <Icon name="famicons:person-add" color="#FFFFFF" size={24} />
       </TouchableOpacity>
-
-      <TabBar activeTab="home" />
     </View>
   );
 }

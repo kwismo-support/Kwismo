@@ -15,7 +15,6 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
-import { TabBar } from '@/shared/components/TabBar';
 import { Skeleton, SkeletonLoader } from '@/shared/ui/Skeleton';
 import { Button } from '@/shared/ui/Button';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
@@ -380,8 +379,6 @@ export default function TransferScreen() {
       >
         <Icon name="solar:add-linear" color="#FFFFFF" size={28} />
       </TouchableOpacity>
-
-      <TabBar activeTab="transfer" />
 
       <Modal
         visible={detailModalVisible}

@@ -7,6 +7,7 @@ import {
   ScrollView,
   Keyboard,
   Modal,
+  Image,
 } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
@@ -200,7 +201,13 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
         }}
         className="px-4 relative overflow-hidden"
       >
-        <View className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
+        <View className="absolute inset-0 overflow-hidden opacity-25 pointer-events-none">
+          <Image
+            source={require('../../../assets/logo-white.png')}
+            className="absolute -top-3 -left-5 w-28 h-28 opacity-30"
+            resizeMode="contain"
+            style={{ transform: [{ rotate: '-15deg' }] }}
+          />
           <View className="absolute -top-10 -right-5 wx-55 hx-55 rounded-full border-[26px] border-white -rotate-25 scale-x-140" />
         </View>
 
@@ -287,7 +294,13 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             }}
             className="px-4 relative overflow-hidden"
           >
-            <View className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
+            <View className="absolute inset-0 overflow-hidden opacity-25 pointer-events-none">
+              <Image
+                source={require('../../../assets/logo-white.png')}
+                className="absolute -top-3 -left-5 w-28 h-28 opacity-30"
+                resizeMode="contain"
+                style={{ transform: [{ rotate: '-15deg' }] }}
+              />
               <View className="absolute -top-10 -right-5 wx-55 hx-55 rounded-full border-[26px] border-white -rotate-25 scale-x-140" />
             </View>
 

@@ -13,7 +13,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
-import { TabBar } from '@/shared/components/TabBar';
 import { HeaderBar } from '@/shared/components/HeaderBar';
 import { CustomSwitch } from '@/shared/ui/CustomSwitch';
 import { ProfileSkeleton } from '@/features/profile/components/ProfileSkeleton';
@@ -283,7 +282,7 @@ export default function ProfileScreen() {
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => setLogoutModalVisible(false)}
-                className="flex-1 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 items-center justify-center"
+                className="flex-1 hx-11 rounded-xl bg-slate-100 dark:bg-slate-800 items-center justify-center"
               >
                 <Text className="font-bold text-xs text-slate-700 dark:text-slate-300">
                   {t('common.cancel')}
@@ -293,7 +292,7 @@ export default function ProfileScreen() {
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={handleLogoutConfirm}
-                className="flex-1 h-11 rounded-xl bg-red-500 items-center justify-center"
+                className="flex-1 hx-11 rounded-xl bg-red-500 items-center justify-center"
               >
                 <Text className="font-bold text-xs text-white">
                   {t('common.logoutAction')}
@@ -303,8 +302,6 @@ export default function ProfileScreen() {
           </Pressable>
         </Pressable>
       </Modal>
-
-      <TabBar activeTab="profile" />
     </View>
   );
 }

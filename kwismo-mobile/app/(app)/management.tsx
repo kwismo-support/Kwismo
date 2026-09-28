@@ -16,7 +16,6 @@ import { useTranslation } from 'react-i18next';
 import { AsYouType, isValidPhoneNumber } from 'libphonenumber-js/min';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
-import { TabBar } from '@/shared/components/TabBar';
 import { Skeleton, SkeletonLoader } from '@/shared/ui/Skeleton';
 import { CountryFlag } from '@/shared/components/CountryFlag';
 import { CountryPickerModal, CountryItem } from '@/shared/components/CountryPickerModal';
@@ -313,8 +312,6 @@ export default function ManagementScreen() {
       >
         <Icon name="solar:add-linear" color="#FFFFFF" size={28} />
       </TouchableOpacity>
-
-      <TabBar activeTab="management" />
 
       <Modal visible={fullScreenAddVisible} animationType="slide">
         <View className="flex-1 bg-brand-green">
