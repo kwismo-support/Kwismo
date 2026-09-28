@@ -197,6 +197,9 @@ export default function RootLayout() {
           screenOptions={{
             headerShown: false,
             animation: 'slide_from_right',
+            gestureEnabled: true,
+            fullScreenGestureEnabled: true,
+            animationDuration: 200,
             contentStyle: { backgroundColor: '#161E33' },
           }}
         >

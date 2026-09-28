@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { notificationsApi, NotificationBackendItem } from '../services/notifications.api';
 import { toast } from '../../../shared/store/toastStore';
+import { storage } from '../../../shared/services/storage';
 import i18next from 'i18next';
 
 export type NotificationTabFilter = 'all' | 'unread';
+
+const NOTIFS_CACHE_KEY = 'kwismo_notifications_cache_v1';
 
 export function useNotifications() {
   const [notifications, setNotifications] = useState<NotificationBackendItem[]>([]);
@@ -16,7 +19,10 @@ export function useNotifications() {
     if (isRefresh) {
       setRefreshing(true);
     } else {
-      setLoading(true);
+      const cached = await storage.getItem(NOTIFS_CACHE_KEY);
+      if (!cached) {
+        setLoading(true);
+      }
     }
     try {
       const res = await notificationsApi.getNotifications(1, 50);
@@ -24,6 +30,7 @@ export function useNotifications() {
         const list = res.data.items || [];
         setNotifications(list);
         setUnreadCount(list.filter((item) => !item.lu).length);
+        await storage.setItem(NOTIFS_CACHE_KEY, JSON.stringify(list)).catch(() => {});
       }
     } catch (err: any) {
       console.error('Error fetching notifications:', err);
@@ -34,13 +41,27 @@ export function useNotifications() {
   }, []);
 
   useEffect(() => {
+    storage.getItem(NOTIFS_CACHE_KEY).then((cachedStr) => {
+      if (cachedStr) {
+        try {
+          const list = JSON.parse(cachedStr);
+          if (Array.isArray(list) && list.length > 0) {
+            setNotifications(list);
+            setUnreadCount(list.filter((item: any) => !item.lu).length);
+            setLoading(false);
+          }
+        } catch {}
+      }
+    });
     fetchNotifications();
   }, [fetchNotifications]);
 
   const markAsRead = async (id: string) => {
-    setNotifications((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, lu: true } : item))
-    );
+    setNotifications((prev) => {
+      const updated = prev.map((item) => (item.id === id ? { ...item, lu: true } : item));
+      storage.setItem(NOTIFS_CACHE_KEY, JSON.stringify(updated)).catch(() => {});
+      return updated;
+    });
     setUnreadCount((prev) => Math.max(0, prev - 1));
 
     try {
@@ -51,7 +72,11 @@ export function useNotifications() {
   };
 
   const markAllAsRead = async () => {
-    setNotifications((prev) => prev.map((item) => ({ ...item, lu: true })));
+    setNotifications((prev) => {
+      const updated = prev.map((item) => ({ ...item, lu: true }));
+      storage.setItem(NOTIFS_CACHE_KEY, JSON.stringify(updated)).catch(() => {});
+      return updated;
+    });
     setUnreadCount(0);
 
     try {
@@ -66,7 +91,11 @@ export function useNotifications() {
 
   const deleteNotif = async (id: string) => {
     const target = notifications.find((n) => n.id === id);
-    setNotifications((prev) => prev.filter((item) => item.id !== id));
+    setNotifications((prev) => {
+      const updated = prev.filter((item) => item.id !== id);
+      storage.setItem(NOTIFS_CACHE_KEY, JSON.stringify(updated)).catch(() => {});
+      return updated;
+    });
     if (target && !target.lu) {
       setUnreadCount((prev) => Math.max(0, prev - 1));
     }

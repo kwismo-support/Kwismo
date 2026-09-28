@@ -81,7 +81,7 @@ export default function ProfileScreen() {
             <View className="flex-1 ml-3.5">
               <View className="flex-row items-center gap-1.5">
                 <Text className="text-xs font-semibold text-slate-900 dark:text-slate-200">
-                  {t('common.welcomeUser')}
+                  {t('common.welcome')}
                 </Text>
                 <Icon name="solar:verified-check-bold" color="#25B876" size={16} />
               </View>

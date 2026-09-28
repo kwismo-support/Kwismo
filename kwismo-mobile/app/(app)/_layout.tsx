@@ -74,6 +74,9 @@ export default function AppLayout() {
         screenOptions={{
           headerShown: false,
           animation: stackAnimation,
+          gestureEnabled: true,
+          fullScreenGestureEnabled: true,
+          animationDuration: 200,
           contentStyle: {
             backgroundColor: isDark ? '#0F1626' : '#FFFFFF',
           },

@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import { toast } from '@/shared/store/toastStore';
+import { storage } from '@/shared/services/storage';
 
 let Notifications: any = null;
 try {
@@ -43,7 +44,19 @@ export const PushNotificationService = {
     }
   },
 
-  async sendLocalNotification(title: string, body: string, data?: Record<string, any>) {
+  async sendLocalNotification(title: string, body: string, data?: Record<string, any>, isUrgentCallAlert: boolean = false) {
+    if (!isUrgentCallAlert) {
+      try {
+        const prefsStr = await storage.getItem('kwismo_notif_prefs');
+        if (prefsStr) {
+          const parsed = JSON.parse(prefsStr);
+          if (parsed.push_enabled === false) {
+            return;
+          }
+        }
+      } catch {}
+    }
+
     toast.info(body, title, 5000);
 
     if (Notifications && typeof Notifications.scheduleNotificationAsync === 'function') {

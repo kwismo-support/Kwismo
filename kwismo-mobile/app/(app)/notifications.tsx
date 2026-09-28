@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   ScrollView,
   RefreshControl,
-  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,7 +12,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
-import { useNotifications, NotificationTabFilter } from '@/features/profile/hooks/useNotifications';
+import { Skeleton, SkeletonCircle } from '@/shared/ui/Skeleton';
+import { useNotifications } from '@/features/profile/hooks/useNotifications';
 
 export default function NotificationsScreen() {
   const router = useRouter();
@@ -59,20 +59,10 @@ export default function NotificationsScreen() {
     <View className="flex-1 bg-brand-green">
       <StatusBar style="light" />
 
-      {/* Header with Settings Gear icon as rightAction */}
       <HeaderBar
         title={t('common.notificationItem')}
         showBack={true}
         onBack={() => router.back()}
-        rightAction={
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => router.push('/(app)/notification-settings')}
-            className="p-1"
-          >
-            <Icon name="solar:settings-bold" color="#FFFFFF" size={22} />
-          </TouchableOpacity>
-        }
       />
 
       <View className="flex-1 bg-white dark:bg-brand-darkBg rounded-t-[28px] overflow-hidden pt-4 px-5">
@@ -89,9 +79,7 @@ export default function NotificationsScreen() {
           }
           className="gap-y-4"
         >
-          {/* Tab Filters and Mark All Read Button */}
-          <View className="flex-row items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
-            {/* Filter Tabs */}
+          <View className="flex-row items-center justify-between">
             <View className="flex-row items-center space-x-2">
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -149,7 +137,6 @@ export default function NotificationsScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Tout marquer comme lu button - ONLY visible if unreadCount > 0 */}
             {unreadCount > 0 && (
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -164,10 +151,20 @@ export default function NotificationsScreen() {
             )}
           </View>
 
-          {/* Activity Feed */}
           {loading ? (
-            <View className="py-16 items-center justify-center">
-              <ActivityIndicator size="large" color="#00A859" />
+            <View className="gap-y-3 pt-1">
+              {[1, 2, 3, 4, 5].map((key) => (
+                <View
+                  key={key}
+                  className="p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-brand-cardDark flex-row items-start space-x-3"
+                >
+                  <SkeletonCircle size={36} />
+                  <View className="flex-1 gap-2 pt-1">
+                    <Skeleton width="85%" height={14} borderRadius={4} />
+                    <Skeleton width="40%" height={10} borderRadius={4} />
+                  </View>
+                </View>
+              ))}
             </View>
           ) : notifications.length === 0 ? (
             <View className="bg-slate-50 dark:bg-brand-cardDark rounded-2xl p-8 items-center justify-center my-4 border border-slate-100 dark:border-slate-800">
