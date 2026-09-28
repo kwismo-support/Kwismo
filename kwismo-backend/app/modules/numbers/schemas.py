@@ -31,6 +31,7 @@ class NumberOut(BaseModel):
     country_id: str | None = None
     operator_id: str | None = None
     operator_name: str | None = None
+    nombre_signalements: int = 0
 
 
 

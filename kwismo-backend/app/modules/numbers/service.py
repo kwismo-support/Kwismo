@@ -37,7 +37,7 @@ VALID_STATUTS = {"securise", "a_signaler", "frauduleux", "unknown"}
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _to_out(n) -> NumberOut:
+def _to_out(n, nombre_signalements: int = 0) -> NumberOut:
     raw = n.scoreRisque or 0.0
     score = min(1.0, max(0.0, raw / 100.0 if raw > 1.0 else raw))
     op_name = None
@@ -52,6 +52,7 @@ def _to_out(n) -> NumberOut:
         country_id=n.countryId,
         operator_id=n.operatorId,
         operator_name=op_name,
+        nombre_signalements=nombre_signalements,
     )
 
 
@@ -196,6 +197,7 @@ async def _score_and_upsert(valeur: str, country_id: str | None = None) -> Numbe
                 "countryId": resolved_country_id,
                 "operatorId": resolved_operator_id,
             },
+            include={"operator": True},
         )
     else:
         numero = await db.numero.create(
@@ -206,9 +208,10 @@ async def _score_and_upsert(valeur: str, country_id: str | None = None) -> Numbe
                 "dateDerniereVerification": now,
                 "countryId": resolved_country_id,
                 "operatorId": resolved_operator_id,
-            }
+            },
+            include={"operator": True},
         )
-    return _to_out(numero)
+    return _to_out(numero, nombre_signalements=nombre_signalements)
 
 
 # ---------------------------------------------------------------------------
@@ -290,7 +293,7 @@ async def list_numbers(
 # ---------------------------------------------------------------------------
 
 async def get_number(number_id: str, lang: str = "fr") -> NumberDetailOut:
-    numero = await db.numero.find_unique(where={"id": number_id})
+    numero = await db.numero.find_unique(where={"id": number_id}, include={"operator": True})
     if numero is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("number_not_found", lang))
     nombre_signalements = await db.report.count(where={"numeroId": number_id})

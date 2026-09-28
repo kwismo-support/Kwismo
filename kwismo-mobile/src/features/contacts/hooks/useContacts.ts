@@ -33,19 +33,31 @@ export function useContacts() {
       if (syncPayload.length > 0) {
         const syncRes = await contactsApi.syncContacts(syncPayload);
         if (syncRes.success && Array.isArray(syncRes.data)) {
-          const onlineItems = syncRes.data.map((c: any) => ({
-            id: c.id,
-            name: c.nom || c.numero,
-            phone: c.numero,
-            hasKwismo: c.statut === 'securise',
-            kwismoStatus: c.statut || 'none',
-            countryCode: 'CM',
-          }));
+          const onlineItems = syncRes.data.map((c: any) => {
+            const hasKwismo = c.has_kwismo === true || c.hasKwismo === true || (Boolean(c.statut) && c.statut !== 'inconnu' && c.statut !== 'unknown');
+            return {
+              id: c.id,
+              name: c.nom || c.numero,
+              phone: c.numero,
+              hasKwismo,
+              kwismoStatus: c.statut || (hasKwismo ? 'securise' : 'none'),
+              countryCode: 'CM',
+            };
+          });
 
           // Merge local device contacts + online DB contacts without duplicates
           const phoneMap = new Map<string, ContactItem>();
           localDeviceContacts.forEach((item) => phoneMap.set(item.phone.replace(/\s+/g, ''), item));
-          onlineItems.forEach((item) => phoneMap.set(item.phone.replace(/\s+/g, ''), item));
+          onlineItems.forEach((item) => {
+            const cleanKey = item.phone.replace(/\s+/g, '');
+            const existingLocal = phoneMap.get(cleanKey);
+            phoneMap.set(cleanKey, {
+              ...item,
+              name: existingLocal?.name || item.name,
+              hasKwismo: item.hasKwismo,
+              kwismoStatus: item.kwismoStatus,
+            });
+          });
 
           const merged = Array.from(phoneMap.values());
           setContactsList(merged);

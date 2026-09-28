@@ -25,6 +25,7 @@ class ContactOut(BaseModel):
     nom: str
     numero: str
     statut: str | None = Field(None, examples=["securise"], description="Insigne / Badge: securise, suspect, frauduleux, inconnu.")
+    has_kwismo: bool = Field(False, description="True si le numéro est inscrit sur Kwismo / True if number is on Kwismo.")
     created_at: datetime
 
 
