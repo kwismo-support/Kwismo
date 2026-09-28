@@ -37,10 +37,10 @@ export function useProfile() {
     if (currentUser && !forceRefresh) {
       setProfile(userToProfile(currentUser));
       setLoading(false);
-      return;
+    } else {
+      setLoading(true);
     }
 
-    setLoading(true);
     setError(null);
     try {
       const res = await profileApi.getProfile();
@@ -58,10 +58,14 @@ export function useProfile() {
           kpi: res.data.kpi,
         });
       } else {
-        setError(res.message || i18next.t('profile.fetchError'));
+        if (!currentUser) {
+          setError(res.message || i18next.t('profile.fetchError'));
+        }
       }
     } catch (err: any) {
-      setError(err.message || i18next.t('toasts.networkError'));
+      if (!currentUser) {
+        setError(err.message || i18next.t('toasts.networkError'));
+      }
     } finally {
       setLoading(false);
     }
@@ -153,3 +157,4 @@ export function useProfile() {
     logout: handleLogout,
   };
 }
+

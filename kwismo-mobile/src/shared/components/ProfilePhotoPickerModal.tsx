@@ -6,6 +6,7 @@ import {
   Modal,
   Pressable,
   Platform,
+  PermissionsAndroid,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +27,45 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
 }) => {
   const { t } = useTranslation();
   const { colors: themeColors } = useAppTheme();
+
+  const requestGalleryPermission = async (): Promise<boolean> => {
+    if (Platform.OS === 'web') return true;
+    try {
+      if (Platform.OS === 'android') {
+        if (Platform.Version >= 33) {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) return true;
+        } else {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+          );
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) return true;
+        }
+      }
+      const expRes = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      return expRes.granted;
+    } catch {
+      return true;
+    }
+  };
+
+  const requestCameraPermission = async (): Promise<boolean> => {
+    if (Platform.OS === 'web') return true;
+    try {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) return true;
+      }
+      const expRes = await ImagePicker.requestCameraPermissionsAsync();
+      return expRes.granted;
+    } catch {
+      return true;
+    }
+  };
 
   const handlePickFromGallery = async () => {
     if (Platform.OS === 'web') {
@@ -51,14 +91,14 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
     }
 
     try {
-      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permission.granted) {
+      const hasPerm = await requestGalleryPermission();
+      if (!hasPerm) {
         toast.error(t('common.galleryPermissionDenied'));
         return;
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
@@ -102,8 +142,8 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
     }
 
     try {
-      const permission = await ImagePicker.requestCameraPermissionsAsync();
-      if (!permission.granted) {
+      const hasPerm = await requestCameraPermission();
+      if (!hasPerm) {
         toast.error(t('common.cameraPermissionDenied'));
         return;
       }
@@ -185,3 +225,4 @@ export const ProfilePhotoPickerModal: React.FC<ProfilePhotoPickerModalProps> = (
 };
 
 export default ProfilePhotoPickerModal;
+

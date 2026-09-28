@@ -155,8 +155,7 @@ export default function ReportScreen() {
   return (
     <KeyboardAvoidingView
       className="flex-1 bg-brand-green"
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       <StatusBar style="light" />
 
@@ -168,7 +167,7 @@ export default function ReportScreen() {
       <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg rounded-tl-3xl overflow-hidden">
         <ScrollView
           ref={scrollViewRef}
-          contentContainerStyle={{ paddingBottom: insets.bottom + 220, flexGrow: 1 }}
+          contentContainerStyle={{ paddingBottom: Math.max(insets.bottom + 40, 80), flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustKeyboardInsets={true}
@@ -281,7 +280,8 @@ export default function ReportScreen() {
           </Text>
 
           <TextInput
-            className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-3.5 font-font-regular text-xs text-slate-900 dark:text-white min-hx-24 text-top"
+            className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark p-3.5 font-font-regular text-xs text-slate-900 dark:text-white text-top"
+            style={{ minHeight: 96 }}
             placeholder={t('report.detailsPlaceholder')}
             placeholderTextColor="#94A3B8"
             multiline
@@ -291,7 +291,7 @@ export default function ReportScreen() {
             onFocus={() => {
               setTimeout(() => {
                 scrollViewRef.current?.scrollToEnd({ animated: true });
-              }, 200);
+              }, 150);
             }}
           />
 

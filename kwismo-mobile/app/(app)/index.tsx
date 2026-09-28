@@ -258,18 +258,18 @@ export default function HomeScreen() {
           <View className="flex-row items-center gap-1">
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={handleClearHistory}
-              className="p-1.5"
-            >
-              <Icon name="solar:broom-bold" color={isDark ? 'white' : '#161E33'} size={18} />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              activeOpacity={0.7}
               onPress={toggleFilters}
               className="p-1.5"
             >
               <Icon name="hugeicons:filter" color={isDark ? 'white' : '#161E33'} size={16} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={handleClearHistory}
+              className="p-1.5"
+            >
+              <Icon name="gravity-ui:trash-bin" color={isDark ? 'white' : '#161E33'} size={16} />
             </TouchableOpacity>
           </View>
         </View>

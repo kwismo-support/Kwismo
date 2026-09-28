@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Animated,
   useWindowDimensions,
-  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -41,32 +40,31 @@ export default function LanguageSelectionScreen() {
   const { isAuthenticated, isInitialized } = useAuthStore();
   const [selectedLang, setSelectedLang] = useState<string>(i18n.language || 'fr');
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [checkingStatus, setCheckingStatus] = useState(true);
+  const [splashFinished, setSplashFinished] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(15)).current;
 
-  useEffect(() => {
-    if (!isInitialized) return;
-
+  const handleSplashFinish = async () => {
     if (isAuthenticated) {
       router.replace('/(app)');
       return;
     }
 
-    storage.getItem('kwismo_onboarding_done').then((done) => {
+    try {
+      const done = await storage.getItem('kwismo_onboarding_done');
       if (done === 'true') {
         router.replace('/(auth)/login');
       } else {
-        setCheckingStatus(false);
+        setSplashFinished(true);
       }
-    }).catch(() => {
-      setCheckingStatus(false);
-    });
-  }, [isInitialized, isAuthenticated, router]);
+    } catch {
+      setSplashFinished(true);
+    }
+  };
 
   useEffect(() => {
-    if (!checkingStatus) {
+    if (splashFinished) {
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
@@ -80,7 +78,7 @@ export default function LanguageSelectionScreen() {
         }),
       ]).start();
     }
-  }, [checkingStatus]);
+  }, [splashFinished]);
 
   const handleSelectLanguage = (code: string) => {
     setSelectedLang(code);
@@ -92,8 +90,8 @@ export default function LanguageSelectionScreen() {
     router.replace('/onboarding');
   };
 
-  if (!isInitialized || checkingStatus) {
-    return <CustomAnimatedSplash />;
+  if (!isInitialized || !splashFinished) {
+    return <CustomAnimatedSplash onFinish={handleSplashFinish} />;
   }
 
   const currentOption = LANGUAGES.find((l) => l.code === selectedLang);
@@ -209,4 +207,5 @@ export default function LanguageSelectionScreen() {
     </BrandGradientBackground>
   );
 }
+
 

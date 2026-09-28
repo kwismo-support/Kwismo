@@ -27,25 +27,42 @@ export const permissionManager = {
     const missingPermissions: string[] = [];
 
     try {
-      const contactsRes = await Contacts.getPermissionsAsync();
-      contactsGranted = contactsRes.status === 'granted';
-      if (!contactsGranted) missingPermissions.push('contacts');
+      if (Platform.OS === 'android') {
+        const nativeContacts = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.READ_CONTACTS
+        );
+        if (nativeContacts) {
+          contactsGranted = true;
+        } else {
+          const contactsRes = await Contacts.getPermissionsAsync();
+          contactsGranted = contactsRes.status === 'granted';
+        }
+      } else {
+        const contactsRes = await Contacts.getPermissionsAsync();
+        contactsGranted = contactsRes.status === 'granted';
+      }
     } catch {
       contactsGranted = false;
-      missingPermissions.push('contacts');
     }
+    if (!contactsGranted) missingPermissions.push('contacts');
 
     try {
       if (Notifications && typeof Notifications.getPermissionsAsync === 'function') {
         const notifRes = await Notifications.getPermissionsAsync();
-        notificationsGranted = notifRes.status === 'granted' || notifRes.granted;
+        notificationsGranted = notifRes.status === 'granted' || notifRes.granted === true;
       } else {
         notificationsGranted = true;
       }
-      if (!notificationsGranted) missingPermissions.push('notifications');
+      if (Platform.OS === 'android' && Platform.Version >= 33) {
+        const nativeNotif = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+        );
+        if (nativeNotif) notificationsGranted = true;
+      }
     } catch {
       notificationsGranted = true;
     }
+    if (!notificationsGranted) missingPermissions.push('notifications');
 
     if (Platform.OS === 'android') {
       try {
@@ -59,7 +76,6 @@ export const permissionManager = {
             PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE
           );
           callLogGranted = hasReadCallLog || hasReadPhoneState;
-          if (!callLogGranted) missingPermissions.push('callLog');
         }
       } catch {
         callLogGranted = true;
@@ -67,6 +83,7 @@ export const permissionManager = {
     } else {
       callLogGranted = true;
     }
+    if (!callLogGranted) missingPermissions.push('callLog');
 
     const hasAll = contactsGranted && notificationsGranted && callLogGranted;
 
@@ -81,6 +98,11 @@ export const permissionManager = {
 
   async requestAllPermissions(): Promise<PermissionStatusResult> {
     try {
+      if (Platform.OS === 'android') {
+        try {
+          await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.READ_CONTACTS);
+        } catch {}
+      }
       await Contacts.requestPermissionsAsync();
     } catch {}
 
@@ -92,14 +114,21 @@ export const permissionManager = {
 
     if (Platform.OS === 'android' && !isExpoGo) {
       try {
-        await PermissionsAndroid.requestMultiple([
+        const perms: any[] = [
           PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
           PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
-          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-        ]);
+        ];
+        if (Platform.Version >= 33) {
+          perms.push(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+          perms.push(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES);
+        } else {
+          perms.push(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
+        }
+        await PermissionsAndroid.requestMultiple(perms);
       } catch {}
     }
 
     return this.checkPermissions();
   },
 };
+
