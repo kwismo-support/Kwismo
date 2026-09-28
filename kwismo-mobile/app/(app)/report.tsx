@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -36,6 +36,7 @@ const REPORT_REASONS = [
 export default function ReportScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const scrollViewRef = useRef<ScrollView>(null);
   const params = useLocalSearchParams<{ phone?: string }>();
   const { t } = useTranslation();
   const { isDark } = useAppTheme();
@@ -137,7 +138,11 @@ export default function ReportScreen() {
   };
 
   return (
-    <View className="flex-1 bg-brand-green">
+    <KeyboardAvoidingView
+      className="flex-1 bg-brand-green"
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+    >
       <StatusBar style="light" />
 
       <HeaderBar
@@ -145,13 +150,10 @@ export default function ReportScreen() {
         showBack={true}
       />
 
-      <KeyboardAvoidingView
-        className="flex-1 bg-slate-50 dark:bg-brand-darkBg rounded-tl-3xl overflow-hidden"
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-      >
+      <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg rounded-tl-3xl overflow-hidden">
         <ScrollView
-          contentContainerStyle={{ paddingBottom: insets.bottom + 60, flexGrow: 1 }}
+          ref={scrollViewRef}
+          contentContainerStyle={{ paddingBottom: insets.bottom + 220, flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustKeyboardInsets={true}
@@ -271,6 +273,11 @@ export default function ReportScreen() {
             numberOfLines={4}
             value={description}
             onChangeText={setDescription}
+            onFocus={() => {
+              setTimeout(() => {
+                scrollViewRef.current?.scrollToEnd({ animated: true });
+              }, 200);
+            }}
           />
 
           <TouchableOpacity
@@ -295,7 +302,7 @@ export default function ReportScreen() {
             )}
           </TouchableOpacity>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </View>
 
       <Modal visible={showCallPickerModal} transparent animationType="slide">
         <View className="flex-1 bg-black/60 justify-end">
@@ -389,6 +396,6 @@ export default function ReportScreen() {
         onConfirm={handleGrantCallLogPermission}
         onCancel={() => setPermissionModalVisible(false)}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 }

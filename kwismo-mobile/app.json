@@ -21,6 +21,7 @@
         "monochromeImage": "./assets/adaptive-icon-monochrome.png"
       },
       "package": "com.kwismo.mobile",
+      "softwareKeyboardLayoutMode": "pan",
       "permissions": [
         "READ_CALL_LOG",
         "READ_PHONE_STATE",

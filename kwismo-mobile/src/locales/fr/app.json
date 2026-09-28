@@ -100,7 +100,7 @@
     "reasonPhishing": "Message frauduleux / Phishing",
     "reasonHarassment": "Appels répétés suspects / Harcèlement",
     "reasonWrongTransfer": "Faux transfert ou demande de remboursement",
-    "recentCalls10min": "Appels inconnus (10 min)",
+    "recentCalls10min": "Appels inconnus",
     "recentCallsModalTitle": "Appels reçus (10 dernières minutes)",
     "recentCallsModalSub": "Sélectionnez un numéro qui vous a appelé au cours des 10 dernières minutes :",
     "noRecentUnknownCalls": "Aucun numéro inconnu n'a appelé au cours des 10 dernières minutes.",
