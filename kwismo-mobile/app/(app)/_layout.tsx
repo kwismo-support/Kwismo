@@ -18,6 +18,7 @@ export default function AppLayout() {
   const pathname = usePathname();
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [missingPermissions, setMissingPermissions] = useState<string[]>([]);
+  const [dismissedGuard, setDismissedGuard] = useState(false);
 
   const isMainTab = useMemo(() => {
     const cleanPath = pathname ? pathname.replace(/\/$/, '') : '';
@@ -36,11 +37,13 @@ export default function AppLayout() {
     const res = await permissionManager.checkPermissions();
     setMissingPermissions(res.missingPermissions);
     if (!res.hasAll && res.missingPermissions.length > 0) {
-      setShowPermissionModal(true);
+      if (!dismissedGuard) {
+        setShowPermissionModal(true);
+      }
     } else {
       setShowPermissionModal(false);
     }
-  }, []);
+  }, [dismissedGuard]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -64,12 +67,15 @@ export default function AppLayout() {
   const handleGrantPermissions = async () => {
     const res = await permissionManager.requestAllPermissions();
     setMissingPermissions(res.missingPermissions);
-    if (res.hasAll || res.missingPermissions.length === 0) {
-      setShowPermissionModal(false);
-    } else {
-      setShowPermissionModal(true);
-    }
+    setDismissedGuard(true);
+    setShowPermissionModal(false);
   };
+
+  const handleDismissGuard = () => {
+    setDismissedGuard(true);
+    setShowPermissionModal(false);
+  };
+
 
   if (!isInitialized) {
     return (
@@ -102,8 +108,9 @@ export default function AppLayout() {
         visible={showPermissionModal}
         missingPermissions={missingPermissions}
         onGrant={handleGrantPermissions}
-        onDismiss={() => setShowPermissionModal(false)}
+        onDismiss={handleDismissGuard}
       />
     </View>
   );
 }
+

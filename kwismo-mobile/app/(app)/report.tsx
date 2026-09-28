@@ -167,7 +167,7 @@ export default function ReportScreen() {
       <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg rounded-tl-3xl overflow-hidden">
         <ScrollView
           ref={scrollViewRef}
-          contentContainerStyle={{ paddingBottom: Math.max(insets.bottom + 40, 80), flexGrow: 1 }}
+          contentContainerStyle={{ paddingBottom: Math.max(insets.bottom + 340, 360), flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustKeyboardInsets={true}
@@ -203,6 +203,11 @@ export default function ReportScreen() {
               onChangeText={(text) => {
                 setTargetPhone(text);
                 if (validationError) setValidationError('');
+              }}
+              onFocus={() => {
+                setTimeout(() => {
+                  scrollViewRef.current?.scrollTo({ y: 80, animated: true });
+                }, 100);
               }}
             />
 
@@ -291,7 +296,7 @@ export default function ReportScreen() {
             onFocus={() => {
               setTimeout(() => {
                 scrollViewRef.current?.scrollToEnd({ animated: true });
-              }, 150);
+              }, 100);
             }}
           />
 

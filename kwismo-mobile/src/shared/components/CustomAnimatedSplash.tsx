@@ -78,7 +78,6 @@ export const CustomAnimatedSplash: React.FC<CustomAnimatedSplashProps> = ({ onFi
           },
         ]}
       >
-        <Text style={[styles.title, { color: textColor }]}>KWISMO</Text>
         <Text style={[styles.subtitle, { color: subtitleColor }]}>
           {t('splash.subtitle')}
         </Text>

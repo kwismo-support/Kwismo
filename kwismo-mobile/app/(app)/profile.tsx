@@ -29,11 +29,12 @@ export default function ProfileScreen() {
   const { isDark } = useAppTheme();
   const { userThemePreference, setTheme } = useThemeStore();
   const { user } = useAuthStore();
-  const { profile, loading, logout, updateProfile } = useProfile();
+  const { profile, loading, logout, updateProfile, refresh } = useProfile();
   const { preferences, updatePreference } = useNotificationSettings();
 
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+  const [avatarErr, setAvatarErr] = useState(false);
 
   const userName = user?.firstName
     ? `${user.firstName} ${user.lastName || ''}`.trim()
@@ -68,8 +69,16 @@ export default function ProfileScreen() {
         ) : (
           <View className="flex-row items-center p-4 rounded-2xl shadow-xl shadow-black elevation-4 border border-slate-100 dark:border-slate-800 bg-white dark:bg-brand-cardDark -mt-10 mb-4">
             <View className="wx-13 hx-13 rounded-full bg-emerald-100 dark:bg-emerald-900/40 items-center justify-center overflow-hidden border border-brand-green/30">
-              {avatarPhoto ? (
-                <Image source={{ uri: avatarPhoto }} className="w-full h-full" resizeMode="cover" />
+              {avatarPhoto && !avatarErr ? (
+                <Image
+                  source={{ uri: avatarPhoto }}
+                  className="w-full h-full"
+                  resizeMode="cover"
+                  onError={() => {
+                    setAvatarErr(true);
+                    refresh();
+                  }}
+                />
               ) : (
                 <Text className="font-headline-bold text-xl font-extrabold text-brand-green dark:text-emerald-400">
                   {(userName || 'K').charAt(0).toUpperCase()}

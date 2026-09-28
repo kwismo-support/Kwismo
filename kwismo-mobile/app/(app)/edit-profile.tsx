@@ -46,6 +46,7 @@ export default function EditProfileScreen() {
   const [isPhotoPickerOpen, setIsPhotoPickerOpen] = useState(false);
   const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [avatarErr, setAvatarErr] = useState(false);
 
   const [emailWarningModalVisible, setEmailWarningModalVisible] = useState(false);
   const [otpModalVisible, setOtpModalVisible] = useState(false);
@@ -158,8 +159,13 @@ export default function EditProfileScreen() {
       >
         <View className="self-center relative mb-6">
           <View className="wx-24 hx-24 rounded-full items-center justify-center bg-emerald-100 dark:bg-emerald-900/40 overflow-hidden border-2 border-brand-green">
-            {profilePhoto ? (
-              <Image source={{ uri: profilePhoto }} className="w-full h-full" resizeMode="cover" />
+            {profilePhoto && !avatarErr ? (
+              <Image
+                source={{ uri: profilePhoto }}
+                className="w-full h-full"
+                resizeMode="cover"
+                onError={() => setAvatarErr(true)}
+              />
             ) : (
               <Text className="font-headline-bold text-3xl font-extrabold text-brand-green dark:text-emerald-400">
                 {(firstName || lastName || 'K').charAt(0).toUpperCase()}

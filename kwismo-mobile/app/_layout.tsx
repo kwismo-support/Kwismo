@@ -170,14 +170,15 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (fontsLoaded) {
+      SplashScreen.hideAsync().catch(() => {});
       initializeAuth().finally(() => {
-        SplashScreen.hideAsync().catch(() => {});
         import('@/shared/services/offlineQueue').then(({ offlineQueue }) => {
           offlineQueue.processQueue().catch(() => {});
         });
       });
     }
   }, [fontsLoaded, initializeAuth]);
+
 
   if (!fontsLoaded) {
     return null;

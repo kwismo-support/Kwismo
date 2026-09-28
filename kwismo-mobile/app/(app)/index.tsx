@@ -88,6 +88,8 @@ export default function HomeScreen() {
     { key: 'transfers', labelKey: 'common.filterTransfers' },
   ];
 
+  const [avatarErr, setAvatarErr] = useState(false);
+
   return (
     <View className="flex-1 bg-white dark:bg-brand-darkBg relative">
       <StatusBar style="light" />
@@ -129,10 +131,11 @@ export default function HomeScreen() {
           <View className="rounded-xl p-4 mb-4 shadow-xl shadow-black elevation-4 bg-white dark:bg-brand-cardDark">
             <View className="flex-row items-center mb-4">
               <View className="mr-3">
-                {user?.avatarUrl ? (
+                {user?.avatarUrl && !avatarErr ? (
                   <Image
                     source={{ uri: user.avatarUrl }}
                     className="wx-13 hx-13 rounded-full"
+                    onError={() => setAvatarErr(true)}
                   />
                 ) : (
                   <View className="wx-13 hx-13 rounded-full bg-emerald-100 dark:bg-emerald-900/40 justify-center items-center border border-brand-green/30">
