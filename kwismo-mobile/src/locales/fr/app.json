@@ -318,6 +318,7 @@
     "generalMessage": "Impossible de charger la ressource. Veuillez réessayer.",
     "accountBlocked": "Votre compte a été suspendu ou bloqué par un administrateur.",
     "sessionExpired": "Session expirée. Veuillez vous reconnecter.",
+    "invalidCredentials": "Identifiants invalides. Veuillez vérifier votre adresse e-mail et votre mot de passe.",
     "accessDenied": "Accès restreint.",
     "notFound": "Service ou ressource introuvable.",
     "serverError": "Erreur serveur. Veuillez réessayer.",

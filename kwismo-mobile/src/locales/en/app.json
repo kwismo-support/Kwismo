@@ -318,6 +318,7 @@
     "generalMessage": "Unable to load resource. Please try again.",
     "accountBlocked": "Your account has been suspended or blocked by an administrator.",
     "sessionExpired": "Session expired. Please log in again.",
+    "invalidCredentials": "Invalid credentials. Please check your email address and password.",
     "accessDenied": "Access denied.",
     "notFound": "Service or resource not found.",
     "serverError": "Server error. Please try again.",

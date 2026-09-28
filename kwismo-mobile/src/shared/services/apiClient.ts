@@ -123,6 +123,13 @@ export class ApiClient {
           errorMsg = errorMsg.map((e: any) => e.msg || e.detail || JSON.stringify(e)).join(', ');
         }
 
+        // Si le message est bilingue ("FR / EN"), on extrait selon la langue actuelle
+        if (typeof errorMsg === 'string' && errorMsg.includes(' / ')) {
+          const parts = errorMsg.split(' / ').map((p) => p.trim());
+          const isEn = i18next.language?.toLowerCase().startsWith('en');
+          errorMsg = isEn ? parts[1] || parts[0] : parts[0];
+        }
+
         const errorCode = json.error_code || json.code || `HTTP_${response.status}`;
         const isAccountBlocked =
           errorCode === 'ACCOUNT_BLOCKED' ||
@@ -130,10 +137,18 @@ export class ApiClient {
           json.status === 'BLOCKED' ||
           json.user_status === 'BLOCKED';
 
+        const isAuthEndpoint =
+          cleanEndpoint.includes('/auth/login') ||
+          cleanEndpoint.includes('/auth/register') ||
+          cleanEndpoint.includes('/auth/verify') ||
+          cleanEndpoint.includes('/auth/otp') ||
+          cleanEndpoint.includes('/auth/forgot') ||
+          cleanEndpoint.includes('/auth/reset');
+
         if (
           response.status === 401 &&
+          !isAuthEndpoint &&
           !cleanEndpoint.includes('/auth/refresh') &&
-          !cleanEndpoint.includes('/auth/login') &&
           !isAccountBlocked
         ) {
           if (!this.isRefreshing) {
@@ -155,6 +170,10 @@ export class ApiClient {
                 resolve(this.request<T>(endpoint, options));
               });
             });
+          }
+        } else if (response.status === 401 && isAuthEndpoint) {
+          if (!errorMsg) {
+            errorMsg = i18next.t('errors.invalidCredentials');
           }
         } else if (response.status === 401 || isAccountBlocked) {
           if (isAccountBlocked) {
