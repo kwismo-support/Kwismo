@@ -34,13 +34,14 @@
       "favicon": "./assets/icon.png",
       "bundler": "metro"
     },
+    "splash": {
+      "backgroundColor": "#FFFFFF"
+    },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/splash.png",
-          "resizeMode": "contain",
           "backgroundColor": "#FFFFFF"
         }
       ]
