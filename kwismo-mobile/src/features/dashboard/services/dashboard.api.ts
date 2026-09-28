@@ -1,4 +1,5 @@
 import { ApiClient } from '../../../shared/services/apiClient';
+import { activityHistoryService } from '../../../shared/services/activityHistoryService';
 
 export interface DashboardActivity {
   id: string;
@@ -8,6 +9,7 @@ export interface DashboardActivity {
   status: string;
   badgeType: 'green' | 'red' | 'yellow' | 'blue';
   date: string;
+  timestamp?: number;
   initials?: string;
   initialBg?: string;
 }
@@ -23,7 +25,7 @@ export interface DashboardSummary {
 export const dashboardApi = {
   async getSummary(): Promise<{ success: boolean; data?: DashboardSummary; message?: string }> {
     try {
-      const [meRes, txRes, phonesRes] = await Promise.all([
+      const [meRes, txRes, phonesRes, localActivities] = await Promise.all([
         ApiClient.request<{
           kpi: {
             numeros_verifies: number;
@@ -49,6 +51,7 @@ export const dashboardApi = {
           est_verifie: boolean;
           est_compromis: boolean;
         }>>('/users/me/phones', { method: 'GET', silent: true }),
+        activityHistoryService.getActivities(),
       ]);
 
       const kpi = meRes.data?.kpi || {
@@ -61,7 +64,7 @@ export const dashboardApi = {
       const compromisedCount = phones.filter((p) => p.est_compromis).length;
 
       const transactions = txRes.data?.items || [];
-      const activities: DashboardActivity[] = transactions.map((tx, idx) => {
+      const remoteActivities: DashboardActivity[] = transactions.map((tx, idx) => {
         const phoneDisplay = tx.valeur_numero || tx.nom_destinataire || tx.numero_id || '';
         const isConfirmed = tx.statut === 'confirmed' || tx.statut === 'completed';
         const isFailedOrFraud = tx.statut === 'blocked' || tx.statut === 'failed' || (tx.score_risque && tx.score_risque > 70);
@@ -101,14 +104,24 @@ export const dashboardApi = {
         };
       });
 
+      const combinedMap = new Map<string, DashboardActivity>();
+      localActivities.forEach((act) => combinedMap.set(act.id, act));
+      remoteActivities.forEach((act) => {
+        if (!combinedMap.has(act.id)) {
+          combinedMap.set(act.id, act);
+        }
+      });
+
+      const recentActivities = Array.from(combinedMap.values());
+
       return {
-        success: meRes.success,
+        success: meRes.success || localActivities.length > 0,
         data: {
-          numeros_verifies: kpi.numeros_verifies || phones.filter((p) => p.est_verifie).length,
-          threats_avoided: compromisedCount,
-          signalements_effectues: kpi.signalements_effectues || 0,
-          transferts_proteges: kpi.transferts_proteges || transactions.length,
-          recentActivities: activities,
+          numeros_verifies: Math.max(kpi.numeros_verifies || 0, phones.filter((p) => p.est_verifie).length, localActivities.filter((a) => a.category === 'verified').length),
+          threats_avoided: Math.max(compromisedCount, localActivities.filter((a) => a.category === 'threats').length),
+          signalements_effectues: Math.max(kpi.signalements_effectues || 0, localActivities.filter((a) => a.category === 'reports').length),
+          transferts_proteges: Math.max(kpi.transferts_proteges || 0, transactions.length, localActivities.filter((a) => a.category === 'transfers').length),
+          recentActivities,
         },
       };
     } catch (err: any) {

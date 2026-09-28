@@ -23,6 +23,7 @@ import { toast } from '@/shared/store/toastStore';
 import { getDeviceFingerprint } from '@/shared/services/device';
 import { apiClient } from '@/shared/services/apiClient';
 import { enqueueOutboxItem } from '@/shared/services/database';
+import { activityHistoryService } from '@/shared/services/activityHistoryService';
 import { callListenerService } from '@/features/call-detection/services/callListenerService';
 
 const REPORT_REASONS = [
@@ -118,6 +119,13 @@ export default function ReportScreen() {
 
       try {
         await apiClient.post('/reports', payload);
+        await activityHistoryService.addActivity({
+          phone: targetPhone.trim(),
+          type: 'common.report',
+          category: 'reports',
+          status: 'common.reported',
+          badgeType: 'red',
+        });
         setSuccessModalVisible(true);
       } catch (apiErr: any) {
         if (apiErr?.response?.status === 409) {
@@ -126,6 +134,13 @@ export default function ReportScreen() {
           toast.error(detail);
         } else {
           await enqueueOutboxItem('report', payload);
+          await activityHistoryService.addActivity({
+            phone: targetPhone.trim(),
+            type: 'common.report',
+            category: 'reports',
+            status: 'common.reported',
+            badgeType: 'red',
+          });
           toast.info(t('report.localReportSaved'));
           setSuccessModalVisible(true);
         }

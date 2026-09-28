@@ -27,6 +27,7 @@ import { numbersApi } from '@/features/numbers/services/numbers.api';
 import { Skeleton } from '@/shared/ui/Skeleton';
 import { transferApi } from '@/features/transfer/services/transfer.api';
 import { transferCache } from '@/features/transfer/services/transferCache';
+import { activityHistoryService } from '@/shared/services/activityHistoryService';
 
 export interface SenderNumberOption {
   id: string;
@@ -308,6 +309,14 @@ export default function NewTransferScreen() {
         montant: amountNum,
         operator_id: selectedAction?.operator_id || selectedSender?.operator_id || 'op-default',
         ussd_action_id: selectedAction?.id || 'action-default',
+      });
+
+      await activityHistoryService.addActivity({
+        phone: cleanPhone,
+        type: 'common.actionTransfer',
+        category: 'transfers',
+        status: 'common.protected',
+        badgeType: 'green',
       });
 
       if (res.data?.code_ussd_genere) {

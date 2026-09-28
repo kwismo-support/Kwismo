@@ -22,6 +22,7 @@ import { useContacts } from '@/features/contacts/hooks/useContacts';
 import { ContactCard } from '@/features/contacts/components/ContactCard';
 import { EmptyContactsState } from '@/features/contacts/components/EmptyContactsState';
 import { ContactItem } from '@/features/contacts/types/contacts.types';
+import { activityHistoryService } from '@/shared/services/activityHistoryService';
 
 export default function ContactsScreen() {
   const router = useRouter();
@@ -51,6 +52,13 @@ export default function ContactsScreen() {
 
   const handleSelectContactItem = (contact: ContactItem) => {
     toggleSelectContact(contact.id);
+    activityHistoryService.addActivity({
+      phone: contact.phone,
+      type: 'common.myContacts',
+      category: 'verified',
+      status: 'common.verified',
+      badgeType: 'blue',
+    });
     if (isInviteMode && !contact.hasKwismo) {
       setTargetInviteContact(contact);
       setInviteModalVisible(true);

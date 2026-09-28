@@ -13,9 +13,12 @@ export interface CallLogItem {
 
 export const callDetectionApi = {
   evaluateIncomingCall: async (phoneNumber: string): Promise<CallLogItem> => {
+    console.log(`\x1b[35m[CALL DETECTION EVALUATION]\x1b[0m Evaluating incoming call number: "${phoneNumber}"`);
     try {
+      console.log(`\x1b[36m[CALL DETECTION BACKEND REQUEST]\x1b[0m Sending POST /numbers/verify payload for:`, phoneNumber);
       const res = await apiClient.post('/numbers/verify', { valeur: phoneNumber });
       const data = res.data;
+      console.log(`\x1b[32m[CALL DETECTION BACKEND RESPONSE]\x1b[0m Result:`, data);
       return {
         id: `call-${Date.now()}`,
         phone_number: data.valeur || phoneNumber,
@@ -26,8 +29,10 @@ export const callDetectionApi = {
         is_scam: data.statut === 'frauduleux' || (data.score_risque ?? 0) >= 0.7,
       };
     } catch (err) {
+      console.warn(`\x1b[33m[CALL DETECTION FALLBACK]\x1b[0m Request failed. Checking offline cache:`, err);
       const cached = await lookupNumberOffline(phoneNumber);
       if (cached) {
+        console.log(`\x1b[32m[CALL DETECTION CACHE HIT]\x1b[0m Cached item:`, cached);
         return {
           id: `call-offline-${Date.now()}`,
           phone_number: cached.valeur,

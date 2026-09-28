@@ -25,6 +25,7 @@ import { useManagement } from '@/features/management/hooks/useManagement';
 import { SimNumberCard } from '@/features/management/components/SimNumberCard';
 import { EmptyManagementState } from '@/features/management/components/EmptyManagementState';
 import { UserSimNumber } from '@/features/management/types/management.types';
+import { activityHistoryService } from '@/shared/services/activityHistoryService';
 
 export default function ManagementScreen() {
   const router = useRouter();
@@ -160,6 +161,13 @@ export default function ManagementScreen() {
 
     if (result.success) {
       setFullScreenOtpVisible(false);
+      await activityHistoryService.addActivity({
+        phone: otpTargetNumber.phone,
+        type: 'common.myNumbers',
+        category: 'verified',
+        status: 'common.verified',
+        badgeType: 'green',
+      });
       toast.success(t('common.numberVerifiedSuccess'));
     } else {
       toast.error(result.message || t('common.enter6DigitOtp'));
@@ -180,6 +188,13 @@ export default function ManagementScreen() {
   const handleDeclareCompromisedNumber = async (item: UserSimNumber) => {
     const result = await declareCompromised(item.id);
     if (result.success) {
+      await activityHistoryService.addActivity({
+        phone: item.phone,
+        type: 'common.myNumbers',
+        category: 'threats',
+        status: 'common.compromised',
+        badgeType: 'red',
+      });
       toast.error(`${t('common.lineDeclaredCompromised')}: ${item.phone}`);
       router.push('/(app)/alert-whatsapp');
     } else {

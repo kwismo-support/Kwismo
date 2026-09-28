@@ -20,6 +20,9 @@ import { useAuthStore } from '@/shared/store/authStore';
 import { useDashboard } from '@/features/dashboard/hooks/useDashboard';
 import { colors } from '@/styles/tokens';
 
+import { activityHistoryService } from '@/shared/services/activityHistoryService';
+import { toast } from '@/shared/store/toastStore';
+
 type FilterCategory = 'all' | 'verified' | 'threats' | 'reports' | 'transfers';
 
 export default function HomeScreen() {
@@ -35,6 +38,12 @@ export default function HomeScreen() {
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
+  };
+
+  const handleClearHistory = async () => {
+    await activityHistoryService.clearHistory();
+    await refresh();
+    toast.info(t('common.historyCleared') || "Historique d'activité effacé");
   };
 
   const userName = useMemo(() => {
@@ -246,13 +255,23 @@ export default function HomeScreen() {
           <Text className="text-sm font-bold text-slate-900 dark:text-white">
             {t('common.recentActivity')}
           </Text>
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={toggleFilters}
-            className="p-1.5"
-          >
-            <Icon name="hugeicons:filter" color={isDark ? 'white' : '#161E33'} size={16} />
-          </TouchableOpacity>
+          <View className="flex-row items-center gap-1">
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={handleClearHistory}
+              className="p-1.5"
+            >
+              <Icon name="solar:broom-bold" color={isDark ? 'white' : '#161E33'} size={18} />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={toggleFilters}
+              className="p-1.5"
+            >
+              <Icon name="hugeicons:filter" color={isDark ? 'white' : '#161E33'} size={16} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 

@@ -15,6 +15,7 @@ import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
 import { toast } from '@/shared/store/toastStore';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { activityHistoryService } from '@/shared/services/activityHistoryService';
 
 import * as Contacts from 'expo-contacts/legacy';
 
@@ -130,6 +131,13 @@ export default function AlertWhatsappScreen() {
           if (prev >= 100) {
             clearInterval(interval);
             setStep('success');
+            activityHistoryService.addActivity({
+              phone: 'Alerte WhatsApp',
+              type: 'common.actionWhatsapp',
+              category: 'threats',
+              status: 'common.alertWhatsapp',
+              badgeType: 'yellow',
+            });
             return 100;
           }
           return prev + 10;

@@ -3,6 +3,7 @@ import { callDetectionApi, CallLogItem } from './callDetection.api';
 import { storage } from '@/shared/services/storage';
 import { getDeviceContacts } from '@/shared/lib/contactsService';
 import { PushNotificationService } from '@/shared/services/pushNotificationService';
+import { activityHistoryService } from '@/shared/services/activityHistoryService';
 
 const RECENT_CALLS_KEY = 'kwismo_recent_call_log_v1';
 
@@ -20,12 +21,17 @@ export interface SavedCallLog {
 
 export const callListenerService = {
   async initListener(onIncomingCallAlert?: (call: CallLogItem) => void) {
+    console.log(`\x1b[36m[CALL LISTENER INIT]\x1b[0m Initializing Call Listener Service and Push Notifications...`);
     try {
       await PushNotificationService.requestPermissions();
-    } catch {}
+      console.log(`\x1b[32m[CALL LISTENER INIT]\x1b[0m Listener initialized successfully.`);
+    } catch (err) {
+      console.warn(`\x1b[31m[CALL LISTENER INIT WARN]\x1b[0m Error:`, err);
+    }
   },
 
   async recordCallEnded(phoneNumber: string, durationSeconds: number = 25): Promise<SavedCallLog> {
+    console.log(`\x1b[33m[CALL DETECTION — INCOMING CALL ENDED]\x1b[0m Phone Number: "${phoneNumber}", Duration: ${durationSeconds}s`);
     const cleanNumber = phoneNumber.replace(/[\s\-()]/g, '');
     const now = Date.now();
     const durationStr = `${durationSeconds}s`;
@@ -37,6 +43,7 @@ export const callListenerService = {
       const match = contacts.find((c) => c.phone.replace(/[\s\-()]/g, '').includes(cleanNumber));
       if (match) {
         isUnknown = false;
+        console.log(`\x1b[36m[CALL DETECTION CONTACT MATCH]\x1b[0m Contact matched: "${match.name}"`);
       }
     } catch {}
 
@@ -59,6 +66,17 @@ export const callListenerService = {
       let list: SavedCallLog[] = existingStr ? JSON.parse(existingStr) : [];
       list = [callRecord, ...list.filter((c) => c.rawPhone !== cleanNumber)].slice(0, 50);
       await storage.setItem(RECENT_CALLS_KEY, JSON.stringify(list));
+      console.log(`\x1b[32m[CALL DETECTION SAVED]\x1b[0m Call record saved:`, callRecord);
+    } catch {}
+
+    try {
+      await activityHistoryService.addActivity({
+        phone: callRecord.phone,
+        type: 'common.incomingCall',
+        category: 'threats',
+        status: evalResult.is_scam ? 'common.detected' : 'common.verified',
+        badgeType: evalResult.is_scam ? 'red' : 'green',
+      });
     } catch {}
 
     try {

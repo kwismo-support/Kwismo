@@ -21,6 +21,7 @@ import { CountryItem, COUNTRIES_DATA } from '@/shared/components/CountryPickerMo
 import { VerificationGraphic } from '@/shared/components/VerificationGraphic';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { verifyApi, VerifyResult } from '@/features/verify/services/verify.api';
+import { activityHistoryService } from '@/shared/services/activityHistoryService';
 import {
   lookupNumberOffline,
   getRecentVerifications,
@@ -167,9 +168,14 @@ export default function VerifyScreen() {
 
     try {
       const res = await verifyApi.checkNumber(cleanPhone);
+      let isThreat = false;
+      let statusStr = 'common.verified';
+
       if (res.success && res.data) {
         setResult(res.data);
         setTestResultType(res.data.testResultType || 'secure');
+        isThreat = res.data.statut === 'frauduleux' || Boolean(res.data.riskScore && res.data.riskScore > 50);
+        statusStr = isThreat ? 'common.detected' : 'common.verified';
       } else {
         setTestResultType('secure');
         setResult({
@@ -188,6 +194,14 @@ export default function VerifyScreen() {
           recommendation: 'Aucune menace critique détectée',
         });
       }
+
+      await activityHistoryService.addActivity({
+        phone: cleanPhone,
+        type: 'common.actionVerify',
+        category: isThreat ? 'threats' : 'verified',
+        status: statusStr,
+        badgeType: isThreat ? 'red' : 'green',
+      });
     } catch {
       setTestResultType('secure');
     } finally {
