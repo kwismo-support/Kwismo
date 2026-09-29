@@ -97,7 +97,19 @@ export const verifyApi = {
           data: enrichedResult,
         };
       }
-    } catch {
+
+      if (res.success === false && res.errorCode !== 'NETWORK_ERROR') {
+        return {
+          success: false,
+          message: res.message || 'Erreur de vérification',
+          status: res.status,
+        };
+      }
+    } catch (err: any) {
+      return {
+        success: false,
+        message: err.message || 'Erreur de vérification',
+      };
     }
 
     const offlineItem = await lookupNumberOffline(cleanPhone);
@@ -144,22 +156,8 @@ export const verifyApi = {
     }
 
     return {
-      success: true,
-      data: {
-        id: `offline-def-${Date.now()}`,
-        valeur: cleanPhone,
-        phone: cleanPhone,
-        score_risque: 0,
-        riskScore: 0,
-        statut: 'securise',
-        riskLevel: 'LOW',
-        testResultType: 'secure',
-        est_compromis: false,
-        nombre_signalements: 0,
-        reportCount: 0,
-        operator: 'Opérateur Mobile',
-        recommendation: 'Aucun enregistrement local ni réseau pour ce numéro',
-      } as VerifyResult,
+      success: false,
+      message: 'Aucun enregistrement local ni réseau pour ce numéro',
     };
   },
 };

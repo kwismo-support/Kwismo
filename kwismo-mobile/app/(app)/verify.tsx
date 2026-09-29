@@ -43,6 +43,71 @@ const DEFAULT_COUNTRY: CountryItem = {
   callingCode: '+237',
 };
 
+export function parseAndCleanPhone(
+  rawInput: string,
+  currentCountry: CountryItem = DEFAULT_COUNTRY
+): { country: CountryItem; nationalPhone: string; fullE164: string } {
+  const countryList = COUNTRIES_DATA && COUNTRIES_DATA.length > 0 ? COUNTRIES_DATA : [DEFAULT_COUNTRY];
+  let cleaned = rawInput.trim().replace(/\s+/g, '').replace(/-/g, '');
+
+  if (cleaned.startsWith('00')) {
+    cleaned = '+' + cleaned.slice(2);
+  }
+
+  let parsed = parsePhoneNumberFromString(cleaned);
+  if (!parsed && !cleaned.startsWith('+')) {
+    parsed = parsePhoneNumberFromString('+' + cleaned);
+  }
+  if (!parsed) {
+    parsed = parsePhoneNumberFromString(cleaned, currentCountry.code);
+  }
+
+  if (parsed && parsed.country) {
+    const matched = countryList.find((c) => c.code === parsed.country);
+    if (matched) {
+      const national = parsed.nationalNumber || cleaned;
+      return {
+        country: matched,
+        nationalPhone: national,
+        fullE164: parsed.number || `${matched.callingCode}${national}`,
+      };
+    }
+  }
+
+  for (const c of countryList) {
+    const codeDigits = c.callingCode.replace('+', '');
+    if (cleaned.startsWith('+' + codeDigits)) {
+      const national = cleaned.slice(1 + codeDigits.length);
+      return {
+        country: c,
+        nationalPhone: national,
+        fullE164: `${c.callingCode}${national}`,
+      };
+    }
+    if (cleaned.startsWith(codeDigits) && cleaned.length > codeDigits.length + 5) {
+      const national = cleaned.slice(codeDigits.length);
+      return {
+        country: c,
+        nationalPhone: national,
+        fullE164: `${c.callingCode}${national}`,
+      };
+    }
+  }
+
+  const digitsOnly = cleaned.replace(/^\+/, '');
+  const prefixDigits = currentCountry.callingCode.replace('+', '');
+  let national = digitsOnly;
+  if (national.startsWith(prefixDigits) && national.length > prefixDigits.length + 5) {
+    national = national.slice(prefixDigits.length);
+  }
+
+  return {
+    country: currentCountry,
+    nationalPhone: national,
+    fullE164: `${currentCountry.callingCode}${national}`,
+  };
+}
+
 export default function VerifyScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ phone?: string }>();
@@ -50,11 +115,9 @@ export default function VerifyScreen() {
   const { t } = useTranslation();
   const { isDark } = useAppTheme();
 
-  const [mode, setMode] = useState<'input' | 'analyzing' | 'result'>(
-    params.phone ? 'result' : 'input'
-  );
+  const [mode, setMode] = useState<'input' | 'analyzing' | 'result'>('input');
 
-  const [inputPhone, setInputPhone] = useState(params.phone || '');
+  const [inputPhone, setInputPhone] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<CountryItem>(DEFAULT_COUNTRY);
 
   const [permissionGranted, setPermissionGranted] = useState<boolean | null>(null);
@@ -63,30 +126,18 @@ export default function VerifyScreen() {
   const [recentPhones, setRecentPhones] = useState<string[]>([]);
 
   const [testResultType, setTestResultType] = useState<'secure' | 'warning' | 'danger'>('secure');
-  const [result, setResult] = useState<VerifyResult | null>(
-    params.phone
-      ? {
-          id: 'num-init',
-          valeur: params.phone,
-          phone: params.phone,
-          score_risque: 0,
-          riskScore: 0,
-          statut: 'securise',
-          riskLevel: 'LOW',
-          testResultType: 'secure',
-          est_compromis: false,
-          nombre_signalements: 0,
-          reportCount: 0,
-          operator: 'Opérateur Mobile',
-          recommendation: 'Aucun signalement récent',
-        }
-      : null
-  );
+  const [result, setResult] = useState<VerifyResult | null>(null);
 
   useEffect(() => {
     requestContactsPermission();
     loadRecents();
-  }, []);
+    if (params.phone) {
+      const parsed = parseAndCleanPhone(params.phone);
+      setSelectedCountry(parsed.country);
+      setInputPhone(parsed.nationalPhone);
+      startVerificationProcess(parsed.fullE164);
+    }
+  }, [params.phone]);
 
   const loadRecents = async () => {
     const list = await getRecentVerifications();
@@ -142,76 +193,60 @@ export default function VerifyScreen() {
     }
   };
 
-  const updateCountryFromPhone = (phoneNumber: string) => {
-    const parsed = parsePhoneNumberFromString(phoneNumber);
-    if (parsed && parsed.country) {
-      const countryList = COUNTRIES_DATA && COUNTRIES_DATA.length > 0 ? COUNTRIES_DATA : COUNTRIES_DATA || [];
-      const matched = countryList.find((c) => c.code === parsed.country);
-      if (matched) {
-        setSelectedCountry(matched);
-      }
+  const handlePhoneChange = (val: string) => {
+    const parsed = parseAndCleanPhone(val, selectedCountry);
+    if (val.startsWith('+') || val.startsWith('00')) {
+      setSelectedCountry(parsed.country);
+      setInputPhone(parsed.nationalPhone);
+    } else {
+      setInputPhone(val);
     }
   };
 
   const handleSelectContact = (phone: string, name?: string) => {
-    const rawNumber = phone.replace(/\s+/g, '');
-    setInputPhone(phone);
-    updateCountryFromPhone(rawNumber);
-    startVerificationProcess(rawNumber);
+    const parsed = parseAndCleanPhone(phone, selectedCountry);
+    setSelectedCountry(parsed.country);
+    setInputPhone(parsed.nationalPhone);
+    startVerificationProcess(parsed.fullE164);
   };
 
-  const startVerificationProcess = async (phoneNumber: string) => {
-    const cleanPhone = phoneNumber.replace(/\s+/g, '');
+  const startVerificationProcess = async (fullE164: string) => {
     setMode('analyzing');
-    await addRecentVerification(cleanPhone);
+    await addRecentVerification(fullE164);
     await loadRecents();
 
     try {
-      const res = await verifyApi.checkNumber(cleanPhone);
-      let isThreat = false;
-      let statusStr = 'common.verified';
+      const res = await verifyApi.checkNumber(fullE164);
 
       if (res.success && res.data) {
         setResult(res.data);
         setTestResultType(res.data.testResultType || 'secure');
-        isThreat = res.data.statut === 'frauduleux' || Boolean(res.data.riskScore && res.data.riskScore > 50);
-        statusStr = isThreat ? 'common.detected' : 'common.verified';
-      } else {
-        setTestResultType('secure');
-        setResult({
-          id: `res-${Date.now()}`,
-          valeur: cleanPhone,
-          phone: cleanPhone,
-          score_risque: 0,
-          riskScore: 0,
-          statut: 'securise',
-          riskLevel: 'LOW',
-          testResultType: 'secure',
-          est_compromis: false,
-          nombre_signalements: 0,
-          reportCount: 0,
-          operator: 'Opérateur Mobile',
-          recommendation: 'Aucune menace critique détectée',
-        });
-      }
+        const isThreat = res.data.statut === 'frauduleux' || Boolean(res.data.riskScore && res.data.riskScore > 50);
+        const statusStr = isThreat ? 'common.detected' : 'common.verified';
 
-      await activityHistoryService.addActivity({
-        phone: cleanPhone,
-        type: 'common.actionVerify',
-        category: isThreat ? 'threats' : 'verified',
-        status: statusStr,
-        badgeType: isThreat ? 'red' : 'green',
-      });
+        await activityHistoryService.addActivity({
+          phone: fullE164,
+          type: 'common.actionVerify',
+          category: isThreat ? 'threats' : 'verified',
+          status: statusStr,
+          badgeType: isThreat ? 'red' : 'green',
+        });
+
+        setMode('result');
+      } else {
+        setMode('input');
+      }
     } catch {
-      setTestResultType('secure');
-    } finally {
-      setMode('result');
+      setMode('input');
     }
   };
 
   const handleSearch = () => {
     if (!inputPhone.trim()) return;
-    startVerificationProcess(inputPhone.trim());
+    const parsed = parseAndCleanPhone(inputPhone, selectedCountry);
+    setSelectedCountry(parsed.country);
+    setInputPhone(parsed.nationalPhone);
+    startVerificationProcess(parsed.fullE164);
   };
 
   const filteredContacts = contactsList.filter(
@@ -252,8 +287,7 @@ export default function VerifyScreen() {
             <PhoneCountryInput
               phoneNumber={inputPhone}
               onChangePhoneNumber={(val) => {
-                setInputPhone(val);
-                updateCountryFromPhone(val);
+                handlePhoneChange(val);
               }}
               selectedCountry={selectedCountry}
               onSelectCountry={(c) => setSelectedCountry(c)}
