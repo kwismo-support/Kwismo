@@ -226,7 +226,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
 
               <View className="flex-1" />
 
-              <View className="w-10 flex-row items-center justify-end">
+              <View className="min-w-10 flex-row items-center justify-end">
                 {rightAction || null}
               </View>
             </>

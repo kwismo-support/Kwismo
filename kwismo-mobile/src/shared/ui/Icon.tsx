@@ -38,7 +38,12 @@ function fetchIconData(name: string): Promise<any> {
     .then((res) => res.json())
     .then((data) => {
       if (data && data.icons && data.icons[iconName]) {
-        const iconData = data.icons[iconName];
+        const rawIcon = data.icons[iconName];
+        const iconData = {
+          width: rawIcon.width || data.width || 24,
+          height: rawIcon.height || data.height || 24,
+          ...rawIcon,
+        };
         dynamicIconCache[name] = iconData;
         return iconData;
       }
@@ -133,17 +138,22 @@ export const Icon: React.FC<IconProps> = ({
     );
   }
 
-  const iconData = extractedIconsData[name] || dynamicIconCache[name] || asyncIconData;
-  if (iconData) {
+  const rawData = extractedIconsData[name] || dynamicIconCache[name] || asyncIconData;
+  if (rawData) {
     try {
+      const iconData = {
+        width: rawData.width || 24,
+        height: rawData.height || 24,
+        ...rawData,
+      };
       const renderData = iconToSVG(iconData, { height: size, width: size });
-      const viewBox = renderData.attributes.viewBox || '0 0 24 24';
+      const viewBox = renderData.attributes.viewBox || `0 0 ${iconData.width} ${iconData.height}`;
       let body = renderData.body || '';
       if (color) {
         body = body.replace(/currentColor/g, color);
       }
-      const xml = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${viewBox}" fill="${color}">${body}</svg>`;
-      return <SvgXml xml={xml} width={size} height={size} style={style} />;
+      const xml = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid meet">${body}</svg>`;
+      return <SvgXml xml={xml} width={size} height={size} style={{ overflow: 'visible', ...style }} />;
     } catch (err) {
       return null;
     }

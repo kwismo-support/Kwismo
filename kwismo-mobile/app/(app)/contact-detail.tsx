@@ -125,11 +125,11 @@ export default function ContactDetailScreen() {
         rightAction={
           <View className="flex-row items-center gap-3">
             <TouchableOpacity activeOpacity={0.7} onPress={handleEdit} className="p-1">
-              <Icon name="solar:pen-linear" color="#FFFFFF" size={22} />
+              <Icon name="bitcoin-icons:edit-filled" color="#FFFFFF" size={20} />
             </TouchableOpacity>
 
             <TouchableOpacity activeOpacity={0.7} onPress={handleShare} className="p-1">
-              <Icon name="solar:share-linear" color="#FFFFFF" size={22} />
+              <Icon name="dashicons:share" color="#FFFFFF" size={20} />
             </TouchableOpacity>
           </View>
         }
@@ -165,10 +165,9 @@ export default function ContactDetailScreen() {
                   params: { phone },
                 })
               }
-              style={{ width: 64, height: 64 }}
-              className="rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center border border-emerald-100 dark:border-emerald-900/40 shadow-sm"
+              className="wx-16 hx-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center border border-emerald-100 dark:border-emerald-900/40 shadow-sm"
             >
-              <Icon name="solar:qr-code-bold" color="#25B876" size={26} />
+              <Icon name="mage:scan-user-fill" color="#25B876" size={26} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -179,19 +178,17 @@ export default function ContactDetailScreen() {
                   params: { recipient: phone },
                 })
               }
-              style={{ width: 64, height: 64 }}
-              className="rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center border border-emerald-100 dark:border-emerald-900/40 shadow-sm"
+              className="wx-16 hx-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center border border-emerald-100 dark:border-emerald-900/40 shadow-sm"
             >
-              <Icon name="solar:transfer-horizontal-bold" color="#25B876" size={26} />
+              <Icon name="reicon:square-transfer-h-filled" color="#25B876" size={26} />
             </TouchableOpacity>
 
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => Linking.openURL(`tel:${phone.replace(/\s+/g, '')}`).catch(() => {})}
-              style={{ width: 64, height: 64 }}
-              className="rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center border border-emerald-100 dark:border-emerald-900/40 shadow-sm"
+              className="wx-16 hx-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center border border-emerald-100 dark:border-emerald-900/40 shadow-sm"
             >
-              <Icon name="solar:user-speak-bold" color="#25B876" size={26} />
+              <Icon name="mage:contact-book-fill" color="#25B876" size={26} />
             </TouchableOpacity>
           </View>
 
@@ -207,7 +204,7 @@ export default function ContactDetailScreen() {
 
             <View className="flex-row items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800/60 pb-3">
               <Text className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                {t('common.operatorLabel')}
+                {t('common.operator')}
               </Text>
 
               {loading ? (
@@ -221,7 +218,7 @@ export default function ContactDetailScreen() {
 
             <View className="flex-row items-center justify-between py-1">
               <Text className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                {t('common.statusLabel')}
+                {t('common.status')}
               </Text>
               {renderStatusBadge()}
             </View>
