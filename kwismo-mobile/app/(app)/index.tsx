@@ -376,8 +376,8 @@ export default function HomeScreen() {
                     )}
                   </View>
 
-                  <View className="flex-1 pr-1">
-                    <Text numberOfLines={1} className="text-2xs font-bold text-slate-900 dark:text-white">
+                  <View className="flex-1 pr-2">
+                    <Text numberOfLines={1} className="text-xs font-bold text-slate-900 dark:text-white">
                       {item.phone}
                     </Text>
                     <Text numberOfLines={1} className="text-2xs text-slate-400 dark:text-slate-400 mt-0.5">
@@ -385,19 +385,18 @@ export default function HomeScreen() {
                     </Text>
                   </View>
 
-                  <View className="w-24 items-center justify-center">
-                    <View className={`px-2.5 py-0.5 rounded-full ${badgeStyle.bgClass}`}>
-                      <Text className={`text-2xs font-semibold ${badgeStyle.textClass}`}>
+                  <View className="flex-row items-center gap-1.5">
+                    <View className={`px-2 py-0.5 rounded-full ${badgeStyle.bgClass}`}>
+                      <Text numberOfLines={1} className={`text-2xs font-semibold ${badgeStyle.textClass}`}>
                         {displayStatus}
                       </Text>
                     </View>
-                  </View>
 
-                  <View className="flex-row items-center justify-end w-24">
-                    <Text numberOfLines={1} className="text-2xs text-slate-400 dark:text-slate-500">
+                    <Text numberOfLines={1} className="text-3xs text-slate-400 dark:text-slate-500">
                       {item.date}
                     </Text>
-                    <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={14} style={{ marginLeft: 3 }} />
+
+                    <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={14} />
                   </View>
                 </TouchableOpacity>
               );
