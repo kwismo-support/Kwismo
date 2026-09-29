@@ -266,14 +266,6 @@ export default function HomeScreen() {
             >
               <Icon name="hugeicons:filter" color={isDark ? 'white' : '#161E33'} size={16} />
             </TouchableOpacity>
-
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={handleClearHistory}
-              className="p-1.5"
-            >
-              <Icon name="gravity-ui:trash-bin" color={isDark ? 'white' : '#161E33'} size={16} />
-            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -413,14 +405,6 @@ export default function HomeScreen() {
           </View>
         )}
       </ScrollView>
-
-      <TouchableOpacity
-        activeOpacity={0.88}
-        onPress={() => router.push('/(app)/report')}
-        className="absolute bottom-20 right-5 z-50 wx-13 hx-13 rounded-full bg-brand-orange justify-center items-center shadow-lg shadow-brand-orange/40 elevation-6"
-      >
-        <Icon name="famicons:person-add" color="#FFFFFF" size={24} />
-      </TouchableOpacity>
     </View>
   );
 }

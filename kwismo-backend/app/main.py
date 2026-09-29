@@ -219,6 +219,8 @@ for router in (
     app.include_router(router, prefix="/api/v1")
 
 
+from fastapi.responses import HTMLResponse, FileResponse
+
 @app.get("/health",
     response_model=HealthOut,
     tags=["System"],
@@ -234,6 +236,19 @@ async def health() -> HealthOut:
     except Exception as exc:
         _logger.error("Healthcheck DB failure: %s", exc)
         return HealthOut(status="degraded")
+
+
+@app.get("/download/Kwismo.apk", tags=["System"], summary="Télécharger l'application APK Kwismo")
+async def download_apk():
+    apk_path = os.path.join("uploads", "Kwismo.apk")
+    if os.path.exists(apk_path):
+        return FileResponse(
+            path=apk_path,
+            filename="Kwismo.apk",
+            media_type="application/vnd.android.package-archive",
+            headers={"Content-Disposition": 'attachment; filename="Kwismo.apk"'}
+        )
+    return HTMLResponse("Le fichier APK Kwismo n'est pas encore disponible.", status_code=404)
 
 
 @app.get("/docs", include_in_schema=False)
