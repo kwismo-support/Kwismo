@@ -29,6 +29,7 @@ const UserPortalPage       = lazy(() => import('@/features/user'));
 const ProfilePage          = lazy(() => import('@/features/profile'));
 const SettingsPage         = lazy(() => import('@/features/settings'));
 const NotificationsPage    = lazy(() => import('@/features/notifications'));
+const LegalPage            = lazy(() => import('@/features/legal/LegalPage'));
 
 function AppIndexRedirect() {
   const user = useAuthStore((s) => s.user);
@@ -43,6 +44,12 @@ export function AppRouter() {
     <Suspense fallback={<PageRouteLoader />}>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/privacy" element={<LegalPage initialTab="privacy" />} />
+        <Route path="/confidentialite" element={<LegalPage initialTab="privacy" />} />
+        <Route path="/politique-de-confidentialite" element={<LegalPage initialTab="privacy" />} />
+        <Route path="/terms" element={<LegalPage initialTab="terms" />} />
+        <Route path="/cgu" element={<LegalPage initialTab="terms" />} />
+        <Route path="/conditions-d-utilisation" element={<LegalPage initialTab="terms" />} />
         <Route path="/partner" element={<PartnerRequestPage />} />
         <Route path="/devenir-partenaire" element={<PartnerRequestPage />} />
         <Route path="/partner-request" element={<PartnerRequestPage />} />

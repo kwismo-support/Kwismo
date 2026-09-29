@@ -83,16 +83,16 @@ export default function Footer() {
             <h4 className="font-title text-sm font-bold text-slate-900 dark:text-white mb-1">
               {t('landing:footer.colLegal')}
             </h4>
-            <a href="#" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+            <a href="/privacy" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
               {t('landing:footer.legalPrivacy')}
             </a>
-            <a href="#" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+            <a href="/terms" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
               {t('landing:footer.legalTerms')}
             </a>
-            <a href="#" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+            <a href="/privacy" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
               {t('landing:footer.legalCookies')}
             </a>
-            <a href="#" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
+            <a href="/privacy" className="text-slate-600 dark:text-white/70 hover:text-brand-green dark:hover:text-white transition">
               {t('landing:footer.legalSecurity')}
             </a>
           </div>
