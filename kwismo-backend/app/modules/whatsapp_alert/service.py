@@ -101,6 +101,9 @@ async def broadcast_whatsapp_alert(user_id: str, payload: WhatsAppBroadcastIn, l
         }
     )
 
+    # Mettre à jour le statut du numéro compromis chez tous les membres Kwismo
+    await db.contact.update_many(where={"numero": phone_valeur}, data={"statut": "whatsapp_alert"})
+
     recipients_out = []
     for contact in contacts:
         recipient = await db.whatsappalertrecipient.create(
@@ -116,6 +119,16 @@ async def broadcast_whatsapp_alert(user_id: str, payload: WhatsAppBroadcastIn, l
                 statut_accuse=recipient.statutAccuse,
             )
         )
+        # Notifier l'utilisateur Kwismo correspondant au contact s'il est membre
+        target_user_phone = await db.userphone.find_first(where={"valeur": contact.numero})
+        if target_user_phone and target_user_phone.userId != user_id:
+            await db.notification.create(
+                data={
+                    "userId": target_user_phone.userId,
+                    "texte": f"🚨 ALERTE WHATSAPP : Le compte WhatsApp de votre contact {phone_valeur} a été piraté. Ne répondez à aucune demande de fonds !",
+                    "lu": False,
+                }
+            )
         logger.info("[WHATSAPP ALERT] -> %s (%s) : %s", contact.nom, contact.numero, contenu)
 
     return WhatsAppAlertOut(

@@ -231,6 +231,24 @@ async def declare_my_phone_compromised(user_id: str, phone_id: str, lang: str = 
         data={"userId": user_id, "userPhoneId": phone_id}
     )
 
+    # 1. Mettre à jour le statut des contacts possédant ce numéro dans l'annuaire des utilisateurs
+    await db.contact.update_many(where={"numero": phone.valeur}, data={"statut": "compromis"})
+
+    # 2. Envoyer une notification Push / In-App à tous les utilisateurs Kwismo ayant ce contact
+    contacts_with_phone = await db.contact.find_many(where={"numero": phone.valeur})
+    declaring_user = await db.user.find_unique(where={"id": user_id})
+    user_name = f"{declaring_user.prenom} {declaring_user.nom}".strip() if declaring_user else phone.valeur
+
+    for c in contacts_with_phone:
+        if c.userId != user_id:
+            await db.notification.create(
+                data={
+                    "userId": c.userId,
+                    "texte": f"🚨 ALERTE SÉCURITÉ KWISMO : Le numéro {phone.valeur} ({user_name}) a été déclaré compromis/usurpé. Soyez vigilant !",
+                    "lu": False,
+                }
+            )
+
     from app.core.audit_log import log_audit
     await log_audit(user_id, "compromise_phone", cible=phone_id)
 
