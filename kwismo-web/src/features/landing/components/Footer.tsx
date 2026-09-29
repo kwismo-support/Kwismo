@@ -23,7 +23,10 @@ export default function Footer() {
 
             <div className="mt-6 flex items-center gap-3">
               <a
-                href="#"
+                href="https://github.com/kwismo-support/Kwismo/releases/download/v1.0.0/Kwismo.apk"
+                target="_blank"
+                rel="noopener noreferrer"
+                download="Kwismo.apk"
                 className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-white/10 border border-slate-300 dark:border-white/15 hover:bg-slate-200 dark:hover:bg-white/20 transition text-xs font-semibold"
               >
                 <Icon icon="bxl:apple" className="text-xl text-slate-800 dark:text-white" />
@@ -31,7 +34,10 @@ export default function Footer() {
               </a>
 
               <a
-                href="#"
+                href="https://github.com/kwismo-support/Kwismo/releases/download/v1.0.0/Kwismo.apk"
+                target="_blank"
+                rel="noopener noreferrer"
+                download="Kwismo.apk"
                 className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-white/10 border border-slate-300 dark:border-white/15 hover:bg-slate-200 dark:hover:bg-white/20 transition text-xs font-semibold"
               >
                 <Icon icon="bxl:play-store" className="text-xl text-brand-green" />

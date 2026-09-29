@@ -25,7 +25,10 @@ export default function DownloadCTA() {
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <a
-              href="#"
+              href="https://github.com/kwismo-support/Kwismo/releases/download/v1.0.0/Kwismo.apk"
+              target="_blank"
+              rel="noopener noreferrer"
+              download="Kwismo.apk"
               className="flex h-[50px] items-center gap-3 rounded-xl bg-white text-slate-900 px-5 transition hover:bg-slate-100 shadow-lg"
             >
               <Icon icon="bxl:apple" className="text-2xl text-slate-900" />
@@ -36,7 +39,10 @@ export default function DownloadCTA() {
             </a>
 
             <a
-              href="#"
+              href="https://github.com/kwismo-support/Kwismo/releases/download/v1.0.0/Kwismo.apk"
+              target="_blank"
+              rel="noopener noreferrer"
+              download="Kwismo.apk"
               className="flex h-[50px] items-center gap-3 rounded-xl bg-white text-slate-900 px-5 transition hover:bg-slate-100 shadow-lg"
             >
               <Icon icon="bxl:play-store" className="text-2xl text-brand-green" />
