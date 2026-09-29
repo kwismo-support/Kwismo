@@ -175,6 +175,9 @@ export default function RootLayout() {
         import('@/shared/services/offlineQueue').then(({ offlineQueue }) => {
           offlineQueue.processQueue().catch(() => {});
         });
+        import('@/shared/services/callDetectionService').then(({ callDetectionService }) => {
+          callDetectionService.init().catch(() => {});
+        });
       });
     }
   }, [fontsLoaded, initializeAuth]);
