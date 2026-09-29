@@ -174,12 +174,16 @@ export default function ManagementScreen() {
     }
   };
 
-  const handleResendOtpCode = async () => {
+  const handleResendOtpCode = async (channel: 'sms' | 'email' = 'sms') => {
     if (!otpTargetNumber) return;
     setOtpTimer(60);
-    const result = await resendOtp(otpTargetNumber.id);
+    const result = await resendOtp(otpTargetNumber.id, channel);
     if (result.success) {
-      toast.success(t('common.otpSentBySms'));
+      toast.success(
+        channel === 'email'
+          ? (result.message || 'Code OTP envoyé à votre adresse e-mail')
+          : t('common.otpSentBySms')
+      );
     } else {
       toast.error(result.message || t('common.retry'));
     }
@@ -441,13 +445,24 @@ export default function ManagementScreen() {
                   {t('common.resendCodeIn')} {otpTimer}s
                 </Text>
               ) : (
-                <TouchableOpacity onPress={handleResendOtpCode}>
+                <TouchableOpacity onPress={() => handleResendOtpCode('sms')}>
                   <Text className="font-font-bold text-xs font-bold text-brand-green">
                     {t('common.resendNewCode')}
                   </Text>
                 </TouchableOpacity>
               )}
             </View>
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => handleResendOtpCode('email')}
+              className="flex-row items-center justify-center p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark my-2"
+            >
+              <Icon name="solar:letter-bold" color="#25B46E" size={18} className="mr-2" />
+              <Text className="font-font-bold text-xs font-bold text-slate-900 dark:text-white">
+                Recevoir le code par e-mail (Compte)
+              </Text>
+            </TouchableOpacity>
 
             <TouchableOpacity
               activeOpacity={0.85}

@@ -105,51 +105,53 @@ async def _check_firebase_otp(phone: str, code: str, session_info: str | None = 
     return True
 
 
-async def send_sms_otp(phone: str, code: str | None = None, email: str | None = None) -> bool:
+async def send_sms_otp(phone: str, code: str | None = None, email: str | None = None, channel: str = "all") -> bool:
     code_to_send = code or generate_otp()
+    sms_sent = False
 
-    if _has_firebase():
-        try:
-            success = await _send_firebase_otp(phone, code_to_send)
-            if success:
-                logger.info("Firebase OTP envoye avec succes a %s", phone)
-                return True
-        except Exception as exc:
-            logger.warning("Erreur Firebase SMS pour %s : %s", phone, exc)
+    if channel in ("sms", "all"):
+        if _has_firebase():
+            try:
+                success = await _send_firebase_otp(phone, code_to_send)
+                if success:
+                    logger.info("Firebase OTP envoye avec succes a %s", phone)
+                    sms_sent = True
+            except Exception as exc:
+                logger.warning("Erreur Firebase SMS pour %s : %s", phone, exc)
 
-    if _has_brevo():
-        try:
-            success = await _send_brevo_sms_otp(phone, code_to_send)
-            if success:
-                logger.info("Brevo SMS OTP envoye avec succes a %s", phone)
-                return True
-        except Exception as exc:
-            logger.warning("Erreur Brevo SMS pour %s : %s", phone, exc)
+        if not sms_sent and _has_brevo():
+            try:
+                success = await _send_brevo_sms_otp(phone, code_to_send)
+                if success:
+                    logger.info("Brevo SMS OTP envoye avec succes a %s", phone)
+                    sms_sent = True
+            except Exception as exc:
+                logger.warning("Erreur Brevo SMS pour %s : %s", phone, exc)
 
-    if _has_twilio():
-        try:
-            s = get_settings()
+        if not sms_sent and _has_twilio():
+            try:
+                s = get_settings()
 
-            def _twilio_send():
-                verification = _client().verify.v2.services(
-                    s.twilio_verify_service_sid
-                ).verifications.create(to=phone, channel="sms")
-                return verification.status
+                def _twilio_send():
+                    verification = _client().verify.v2.services(
+                        s.twilio_verify_service_sid
+                    ).verifications.create(to=phone, channel="sms")
+                    return verification.status
 
-            status = await asyncio.to_thread(_twilio_send)
-            if status in ("pending", "approved"):
-                return True
-        except Exception as exc:
-            logger.warning("Echec Twilio SMS pour %s : %s", phone, exc)
+                status = await asyncio.to_thread(_twilio_send)
+                if status in ("pending", "approved"):
+                    sms_sent = True
+            except Exception as exc:
+                logger.warning("Echec Twilio SMS pour %s : %s", phone, exc)
 
-    if email:
+    if email and (channel in ("email", "all") or not sms_sent):
         try:
             await send_otp_email(email, code_to_send, phone=phone)
-            return True
+            logger.info("OTP Email envoye avec succes a %s pour le numero %s", email, phone)
         except Exception as exc:
             logger.warning("Echec envoi email OTP a %s : %s", email, exc)
 
-    logger.info("OTP SMS declenche pour phone=%s (code=%s)", phone, code_to_send)
+    logger.info("OTP declenche pour phone=%s (code=%s, sms_sent=%s)", phone, code_to_send, sms_sent)
     return True
 
 

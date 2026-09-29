@@ -145,8 +145,8 @@ export function useManagement() {
     return { success: false, message: res.message };
   };
 
-  const resendOtp = async (phoneId: string) => {
-    return await managementApi.resendPhoneOtp(phoneId);
+  const resendOtp = async (phoneId: string, channel: 'sms' | 'email' = 'sms') => {
+    return await managementApi.resendPhoneOtp(phoneId, channel);
   };
 
   const deleteNumber = async (phoneId: string) => {

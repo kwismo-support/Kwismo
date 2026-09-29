@@ -66,14 +66,14 @@ async def verify_my_phone(
     "/{phone_id}/resend",
     response_model=Message,
     responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
-    summary="Resend the SMS OTP / Renvoyer l'OTP SMS",
-    description=f"**FR** — Renvoie l'OTP SMS. Limité ({OTP_RATE_LIMIT}).\n\n**EN** — Resends the SMS OTP. Rate-limited ({OTP_RATE_LIMIT}).",
+    summary="Resend the OTP via SMS or Email / Renvoyer l'OTP SMS ou Email",
+    description=f"**FR** — Renvoie l'OTP via SMS ou e-mail. Limité ({OTP_RATE_LIMIT}).\n\n**EN** — Resends the OTP via SMS or Email. Rate-limited ({OTP_RATE_LIMIT}).",
 )
 @limiter.limit(OTP_RATE_LIMIT)
 async def resend_my_phone_otp(
-    request: Request, response: Response, phone_id: str, user=Depends(require_roles("user", "admin", "partner", "superadmin"))
+    request: Request, response: Response, phone_id: str, channel: str = "sms", user=Depends(require_roles("user", "admin", "partner", "superadmin"))
 ) -> Message:
-    return await service.resend_my_phone_otp(user.id, phone_id, user.langue)
+    return await service.resend_my_phone_otp(user.id, phone_id, channel, user.langue)
 
 
 @router.delete(

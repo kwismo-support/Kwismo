@@ -9,7 +9,7 @@ interface VerifyOtpModalProps {
   phoneValue?: string;
   onClose: () => void;
   onVerify: (code: string) => Promise<void>;
-  onResend: () => Promise<void>;
+  onResend: (channel?: 'sms' | 'email') => Promise<void>;
   loading?: boolean;
 }
 
@@ -33,10 +33,10 @@ export function VerifyOtpModal({
     await onVerify(code.trim());
   };
 
-  const handleResendClick = async () => {
+  const handleResendClick = async (channel: 'sms' | 'email' = 'sms') => {
     setResending(true);
     try {
-      await onResend();
+      await onResend(channel);
     } finally {
       setResending(false);
     }
@@ -78,18 +78,30 @@ export function VerifyOtpModal({
             onChange={(e) => setCode(e.target.value)}
           />
 
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-500 dark:text-slate-400">
+          <div className="flex flex-col gap-2 pt-1">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
               {t('user:verifyOtpModal.notReceived')}
             </span>
-            <button
-              type="button"
-              onClick={handleResendClick}
-              disabled={resending || loading}
-              className="text-brand-orange font-semibold hover:underline disabled:opacity-50"
-            >
-              {resending ? t('common:actions.loading') : t('user:verifyOtpModal.resendBtn')}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleResendClick('sms')}
+                disabled={resending || loading}
+                className="flex-1 py-2 px-3 text-xs font-semibold rounded-xl border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 disabled:opacity-50 flex items-center justify-center gap-1.5 transition"
+              >
+                <Icon icon="solar:chat-round-dots-bold" className="text-brand-orange text-sm" />
+                Renvoyer SMS
+              </button>
+              <button
+                type="button"
+                onClick={() => handleResendClick('email')}
+                disabled={resending || loading}
+                className="flex-1 py-2 px-3 text-xs font-semibold rounded-xl border border-brand-green/30 bg-brand-green/5 text-brand-green hover:bg-brand-green/10 disabled:opacity-50 flex items-center justify-center gap-1.5 transition"
+              >
+                <Icon icon="solar:letter-bold" className="text-sm" />
+                Recevoir par e-mail
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center gap-3 pt-4 border-t border-slate-100 dark:border-white/10">

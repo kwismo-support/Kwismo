@@ -63,10 +63,13 @@ export const managementApi = {
     }
   },
 
-  async resendPhoneOtp(phoneId: string): Promise<{ success: boolean; message?: string }> {
+  async resendPhoneOtp(
+    phoneId: string,
+    channel: 'sms' | 'email' = 'sms'
+  ): Promise<{ success: boolean; message?: string }> {
     try {
       const res = await ApiClient.request<{ message_fr?: string; message_en?: string }>(
-        `/users/me/phones/${phoneId}/resend`,
+        `/users/me/phones/${phoneId}/resend?channel=${channel}`,
         {
           method: 'POST',
           silent: false,

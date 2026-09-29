@@ -51,9 +51,9 @@ export function useUserPortal() {
     }
   };
 
-  const resendOtp = async () => {
+  const resendOtp = async (channel: 'sms' | 'email' = 'sms') => {
     if (!selectedPhone) return;
-    await userApi.resendMyPhoneOtp(selectedPhone.id);
+    await userApi.resendMyPhoneOtp(selectedPhone.id, channel);
   };
 
   const removePhone = async (phoneId: string) => {

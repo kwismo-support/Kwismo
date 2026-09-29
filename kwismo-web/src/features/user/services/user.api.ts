@@ -85,15 +85,15 @@ export const userApi = {
     }
   },
 
-  resendMyPhoneOtp: async (phoneId: string): Promise<void> => {
+  resendMyPhoneOtp: async (phoneId: string, channel: 'sms' | 'email' = 'sms'): Promise<void> => {
     if (env.useMock) {
       await delay();
-      toast.success('user:toast.otpResent');
+      toast.success(channel === 'email' ? 'Code OTP envoyé à votre adresse e-mail' : 'user:toast.otpResent');
       return;
     }
     try {
-      await apiClient.post(`/users/me/phones/${phoneId}/resend`);
-      toast.success('user:toast.otpResent');
+      await apiClient.post(`/users/me/phones/${phoneId}/resend?channel=${channel}`);
+      toast.success(channel === 'email' ? 'Code OTP envoyé à votre adresse e-mail' : 'user:toast.otpResent');
     } catch (err: any) {
       const msg = err.response?.data?.detail ?? err.message ?? 'user:toast.resendOtpFailed';
       toast.error(msg);

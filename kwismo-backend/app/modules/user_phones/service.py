@@ -174,7 +174,7 @@ async def verify_my_phone(user_id: str, phone_id: str, payload: UserPhoneVerifyI
     )
 
 
-async def resend_my_phone_otp(user_id: str, phone_id: str, lang: str = "fr"):
+async def resend_my_phone_otp(user_id: str, phone_id: str, channel: str = "sms", lang: str = "fr"):
     phone = await db.userphone.find_unique(where={"id": phone_id})
     if phone is None or phone.userId != user_id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("phone_not_found", lang))
@@ -187,11 +187,18 @@ async def resend_my_phone_otp(user_id: str, phone_id: str, lang: str = "fr"):
     user_email = user.email if user else None
 
     code = await _create_sms_otp(user_id, phone_id, phone.valeur)
-    await send_sms_otp(phone.valeur, code=code, email=user_email)
+    await send_sms_otp(phone.valeur, code=code, email=user_email, channel=channel)
+
+    if channel == "email":
+        msg_fr = f"Nouveau code OTP envoyé à l'adresse e-mail ({user_email or 'votre compte'})."
+        msg_en = f"New OTP code sent to your account email ({user_email or 'your account'})."
+    else:
+        msg_fr = t("otp_sms_resent", "fr")
+        msg_en = t("otp_sms_resent", "en")
 
     return Message(
-        message_fr=t("otp_sms_resent", "fr"),
-        message_en=t("otp_sms_resent", "en"),
+        message_fr=msg_fr,
+        message_en=msg_en,
     )
 
 
