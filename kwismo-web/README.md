@@ -153,7 +153,7 @@ kwismo-web/
 │  │
 │  ├─ features/
 │  │  │
-│  │  ├─ landing/
+│  │  ├─ landing/                    # Landing page publique & vitrine
 │  │  │  ├─ index.tsx
 │  │  │  ├─ components/
 │  │  │  │  ├─ Navbar.tsx
@@ -169,6 +169,10 @@ kwismo-web/
 │  │  │  │  └─ Footer.tsx
 │  │  │  └─ sections/
 │  │  │     └─ landingSections.ts
+│  │  │
+│  │  ├─ legal/                      # Page légale dynamique (CGU & Politique de confidentialité)
+│  │  │  ├─ index.tsx
+│  │  │  └─ LegalPage.tsx
 │  │  │
 │  │  ├─ auth/                       # Connexion, oubli mot de passe, reset
 │  │  │  ├─ index.tsx
@@ -195,6 +199,10 @@ kwismo-web/
 │  │  │  ├─ index.tsx
 │  │  │  └─ components/
 │  │  │
+│  │  ├─ partner-request/            # Demandes de partenariat
+│  │  │  ├─ index.tsx
+│  │  │  └─ components/
+│  │  │
 │  │  ├─ numbers/                    # Base des Numéros et Signalements
 │  │  │  ├─ index.tsx
 │  │  │  └─ components/
@@ -204,6 +212,18 @@ kwismo-web/
 │  │  │  └─ components/
 │  │  │
 │  │  ├─ access-control/             # Contrôle d'Accès et Matrice de Droits
+│  │  │  ├─ index.tsx
+│  │  │  └─ components/
+│  │  │
+│  │  ├─ settings/                   # Configuration du système et seuils de risque
+│  │  │  ├─ index.tsx
+│  │  │  └─ components/
+│  │  │
+│  │  ├─ notifications/              # Gestion des alertes et notifications
+│  │  │  ├─ index.tsx
+│  │  │  └─ components/
+│  │  │
+│  │  ├─ profile/                    # Profil utilisateur et sécurité
 │  │  │  ├─ index.tsx
 │  │  │  └─ components/
 │  │  │

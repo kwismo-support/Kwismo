@@ -25,7 +25,7 @@ export default function DownloadCTA() {
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <a
-              href="https://github.com/kwismo-support/Kwismo/releases/download/v1.0.0/Kwismo.apk"
+              href={import.meta.env.VITE_APP_APK_DOWNLOAD_URL}
               target="_blank"
               rel="noopener noreferrer"
               download="Kwismo.apk"
@@ -39,7 +39,7 @@ export default function DownloadCTA() {
             </a>
 
             <a
-              href="https://github.com/kwismo-support/Kwismo/releases/download/v1.0.0/Kwismo.apk"
+              href={import.meta.env.VITE_APP_APK_DOWNLOAD_URL}
               target="_blank"
               rel="noopener noreferrer"
               download="Kwismo.apk"

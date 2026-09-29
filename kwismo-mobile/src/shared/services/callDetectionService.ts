@@ -69,6 +69,8 @@ class CallDetectionService {
 
   public async handleCallEvent(event: CallStateEvent): Promise<void> {
     const { state, phoneNumber } = event;
+    console.log(`\x1b[35m[KWISMO CALL EVENT DETECTED]\x1b[0m State: "${state}", Phone: "${phoneNumber || 'REDACTED_BY_OS'}"`);
+
     if (!phoneNumber) return;
 
     const cleanPhone = phoneNumber.trim();
@@ -82,12 +84,16 @@ class CallDetectionService {
 
       await this.refreshKnownContacts();
       if (this.isUnknownNumber(cleanPhone)) {
+        console.log(`\x1b[36m[KWISMO UNKNOWN CALL]\x1b[0m Analyzing incoming unknown phone: "${cleanPhone}"`);
         await this.checkAndNotifyUnknownCall(cleanPhone);
+      } else {
+        console.log(`\x1b[32m[KWISMO KNOWN CONTACT]\x1b[0m Call from trusted contact: "${cleanPhone}" (Ignored)`);
       }
     } else if (state === 'IDLE') {
       const targetPhone = this.activeCallPhone || cleanPhone;
 
       if (this.wasCallAnswered && targetPhone) {
+        console.log(`\x1b[33m[KWISMO CALL ENDED]\x1b[0m Triggering post-call survey for: "${targetPhone}"`);
         await this.triggerPostCallSurveyNotification(targetPhone);
       }
 
@@ -98,6 +104,7 @@ class CallDetectionService {
 
   private async checkAndNotifyUnknownCall(phone: string): Promise<void> {
     try {
+      console.log(`\x1b[34m[KWISMO API CHECK]\x1b[0m Checking number against server: "${phone}"`);
       const res = await verifyApi.checkNumber(phone);
 
       const isThreat =
@@ -108,6 +115,7 @@ class CallDetectionService {
           Boolean(res.data.riskScore && res.data.riskScore > 50));
 
       if (isThreat) {
+        console.log(`\x1b[31m[KWISMO THREAT ALERT]\x1b[0m High risk scam call detected: "${phone}"`);
         const alertTitle = `Appel suspect détecté : ${phone}`;
         const alertBody = `Attention ! Le numéro inconnu ${phone} a fait l'objet de signalements de fraude. Soyez très vigilant.`;
 
@@ -126,6 +134,7 @@ class CallDetectionService {
           badgeType: 'red',
         });
       } else {
+        console.log(`\x1b[32m[KWISMO VERIFIED CLEAN]\x1b[0m Number verified: "${phone}"`);
         await activityHistoryService.addActivity({
           phone,
           type: 'common.incomingCall',
@@ -134,7 +143,9 @@ class CallDetectionService {
           badgeType: 'green',
         });
       }
-    } catch {
+      console.log(`\x1b[32m[KWISMO ACTIVITY SUCCESS]\x1b[0m Activity logged for "${phone}"`);
+    } catch (err) {
+      console.warn(`\x1b[33m[KWISMO OFFLINE FALLBACK]\x1b[0m API offline or failed. Queuing call for "${phone}"`);
       try {
         const { offlineQueue } = await import('@/shared/services/offlineQueue');
         await offlineQueue.enqueue(
@@ -153,6 +164,7 @@ class CallDetectionService {
         status: 'common.verified',
         badgeType: 'yellow',
       });
+      console.log(`\x1b[33m[KWISMO LOCAL LOG SAVED]\x1b[0m Call stored offline for "${phone}"`);
     }
   }
 
@@ -174,6 +186,7 @@ class CallDetectionService {
     if (Platform.OS !== 'android') return;
 
     try {
+      console.log(`\x1b[35m[KWISMO START MONITORING]\x1b[0m Initializing call detector listener on Android...`);
       let CallDetector: any = null;
       try {
         CallDetector = require('react-native-call-detection');
@@ -199,8 +212,13 @@ class CallDetectionService {
             message: 'Kwismo nécessite l\'accès aux appels pour détecter les numéros suspects en temps réel.',
           }
         );
+        console.log(`\x1b[32m[KWISMO MONITOR ACTIVE]\x1b[0m Call detector listener successfully active.`);
+      } else {
+        console.warn(`\x1b[33m[KWISMO MONITOR NOTICE]\x1b[0m react-native-call-detection module not loaded in current environment.`);
       }
-    } catch {}
+    } catch (err) {
+      console.error(`\x1b[31m[KWISMO MONITOR ERROR]\x1b[0m Failed to start call detector:`, err);
+    }
   }
 }
 

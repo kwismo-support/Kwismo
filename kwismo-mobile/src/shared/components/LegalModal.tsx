@@ -31,18 +31,22 @@ export const LegalModal: React.FC<LegalModalProps> = ({
   const { i18n, t } = useTranslation();
   const { colors: themeColors } = useAppTheme();
 
-  const legalDoc: LegalDocument | null = useMemo(() => {
-    const lang = i18n.language || 'fr';
-    const isTerms =
+  const isTerms = useMemo(() => {
+    return (
       type === 'terms' ||
       title.toLowerCase().includes('term') ||
-      title.toLowerCase().includes('condition');
+      title.toLowerCase().includes('condition')
+    );
+  }, [type, title]);
 
-    if (isTerms) {
-      return getTermsOfService(lang);
-    }
-    return getPrivacyPolicy(lang);
-  }, [title, type, i18n.language]);
+  const keyPrefix = isTerms ? 'legal.terms' : 'legal.privacy';
+
+  const docTitle = t(`${keyPrefix}.title`);
+  const docLastUpdated = t(`${keyPrefix}.lastUpdated`);
+  const rawSections = t(`${keyPrefix}.sections`, { returnObjects: true });
+  const sections: { id: string; title: string; content: string }[] = Array.isArray(rawSections)
+    ? (rawSections as { id: string; title: string; content: string }[])
+    : [];
 
   return (
     <Modal
@@ -62,13 +66,13 @@ export const LegalModal: React.FC<LegalModalProps> = ({
               className="font-headline-bold text-base font-bold text-slate-900 dark:text-white"
               numberOfLines={1}
             >
-              {legalDoc ? legalDoc.title : title}
+              {docTitle || title}
             </Text>
-            {legalDoc && (
+            {docLastUpdated ? (
               <Text className="text-3xs font-medium text-slate-400 dark:text-slate-400 mt-0.5">
-                {t('common.lastUpdated') || 'Dernière mise à jour'} : {legalDoc.lastUpdated}
+                {t('common.lastUpdated') || 'Dernière mise à jour'} : {docLastUpdated}
               </Text>
-            )}
+            ) : null}
           </View>
 
           <TouchableOpacity
@@ -93,10 +97,10 @@ export const LegalModal: React.FC<LegalModalProps> = ({
             <Text className="font-regular text-xs leading-5 text-slate-700 dark:text-slate-300">
               {content}
             </Text>
-          ) : legalDoc ? (
+          ) : sections.length > 0 ? (
             <View className="gap-4">
-              {legalDoc.sections.map((sec, idx) => (
-                <View key={idx} className="bg-slate-50 dark:bg-slate-800/40 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80">
+              {sections.map((sec, idx) => (
+                <View key={sec.id || idx} className="bg-slate-50 dark:bg-slate-800/40 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80">
                   <Text className="font-headline-bold text-xs font-bold text-slate-900 dark:text-white mb-2">
                     {sec.title}
                   </Text>

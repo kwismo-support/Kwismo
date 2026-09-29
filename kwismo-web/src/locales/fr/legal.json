@@ -1,0 +1,94 @@
+{
+  "privacy": {
+    "title": "Politique de Confidentialité et Protection des Données Personnelles",
+    "lastUpdated": "29 Septembre 2026",
+    "sections": [
+      {
+        "id": "art1",
+        "title": "Article 1. PRÉAMBULE ET CHAMP D’APPLICATION EXHAUSTIF",
+        "content": "La présente Politique de Confidentialité régit de manière stricte et intégrale la collecte, l’utilisation, le traitement, le stockage et la protection de l’ensemble des données à caractère personnel des utilisateurs de la plateforme KWISMO (incluant l’application mobile Android/iOS, les portails web, les API partenaires et les services d’analyse IA). KWISMO s’engage formellement à garantir le respect absolu de la vie privée de ses utilisateurs conformément aux dispositions des lois et réglementations nationales et internationales relatives à la protection des données personnelles, à la cybersécurité et au droit du numérique. En accédant ou en utilisant les services KWISMO, vous acceptez l’intégralité des pratiques décrites dans la présente politique."
+      },
+      {
+        "id": "art2",
+        "title": "Article 2. NATURE PRÉCISE DES DONNÉES COLLECTÉES ET TRAITÉES",
+        "content": "KWISMO applique une politique rigoureuse de minimisation des données. Seules les informations strictement indispensables à la détection des fraudes financières, à la prévention du harcèlement et à la sécurisation des transactions Mobile Money sont collectées :\n\n1. Données d’Identité et d’Authentification : Nom, prénom, adresse e-mail valide, numéro de téléphone principal d’inscription, langue d’usage et identifiants cryptographiques sécurisés.\n2. Données Techniques et Métadonnées de Téléphonie : Numéros de téléphone des appels entrants et sortants hors carnet d’adresses, horodatage exact des événements, durée d’appel, état de ligne et scores de risque algorithmiques.\n3. Traitement Local du Carnet d’Adresses : L’accès aux contacts du répertoire est effectué EXCLUSIVEMENT en local sur l’appareil de l’utilisateur pour faire la distinction entre un contact connu et un numéro inconnu. Aucune liste de contacts personnels n’est vendue, louée, transmise ou commercialisée à des tiers."
+      },
+      {
+        "id": "art3",
+        "title": "Article 3. JUSTIFICATION SYSTÈME ET VALIDATION DES PERMISSIONS",
+        "content": "Pour assurer une protection en temps réel contre l’ingénierie sociale et les escroqueries financières, KWISMO requiert des autorisations spécifiques auprès du système d’exploitation de l’appareil mobile :\n\n• Autorisations READ_CALL_LOG et READ_PHONE_STATE (Android) : Indispensables pour intercepter les appels entrants et sortants de numéros inconnus afin d’analyser immédiatement leur empreinte de risque.\n• Autorisation READ_CONTACTS : Strictement réservée à l’appareil local afin de neutraliser les fausses alertes sur vos proches et contacts enregistrés.\n• Autorisation POST_NOTIFICATIONS : Indispensable pour délivrer immédiatement des alertes sonores et visuelles de sécurité en cas de menace avérée ou pour soumettre l’enquête post-appel.\n• Autorisation PROCESS_OUTGOING_CALLS : Utilisée pour vérifier les numéros sortants vers des destinataires non enregistrés avant le déclenchement du transfert."
+      },
+      {
+        "id": "art4",
+        "title": "Article 4. TRAITEMENT HORS LIGNE ET SYNCHRONISATION DIFFÉRÉE",
+        "content": "En cas d’absence de connexion Internet ou de rupture du réseau mobile, KWISMO préserve l’intégralité des fonctionnalités de sécurité grâce à son moteur d’analyse hors-ligne. Les événements d’appels détectés sont enregistrés de manière chiffrée dans la file d’attente locale de l’appareil (Offline Outbox). Dès que la connectivité réseau est rétablie, l’application effectue automatiquement une synchronisation différée avec le serveur central pour mettre à jour les bases de réputation et affiner les scores de risque sans aucune perte de données."
+      },
+      {
+        "id": "art5",
+        "title": "Article 5. CHIFFREMENT, SÉCURITÉ ET STOCKAGE DES DONNÉES",
+        "content": "Toutes les métadonnées transmises entre l’application mobile KWISMO et le cluster d’analyse backend sont chiffrées de bout en bout à l’aide des standards cryptographiques TLS 1.3 et AES-256. Les secrets d’authentification et mots de passe sont hachés au moyen de l’algorithme Argon2id à haute entropie. Les données sont hébergées dans des centres de données hautement sécurisés bénéficiant de certifications de conformité internationales."
+      },
+      {
+        "id": "art6",
+        "title": "Article 6. PARTAGE DES DONNÉES ET COOPÉRATION JUDICIAIRE",
+        "content": "KWISMO s’interdit formellement de vendre, louer ou céder vos données personnelles à des courtiers de données ou à des régies publicitaires. Le partage de données est strictement restreint aux cas suivants :\n\n1. Réquisitions Judiciaires : Communication obligatoire aux autorités judiciaires, policières ou de régulation financière compétentes sur présentation d’un mandat ou d’une réquisition légale dans le cadre d’enquêtes pour cybercriminalité ou fraude financière.\n2. Prestataires Techniques d’Infrastructure : Partenaires d’hébergement et de téléphonie soumis à des obligations strictes de confidentialité."
+      },
+      {
+        "id": "art7",
+        "title": "Article 7. DROITS DES UTILISATEURS, RECTIFICATION ET EFFACEMENT",
+        "content": "Conformément aux réglementations sur la protection des données personnelles, vous disposez des droits suivants sur vos données :\n\n• Droit d’accès et de portabilité des données d’activité.\n• Droit de rectification des informations inexactes.\n• Droit à l’effacement (droit à l’oubli) entraînant la suppression totale et irréversible de votre compte et de l’historique associé.\nPour exercer l’un de ces droits, vous pouvez formuler votre demande par e-mail à notre Délégué à la Protection des Données à l’adresse privacy@kwismo.com."
+      },
+      {
+        "id": "art8",
+        "title": "Article 8. DÉLÉGUÉ À LA PROTECTION DES DONNÉES ET RECLAMATIONS",
+        "content": "Pour toute question relative à la présente politique de confidentialité ou pour formuler une réclamation, vous pouvez contacter notre service juridique à privacy@kwismo.com ou support@kwismo.com. Vos demandes sont traitées dans un délai maximum de 48 heures ouvrées."
+      }
+    ]
+  },
+  "terms": {
+    "title": "Conditions Générales d’Utilisation (CGU) et Engagements de l’Utilisateur",
+    "lastUpdated": "29 Septembre 2026",
+    "sections": [
+      {
+        "id": "art1",
+        "title": "Article 1. OBJET ET ACCEPTATION DES CONDITIONS GÉNÉRALES",
+        "content": "Les présentes Conditions Générales d’Utilisation (CGU) ont pour objet de définir les modalités d’accès, de mise à disposition et d’utilisation des services anti-fraude KWISMO via l’application mobile et le portail web. L’installation de l’application, la création d’un compte ou l’accès aux services vaut acceptation sans réserve de l’ensemble des stipulations des présentes CGU."
+      },
+      {
+        "id": "art2",
+        "title": "Article 2. DESCRIPTION DES SERVICES ET CONDITIONS D’ÉLIGIBILITÉ",
+        "content": "KWISMO fournit un service communautaire et algorithmique d’aide à la décision visant à identifier les numéros suspects, prévenir le phishing et sécuriser les transferts d’argent Mobile Money. Le service est exclusivement réservé aux personnes physiques majeures ou aux personnes morales valablement représentées."
+      },
+      {
+        "id": "art3",
+        "title": "Article 3. DROITS ET OBLIGATIONS DE L’UTILISATEUR (CE QU’IL FAUT FAIRE ET NE PAS FAIRE)",
+        "content": "Droits de l’Utilisateur :\n• Consulter gratuitement les notes de risque et les analyses d’authenticité des numéros de téléphone.\n• Soumettre des signalements citoyens documentés en cas de tentative d’escroquerie.\n\nObligations de l’Utilisateur :\n• Fournir des informations exactes et sincères lors de l’inscription.\n• Conserver la confidentialité absolue de ses identifiants et sécuriser l’accès à son appareil mobile."
+      },
+      {
+        "id": "art4",
+        "title": "Article 4. INTERDICTIONS STRICTES, ABUS, FAUX SIGNALEMENTS ET SANCTIONS",
+        "content": "Il est strictement interdit, sous peine de poursuites civiles et pénales, de :\n1. Publier de faux signalements abusifs, mensongers ou diffamatoires dans l’intention de nuire à un numéro de téléphone légitime ou à un commerce.\n2. Réaliser de l’ingénierie inverse (reverse engineering), décompiler, désassembler ou extraire les algorithmes IA et le code source de KWISMO.\n3. Utiliser la plateforme KWISMO à des fins de harcèlement, de blanchiment d’argent, d’extorsion ou de toute activité financière illégale.\n\nToute violation entraînera la suspension immédiate du compte, le bannissement irréversible de l’appareil et la transmission du dossier aux autorités judiciaires et policières."
+      },
+      {
+        "id": "art5",
+        "title": "Article 5. PROCÉDURE DE SIGNALEMENT ET CONTESTATION DE NUMÉRO",
+        "content": "Toute personne ou entité estimant qu’un numéro de téléphone a été indûment catégorisé comme suspect ou frauduleux peut introduire une demande de révision en écrivant à legal@kwismo.com. Le dossier doit comporter une justification d’identité et des pièces probantes. KWISMO s’engage à mener une enquête contradictoire et à mettre à jour la notation sous 72 heures ouvrées."
+      },
+      {
+        "id": "art6",
+        "title": "Article 6. LIMITATION DE RESPONSABILITÉ ET EXCLUSION DE GARANTIE",
+        "content": "KWISMO constitue un outil de prévention et d’aide à la décision. Les scores de risque sont générés par des algorithmes d’intelligence artificielle et des données communautaires. KWISMO ne peut être tenu responsable des pertes financières ou préjudices directs ou indirects résultant d’une transaction financière exécutée volontairement par l’utilisateur malgré un avertissement d’alerte."
+      },
+      {
+        "id": "art7",
+        "title": "Article 7. PROPRIÉTÉ INTELLECTUELLE",
+        "content": "L’ensemble des marques, logos, graphismes, interfaces, codes sources, bases de données et algorithmes de KWISMO sont la propriété exclusive de la société. Toute reproduction, modification ou diffusion non autorisée est strictement interdite et constitue une contrefaçon sanctionnée par la loi."
+      },
+      {
+        "id": "art8",
+        "title": "Article 8. RESCISSION, SUSPENSION ET DROIT APPLICABLE",
+        "content": "KWISMO se réserve le droit de suspendre ou de résilier sans préavis tout compte en cas de manquement grave aux présentes CGU. Les présentes conditions sont soumises au droit applicable en matière de commerce électronique et de services numériques. Tout litige relatif à leur exécution sera porté devant les tribunaux compétents."
+      }
+    ]
+  }
+}

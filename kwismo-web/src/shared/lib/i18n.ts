@@ -13,7 +13,7 @@ import frPartner from '@/locales/fr/partner.json';
 import frPartnerRequest from '@/locales/fr/partnerRequest.json';
 import frUser    from '@/locales/fr/user.json';
 import frErrors  from '@/locales/fr/errors.json';
-
+import frLegal   from '@/locales/fr/legal.json';
 
 import enCommon  from '@/locales/en/common.json';
 import enLanding from '@/locales/en/landing.json';
@@ -23,6 +23,7 @@ import enPartner from '@/locales/en/partner.json';
 import enPartnerRequest from '@/locales/en/partnerRequest.json';
 import enUser    from '@/locales/en/user.json';
 import enErrors  from '@/locales/en/errors.json';
+import enLegal   from '@/locales/en/legal.json';
 
 i18next
   .use(LanguageDetector)
@@ -31,7 +32,7 @@ i18next
     lng:         env.defaultLang,
     fallbackLng: 'fr',
     debug:       false,
-    ns:          ['common', 'landing', 'auth', 'admin', 'partner', 'partnerRequest', 'user', 'errors'],
+    ns:          ['common', 'landing', 'auth', 'admin', 'partner', 'partnerRequest', 'user', 'errors', 'legal'],
     defaultNS:   'common',
     detection: {
       order:  ['localStorage', 'navigator'],
@@ -39,8 +40,8 @@ i18next
       caches: ['localStorage'],
     },
     resources: {
-      fr: { common: frCommon, landing: frLanding, auth: frAuth, admin: frAdmin, partner: frPartner, partnerRequest: frPartnerRequest, user: frUser, errors: frErrors },
-      en: { common: enCommon, landing: enLanding, auth: enAuth, admin: enAdmin, partner: enPartner, partnerRequest: enPartnerRequest, user: enUser, errors: enErrors },
+      fr: { common: frCommon, landing: frLanding, auth: frAuth, admin: frAdmin, partner: frPartner, partnerRequest: frPartnerRequest, user: frUser, errors: frErrors, legal: frLegal },
+      en: { common: enCommon, landing: enLanding, auth: enAuth, admin: enAdmin, partner: enPartner, partnerRequest: enPartnerRequest, user: enUser, errors: enErrors, legal: enLegal },
     },
     interpolation: { escapeValue: false },
   });
