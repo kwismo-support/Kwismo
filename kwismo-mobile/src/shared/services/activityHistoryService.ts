@@ -43,10 +43,9 @@ export const activityHistoryService = {
         minute: '2-digit',
       });
 
-      let initials = item.initials || '';
-      if (!initials && item.phone) {
-        const clean = item.phone.replace(/[^0-9]/g, '');
-        initials = clean.length > 2 ? clean.slice(-2) : clean;
+      let initials = item.initials || undefined;
+      if (initials && /^[0-9]+$/.test(initials)) {
+        initials = undefined;
       }
 
       const newRecord: DashboardActivity = {
