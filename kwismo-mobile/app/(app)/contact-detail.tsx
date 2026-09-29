@@ -125,11 +125,11 @@ export default function ContactDetailScreen() {
         rightAction={
           <View className="flex-row items-center gap-3">
             <TouchableOpacity activeOpacity={0.7} onPress={handleEdit} className="p-1">
-              <Icon name="solar:pen-linear" color="#FFFFFF" size={20} />
+              <Icon name="solar:pen-linear" color="#FFFFFF" size={22} />
             </TouchableOpacity>
 
             <TouchableOpacity activeOpacity={0.7} onPress={handleShare} className="p-1">
-              <Icon name="solar:share-linear" color="#FFFFFF" size={20} />
+              <Icon name="solar:share-linear" color="#FFFFFF" size={22} />
             </TouchableOpacity>
           </View>
         }
@@ -141,8 +141,11 @@ export default function ContactDetailScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="items-center mb-6">
-            <View className="wx-20 hx-20 rounded-full bg-brand-green/10 dark:bg-brand-green/20 items-center justify-center mb-3 border border-brand-green/30">
-              <Icon name="solar:user-bold" color="#25B876" size={40} />
+            <View
+              style={{ width: 80, height: 80 }}
+              className="rounded-full bg-brand-green/10 dark:bg-brand-green/20 items-center justify-center mb-3 border border-brand-green/30"
+            >
+              <Icon name="solar:user-bold" color="#25B876" size={38} />
             </View>
 
             <Text className="font-montserrat-bold text-xl font-bold text-slate-900 dark:text-white text-center mb-0.5">
@@ -162,9 +165,10 @@ export default function ContactDetailScreen() {
                   params: { phone },
                 })
               }
-              className="wx-16 hx-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center border border-emerald-100 dark:border-emerald-900/40 shadow-sm"
+              style={{ width: 64, height: 64 }}
+              className="rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center border border-emerald-100 dark:border-emerald-900/40 shadow-sm"
             >
-              <Icon name="solar:qr-code-bold" color="#25B876" size={22} />
+              <Icon name="solar:qr-code-bold" color="#25B876" size={26} />
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -175,17 +179,19 @@ export default function ContactDetailScreen() {
                   params: { recipient: phone },
                 })
               }
-              className="wx-16 hx-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center border border-emerald-100 dark:border-emerald-900/40 shadow-sm"
+              style={{ width: 64, height: 64 }}
+              className="rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center border border-emerald-100 dark:border-emerald-900/40 shadow-sm"
             >
-              <Icon name="solar:transfer-horizontal-bold" color="#25B876" size={22} />
+              <Icon name="solar:transfer-horizontal-bold" color="#25B876" size={26} />
             </TouchableOpacity>
 
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => Linking.openURL(`tel:${phone.replace(/\s+/g, '')}`).catch(() => {})}
-              className="wx-16 hx-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center border border-emerald-100 dark:border-emerald-900/40 shadow-sm"
+              style={{ width: 64, height: 64 }}
+              className="rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 items-center justify-center border border-emerald-100 dark:border-emerald-900/40 shadow-sm"
             >
-              <Icon name="solar:user-speak-bold" color="#25B876" size={22} />
+              <Icon name="solar:user-speak-bold" color="#25B876" size={26} />
             </TouchableOpacity>
           </View>
 
@@ -201,7 +207,7 @@ export default function ContactDetailScreen() {
 
             <View className="flex-row items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800/60 pb-3">
               <Text className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                {t('common.operator')}
+                {t('common.operatorLabel')}
               </Text>
 
               {loading ? (
@@ -215,7 +221,7 @@ export default function ContactDetailScreen() {
 
             <View className="flex-row items-center justify-between py-1">
               <Text className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                {t('common.status')}
+                {t('common.statusLabel')}
               </Text>
               {renderStatusBadge()}
             </View>

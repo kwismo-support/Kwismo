@@ -252,6 +252,8 @@
     "unknown": "Inconnu",
     "shareError": "Erreur lors du partage",
     "operator": "Opérateur",
-    "status": "Statut"
+    "operatorLabel": "Opérateur",
+    "status": "Statut",
+    "statusLabel": "Statut"
   }
 }
