@@ -104,7 +104,7 @@ export function ContactCard({
     >
       <View className="flex-row items-center flex-1 mr-2">
         <View
-          className={`w-11 h-11 rounded-full items-center justify-center mr-3.5 ${getAvatarBg()}`}
+          className={`wx-11 hx-11 rounded-full items-center justify-center mr-3.5 ${getAvatarBg()}`}
         >
           {getAvatarContent()}
         </View>

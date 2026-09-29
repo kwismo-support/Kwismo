@@ -150,7 +150,7 @@ export default function AddNumberScreen() {
           showsVerticalScrollIndicator={false}
           className="gap-y-6"
         >
-          <View className="flex-row items-center h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
+          <View className="flex-row items-center hx-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
             <Icon name="solar:user-linear" color="#94A3B8" size={20} className="mr-2.5" />
             <TextInput
               className="flex-1 font-medium text-base text-slate-900 dark:text-white"
@@ -161,7 +161,7 @@ export default function AddNumberScreen() {
             />
           </View>
 
-          <View className="flex-row items-center h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
+          <View className="flex-row items-center hx-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
             <Icon name="solar:user-linear" color="#94A3B8" size={20} className="mr-2.5" />
             <TextInput
               className="flex-1 font-medium text-base text-slate-900 dark:text-white"
@@ -175,7 +175,7 @@ export default function AddNumberScreen() {
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setCountryModalVisible(true)}
-            className="h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 flex-row items-center bg-white dark:bg-brand-cardDark"
+            className="hx-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 flex-row items-center bg-white dark:bg-brand-cardDark"
           >
             <CountryFlag countryCode={selectedCountry.code} size={22} className="mr-2.5" />
             <Text className="font-medium text-base text-slate-900 dark:text-white flex-1">
@@ -185,7 +185,7 @@ export default function AddNumberScreen() {
           </TouchableOpacity>
 
           <View
-            className={`flex-row items-center h-13 rounded-xl border px-3.5 bg-white dark:bg-brand-cardDark ${
+            className={`flex-row items-center hx-13 rounded-xl border px-3.5 bg-white dark:bg-brand-cardDark ${
               phoneError ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
             }`}
           >

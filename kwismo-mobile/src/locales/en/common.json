@@ -245,6 +245,13 @@
     "amount": "Total amount",
     "loading": "Analyzing...",
     "mockSuccess": "Operation successful (mocked)",
-    "localFallback": "Data saved locally"
+    "localFallback": "Data saved locally",
+    "operatorNotRegistered": "Unregistered operator",
+    "editContactTitle": "Edit contact",
+    "contactUpdatedSuccess": "Contact updated successfully",
+    "unknown": "Unknown",
+    "shareError": "Error sharing contact",
+    "operator": "Operator",
+    "status": "Status"
   }
 }

@@ -256,7 +256,7 @@ export default function AlertWhatsappScreen() {
             contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
             showsVerticalScrollIndicator={false}
           >
-            <View className="flex-row items-center h-12 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark px-4 mb-4 shadow-sm">
+            <View className="flex-row items-center hx-12 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark px-4 mb-4 shadow-sm">
               <Icon name="solar:magnifer-linear" color="#94A3B8" size={20} className="mr-3" />
               <TextInput
                 className="flex-1 text-sm font-medium text-slate-900 dark:text-white"
@@ -281,7 +281,7 @@ export default function AlertWhatsappScreen() {
                   {t('common.selectAll')}
                 </Text>
                 <View
-                  className={`w-5 h-5 rounded-full border items-center justify-center ${
+                  className={`wx-5 hx-5 rounded-full border items-center justify-center ${
                     allSelected
                       ? 'border-brand-green bg-brand-green'
                       : 'border-slate-300 dark:border-slate-600'
@@ -325,7 +325,7 @@ export default function AlertWhatsappScreen() {
                       <View className="flex-row items-center flex-1 pr-3">
                         <View
                           style={{ backgroundColor: contact.initialBg || '#CBD5E1' }}
-                          className="w-11 h-11 rounded-full items-center justify-center mr-3.5"
+                          className="wx-11 hx-11 rounded-full items-center justify-center mr-3.5"
                         >
                           {contact.initials ? (
                             <Text className="text-white font-bold text-sm">{contact.initials}</Text>
@@ -345,7 +345,7 @@ export default function AlertWhatsappScreen() {
                       </View>
 
                       <View
-                        className={`w-5 h-5 rounded-full border items-center justify-center ${
+                        className={`wx-5 hx-5 rounded-full border items-center justify-center ${
                           isSelected
                             ? 'border-brand-green bg-brand-green'
                             : 'border-slate-300 dark:border-slate-600'
@@ -362,7 +362,7 @@ export default function AlertWhatsappScreen() {
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={handleNextToMessage}
-              className="h-13 rounded-2xl bg-brand-orange justify-center items-center mb-6 shadow-md shadow-brand-orange/30"
+              className="hx-13 rounded-2xl bg-brand-orange justify-center items-center mb-6 shadow-md shadow-brand-orange/30"
             >
               <Text className="font-montserrat-bold text-base font-bold text-white">
                 {t('common.next')} ({selectedIds.size})
@@ -402,7 +402,7 @@ export default function AlertWhatsappScreen() {
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={startBroadcast}
-              className="h-13 rounded-2xl bg-brand-orange justify-center items-center mb-6 shadow-md shadow-brand-orange/30"
+              className="hx-13 rounded-2xl bg-brand-orange justify-center items-center mb-6 shadow-md shadow-brand-orange/30"
             >
               <Text className="font-montserrat-bold text-base font-bold text-white">
                 {t('common.send')} ({selectedCount})
@@ -413,7 +413,7 @@ export default function AlertWhatsappScreen() {
 
         {step === 'broadcasting' && (
           <View className="flex-1 items-center justify-center px-4 pb-12">
-            <View className="w-36 h-36 rounded-full bg-emerald-50 dark:bg-emerald-950/30 items-center justify-center mb-8 relative">
+            <View className="wx-36 hx-36 rounded-full bg-emerald-50 dark:bg-emerald-950/30 items-center justify-center mb-8 relative">
               <Icon name="solar:shield-warning-bold" color="#25B876" size={68} />
               <ActivityIndicator
                 size="large"
@@ -441,8 +441,8 @@ export default function AlertWhatsappScreen() {
 
         {step === 'success' && (
           <View className="flex-1 items-center justify-center px-4 pb-12">
-            <View className="w-36 h-36 rounded-full bg-emerald-50 dark:bg-emerald-950/30 items-center justify-center mb-8">
-              <View className="w-20 h-20 rounded-full bg-brand-green items-center justify-center shadow-lg shadow-emerald-500/30">
+            <View className="wx-36 hx-36 rounded-full bg-emerald-50 dark:bg-emerald-950/30 items-center justify-center mb-8">
+              <View className="wx-20 hx-20 rounded-full bg-brand-green items-center justify-center shadow-lg shadow-emerald-500/30">
                 <Icon name="gravity-ui:check" color="#FFFFFF" size={40} />
               </View>
             </View>
@@ -458,7 +458,7 @@ export default function AlertWhatsappScreen() {
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={() => router.back()}
-              className="w-full max-w-[280px] h-13 rounded-2xl bg-brand-green justify-center items-center shadow-md shadow-emerald-500/30"
+              className="w-full max-w-[280px] hx-13 rounded-2xl bg-brand-green justify-center items-center shadow-md shadow-emerald-500/30"
             >
               <Text className="font-montserrat-bold text-base font-bold text-white">
                 {t('common.continue')}
@@ -481,7 +481,7 @@ export default function AlertWhatsappScreen() {
             </View>
 
             <View className="items-center justify-center my-4">
-              <View className="w-36 h-36 rounded-full bg-red-50 dark:bg-red-950/30 items-center justify-center mb-6">
+              <View className="wx-36 hx-36 rounded-full bg-red-50 dark:bg-red-950/30 items-center justify-center mb-6">
                 <Icon name="solar:danger-triangle-bold" color="#EF4444" size={68} />
               </View>
 
@@ -497,7 +497,7 @@ export default function AlertWhatsappScreen() {
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={() => router.back()}
-              className="h-13 rounded-2xl bg-brand-orange justify-center items-center mb-3 shadow-md shadow-brand-orange/30"
+              className="hx-13 rounded-2xl bg-brand-orange justify-center items-center mb-3 shadow-md shadow-brand-orange/30"
             >
               <Text className="font-montserrat-bold text-base font-bold text-white">
                 {t('common.skip')}
@@ -507,7 +507,7 @@ export default function AlertWhatsappScreen() {
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={startBroadcast}
-              className="h-13 rounded-2xl bg-red-600 justify-center items-center mb-6 shadow-md shadow-red-600/30"
+              className="hx-13 rounded-2xl bg-red-600 justify-center items-center mb-6 shadow-md shadow-red-600/30"
             >
               <Text className="font-montserrat-bold text-base font-bold text-white">
                 {t('common.retry')}

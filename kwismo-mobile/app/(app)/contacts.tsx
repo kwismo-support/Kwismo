@@ -116,7 +116,7 @@ export default function ContactsScreen() {
       />
 
       <View className="flex-1 bg-white dark:bg-brand-darkBg rounded-t-[28px] overflow-hidden pt-4 px-4">
-        <View className="flex-row items-center h-12 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark px-4 mb-4 shadow-sm">
+        <View className="flex-row items-center hx-12 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark px-4 mb-4 shadow-sm">
           <Icon name="solar:magnifer-linear" color="#94A3B8" size={20} className="mr-3" />
           <TextInput
             className="flex-1 text-sm font-medium text-slate-900 dark:text-white"
@@ -137,7 +137,7 @@ export default function ContactsScreen() {
               onPress={() => setIsInviteMode(true)}
               className="flex-row items-center py-3 mb-2"
             >
-              <View className="w-11 h-11 rounded-full bg-brand-green items-center justify-center mr-3.5">
+              <View className="wx-11 hx-11 rounded-full bg-brand-green items-center justify-center mr-3.5">
                 <Icon name="gravity-ui:hashtag" color="#FFFFFF" size={20} />
               </View>
               <Text className="font-bold text-base text-slate-900 dark:text-white">
@@ -194,7 +194,7 @@ export default function ContactsScreen() {
         activeOpacity={0.85}
         onPress={() => router.push('/(app)/add-number')}
         style={{ bottom: Math.max(insets.bottom + 24, 30) }}
-        className="absolute right-5 w-14 h-14 rounded-full items-center justify-center bg-orange-400 shadow-lg shadow-orange-400/40 z-50"
+        className="absolute right-5 wx-14 hx-14 rounded-full items-center justify-center bg-orange-400 shadow-lg shadow-orange-400/40 z-50"
       >
         <Icon name="ic:sharp-dialpad" color="#FFFFFF" size={26} />
       </TouchableOpacity>
