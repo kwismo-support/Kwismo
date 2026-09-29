@@ -7,15 +7,19 @@ import { ContactItem } from '../types/contacts.types';
 interface ContactCardProps {
   item: ContactItem;
   index: number;
-  isSelected: boolean;
-  onToggleSelect: (item: ContactItem) => void;
+  isSelected?: boolean;
+  showSelection?: boolean;
+  onToggleSelect?: (item: ContactItem) => void;
+  onPressContact?: (item: ContactItem) => void;
 }
 
 export function ContactCard({
   item,
   index,
-  isSelected,
+  isSelected = false,
+  showSelection = false,
   onToggleSelect,
+  onPressContact,
 }: ContactCardProps) {
   const { t } = useTranslation();
 
@@ -84,10 +88,18 @@ export function ContactCard({
     return <Text className="font-bold text-sm text-white">{initials.toUpperCase()}</Text>;
   };
 
+  const handlePress = () => {
+    if (showSelection && onToggleSelect) {
+      onToggleSelect(item);
+    } else if (onPressContact) {
+      onPressContact(item);
+    }
+  };
+
   return (
     <TouchableOpacity
       activeOpacity={0.75}
-      onPress={() => onToggleSelect(item)}
+      onPress={handlePress}
       className="flex-row items-center justify-between py-2.5 border-b border-slate-100 dark:border-slate-800/60"
     >
       <View className="flex-row items-center flex-1 mr-2">
@@ -113,15 +125,17 @@ export function ContactCard({
           <Icon name="solar:verified-check-bold" color="#25B876" size={18} />
         )}
 
-        <View
-          className={`wx-5 hx-5 rounded-full border items-center justify-center ${
-            isSelected
-              ? 'border-brand-green bg-brand-green'
-              : 'border-slate-300 dark:border-slate-600'
-          }`}
-        >
-          {isSelected && <Icon name="gravity-ui:check" color="#FFFFFF" size={14} />}
-        </View>
+        {showSelection && (
+          <View
+            className={`wx-5 hx-5 rounded-full border items-center justify-center ${
+              isSelected
+                ? 'border-brand-green bg-brand-green'
+                : 'border-slate-300 dark:border-slate-600'
+            }`}
+          >
+            {isSelected && <Icon name="gravity-ui:check" color="#FFFFFF" size={14} />}
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );

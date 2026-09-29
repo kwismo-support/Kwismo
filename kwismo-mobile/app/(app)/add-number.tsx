@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,21 +6,33 @@ import {
   TextInput,
   ScrollView,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { isValidPhoneNumber } from 'libphonenumber-js/min';
+import { isValidPhoneNumber, parsePhoneNumberFromString } from 'libphonenumber-js/min';
+import * as Contacts from 'expo-contacts/legacy';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
 import { CountryFlag } from '@/shared/components/CountryFlag';
 import { CountryPickerModal, CountryItem } from '@/shared/components/CountryPickerModal';
 import { toast } from '@/shared/store/toastStore';
+import { storage } from '@/shared/services/storage';
+import { contactsApi } from '@/features/contacts/services/contacts.api';
+
+const CONTACTS_CACHE_KEY = 'kwismo_contacts_cache';
 
 export default function AddNumberScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const params = useLocalSearchParams<{
+    isEdit?: string;
+    phone?: string;
+    name?: string;
+  }>();
+
+  const isEdit = params.isEdit === 'true';
 
   const [addNom, setAddNom] = useState('');
   const [addPrenom, setAddPrenom] = useState('');
@@ -33,7 +45,23 @@ export default function AddNumberScreen() {
     callingCode: '+237',
   });
 
-  const handleSaveNewNumber = () => {
+  useEffect(() => {
+    if (params.name) {
+      const parts = params.name.trim().split(' ');
+      if (parts.length > 1) {
+        setAddPrenom(parts[0]);
+        setAddNom(parts.slice(1).join(' '));
+      } else {
+        setAddNom(params.name);
+      }
+    }
+    if (params.phone) {
+      const clean = params.phone.replace('+237', '').replace(/\s+/g, '');
+      setAddPhone(clean);
+    }
+  }, [params.name, params.phone]);
+
+  const handleSaveNewNumber = async () => {
     const cleanDigits = addPhone.replace(/\s+/g, '');
     const fullNumber = `${selectedCountry.callingCode}${cleanDigits}`;
     const isValid = isValidPhoneNumber(fullNumber, selectedCountry.code as any);
@@ -43,7 +71,62 @@ export default function AddNumberScreen() {
       return;
     }
 
-    toast.success(t('common.numberVerifiedSuccess'));
+    const fullName = `${addPrenom} ${addNom}`.trim() || fullNumber;
+
+    // 1. Save / Update on local device contacts via expo-contacts
+    try {
+      const { status } = await Contacts.requestPermissionsAsync();
+      if (status === 'granted') {
+        const contactData: Contacts.Contact = {
+          [Contacts.Fields.FirstName]: addPrenom || fullName,
+          [Contacts.Fields.LastName]: addNom || '',
+          [Contacts.Fields.PhoneNumbers]: [
+            {
+              number: fullNumber,
+              label: 'mobile',
+            },
+          ],
+        } as any;
+        await Contacts.addContactAsync(contactData);
+      }
+    } catch {}
+
+    // 2. Update local storage cache
+    try {
+      const cached = await storage.getItem(CONTACTS_CACHE_KEY);
+      let list = cached ? JSON.parse(cached) : [];
+      if (Array.isArray(list)) {
+        const existingIdx = list.findIndex(
+          (c: any) => c.phone && c.phone.replace(/\s+/g, '') === fullNumber.replace(/\s+/g, '')
+        );
+        if (existingIdx >= 0) {
+          list[existingIdx] = {
+            ...list[existingIdx],
+            name: fullName,
+            phone: fullNumber,
+          };
+        } else {
+          list.unshift({
+            id: `local-${Date.now()}`,
+            name: fullName,
+            phone: fullNumber,
+            hasKwismo: false,
+            kwismoStatus: 'none',
+            countryCode: selectedCountry.code,
+          });
+        }
+        await storage.setItem(CONTACTS_CACHE_KEY, JSON.stringify(list));
+      }
+    } catch {}
+
+    // 3. Silent sync with online DB
+    contactsApi.addContact({ nom: fullName, numero: fullNumber }).catch(() => {});
+
+    toast.success(
+      isEdit
+        ? t('common.contactUpdatedSuccess') || 'Contact mis à jour avec succès'
+        : t('common.numberVerifiedSuccess') || 'Contact enregistré avec succès'
+    );
     router.back();
   };
 
@@ -52,7 +135,7 @@ export default function AddNumberScreen() {
       <StatusBar style="light" />
 
       <HeaderBar
-        title={t('common.addPhoneTitle')}
+        title={isEdit ? 'Modifier le contact' : t('common.addPhoneTitle')}
         showBack={true}
         onBack={() => router.back()}
         rightAction={
@@ -72,7 +155,7 @@ export default function AddNumberScreen() {
           showsVerticalScrollIndicator={false}
           className="gap-y-6"
         >
-          <View className="flex-row items-center hx-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
+          <View className="flex-row items-center h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
             <Icon name="solar:user-linear" color="#94A3B8" size={20} className="mr-2.5" />
             <TextInput
               className="flex-1 font-medium text-base text-slate-900 dark:text-white"
@@ -83,7 +166,7 @@ export default function AddNumberScreen() {
             />
           </View>
 
-          <View className="flex-row items-center hx-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
+          <View className="flex-row items-center h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 bg-white dark:bg-brand-cardDark">
             <Icon name="solar:user-linear" color="#94A3B8" size={20} className="mr-2.5" />
             <TextInput
               className="flex-1 font-medium text-base text-slate-900 dark:text-white"
@@ -97,7 +180,7 @@ export default function AddNumberScreen() {
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={() => setCountryModalVisible(true)}
-            className="hx-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 flex-row items-center bg-white dark:bg-brand-cardDark"
+            className="h-13 rounded-xl border border-slate-200 dark:border-slate-700 px-3.5 flex-row items-center bg-white dark:bg-brand-cardDark"
           >
             <CountryFlag countryCode={selectedCountry.code} size={22} className="mr-2.5" />
             <Text className="font-medium text-base text-slate-900 dark:text-white flex-1">
@@ -107,7 +190,7 @@ export default function AddNumberScreen() {
           </TouchableOpacity>
 
           <View
-            className={`flex-row items-center hx-13 rounded-xl border px-3.5 bg-white dark:bg-brand-cardDark ${
+            className={`flex-row items-center h-13 rounded-xl border px-3.5 bg-white dark:bg-brand-cardDark ${
               phoneError ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
             }`}
           >

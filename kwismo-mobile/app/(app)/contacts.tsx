@@ -50,8 +50,7 @@ export default function ContactsScreen() {
     filteredContacts.length > 0 &&
     filteredContacts.every((c) => selectedContactIds.has(c.id));
 
-  const handleSelectContactItem = (contact: ContactItem) => {
-    toggleSelectContact(contact.id);
+  const handlePressContact = (contact: ContactItem) => {
     activityHistoryService.addActivity({
       phone: contact.phone,
       type: 'common.myContacts',
@@ -62,7 +61,17 @@ export default function ContactsScreen() {
     if (isInviteMode && !contact.hasKwismo) {
       setTargetInviteContact(contact);
       setInviteModalVisible(true);
+      return;
     }
+    router.push({
+      pathname: '/(app)/contact-detail',
+      params: {
+        phone: contact.phone,
+        name: contact.name,
+        status: contact.kwismoStatus,
+        hasKwismo: String(contact.hasKwismo),
+      },
+    });
   };
 
   const handleConfirmInvite = async () => {
@@ -147,25 +156,6 @@ export default function ContactsScreen() {
             <Text className="text-sm font-semibold text-slate-400 dark:text-slate-500">
               {isInviteMode ? t('common.myContacts') : t('common.contactsHeader')}
             </Text>
-
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => toggleSelectAll(filteredContacts)}
-              className="flex-row items-center gap-2"
-            >
-              <Text className="text-xs font-medium text-slate-400 dark:text-slate-500">
-                {t('common.selectAll')}
-              </Text>
-              <View
-                className={`wx-5 hx-5 rounded-full border items-center justify-center ${
-                  allSelected
-                    ? 'border-brand-green bg-brand-green'
-                    : 'border-slate-300 dark:border-slate-600'
-                }`}
-              >
-                {allSelected && <Icon name="gravity-ui:check" color="#FFFFFF" size={14} />}
-              </View>
-            </TouchableOpacity>
           </View>
 
           {loading ? (
@@ -198,8 +188,8 @@ export default function ContactsScreen() {
                 key={item.id}
                 item={item}
                 index={idx}
-                isSelected={selectedContactIds.has(item.id)}
-                onToggleSelect={handleSelectContactItem}
+                showSelection={false}
+                onPressContact={handlePressContact}
               />
             ))
           )}

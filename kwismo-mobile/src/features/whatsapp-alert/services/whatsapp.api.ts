@@ -3,25 +3,28 @@ import { ApiClient } from '../../../shared/services/apiClient';
 
 export interface DeclareIncidentPayload {
   user_phone_id: string;
-  custom_message?: string;
 }
 
 export interface BroadcastPayload {
-  incident_id: string;
-  recipient_phones: string[];
+  compromise_incident_id: string;
+  contact_ids: string[];
+  contenu?: string;
 }
 
 export interface IncidentOut {
   id: string;
+  compromise_incident_id: string;
   user_phone_id: string;
+  numero: string;
   statut: string;
-  date_declaration: string;
 }
 
 export interface AlertOut {
   id: string;
-  incident_id: string;
-  destinataires_count: number;
+  contenu: string;
+  date_envoi: string;
+  statut: string;
+  recipients: Array<{ contact_id: string; statut_accuse: string }>;
 }
 
 export const whatsappApi = {
@@ -39,4 +42,5 @@ export const whatsappApi = {
     });
   },
 };
+
 
