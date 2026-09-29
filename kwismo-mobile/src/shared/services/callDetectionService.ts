@@ -100,33 +100,49 @@ class CallDetectionService {
     try {
       const res = await verifyApi.checkNumber(phone);
 
-      if (res.success && res.data) {
-        const isThreat =
-          res.data.statut === 'frauduleux' ||
+      const isThreat =
+        res.success &&
+        res.data &&
+        (res.data.statut === 'frauduleux' ||
           res.data.statut === 'suspect' ||
-          Boolean(res.data.riskScore && res.data.riskScore > 50);
+          Boolean(res.data.riskScore && res.data.riskScore > 50));
 
-        if (isThreat) {
-          const alertTitle = `Appel suspect détecté : ${phone}`;
-          const alertBody = `Attention ! Le numéro inconnu ${phone} a fait l'objet de signalements de fraude. Soyez très vigilant.`;
+      if (isThreat) {
+        const alertTitle = `Appel suspect détecté : ${phone}`;
+        const alertBody = `Attention ! Le numéro inconnu ${phone} a fait l'objet de signalements de fraude. Soyez très vigilant.`;
 
-          await PushNotificationService.sendLocalNotification(
-            alertTitle,
-            alertBody,
-            { route: '/(app)/verify', phone },
-            true
-          );
+        await PushNotificationService.sendLocalNotification(
+          alertTitle,
+          alertBody,
+          { route: '/(app)/verify', phone },
+          true
+        );
 
-          await activityHistoryService.addActivity({
-            phone,
-            type: 'common.suspectCallDetected',
-            category: 'threats',
-            status: 'common.detected',
-            badgeType: 'red',
-          });
-        }
+        await activityHistoryService.addActivity({
+          phone,
+          type: 'common.suspectCallDetected',
+          category: 'threats',
+          status: 'common.detected',
+          badgeType: 'red',
+        });
+      } else {
+        await activityHistoryService.addActivity({
+          phone,
+          type: 'common.incomingCall',
+          category: 'verified',
+          status: 'common.verified',
+          badgeType: 'green',
+        });
       }
-    } catch {}
+    } catch {
+      await activityHistoryService.addActivity({
+        phone,
+        type: 'common.incomingCall',
+        category: 'verified',
+        status: 'common.verified',
+        badgeType: 'green',
+      });
+    }
   }
 
   private async triggerPostCallSurveyNotification(phone: string): Promise<void> {
