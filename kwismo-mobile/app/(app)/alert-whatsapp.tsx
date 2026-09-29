@@ -82,7 +82,6 @@ export default function AlertWhatsappScreen() {
                 };
               });
 
-            // Sync with backend to get real Kwismo members & DB contact IDs
             const syncPayload = localDeviceContacts.map((c) => ({
               nom: c.name,
               numero: c.phone,
@@ -152,7 +151,7 @@ export default function AlertWhatsappScreen() {
 
   const handleNextToMessage = () => {
     if (selectedIds.size === 0) {
-      toast.info('Veuillez sélectionner au moins un contact Kwismo.');
+      toast.info(t('whatsapp.selectOneContactError'));
       return;
     }
     setStep('configure_message');
@@ -160,7 +159,7 @@ export default function AlertWhatsappScreen() {
 
   const startBroadcast = async () => {
     if (selectedIds.size === 0) {
-      toast.info('Veuillez sélectionner au moins un contact Kwismo.');
+      toast.info(t('whatsapp.selectOneContactError'));
       setStep('select_contacts');
       return;
     }
@@ -170,7 +169,6 @@ export default function AlertWhatsappScreen() {
     setErrorMessage('');
 
     try {
-      // 1. Fetch user phones to get active user_phone_id
       const userPhonesRes = await ApiClient.request<any[]>('/users/me/phones', {
         method: 'GET',
         silent: true,
@@ -181,12 +179,11 @@ export default function AlertWhatsappScreen() {
         : null;
 
       if (!activePhone || !activePhone.id) {
-        throw new Error('Aucun numéro enregistré sur votre compte Kwismo.');
+        throw new Error(t('common.noRegisteredPhone'));
       }
 
       setProgress(40);
 
-      // 2. Declare WhatsApp incident
       const incidentRes = await whatsappApi.declareIncident({
         user_phone_id: activePhone.id,
       });
@@ -194,12 +191,11 @@ export default function AlertWhatsappScreen() {
       const incidentData = incidentRes.data;
       const incidentId = incidentData?.compromise_incident_id || incidentData?.id;
       if (!incidentId) {
-        throw new Error(incidentRes.message || "Impossible d'initialiser l'incident d'alerte.");
+        throw new Error(incidentRes.message || t('whatsapp.failureNotice'));
       }
 
       setProgress(70);
 
-      // 3. Broadcast alert to selected contacts
       await whatsappApi.broadcastAlert({
         compromise_incident_id: incidentId,
         contact_ids: Array.from(selectedIds),
@@ -218,7 +214,7 @@ export default function AlertWhatsappScreen() {
       });
     } catch (err: any) {
       console.error('WhatsApp Broadcast error:', err);
-      setErrorMessage(err?.message || 'Erreur lors de la diffusion de l’alerte.');
+      setErrorMessage(err?.message || t('whatsapp.failureNotice'));
       setStep('failure');
     }
   };
@@ -255,13 +251,11 @@ export default function AlertWhatsappScreen() {
       />
 
       <View className="flex-1 bg-white dark:bg-brand-darkBg rounded-t-[28px] overflow-hidden pt-4 px-5">
-        {/* STEP 1: SELECT CONTACTS */}
         {step === 'select_contacts' && (
           <ScrollView
             contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
             showsVerticalScrollIndicator={false}
           >
-            {/* Search input */}
             <View className="flex-row items-center h-12 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark px-4 mb-4 shadow-sm">
               <Icon name="solar:magnifer-linear" color="#94A3B8" size={20} className="mr-3" />
               <TextInput
@@ -273,10 +267,9 @@ export default function AlertWhatsappScreen() {
               />
             </View>
 
-            {/* Header select row */}
             <View className="flex-row items-center justify-between mb-3">
               <Text className="text-sm font-semibold text-slate-400 dark:text-slate-500">
-                Contacts Kwismo uniquement ({filteredContacts.length})
+                {t('common.myContacts')} ({filteredContacts.length})
               </Text>
 
               <TouchableOpacity
@@ -299,7 +292,6 @@ export default function AlertWhatsappScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Contacts list */}
             <View className="gap-y-1 mb-6">
               {loadingContacts ? (
                 <View className="py-8 items-center justify-center">
@@ -308,15 +300,15 @@ export default function AlertWhatsappScreen() {
               ) : filteredContacts.length === 0 ? (
                 <View className="py-8 items-center justify-center">
                   <Text className="text-xs text-slate-500 dark:text-slate-400 text-center mb-3">
-                    Aucun contact Kwismo trouvé dans votre carnet d'adresses.
+                    {t('common.noContactsFound')}
                   </Text>
                   <TouchableOpacity
                     activeOpacity={0.7}
                     onPress={() => router.push('/(app)/contacts')}
-                    className="px-4 py-2 bg-emerald-100 rounded-full"
+                    className="px-4 py-2 bg-emerald-100 dark:bg-emerald-950/40 rounded-full"
                   >
                     <Text className="text-xs font-bold text-brand-green">
-                      Inviter mes contacts
+                      {t('common.inviteFriends')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -367,7 +359,6 @@ export default function AlertWhatsappScreen() {
               )}
             </View>
 
-            {/* Suivant Button */}
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={handleNextToMessage}
@@ -380,7 +371,6 @@ export default function AlertWhatsappScreen() {
           </ScrollView>
         )}
 
-        {/* STEP 2: CONFIGURE MESSAGE */}
         {step === 'configure_message' && (
           <ScrollView
             contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
@@ -388,10 +378,9 @@ export default function AlertWhatsappScreen() {
             className="pt-2"
           >
             <Text className="font-montserrat-bold text-lg font-bold text-slate-900 dark:text-white mb-2">
-              Modèle du message
+              {t('whatsapp.messageTemplateLabel')}
             </Text>
 
-            {/* Message Template Input Box */}
             <View className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-brand-cardDark mb-6">
               <TextInput
                 multiline
@@ -403,15 +392,13 @@ export default function AlertWhatsappScreen() {
               />
             </View>
 
-            {/* Info Container */}
             <View className="flex-row items-center p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40 mb-8">
               <Icon name="solar:info-circle-bold" color="#6B98FF" size={22} className="mr-3" />
               <Text className="flex-1 text-xs font-medium text-blue-900 dark:text-blue-200 leading-4.5">
-                Ce message sera envoyé sous forme de notification (push et in-app) à vos {selectedCount} contact(s) Kwismo sélectionné(s).
+                {t('whatsapp.compromisedNotice')}
               </Text>
             </View>
 
-            {/* Envoyer Button */}
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={startBroadcast}
@@ -424,7 +411,6 @@ export default function AlertWhatsappScreen() {
           </ScrollView>
         )}
 
-        {/* STEP 3: BROADCASTING LOADING STATE */}
         {step === 'broadcasting' && (
           <View className="flex-1 items-center justify-center px-4 pb-12">
             <View className="w-36 h-36 rounded-full bg-emerald-50 dark:bg-emerald-950/30 items-center justify-center mb-8 relative">
@@ -444,7 +430,6 @@ export default function AlertWhatsappScreen() {
               {t('whatsapp.broadcastingSub', { count: selectedCount })}
             </Text>
 
-            {/* Progress Bar */}
             <View className="w-full max-w-[280px] h-2 bg-emerald-100 dark:bg-emerald-950 rounded-full overflow-hidden">
               <View
                 style={{ width: `${progress}%` }}
@@ -454,7 +439,6 @@ export default function AlertWhatsappScreen() {
           </View>
         )}
 
-        {/* STEP 4: SUCCESS STATE */}
         {step === 'success' && (
           <View className="flex-1 items-center justify-center px-4 pb-12">
             <View className="w-36 h-36 rounded-full bg-emerald-50 dark:bg-emerald-950/30 items-center justify-center mb-8">
@@ -468,7 +452,7 @@ export default function AlertWhatsappScreen() {
             </Text>
 
             <Text className="text-xs text-slate-400 dark:text-slate-400 text-center max-w-[280px] leading-5 mb-8">
-              L'alerte a été diffusée par notification push avec succès à vos {selectedCount} contact(s) Kwismo.
+              {t('whatsapp.broadcastSuccessSub', { count: selectedCount })}
             </Text>
 
             <TouchableOpacity
@@ -483,7 +467,6 @@ export default function AlertWhatsappScreen() {
           </View>
         )}
 
-        {/* STEP 5: FAILURE STATE */}
         {step === 'failure' && (
           <ScrollView
             contentContainerStyle={{ paddingBottom: insets.bottom + 40 }}
@@ -511,7 +494,6 @@ export default function AlertWhatsappScreen() {
               </Text>
             </View>
 
-            {/* Ignorer Button */}
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={() => router.back()}
@@ -522,7 +504,6 @@ export default function AlertWhatsappScreen() {
               </Text>
             </TouchableOpacity>
 
-            {/* Réessayer Button */}
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={startBroadcast}

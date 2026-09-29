@@ -104,7 +104,7 @@ export function ContactCard({
     >
       <View className="flex-row items-center flex-1 mr-2">
         <View
-          className={`wx-11 hx-11 rounded-full items-center justify-center mr-3.5 ${getAvatarBg()}`}
+          className={`w-11 h-11 rounded-full items-center justify-center mr-3.5 ${getAvatarBg()}`}
         >
           {getAvatarContent()}
         </View>
@@ -127,7 +127,7 @@ export function ContactCard({
 
         {showSelection && (
           <View
-            className={`wx-5 hx-5 rounded-full border items-center justify-center ${
+            className={`w-5 h-5 rounded-full border items-center justify-center ${
               isSelected
                 ? 'border-brand-green bg-brand-green'
                 : 'border-slate-300 dark:border-slate-600'

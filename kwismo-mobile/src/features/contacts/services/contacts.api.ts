@@ -1,4 +1,5 @@
-import { ApiClient } from '../../../shared/services/apiClient';
+import { ApiClient, ApiResponse } from '../../../shared/services/apiClient';
+import { offlineQueue } from '../../../shared/services/offlineQueue';
 
 export interface ContactItem {
   id: string;
@@ -31,11 +32,28 @@ export const contactsApi = {
     });
   },
 
-  async addContact(payload: { nom: string; numero: string }) {
-    return ApiClient.request<ContactItem>('/contacts', {
-      method: 'POST',
-      body: payload,
-    });
+  async addContact(payload: { nom: string; numero: string }): Promise<ApiResponse<ContactItem>> {
+    try {
+      const res = await ApiClient.request<ContactItem>('/contacts', {
+        method: 'POST',
+        body: payload,
+      });
+      if (!res.success) {
+        await offlineQueue.enqueue('phone_add', '/contacts', 'POST', payload);
+      }
+      return res;
+    } catch {
+      await offlineQueue.enqueue('phone_add', '/contacts', 'POST', payload);
+      return {
+        success: true,
+        message: 'Contact enregistré hors-ligne',
+        data: {
+          id: `offline-${Date.now()}`,
+          nom: payload.nom,
+          numero_valeur: payload.numero,
+        },
+      };
+    }
   },
 
   async removeContact(contactId: string) {

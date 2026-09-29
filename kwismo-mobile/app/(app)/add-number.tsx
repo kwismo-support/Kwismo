@@ -10,7 +10,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { isValidPhoneNumber, parsePhoneNumberFromString } from 'libphonenumber-js/min';
+import { isValidPhoneNumber } from 'libphonenumber-js/min';
 import * as Contacts from 'expo-contacts/legacy';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
@@ -73,7 +73,6 @@ export default function AddNumberScreen() {
 
     const fullName = `${addPrenom} ${addNom}`.trim() || fullNumber;
 
-    // 1. Save / Update on local device contacts via expo-contacts
     try {
       const { status } = await Contacts.requestPermissionsAsync();
       if (status === 'granted') {
@@ -91,7 +90,6 @@ export default function AddNumberScreen() {
       }
     } catch {}
 
-    // 2. Update local storage cache
     try {
       const cached = await storage.getItem(CONTACTS_CACHE_KEY);
       let list = cached ? JSON.parse(cached) : [];
@@ -119,13 +117,10 @@ export default function AddNumberScreen() {
       }
     } catch {}
 
-    // 3. Silent sync with online DB
     contactsApi.addContact({ nom: fullName, numero: fullNumber }).catch(() => {});
 
     toast.success(
-      isEdit
-        ? t('common.contactUpdatedSuccess') || 'Contact mis à jour avec succès'
-        : t('common.numberVerifiedSuccess') || 'Contact enregistré avec succès'
+      isEdit ? t('common.contactUpdatedSuccess') : t('common.numberVerifiedSuccess')
     );
     router.back();
   };
@@ -135,7 +130,7 @@ export default function AddNumberScreen() {
       <StatusBar style="light" />
 
       <HeaderBar
-        title={isEdit ? 'Modifier le contact' : t('common.addPhoneTitle')}
+        title={isEdit ? t('common.editContactTitle') : t('common.addPhoneTitle')}
         showBack={true}
         onBack={() => router.back()}
         rightAction={
