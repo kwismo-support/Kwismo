@@ -135,12 +135,23 @@ class CallDetectionService {
         });
       }
     } catch {
+      try {
+        const { offlineQueue } = await import('@/shared/services/offlineQueue');
+        await offlineQueue.enqueue(
+          'call_log',
+          '/api/v1/verify/check',
+          'POST',
+          { phone },
+          'Appel sauvegardé hors-ligne. Analyse en cours dès reconnexion.'
+        );
+      } catch {}
+
       await activityHistoryService.addActivity({
         phone,
         type: 'common.incomingCall',
         category: 'verified',
         status: 'common.verified',
-        badgeType: 'green',
+        badgeType: 'yellow',
       });
     }
   }
