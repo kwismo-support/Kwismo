@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -20,10 +20,17 @@ import { useAuthStore } from '@/shared/store/authStore';
 import { useDashboard } from '@/features/dashboard/hooks/useDashboard';
 import { colors } from '@/styles/tokens';
 
+import * as Contacts from 'expo-contacts/legacy';
 import { activityHistoryService } from '@/shared/services/activityHistoryService';
 import { toast } from '@/shared/store/toastStore';
 
 type FilterCategory = 'all' | 'verified' | 'threats' | 'reports' | 'transfers';
+
+interface ContactInfo {
+  name: string;
+  initials: string;
+  bg: string;
+}
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -35,6 +42,52 @@ export default function HomeScreen() {
 
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('all');
+  const [contactMap, setContactMap] = useState<Record<string, ContactInfo>>({});
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { status } = await Contacts.requestPermissionsAsync();
+        if (status === 'granted') {
+          const { data } = await Contacts.getContactsAsync({
+            fields: [Contacts.Fields.PhoneNumbers],
+          });
+          if (data && data.length > 0) {
+            const map: Record<string, ContactInfo> = {};
+            const bgColors = ['#25B46E', '#F97316', '#3B82F6', '#6366F1'];
+            data.forEach((c, idx) => {
+              if (c.phoneNumbers && c.phoneNumbers.length > 0) {
+                const nameParts = [(c as any).firstName, (c as any).middleName, (c as any).lastName].filter(Boolean).join(' ');
+                const displayName = c.name || (nameParts.length > 0 ? nameParts : ((c as any).company || (c as any).nickname));
+                if (displayName) {
+                  let initials = '';
+                  const parts = displayName.trim().split(' ');
+                  initials = parts[0][0];
+                  if (parts.length > 1) initials += parts[1][0];
+                  initials = initials.toUpperCase();
+                  const bg = bgColors[idx % bgColors.length];
+
+                  c.phoneNumbers.forEach((p) => {
+                    if (p.number) {
+                      const clean = p.number.replace(/[^0-9]/g, '');
+                      if (clean) {
+                        map[clean] = { name: displayName, initials, bg };
+                        if (clean.length >= 8) {
+                          map[clean.slice(-8)] = { name: displayName, initials, bg };
+                          map[clean.slice(-9)] = { name: displayName, initials, bg };
+                        }
+                      }
+                    }
+                  });
+                }
+              }
+            });
+            setContactMap(map);
+          }
+        }
+      } catch {}
+    })();
+  }, []);
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
@@ -358,6 +411,18 @@ export default function HomeScreen() {
               const displayType = item.type.includes('.') ? t(item.type) : item.type;
               const displayStatus = item.status.includes('.') ? t(item.status) : item.status;
 
+              const cleanPhone = (item.phone || '').replace(/[^0-9]/g, '');
+              const matchedContact =
+                contactMap[cleanPhone] ||
+                (cleanPhone.length >= 8
+                  ? contactMap[cleanPhone.slice(-8)] || contactMap[cleanPhone.slice(-9)]
+                  : null);
+
+              const displayName = matchedContact ? matchedContact.name : item.phone;
+              const displaySub = matchedContact ? item.phone : displayType;
+              const initials = matchedContact ? matchedContact.initials : undefined;
+              const avatarBg = matchedContact ? matchedContact.bg : undefined;
+
               return (
                 <TouchableOpacity
                   key={item.id}
@@ -366,11 +431,13 @@ export default function HomeScreen() {
                   className="flex-row items-center py-2.5"
                 >
                   <View
-                    className="wx-10 hx-10 rounded-full bg-slate-100 dark:bg-slate-800 justify-center items-center mr-2.5"
-                    style={item.initialBg ? { backgroundColor: item.initialBg } : item.initials ? { backgroundColor: colors.green } : {}}
+                    className="wx-10 hx-10 rounded-full justify-center items-center mr-2.5"
+                    style={{
+                      backgroundColor: avatarBg || (isDark ? '#1E293B' : '#F1F5F9'),
+                    }}
                   >
-                    {item.initials ? (
-                      <Text className="text-white font-bold text-2xs">{item.initials}</Text>
+                    {initials ? (
+                      <Text className="text-white font-bold text-2xs">{initials}</Text>
                     ) : (
                       <Icon name="solar:user-bold" color="#94A3B8" size={20} />
                     )}
@@ -378,10 +445,10 @@ export default function HomeScreen() {
 
                   <View className="flex-1 pr-2">
                     <Text numberOfLines={1} className="text-xs font-bold text-slate-900 dark:text-white">
-                      {item.phone}
+                      {displayName}
                     </Text>
                     <Text numberOfLines={1} className="text-2xs text-slate-400 dark:text-slate-400 mt-0.5">
-                      {displayType}
+                      {displaySub}
                     </Text>
                   </View>
 
