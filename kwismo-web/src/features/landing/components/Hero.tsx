@@ -32,7 +32,10 @@ export default function Hero() {
 
           <div className="mt-6 lg:mt-8 flex flex-wrap items-center gap-4 sm:gap-5">
             <a
-              href="#download"
+              href="https://github.com/kwismo-support/Kwismo/releases/download/v1.0.0/Kwismo.apk"
+              target="_blank"
+              rel="noopener noreferrer"
+              download="Kwismo.apk"
               className="flex h-12 lg:h-14 xl:h-[56px] items-center gap-3 rounded-2xl bg-brand-green px-6 lg:px-6 text-sm lg:text-base xl:text-lg font-bold text-white no-underline transition-all duration-300 hover:bg-brand-green/90 shadow-xl"
             >
               <Icon icon="basil:download-solid" className="text-xl lg:text-2xl shrink-0" />
