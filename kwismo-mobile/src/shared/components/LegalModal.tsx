@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,15 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { getPrivacyPolicy, getTermsOfService, LegalDocument } from '@/shared/lib/legalContent';
 
 interface LegalModalProps {
   visible: boolean;
   title: string;
+  type?: 'privacy' | 'terms';
   content?: string;
   onClose: () => void;
 }
@@ -20,11 +23,26 @@ interface LegalModalProps {
 export const LegalModal: React.FC<LegalModalProps> = ({
   visible,
   title,
+  type,
   content,
   onClose,
 }) => {
   const insets = useSafeAreaInsets();
+  const { i18n, t } = useTranslation();
   const { colors: themeColors } = useAppTheme();
+
+  const legalDoc: LegalDocument | null = useMemo(() => {
+    const lang = i18n.language || 'fr';
+    const isTerms =
+      type === 'terms' ||
+      title.toLowerCase().includes('term') ||
+      title.toLowerCase().includes('condition');
+
+    if (isTerms) {
+      return getTermsOfService(lang);
+    }
+    return getPrivacyPolicy(lang);
+  }, [title, type, i18n.language]);
 
   return (
     <Modal
@@ -39,12 +57,19 @@ export const LegalModal: React.FC<LegalModalProps> = ({
         style={{ paddingTop: insets.top }}
       >
         <View className="flex-row items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700/60 bg-white dark:bg-brand-cardDark">
-          <Text
-            className="font-headline-bold text-lg font-bold text-slate-900 dark:text-white flex-1 mr-3"
-            numberOfLines={1}
-          >
-            {title}
-          </Text>
+          <View className="flex-1 mr-3">
+            <Text
+              className="font-headline-bold text-base font-bold text-slate-900 dark:text-white"
+              numberOfLines={1}
+            >
+              {legalDoc ? legalDoc.title : title}
+            </Text>
+            {legalDoc && (
+              <Text className="text-3xs font-medium text-slate-400 dark:text-slate-400 mt-0.5">
+                {t('common.lastUpdated') || 'Dernière mise à jour'} : {legalDoc.lastUpdated}
+              </Text>
+            )}
+          </View>
 
           <TouchableOpacity
             activeOpacity={0.7}
@@ -61,16 +86,29 @@ export const LegalModal: React.FC<LegalModalProps> = ({
         </View>
 
         <ScrollView
-          contentContainerStyle={{ padding: 20, paddingBottom: insets.bottom + 32 }}
-          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ padding: 18, paddingBottom: insets.bottom + 40 }}
+          showsVerticalScrollIndicator={true}
         >
           {content ? (
-            <Text className="font-regular text-sm leading-6 text-slate-900 dark:text-white">
+            <Text className="font-regular text-xs leading-5 text-slate-700 dark:text-slate-300">
               {content}
             </Text>
+          ) : legalDoc ? (
+            <View className="gap-4">
+              {legalDoc.sections.map((sec, idx) => (
+                <View key={idx} className="bg-slate-50 dark:bg-slate-800/40 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80">
+                  <Text className="font-headline-bold text-xs font-bold text-slate-900 dark:text-white mb-2">
+                    {sec.title}
+                  </Text>
+                  <Text className="font-regular text-2xs leading-4.5 text-slate-600 dark:text-slate-300">
+                    {sec.content}
+                  </Text>
+                </View>
+              ))}
+            </View>
           ) : (
             <View className="py-5">
-              <Text className="font-medium text-sm leading-6 text-slate-500 dark:text-slate-400">
+              <Text className="font-medium text-xs leading-5 text-slate-500 dark:text-slate-400">
                 {title}
               </Text>
             </View>
