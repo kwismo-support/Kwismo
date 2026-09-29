@@ -3,6 +3,7 @@ interface ImportMetaEnv {
   readonly VITE_APP_NAME: string;
   readonly VITE_DEFAULT_LANG: string;
   readonly VITE_USE_MOCK?: string;
+  readonly VITE_APP_APK_DOWNLOAD_URL: string;
 }
 
 interface ImportMeta {

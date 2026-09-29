@@ -23,7 +23,7 @@ export default function Footer() {
 
             <div className="mt-6 flex items-center gap-3">
               <a
-                href="https://github.com/kwismo-support/Kwismo/releases/download/v1.0.0/Kwismo.apk"
+                href={import.meta.env.VITE_APP_APK_DOWNLOAD_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 download="Kwismo.apk"
@@ -34,7 +34,7 @@ export default function Footer() {
               </a>
 
               <a
-                href="https://github.com/kwismo-support/Kwismo/releases/download/v1.0.0/Kwismo.apk"
+                href={import.meta.env.VITE_APP_APK_DOWNLOAD_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 download="Kwismo.apk"

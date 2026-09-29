@@ -1,0 +1,94 @@
+{
+  "privacy": {
+    "title": "Privacy Policy & Data Protection Framework",
+    "lastUpdated": "September 29, 2026",
+    "sections": [
+      {
+        "id": "art1",
+        "title": "Article 1. PREAMBLE AND COMPREHENSIVE SCOPE OF APPLICATION",
+        "content": "This Privacy Policy governs the collection, processing, storage, and protection of personal data collected across the entire KWISMO platform (including Android/iOS mobile applications, web portals, partner APIs, and AI threat engines). KWISMO is strictly committed to protecting user privacy in full compliance with national and international legislation regarding cybersecurity, data protection, and digital rights. By accessing or using KWISMO services, you consent to the data practices described herein."
+      },
+      {
+        "id": "art2",
+        "title": "Article 2. NATURE AND CATEGORIES OF COLLECTED DATA",
+        "content": "KWISMO enforces strict data minimization principles. Only data strictly required for financial fraud prevention, anti-scam detection, and Mobile Money transaction security is processed:\n\n1. Identity & Account Data: Full name, verified primary email address, main phone number, language preference, and cryptographic authentication credentials.\n2. Technical & Telephony Metadata: Incoming and outgoing phone numbers outside your address book, exact timestamps, call state duration, line state, and algorithmic risk assessment scores.\n3. Local Contact Book Processing: Device address book access is executed EXCLUSIVELY on the client device to cross-reference and distinguish known contacts from unknown callers. Private contact lists are NEVER uploaded, rented, sold, or commercialized to any third party."
+      },
+      {
+        "id": "art3",
+        "title": "Article 3. SYSTEM PERMISSIONS AND VALIDATION JUSTIFICATION",
+        "content": "To deliver real-time cyber protection against social engineering and financial scams, KWISMO requests explicit operating system permissions:\n\n• READ_CALL_LOG & READ_PHONE_STATE (Android): Strictly required to intercept unknown incoming and outgoing calls and evaluate scam risk signatures in real time.\n• READ_CONTACTS: Required exclusively on the local device to neutralize false alarms on trusted contacts.\n• POST_NOTIFICATIONS: Essential for delivering immediate critical threat alerts and post-call scam survey notifications.\n• PROCESS_OUTGOING_CALLS: Used to verify outgoing numbers to unregistered recipients prior to initiating transfers."
+      },
+      {
+        "id": "art4",
+        "title": "Article 4. OFFLINE PROCESSING AND DEFERRED SYNCHRONIZATION",
+        "content": "During network connectivity loss or offline status, KWISMO maintains security continuity via its local offline detection engine. Intercepted call events are stored securely in an encrypted local queue (Offline Outbox). Once network connectivity is restored, the application automatically executes deferred synchronization with KWISMO servers to update threat reputation scores without any data loss."
+      },
+      {
+        "id": "art5",
+        "title": "Article 5. ENCRYPTION, DATA SECURITY, AND STORAGE STANDARDS",
+        "content": "All data transmitted between the KWISMO application and backend clusters is encrypted end-to-end using TLS 1.3 and AES-256 protocols. Authentication secrets and passwords are hashed using high-entropy Argon2id cryptographic algorithms. Data is hosted in certified high-security data centers complying with international standards."
+      },
+      {
+        "id": "art6",
+        "title": "Article 6. THIRD-PARTY DISCLOSURE AND LAW ENFORCEMENT COOPERATION",
+        "content": "KWISMO strictly prohibits selling, renting, or disclosing personal data to advertising brokers. Data disclosure is strictly limited to:\n\n1. Judicial & Police Requisitions: Mandatory disclosure to competent law enforcement, judicial, or financial regulatory authorities upon presentation of a formal court order in connection with financial crime or cybercrime investigations.\n2. Technical Infrastructure Providers: Hosting and telecom partners bound by strict contractual confidentiality agreements."
+      },
+      {
+        "id": "art7",
+        "title": "Article 7. USER RIGHTS, RECTIFICATION, AND ERASURE",
+        "content": "In accordance with data protection regulations, users retain the following rights regarding their personal data:\n\n• Right to access and data portability.\n• Right to rectify inaccurate or incomplete records.\n• Right to erasure (right to be forgotten), leading to the total permanent deletion of account data.\nTo exercise any of these rights, contact our Data Protection Officer at privacy@kwismo.com."
+      },
+      {
+        "id": "art8",
+        "title": "Article 8. DATA PROTECTION OFFICER AND COMPLAINTS",
+        "content": "For any queries or formal complaints regarding this privacy framework, contact our Legal & Compliance Department at privacy@kwismo.com or support@kwismo.com. All requests are processed within 48 business hours."
+      }
+    ]
+  },
+  "terms": {
+    "title": "Terms of Service & User Conduct Agreement",
+    "lastUpdated": "September 29, 2026",
+    "sections": [
+      {
+        "id": "art1",
+        "title": "Article 1. OBJECT AND ACCEPTANCE OF TERMS",
+        "content": "These Terms of Service (ToS) govern access to and usage of KWISMO anti-fraud services via the mobile application and web portals. Installing the app, registering an account, or accessing services constitutes full, unconditional acceptance of these terms."
+      },
+      {
+        "id": "art2",
+        "title": "Article 2. SERVICE DESCRIPTION AND ELIGIBILITY",
+        "content": "KWISMO provides algorithmic decision-support and threat intelligence services designed to identify suspicious phone numbers, prevent phishing, and secure Mobile Money transactions. Services are strictly reserved for individuals aged 18 or older or duly authorized corporate entities."
+      },
+      {
+        "id": "art3",
+        "title": "Article 3. USER RIGHTS AND OBLIGATIONS (DO'S AND DON'TS)",
+        "content": "User Rights:\n• Access risk rating scores and authenticity analysis for phone numbers.\n• Submit citizen reports on fraud attempts and request status reviews.\n\nUser Obligations:\n• Provide accurate and truthful registration information.\n• Maintain strict confidentiality of account credentials and secure device access."
+      },
+      {
+        "id": "art4",
+        "title": "Article 4. PROHIBITIONS, ABUSE, FALSE REPORTING, AND PENALTIES",
+        "content": "Users are strictly prohibited from:\n1. Submitting false, malicious, defamatory, or abusive reports intended to harm legitimate phone numbers or businesses.\n2. Reverse engineering, decompiling, disassembling, or extracting KWISMO AI algorithms or source code.\n3. Utilizing KWISMO for harassment, money laundering, extortion, or illegal financial activities.\n\nViolations result in immediate account termination, device banning, and referral to police and judicial authorities for criminal prosecution."
+      },
+      {
+        "id": "art5",
+        "title": "Article 5. DISPUTE RESOLUTION AND NUMBER FLAG REVIEWS",
+        "content": "Any entity wishing to dispute a threat rating or scam label associated with their phone number may submit a formal review request with proof of identity to legal@kwismo.com. KWISMO will conduct an investigation and update ratings within 72 business hours."
+      },
+      {
+        "id": "art6",
+        "title": "Article 6. LIMITATION OF LIABILITY AND WARRANTY EXCLUSION",
+        "content": "KWISMO is a preventative decision-support tool. Risk scores are generated by AI models and community data. KWISMO accepts no liability for financial losses resulting from voluntary money transfers conducted by users despite issued threat warnings."
+      },
+      {
+        "id": "art7",
+        "title": "Article 7. INTELLECTUAL PROPERTY",
+        "content": "All trademarks, logos, graphics, interfaces, source code, databases, and algorithms are the exclusive property of KWISMO. Any unauthorized reproduction or distribution is strictly prohibited."
+      },
+      {
+        "id": "art8",
+        "title": "Article 8. TERMINATION AND GOVERNING LAW",
+        "content": "KWISMO reserves the right to suspend or terminate accounts without notice in case of severe ToS violations. These terms are governed by digital commerce law. Any litigation shall be submitted to competent courts of jurisdiction."
+      }
+    ]
+  }
+}

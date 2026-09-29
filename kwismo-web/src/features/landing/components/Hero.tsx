@@ -32,7 +32,7 @@ export default function Hero() {
 
           <div className="mt-6 lg:mt-8 flex flex-wrap items-center gap-4 sm:gap-5">
             <a
-              href="https://github.com/kwismo-support/Kwismo/releases/download/v1.0.0/Kwismo.apk"
+              href={import.meta.env.VITE_APP_APK_DOWNLOAD_URL}
               target="_blank"
               rel="noopener noreferrer"
               download="Kwismo.apk"
