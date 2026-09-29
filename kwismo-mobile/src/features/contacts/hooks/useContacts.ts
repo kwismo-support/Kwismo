@@ -152,15 +152,25 @@ export function useContacts() {
     setSelectedContactIds(newSet);
   };
 
+  const getPriority = (item: ContactItem) => {
+    const status = item.kwismoStatus;
+    if (status === 'compromised' || status === 'compromis' || status === 'whatsapp_alert' || status === 'alert') return 1;
+    if (status === 'frauduleux' || status === 'a_signaler' || status === 'suspect') return 2;
+    if (item.hasKwismo || status === 'securise' || status === 'secured') return 3;
+    return 4;
+  };
+
   const currentDisplayContacts = isInviteMode
     ? contactsList.filter((c) => !c.hasKwismo)
     : contactsList;
 
-  const filteredContacts = currentDisplayContacts.filter(
-    (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.phone.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredContacts = currentDisplayContacts
+    .filter(
+      (c) =>
+        c.name.toLowerCase().includes(search.toLowerCase()) ||
+        c.phone.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => getPriority(a) - getPriority(b));
 
   return {
     loading,

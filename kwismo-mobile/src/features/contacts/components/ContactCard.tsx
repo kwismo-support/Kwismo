@@ -20,19 +20,23 @@ export function ContactCard({
   const { t } = useTranslation();
 
   const renderSubtitle = () => {
-    if (!item.hasKwismo) {
-      return (
-        <Text className="text-xs text-slate-400 font-medium">
-          {t('common.contactSubtitleNotOnKwismo')}
-        </Text>
-      );
-    }
-
     switch (item.kwismoStatus) {
       case 'compromised':
+      case 'compromis':
+      case 'whatsapp_alert':
+      case 'alert':
         return (
-          <Text className="text-xs text-red-500 font-medium">
-            {t('common.contactSubtitleCompromised')}
+          <Text className="text-xs text-red-500 font-bold">
+            ⚠️ {t('common.contactSubtitleCompromised')}
+          </Text>
+        );
+      case 'frauduleux':
+      case 'a_signaler':
+      case 'suspect':
+      case 'signalement':
+        return (
+          <Text className="text-xs text-amber-500 font-medium">
+            ⚡ {t('common.contactSubtitleSignalement')}
           </Text>
         );
       case 'pending':
@@ -41,23 +45,24 @@ export function ContactCard({
             {t('common.contactSubtitlePending')}
           </Text>
         );
-      case 'signalement':
-        return (
-          <Text className="text-xs text-emerald-500 font-medium">
-            {t('common.contactSubtitleSignalement')}
-          </Text>
-        );
-      case 'transfert':
-        return (
-          <Text className="text-xs text-emerald-500 font-medium">
-            {t('common.contactSubtitleTransfert')}
-          </Text>
-        );
+      case 'securise':
       case 'secured':
-      default:
         return (
           <Text className="text-xs text-emerald-500 font-medium">
-            {t('common.contactSubtitleSecured')}
+            ✓ {t('common.contactSubtitleSecured')}
+          </Text>
+        );
+      default:
+        if (item.hasKwismo) {
+          return (
+            <Text className="text-xs text-emerald-500 font-medium">
+              ✓ {t('common.contactSubtitleSecured')}
+            </Text>
+          );
+        }
+        return (
+          <Text className="text-xs text-slate-400 font-medium">
+            {t('common.contactSubtitleNotOnKwismo')}
           </Text>
         );
     }

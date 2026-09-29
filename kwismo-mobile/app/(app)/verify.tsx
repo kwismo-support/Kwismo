@@ -529,7 +529,7 @@ export default function VerifyScreen() {
               activeOpacity={0.88}
               onPress={() =>
                 router.push({
-                  pathname: '/(app)/transfer',
+                  pathname: '/(app)/new-transfer',
                   params: { recipient: result?.valeur || inputPhone || '+237698004012' },
                 })
               }

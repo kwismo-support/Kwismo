@@ -1,10 +1,18 @@
 export type KwismoContactStatus =
   | 'compromised'
-  | 'pending'
+  | 'compromis'
+  | 'whatsapp_alert'
+  | 'alert'
+  | 'frauduleux'
+  | 'a_signaler'
+  | 'suspect'
+  | 'securise'
   | 'secured'
+  | 'pending'
   | 'signalement'
   | 'transfert'
-  | 'none';
+  | 'none'
+  | (string & {});
 
 export interface ContactItem {
   id: string;

@@ -9,7 +9,7 @@ import {
   Clipboard,
   ActivityIndicator,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
@@ -48,6 +48,7 @@ export interface ActionOption {
 
 export default function NewTransferScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ recipient?: string; phone?: string; numero?: string }>();
   const insets = useSafeAreaInsets();
   const { i18n, t } = useTranslation();
   const { isDark } = useAppTheme();
@@ -73,6 +74,18 @@ export default function NewTransferScreen() {
   const [beneficiaryPhone, setBeneficiaryPhone] = useState('');
   const [selectedCountry, setSelectedCountry] = useState<CountryItem>(defaultCountry);
   const [rawAmount, setRawAmount] = useState('');
+
+  useEffect(() => {
+    const raw = params.recipient || params.phone || params.numero;
+    if (raw) {
+      const cleanPhone = raw.trim();
+      if (cleanPhone.startsWith('+237')) {
+        setBeneficiaryPhone(cleanPhone.slice(4));
+      } else {
+        setBeneficiaryPhone(cleanPhone.replace(/\D/g, ''));
+      }
+    }
+  }, [params.recipient, params.phone, params.numero]);
 
   const [beneficiaryRiskStatus, setBeneficiaryRiskStatus] = useState<string>('unknown');
   const [beneficiaryOperatorName, setBeneficiaryOperatorName] = useState<string | null>(null);
