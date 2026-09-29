@@ -196,7 +196,7 @@ export default function ContactsScreen() {
         style={{ bottom: Math.max(insets.bottom + 24, 30) }}
         className="absolute right-5 wx-14 hx-14 rounded-full items-center justify-center bg-orange-400 shadow-lg shadow-orange-400/40 z-50"
       >
-        <Icon name="ic:sharp-dialpad" color="#FFFFFF" size={26} />
+        <Icon name="famicons:person-add" color="#FFFFFF" size={26} />
       </TouchableOpacity>
 
       <Modal visible={inviteModalVisible} transparent animationType="slide">

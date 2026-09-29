@@ -138,22 +138,17 @@ export const Icon: React.FC<IconProps> = ({
     );
   }
 
-  const rawData = extractedIconsData[name] || dynamicIconCache[name] || asyncIconData;
-  if (rawData) {
+  const iconData = extractedIconsData[name] || dynamicIconCache[name] || asyncIconData;
+  if (iconData) {
     try {
-      const iconData = {
-        width: rawData.width || 24,
-        height: rawData.height || 24,
-        ...rawData,
-      };
       const renderData = iconToSVG(iconData, { height: size, width: size });
-      const viewBox = renderData.attributes.viewBox || `0 0 ${iconData.width} ${iconData.height}`;
+      const viewBox = renderData.attributes.viewBox || '0 0 24 24';
       let body = renderData.body || '';
       if (color) {
         body = body.replace(/currentColor/g, color);
       }
-      const xml = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${viewBox}" preserveAspectRatio="xMidYMid meet">${body}</svg>`;
-      return <SvgXml xml={xml} width={size} height={size} style={{ overflow: 'visible', ...style }} />;
+      const xml = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${viewBox}" fill="${color}">${body}</svg>`;
+      return <SvgXml xml={xml} width={size} height={size} style={style} />;
     } catch (err) {
       return null;
     }
