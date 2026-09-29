@@ -75,7 +75,7 @@ export const permissionManager = {
           const hasReadPhoneState = await PermissionsAndroid.check(
             PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE
           );
-          callLogGranted = hasReadCallLog || hasReadPhoneState;
+          callLogGranted = hasReadCallLog && hasReadPhoneState;
         }
       } catch {
         callLogGranted = true;
@@ -117,6 +117,7 @@ export const permissionManager = {
         const perms: any[] = [
           PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
           PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
+          PermissionsAndroid.PERMISSIONS.PROCESS_OUTGOING_CALLS,
         ];
         if (Platform.Version >= 33) {
           perms.push(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
