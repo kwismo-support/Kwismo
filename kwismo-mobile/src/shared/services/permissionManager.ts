@@ -31,15 +31,11 @@ export const permissionManager = {
         const nativeContacts = await PermissionsAndroid.check(
           PermissionsAndroid.PERMISSIONS.READ_CONTACTS
         );
-        if (nativeContacts) {
-          contactsGranted = true;
-        } else {
-          const contactsRes = await Contacts.getPermissionsAsync();
-          contactsGranted = contactsRes.status === 'granted';
-        }
+        const contactsRes = await Contacts.getPermissionsAsync();
+        contactsGranted = nativeContacts || contactsRes.status === 'granted' || contactsRes.granted === true;
       } else {
         const contactsRes = await Contacts.getPermissionsAsync();
-        contactsGranted = contactsRes.status === 'granted';
+        contactsGranted = contactsRes.status === 'granted' || contactsRes.granted === true;
       }
     } catch {
       contactsGranted = false;
@@ -75,7 +71,7 @@ export const permissionManager = {
           const hasReadPhoneState = await PermissionsAndroid.check(
             PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE
           );
-          callLogGranted = hasReadCallLog && hasReadPhoneState;
+          callLogGranted = hasReadCallLog || hasReadPhoneState;
         }
       } catch {
         callLogGranted = true;

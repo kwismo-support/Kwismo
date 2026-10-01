@@ -11,6 +11,8 @@ import { TabBar } from '@/shared/components/TabBar';
 import { callListenerService } from '@/features/call-detection/services/callListenerService';
 import { colors } from '@/styles/tokens';
 
+import { storage } from '@/shared/services/storage';
+
 export default function AppLayout() {
   const { isAuthenticated, isInitialized } = useAuthStore();
   const { isDark } = useAppTheme();
@@ -34,11 +36,14 @@ export default function AppLayout() {
   }, [pathname]);
 
   const refreshPermissions = useCallback(async () => {
+    const isDismissed = await storage.getItem('kwismo_perm_guard_dismissed');
     const res = await permissionManager.checkPermissions();
     setMissingPermissions(res.missingPermissions);
     if (!res.hasAll && res.missingPermissions.length > 0) {
-      if (!dismissedGuard) {
+      if (isDismissed !== 'true' && !dismissedGuard) {
         setShowPermissionModal(true);
+      } else {
+        setShowPermissionModal(false);
       }
     } else {
       setShowPermissionModal(false);
@@ -68,11 +73,13 @@ export default function AppLayout() {
     const res = await permissionManager.requestAllPermissions();
     setMissingPermissions(res.missingPermissions);
     setDismissedGuard(true);
+    await storage.setItem('kwismo_perm_guard_dismissed', 'true');
     setShowPermissionModal(false);
   };
 
-  const handleDismissGuard = () => {
+  const handleDismissGuard = async () => {
     setDismissedGuard(true);
+    await storage.setItem('kwismo_perm_guard_dismissed', 'true');
     setShowPermissionModal(false);
   };
 
