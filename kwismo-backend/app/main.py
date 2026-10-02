@@ -12,7 +12,7 @@ is written (see app/core/exceptions.not_implemented).
 from contextlib import asynccontextmanager
 import logging
 
-from fastapi import FastAPI, UploadFile, File, Header, HTTPException, status, Request
+from fastapi import FastAPI, Header, HTTPException, status, Request
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware

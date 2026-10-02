@@ -2,6 +2,7 @@
 
 # --- Framework API & serveur ASGI ---
 fastapi>=0.111,<1.0
+python-multipart>=0.0.9
 uvicorn[standard]>=0.30
 gunicorn>=22.0
 
