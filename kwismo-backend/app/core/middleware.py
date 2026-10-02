@@ -50,6 +50,8 @@ class MaxBodySizeMiddleware(BaseHTTPMiddleware):
         self.max_bytes = (max_body_mb or settings.max_request_body_mb) * 1024 * 1024
 
     async def dispatch(self, request: Request, call_next) -> Response:
+        if request.url.path.endswith("/upload-apk"):
+            return await call_next(request)
         content_length = request.headers.get("content-length")
         if content_length is not None and content_length.isdigit() and int(content_length) > self.max_bytes:
             body = ErrorResponse(

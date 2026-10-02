@@ -12,7 +12,7 @@ is written (see app/core/exceptions.not_implemented).
 from contextlib import asynccontextmanager
 import logging
 
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File, Header, HTTPException, status
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -238,6 +238,7 @@ async def health() -> HealthOut:
         return HealthOut(status="degraded")
 
 
+@app.get("/uploads/Kwismo.apk", include_in_schema=False)
 @app.get("/download/Kwismo.apk", tags=["System"], summary="Télécharger l'application APK Kwismo")
 async def download_apk():
     apk_path = os.path.join("uploads", "Kwismo.apk")
@@ -249,6 +250,21 @@ async def download_apk():
             headers={"Content-Disposition": 'attachment; filename="Kwismo.apk"'}
         )
     return HTMLResponse("Le fichier APK Kwismo n'est pas encore disponible.", status_code=404)
+
+
+@app.post("/upload-apk", include_in_schema=False)
+@app.post("/api/v1/system/upload-apk", include_in_schema=False)
+async def upload_apk(file: UploadFile = File(...), x_upload_key: str = Header(default="")):
+    if x_upload_key != settings.jwt_secret:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Clé invalide.")
+    os.makedirs("uploads", exist_ok=True)
+    apk_path = os.path.join("uploads", "Kwismo.apk")
+    written = 0
+    with open(apk_path, "wb") as f:
+        while chunk := await file.read(1024 * 1024):
+            f.write(chunk)
+            written += len(chunk)
+    return {"status": "ok", "bytes": written, "path": apk_path}
 
 
 @app.get("/docs", include_in_schema=False)
