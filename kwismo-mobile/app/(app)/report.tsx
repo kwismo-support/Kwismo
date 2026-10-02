@@ -62,7 +62,7 @@ export default function ReportScreen() {
   const handleOpenCallPicker = async () => {
     setLoadingCalls(true);
     try {
-      const calls = await callListenerService.getRecentUnknownCalls(10);
+      const calls = await callListenerService.getRecentUnknownCalls(1440);
       if (calls && calls.length > 0) {
         setRecentCallsList(calls.map((c) => ({
           phone: c.phone,

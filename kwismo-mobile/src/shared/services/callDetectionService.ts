@@ -92,8 +92,11 @@ class CallDetectionService {
     } else if (state === 'IDLE') {
       const targetPhone = this.activeCallPhone || cleanPhone;
 
-      if (this.wasCallAnswered && targetPhone) {
-        console.log(`\x1b[33m[KWISMO CALL ENDED]\x1b[0m Triggering post-call survey for: "${targetPhone}"`);
+      if (targetPhone) {
+        try {
+          const { callListenerService } = await import('@/features/call-detection/services/callListenerService');
+          await callListenerService.recordCallEnded(targetPhone);
+        } catch {}
         await this.triggerPostCallSurveyNotification(targetPhone);
       }
 

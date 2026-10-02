@@ -90,7 +90,7 @@ export const callListenerService = {
     return callRecord;
   },
 
-  async getRecentUnknownCalls(maxAgeMinutes: number = 10): Promise<SavedCallLog[]> {
+  async getRecentUnknownCalls(maxAgeMinutes: number = 1440): Promise<SavedCallLog[]> {
     try {
       const existingStr = await storage.getItem(RECENT_CALLS_KEY);
       let list: SavedCallLog[] = existingStr ? JSON.parse(existingStr) : [];
