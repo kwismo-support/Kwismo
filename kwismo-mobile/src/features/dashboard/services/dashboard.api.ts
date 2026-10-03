@@ -65,7 +65,7 @@ export const dashboardApi = {
 
       const transactions = txRes.data?.items || [];
       const remoteActivities: DashboardActivity[] = transactions.map((tx, idx) => {
-        const phoneDisplay = tx.valeur_numero || tx.nom_destinataire || tx.numero_id || '';
+        const phoneDisplay = (tx as any).numero_telephone || tx.valeur_numero || tx.nom_destinataire || tx.numero_id || '';
         const isConfirmed = tx.statut === 'confirmed' || tx.statut === 'completed';
         const isFailedOrFraud = tx.statut === 'blocked' || tx.statut === 'failed' || (tx.score_risque && tx.score_risque > 70);
 

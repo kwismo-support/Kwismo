@@ -19,8 +19,8 @@ import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { useAuthStore } from '@/shared/store/authStore';
 import { useDashboard } from '@/features/dashboard/hooks/useDashboard';
 import { colors } from '@/styles/tokens';
-
-import * as Contacts from 'expo-contacts/legacy';
+import { useDeviceContacts } from '@/shared/hooks/useDeviceContacts';
+import { formatPhoneNumber } from '@/shared/utils/phoneFormatter';
 import { activityHistoryService } from '@/shared/services/activityHistoryService';
 import { toast } from '@/shared/store/toastStore';
 
@@ -42,52 +42,7 @@ export default function HomeScreen() {
 
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('all');
-  const [contactMap, setContactMap] = useState<Record<string, ContactInfo>>({});
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const { status } = await Contacts.requestPermissionsAsync();
-        if (status === 'granted') {
-          const { data } = await Contacts.getContactsAsync({
-            fields: [Contacts.Fields.PhoneNumbers],
-          });
-          if (data && data.length > 0) {
-            const map: Record<string, ContactInfo> = {};
-            const bgColors = ['#25B46E', '#F97316', '#3B82F6', '#6366F1'];
-            data.forEach((c, idx) => {
-              if (c.phoneNumbers && c.phoneNumbers.length > 0) {
-                const nameParts = [(c as any).firstName, (c as any).middleName, (c as any).lastName].filter(Boolean).join(' ');
-                const displayName = c.name || (nameParts.length > 0 ? nameParts : ((c as any).company || (c as any).nickname));
-                if (displayName) {
-                  let initials = '';
-                  const parts = displayName.trim().split(' ');
-                  initials = parts[0][0];
-                  if (parts.length > 1) initials += parts[1][0];
-                  initials = initials.toUpperCase();
-                  const bg = bgColors[idx % bgColors.length];
-
-                  c.phoneNumbers.forEach((p) => {
-                    if (p.number) {
-                      const clean = p.number.replace(/[^0-9]/g, '');
-                      if (clean) {
-                        map[clean] = { name: displayName, initials, bg };
-                        if (clean.length >= 8) {
-                          map[clean.slice(-8)] = { name: displayName, initials, bg };
-                          map[clean.slice(-9)] = { name: displayName, initials, bg };
-                        }
-                      }
-                    }
-                  });
-                }
-              }
-            });
-            setContactMap(map);
-          }
-        }
-      } catch {}
-    })();
-  }, []);
+  const { getContactDisplay } = useDeviceContacts();
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
@@ -409,19 +364,35 @@ export default function HomeScreen() {
             {filteredActivities.map((item) => {
               const badgeStyle = getBadgeStyle(item.badgeType);
               const displayType = item.type.includes('.') ? t(item.type) : item.type;
-              const displayStatus = item.status.includes('.') ? t(item.status) : item.status;
 
-              const cleanPhone = (item.phone || '').replace(/[^0-9]/g, '');
-              const matchedContact =
-                contactMap[cleanPhone] ||
-                (cleanPhone.length >= 8
-                  ? contactMap[cleanPhone.slice(-8)] || contactMap[cleanPhone.slice(-9)]
-                  : null);
+              const resolveStatus = (statusStr: string) => {
+                if (!statusStr) return '';
+                if (statusStr.includes('.')) return t(statusStr);
+                const commonKey = `common.${statusStr}`;
+                const translated = t(commonKey);
+                if (translated !== commonKey) return translated;
+                const directTranslated = t(statusStr);
+                if (directTranslated !== statusStr) return directTranslated;
+                return statusStr;
+              };
 
-              const displayName = matchedContact ? matchedContact.name : item.phone;
-              const displaySub = matchedContact ? item.phone : displayType;
-              const initials = matchedContact ? matchedContact.initials : undefined;
-              const avatarBg = matchedContact ? matchedContact.bg : undefined;
+              const displayStatus = resolveStatus(item.status);
+
+              const isCuid = /^c[a-z0-9]{20,}$/i.test(item.phone || '');
+              const contactInfo = getContactDisplay(isCuid ? '' : item.phone);
+
+              let displayName = displayType;
+              let displaySub = displayStatus;
+              let initials = contactInfo.initials;
+              let avatarBg = contactInfo.bg;
+
+              if (contactInfo.isContact) {
+                displayName = contactInfo.displayName;
+                displaySub = formatPhoneNumber(item.phone);
+              } else if (!isCuid && item.phone) {
+                displayName = formatPhoneNumber(item.phone);
+                displaySub = displayType;
+              }
 
               return (
                 <TouchableOpacity

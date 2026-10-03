@@ -20,6 +20,8 @@ import { Button } from '@/shared/ui/Button';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { toast } from '@/shared/store/toastStore';
 import { transferApi, TransactionOut } from '@/features/transfer/services/transfer.api';
+import { useDeviceContacts } from '@/shared/hooks/useDeviceContacts';
+import { formatPhoneNumber } from '@/shared/utils/phoneFormatter';
 
 type DateFilter = 'all' | '24h' | '7d' | '30d' | '90d';
 
@@ -35,6 +37,7 @@ export default function TransferScreen() {
   const [activeFilter, setActiveFilter] = useState<DateFilter>('all');
   const [selectedTx, setSelectedTx] = useState<TransactionOut | null>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const { getContactDisplay } = useDeviceContacts();
 
   const fetchTransactions = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -309,8 +312,20 @@ export default function TransferScreen() {
             ) : (
               <View className="gap-y-3">
                 {filteredTransactions.map((tx) => {
-                  const phoneDisplay = tx.numero_telephone || tx.numero_id || '';
+                  const rawPhone = tx.numero_telephone || tx.numero_id || '';
+                  const isCuid = /^c[a-z0-9]{20,}$/i.test(rawPhone);
+                  const contactInfo = getContactDisplay(isCuid ? '' : rawPhone);
                   const statusInfo = getStatusInfo(tx.statut, tx.niveau_risque);
+
+                  const mainDisplay = contactInfo.isContact
+                    ? contactInfo.displayName
+                    : isCuid
+                    ? (tx.operator_name || t('common.actionTransfer'))
+                    : contactInfo.displayName;
+
+                  const subDisplay = contactInfo.isContact
+                    ? formatPhoneNumber(rawPhone)
+                    : formatDate(tx.date_transaction);
 
                   return (
                     <TouchableOpacity
@@ -321,18 +336,27 @@ export default function TransferScreen() {
                     >
                       <View className="flex-row items-center justify-between mb-1.5">
                         <View className="flex-row items-center flex-1 mr-2">
-                          <View className="wx-10 hx-10 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center mr-3">
-                            <Icon name={statusInfo.icon} size={20} color={statusInfo.iconColor} />
+                          <View
+                            className="wx-10 hx-10 rounded-full items-center justify-center mr-3"
+                            style={{
+                              backgroundColor: contactInfo.bg || (isDark ? '#1E293B' : '#F1F5F9'),
+                            }}
+                          >
+                            {contactInfo.initials ? (
+                              <Text className="text-white font-bold text-2xs">{contactInfo.initials}</Text>
+                            ) : (
+                              <Icon name={statusInfo.icon} size={20} color={statusInfo.iconColor} />
+                            )}
                           </View>
                           <View className="flex-1">
                             <Text
                               numberOfLines={1}
                               className="font-font-bold text-sm font-bold text-slate-900 dark:text-white"
                             >
-                              {phoneDisplay}
+                              {mainDisplay}
                             </Text>
                             <Text className="font-font-regular text-2xs text-slate-400 dark:text-slate-500">
-                              {formatDate(tx.date_transaction)}
+                              {subDisplay}
                             </Text>
                           </View>
                         </View>
@@ -426,7 +450,7 @@ export default function TransferScreen() {
                       {t('transfer.detailRecipient')}
                     </Text>
                     <Text className="font-bold text-sm text-slate-900 dark:text-white">
-                      {selectedTx.numero_telephone || selectedTx.numero_id}
+                      {getContactDisplay(selectedTx.numero_telephone || selectedTx.numero_id).displayName}
                     </Text>
                   </View>
 
