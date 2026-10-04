@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import AliasChoices, BaseModel, EmailStr, Field
 
 
 class DeviceSummaryOut(BaseModel):
@@ -82,7 +82,7 @@ class UserStatusIn(BaseModel):
 
 
 class UserPasswordChangeIn(BaseModel):
-    ancien_mot_de_passe: str
-    nouveau_mot_de_passe: str
+    ancien_mot_de_passe: str = Field(..., validation_alias=AliasChoices("ancien_mot_de_passe", "old_password", "current_password"))
+    nouveau_mot_de_passe: str = Field(..., validation_alias=AliasChoices("nouveau_mot_de_passe", "new_password"))
 
 

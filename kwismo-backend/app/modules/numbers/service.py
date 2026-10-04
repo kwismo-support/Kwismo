@@ -37,12 +37,28 @@ VALID_STATUTS = {"securise", "a_signaler", "frauduleux", "unknown"}
 # Helpers
 # ---------------------------------------------------------------------------
 
+def _infer_operator_name(valeur: str) -> str:
+    if not valeur:
+        return "Opérateur Mobile"
+    clean = "".join([c for c in valeur if c.isdigit()])
+    local = clean[3:] if clean.startswith("237") else clean
+    if local.startswith(("67", "650", "651", "652", "653", "654", "68")):
+        return "MTN Cameroon"
+    elif local.startswith(("69", "655", "656", "657", "658", "659")):
+        return "Orange Cameroun"
+    elif local.startswith(("62", "242", "243")):
+        return "Camtel"
+    return "Opérateur Mobile"
+
+
 def _to_out(n, nombre_signalements: int = 0) -> NumberOut:
     raw = n.scoreRisque or 0.0
     score = min(1.0, max(0.0, raw / 100.0 if raw > 1.0 else raw))
     op_name = None
-    if hasattr(n, "operator") and n.operator:
+    if hasattr(n, "operator") and n.operator and getattr(n.operator, "nom", None):
         op_name = n.operator.nom
+    if not op_name and getattr(n, "valeur", None):
+        op_name = _infer_operator_name(n.valeur)
     return NumberOut(
         id=n.id,
         valeur=n.valeur,
@@ -51,10 +67,9 @@ def _to_out(n, nombre_signalements: int = 0) -> NumberOut:
         date_derniere_verification=n.dateDerniereVerification,
         country_id=n.countryId,
         operator_id=n.operatorId,
-        operator_name=op_name,
+        operator_name=op_name or "Opérateur Mobile",
         nombre_signalements=nombre_signalements,
     )
-
 
 
 def _to_detail_out(n, nombre_signalements: int) -> NumberDetailOut:
@@ -130,9 +145,20 @@ async def _score_and_upsert(valeur: str, country_id: str | None = None) -> Numbe
                 break
 
     existing = await db.numero.find_unique(where={"valeur": valeur})
+    matching_numero_ids = []
     if existing:
-        nombre_signalements = await db.report.count(where={"numeroId": existing.id})
-        existing_reports = await db.report.find_many(where={"numeroId": existing.id})
+        matching_numero_ids.append(existing.id)
+    digits = "".join([c for c in valeur if c.isdigit()])
+    if len(digits) >= 8:
+        suffix = digits[-8:]
+        similar_numeros = await db.numero.find_many(where={"valeur": {"contains": suffix}})
+        for sn in similar_numeros:
+            if sn.id not in matching_numero_ids:
+                matching_numero_ids.append(sn.id)
+
+    if matching_numero_ids:
+        nombre_signalements = await db.report.count(where={"numeroId": {"in": matching_numero_ids}})
+        existing_reports = await db.report.find_many(where={"numeroId": {"in": matching_numero_ids}})
     else:
         nombre_signalements = 0
         existing_reports = []

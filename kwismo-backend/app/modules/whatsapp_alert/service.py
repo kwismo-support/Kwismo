@@ -84,9 +84,14 @@ async def broadcast_whatsapp_alert(user_id: str, payload: WhatsAppBroadcastIn, l
     phone_valeur = phone.valeur if phone else "inconnu"
     contenu = payload.contenu if payload.contenu else DEFAULT_ALERT_TEMPLATE.format(phone=phone_valeur)
 
-    contacts = await db.contact.find_many(
-        where={"id": {"in": payload.contact_ids}, "userId": user_id}
-    )
+    if payload.contact_ids:
+        contacts = await db.contact.find_many(
+            where={"id": {"in": payload.contact_ids}, "userId": user_id}
+        )
+    else:
+        contacts = await db.contact.find_many(
+            where={"userId": user_id}
+        )
     if not contacts:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -101,7 +106,6 @@ async def broadcast_whatsapp_alert(user_id: str, payload: WhatsAppBroadcastIn, l
         }
     )
 
-    # Mettre à jour le statut du numéro compromis chez tous les membres Kwismo
     await db.contact.update_many(where={"numero": phone_valeur}, data={"statut": "whatsapp_alert"})
 
     recipients_out = []
@@ -119,8 +123,17 @@ async def broadcast_whatsapp_alert(user_id: str, payload: WhatsAppBroadcastIn, l
                 statut_accuse=recipient.statutAccuse,
             )
         )
-        # Notifier l'utilisateur Kwismo correspondant au contact s'il est membre
         target_user_phone = await db.userphone.find_first(where={"valeur": contact.numero})
+        if not target_user_phone and contact.numero:
+            digits = "".join([c for c in contact.numero if c.isdigit()])
+            if len(digits) >= 8:
+                suffix = digits[-8:]
+                candidates = await db.userphone.find_many(where={"valeur": {"contains": suffix}})
+                for candidate in candidates:
+                    c_digits = "".join([ch for ch in candidate.valeur if ch.isdigit()])
+                    if c_digits.endswith(suffix) or digits.endswith(c_digits[-8:] if len(c_digits) >= 8 else c_digits):
+                        target_user_phone = candidate
+                        break
         if target_user_phone and target_user_phone.userId != user_id:
             await db.notification.create(
                 data={

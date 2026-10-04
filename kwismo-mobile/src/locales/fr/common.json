@@ -262,6 +262,21 @@
     "operator": "Opérateur",
     "operatorLabel": "Opérateur",
     "status": "Statut",
-    "statusLabel": "Statut"
+    "statusLabel": "Statut",
+    "noRegisteredPhone": "Aucun numéro de téléphone enregistré sur votre compte.",
+    "filterAll": "Tout",
+    "filterVerified": "Vérifiés",
+    "filterThreats": "Menaces",
+    "filterReports": "Signalements",
+    "filterTransfers": "Transferts",
+    "noActivityForFilter": "Aucune activité pour ce filtre",
+    "protected": "Protégé",
+    "detected": "Détecté",
+    "inProgress": "En cours",
+    "securise": "Sécurisé",
+    "suspect": "Suspect",
+    "signale": "Signalé",
+    "whatsapp_alert": "Alerte WhatsApp",
+    "inconnu": "Inconnu"
   }
 }

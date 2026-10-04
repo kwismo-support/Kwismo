@@ -157,12 +157,12 @@ async def change_password(user_id: str, payload: UserPasswordChangeIn, lang: str
             status_code=status.HTTP_404_NOT_FOUND,
             detail=t("user_not_found", lang),
         )
-    if not verify_password(payload.ancien_mot_de_passe, user.motDePasse):
+    if not user.motDePasse or not await verify_password(payload.ancien_mot_de_passe, user.motDePasse):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=t("invalid_current_password", lang),
         )
-    new_hashed = hash_password(payload.nouveau_mot_de_passe)
+    new_hashed = await hash_password(payload.nouveau_mot_de_passe)
     await db.user.update(
         where={"id": user_id},
         data={"motDePasse": new_hashed},

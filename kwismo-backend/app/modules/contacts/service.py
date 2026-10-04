@@ -29,11 +29,27 @@ def _to_out(c, has_kwismo: bool = False) -> ContactOut:
 
 
 async def _resolve_contact_kwismo_info(numero_valeur: str) -> tuple[str | None, bool]:
-    """Vérifie si le numéro appartient à un utilisateur Kwismo et détermine le badge."""
     user_phone = await db.userphone.find_first(where={"valeur": numero_valeur})
+    if not user_phone and numero_valeur:
+        digits = "".join([c for c in numero_valeur if c.isdigit()])
+        if len(digits) >= 8:
+            suffix = digits[-8:]
+            candidates = await db.userphone.find_many(where={"valeur": {"contains": suffix}})
+            for c in candidates:
+                c_digits = "".join([ch for ch in c.valeur if ch.isdigit()])
+                if c_digits.endswith(suffix) or digits.endswith(c_digits[-8:] if len(c_digits) >= 8 else c_digits):
+                    user_phone = c
+                    break
+
     is_kwismo_user = user_phone is not None
 
     entry = await db.numero.find_unique(where={"valeur": numero_valeur})
+    if not entry and numero_valeur:
+        digits = "".join([c for c in numero_valeur if c.isdigit()])
+        if len(digits) >= 8:
+            suffix = digits[-8:]
+            entry = await db.numero.find_first(where={"valeur": {"contains": suffix}})
+
     badge = None
     if entry and entry.statut and entry.statut != "unknown":
         badge = entry.statut

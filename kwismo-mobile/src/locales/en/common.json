@@ -262,6 +262,21 @@
     "operator": "Operator",
     "operatorLabel": "Operator",
     "status": "Status",
-    "statusLabel": "Status"
+    "statusLabel": "Status",
+    "noRegisteredPhone": "No registered phone number found on your account.",
+    "filterAll": "All",
+    "filterVerified": "Verified",
+    "filterThreats": "Threats",
+    "filterReports": "Reports",
+    "filterTransfers": "Transfers",
+    "noActivityForFilter": "No activity for this filter",
+    "protected": "Protected",
+    "detected": "Detected",
+    "inProgress": "In progress",
+    "securise": "Secured",
+    "suspect": "Suspect",
+    "signale": "Reported",
+    "whatsapp_alert": "WhatsApp Alert",
+    "inconnu": "Unknown"
   }
 }

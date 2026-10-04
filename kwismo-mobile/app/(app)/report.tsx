@@ -56,6 +56,15 @@ export default function ReportScreen() {
   React.useEffect(() => {
     if (params.phone) {
       setTargetPhone(params.phone);
+    } else {
+      (async () => {
+        try {
+          const calls = await callListenerService.getRecentUnknownCalls(1440);
+          if (calls && calls.length > 0) {
+            setTargetPhone(calls[0].phone);
+          }
+        } catch {}
+      })();
     }
   }, [params.phone]);
 

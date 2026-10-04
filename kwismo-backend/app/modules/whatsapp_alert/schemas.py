@@ -23,7 +23,7 @@ class WhatsAppIncidentOut(BaseModel):
 
 class WhatsAppBroadcastIn(BaseModel):
     compromise_incident_id: str
-    contact_ids: list[str] = Field(..., min_length=1, description="Contacts sélectionnés / Selected contacts.")
+    contact_ids: list[str] = Field(default=[], description="Contacts sélectionnés / Selected contacts.")
     contenu: str | None = Field(None, description="Message personnalisé (sinon modèle par défaut) / Custom message (otherwise default template).")
 
 
