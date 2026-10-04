@@ -59,7 +59,7 @@ export default function ReportScreen() {
     } else {
       (async () => {
         try {
-          const calls = await callListenerService.getRecentUnknownCalls(1440);
+          const calls = await callListenerService.getRecentUnknownCalls(10);
           if (calls && calls.length > 0) {
             setTargetPhone(calls[0].phone);
           }

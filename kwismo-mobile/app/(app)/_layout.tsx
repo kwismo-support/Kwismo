@@ -39,14 +39,10 @@ export default function AppLayout() {
     const isDismissed = await storage.getItem('kwismo_perm_guard_dismissed');
     const res = await permissionManager.checkPermissions();
     setMissingPermissions(res.missingPermissions);
-    if (!res.hasAll && res.missingPermissions.length > 0) {
-      if (isDismissed !== 'true' && !dismissedGuard) {
-        setShowPermissionModal(true);
-      } else {
-        setShowPermissionModal(false);
-      }
-    } else {
+    if (res.hasAll || res.missingPermissions.length === 0 || isDismissed === 'true' || dismissedGuard) {
       setShowPermissionModal(false);
+    } else {
+      setShowPermissionModal(true);
     }
   }, [dismissedGuard]);
 
