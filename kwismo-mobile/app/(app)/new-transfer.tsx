@@ -28,6 +28,7 @@ import { Skeleton } from '@/shared/ui/Skeleton';
 import { transferApi } from '@/features/transfer/services/transfer.api';
 import { transferCache } from '@/features/transfer/services/transferCache';
 import { activityHistoryService } from '@/shared/services/activityHistoryService';
+import { formatPhoneNumber } from '@/shared/utils/phoneFormatter';
 
 export interface SenderNumberOption {
   id: string;
@@ -284,7 +285,7 @@ export default function NewTransferScreen() {
       if (verifyRes.success && verifyRes.data) {
         transferCache.setCachedVerifiedNumber(fullPhone, verifyRes.data);
         const st = verifyRes.data.statut || 'securise';
-        const sc = verifyRes.data.score_risque ?? verifyRes.data.riskScore ?? 0;
+        const sc = verifyRes.data.score_risque ?? 0;
         setBeneficiaryRiskStatus(st);
         setBeneficiaryRiskScore(sc);
         if (verifyRes.data.operator_name) {
