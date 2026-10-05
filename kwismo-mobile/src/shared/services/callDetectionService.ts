@@ -192,32 +192,34 @@ class CallDetectionService {
       console.log(`\x1b[35m[KWISMO START MONITORING]\x1b[0m Initializing call detector listener on Android...`);
       let CallDetector: any = null;
       try {
-        CallDetector = require('react-native-call-detection');
+        const mod = require('react-native-call-detection');
+        CallDetector = mod.default || mod;
       } catch {}
 
-      if (CallDetector && typeof CallDetector === 'function') {
-        const detector = new CallDetector(
-          (event: string, phoneNumber: string) => {
-            let state: 'RINGING' | 'OFFHOOK' | 'IDLE' = 'IDLE';
-            if (event === 'Incoming' || event === 'Ringing') {
-              state = 'RINGING';
-            } else if (event === 'Offhook' || event === 'Connected') {
-              state = 'OFFHOOK';
-            } else if (event === 'Disconnected' || event === 'Idle') {
-              state = 'IDLE';
+      if (CallDetector && (typeof CallDetector === 'function' || typeof CallDetector === 'object')) {
+        const DetectorClass = typeof CallDetector === 'function' ? CallDetector : CallDetector.default;
+        if (DetectorClass) {
+          const detector = new DetectorClass(
+            (event: string, phoneNumber: string) => {
+              let state: 'RINGING' | 'OFFHOOK' | 'IDLE' = 'IDLE';
+              if (event === 'Incoming' || event === 'Ringing') {
+                state = 'RINGING';
+              } else if (event === 'Offhook' || event === 'Connected') {
+                state = 'OFFHOOK';
+              } else if (event === 'Disconnected' || event === 'Idle') {
+                state = 'IDLE';
+              }
+              this.handleCallEvent({ state, phoneNumber });
+            },
+            true,
+            () => {},
+            {
+              title: 'Permission d\'accès aux appels',
+              message: 'Kwismo nécessite l\'accès aux appels pour détecter les numéros suspects en temps réel.',
             }
-            this.handleCallEvent({ state, phoneNumber });
-          },
-          true,
-          () => {},
-          {
-            title: 'Permission d\'accès aux appels',
-            message: 'Kwismo nécessite l\'accès aux appels pour détecter les numéros suspects en temps réel.',
-          }
-        );
-        console.log(`\x1b[32m[KWISMO MONITOR ACTIVE]\x1b[0m Call detector listener successfully active.`);
-      } else {
-        console.warn(`\x1b[33m[KWISMO MONITOR NOTICE]\x1b[0m react-native-call-detection module not loaded in current environment.`);
+          );
+          console.log(`\x1b[32m[KWISMO MONITOR ACTIVE]\x1b[0m Call detector listener successfully active.`);
+        }
       }
     } catch (err) {
       console.error(`\x1b[31m[KWISMO MONITOR ERROR]\x1b[0m Failed to start call detector:`, err);
