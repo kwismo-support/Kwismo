@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform, Vibration } from 'react-native';
 import { toast } from '@/shared/store/toastStore';
 import { storage } from '@/shared/services/storage';
 
@@ -34,7 +34,7 @@ export const PushNotificationService = {
         await Notifications.setNotificationChannelAsync('default', {
           name: 'Kwismo Alerts',
           importance: Notifications.AndroidImportance.MAX,
-          vibrationPattern: [0, 250, 250, 250],
+          vibrationPattern: [0, 500, 200, 500],
           lightColor: '#00A859',
         });
       }
@@ -56,6 +56,10 @@ export const PushNotificationService = {
         }
       } catch {}
     }
+
+    try {
+      Vibration.vibrate([0, 500, 200, 500]);
+    } catch {}
 
     toast.info(body, title, 5000);
 

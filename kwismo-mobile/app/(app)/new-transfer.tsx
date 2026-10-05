@@ -500,7 +500,7 @@ export default function NewTransferScreen() {
                       <Text className="font-font-bold text-xs text-white">{selectedSender.operator}</Text>
                     </View>
                     <Text className="font-font-medium text-sm text-slate-900 dark:text-white flex-1">
-                      {selectedSender.callingCode} {selectedSender.phone}
+                      {formatPhoneNumber(selectedSender.phone)}
                     </Text>
                   </View>
                   <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={20} />
@@ -557,19 +557,9 @@ export default function NewTransferScreen() {
           </View>
         ) : step === 'summary' ? (
           <View className="w-full">
-            <Text className="font-font-bold text-xl font-extrabold text-slate-900 dark:text-white mb-1">
-              {t('transfer.approveTitle')}
-            </Text>
-            <Text className="font-font-regular text-xs text-slate-500 dark:text-slate-400 mb-5 leading-5">
-              {t('transfer.approveSub')}
-            </Text>
-
             <View className="p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark items-center justify-center mb-4">
-              <Text className="font-font-bold text-3xl font-extrabold text-brand-green mb-1">
+              <Text className="font-font-bold text-3xl font-extrabold text-brand-green">
                 {formattedAmount} <Text className="text-lg">FCFA</Text>
-              </Text>
-              <Text className="font-font-medium text-xs text-slate-500 dark:text-slate-400">
-                {selectedAction?.label || 'Transfert'}
               </Text>
             </View>
 
@@ -605,7 +595,7 @@ export default function NewTransferScreen() {
                   {t('transfer.recipientNumber')}
                 </Text>
                 <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
-                  {selectedCountry.callingCode} {beneficiaryPhone}
+                  {formatPhoneNumber(`${selectedCountry.callingCode}${beneficiaryPhone}`)}
                 </Text>
               </View>
 
@@ -628,7 +618,7 @@ export default function NewTransferScreen() {
                       {t('transfer.senderSim')}
                     </Text>
                     <Text className="font-font-bold text-sm font-semibold text-slate-900 dark:text-white">
-                      {selectedSender.label}
+                      {selectedSender.operator} ({formatPhoneNumber(selectedSender.phone)})
                     </Text>
                   </View>
                 </>
@@ -660,7 +650,7 @@ export default function NewTransferScreen() {
                     ? t('common.loading')
                     : isBeneficiarySuspect
                     ? t('transfer.proceedAnyway')
-                    : t('transfer.generateUssd')
+                    : t('common.send')
                 }
                 onPress={handleProceedFromSummary}
                 disabled={isPreparing}

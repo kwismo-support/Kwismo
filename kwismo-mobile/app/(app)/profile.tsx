@@ -259,7 +259,7 @@ export default function ProfileScreen() {
                     {lang.label}
                   </Text>
                   <View
-                    className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
+                    className={`wx-5 hx-5 rounded-full border-2 items-center justify-center ${
                       isSelected ? 'border-brand-green' : 'border-slate-300 dark:border-slate-600'
                     }`}
                   >
