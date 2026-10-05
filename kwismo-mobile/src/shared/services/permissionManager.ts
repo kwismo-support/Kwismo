@@ -112,14 +112,16 @@ export const permissionManager = {
       try {
         const perms: any[] = [
           PermissionsAndroid.PERMISSIONS.READ_CALL_LOG,
+          PermissionsAndroid.PERMISSIONS.WRITE_CALL_LOG,
           PermissionsAndroid.PERMISSIONS.READ_PHONE_STATE,
-          PermissionsAndroid.PERMISSIONS.PROCESS_OUTGOING_CALLS,
+          PermissionsAndroid.PERMISSIONS.CALL_PHONE,
+          PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+          PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS,
+          PermissionsAndroid.PERMISSIONS.READ_SMS,
+          PermissionsAndroid.PERMISSIONS.RECEIVE_SMS,
         ];
         if (Platform.Version >= 33) {
           perms.push(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
-          perms.push(PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES);
-        } else {
-          perms.push(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);
         }
         await PermissionsAndroid.requestMultiple(perms);
       } catch {}

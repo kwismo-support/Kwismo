@@ -231,10 +231,13 @@ export default function NewTransferScreen() {
   };
 
   const isBeneficiarySuspect = useMemo(() => {
+    const normScore = beneficiaryRiskScore > 1 ? beneficiaryRiskScore / 100 : beneficiaryRiskScore;
     return (
       beneficiaryRiskStatus === 'a_signaler' ||
       beneficiaryRiskStatus === 'frauduleux' ||
-      beneficiaryRiskScore >= 0.5
+      beneficiaryRiskStatus === 'suspect' ||
+      normScore >= 0.3 ||
+      beneficiaryRiskScore >= 30
     );
   }, [beneficiaryRiskStatus, beneficiaryRiskScore]);
 
@@ -276,35 +279,32 @@ export default function NewTransferScreen() {
     if (!valid) return false;
 
     const fullPhone = `${selectedCountry.callingCode}${cleanPhone}`;
-    const cachedVerify = transferCache.getCachedVerifiedNumber(fullPhone);
-    if (cachedVerify) {
-      setBeneficiaryRiskStatus(cachedVerify.statut || 'securise');
-      setBeneficiaryRiskScore(cachedVerify.score_risque || 0);
-      if (cachedVerify.operator_name) {
-        setBeneficiaryOperatorName(cachedVerify.operator_name);
-      }
-      if (cachedVerify.operator_id) {
-        await fetchActionsForOperator(cachedVerify.operator_id);
-      } else if (selectedSender?.operator_id) {
-        await fetchActionsForOperator(selectedSender.operator_id);
-      }
-    } else {
-      try {
-        const verifyRes = await numbersApi.verifyNumber(fullPhone, selectedCountry.code);
-        if (verifyRes.success && verifyRes.data) {
-          transferCache.setCachedVerifiedNumber(fullPhone, verifyRes.data);
-          setBeneficiaryRiskStatus(verifyRes.data.statut || 'securise');
-          setBeneficiaryRiskScore(verifyRes.data.score_risque || 0);
-          if (verifyRes.data.operator_name) {
-            setBeneficiaryOperatorName(verifyRes.data.operator_name);
-          }
-          if (verifyRes.data.operator_id) {
-            await fetchActionsForOperator(verifyRes.data.operator_id);
-          } else if (selectedSender?.operator_id) {
-            await fetchActionsForOperator(selectedSender.operator_id);
-          }
+    try {
+      const verifyRes = await numbersApi.verifyNumber(fullPhone, selectedCountry.code);
+      if (verifyRes.success && verifyRes.data) {
+        transferCache.setCachedVerifiedNumber(fullPhone, verifyRes.data);
+        const st = verifyRes.data.statut || 'securise';
+        const sc = verifyRes.data.score_risque ?? verifyRes.data.riskScore ?? 0;
+        setBeneficiaryRiskStatus(st);
+        setBeneficiaryRiskScore(sc);
+        if (verifyRes.data.operator_name) {
+          setBeneficiaryOperatorName(verifyRes.data.operator_name);
         }
-      } catch {}
+        if (verifyRes.data.operator_id) {
+          await fetchActionsForOperator(verifyRes.data.operator_id);
+        } else if (selectedSender?.operator_id) {
+          await fetchActionsForOperator(selectedSender.operator_id);
+        }
+      }
+    } catch {
+      const cachedVerify = transferCache.getCachedVerifiedNumber(fullPhone);
+      if (cachedVerify) {
+        setBeneficiaryRiskStatus(cachedVerify.statut || 'securise');
+        setBeneficiaryRiskScore(cachedVerify.score_risque || 0);
+        if (cachedVerify.operator_name) {
+          setBeneficiaryOperatorName(cachedVerify.operator_name);
+        }
+      }
     }
 
     setStep('summary');

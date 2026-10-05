@@ -100,10 +100,10 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
           </Animated.View>
         )}
 
-        <View className="wx-34 hx-34 items-center justify-center relative">
+        <View className="wx-30 hx-30 items-center justify-center relative">
           <Icon
             name="solar:shield-minimalistic-bold"
-            size={120}
+            size={100}
             color={mainColor}
           />
 
@@ -111,14 +111,14 @@ export const VerificationGraphic: React.FC<VerificationGraphicProps> = ({
             {currentStatus === 'analyzing' && (
               <Icon
                 name="solar:user-bold-duotone"
-                size={55}
+                size={50}
                 color="#FFFFFF"
               />
             )}
             {currentStatus === 'secure' && (
               <Icon
                 name="solar:diploma-verified-bold-duotone"
-                size={55}
+                size={50}
                 color="#FFFFFF"
               />
             )}

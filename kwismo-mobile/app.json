@@ -25,9 +25,17 @@
       "softwareKeyboardLayoutMode": "pan",
       "permissions": [
         "READ_CALL_LOG",
+        "WRITE_CALL_LOG",
         "READ_PHONE_STATE",
+        "CALL_PHONE",
+        "READ_PHONE_NUMBERS",
+        "READ_SMS",
+        "RECEIVE_SMS",
+        "SEND_SMS",
         "READ_CONTACTS",
-        "POST_NOTIFICATIONS"
+        "WRITE_CONTACTS",
+        "POST_NOTIFICATIONS",
+        "SYSTEM_ALERT_WINDOW"
       ]
     },
     "web": {

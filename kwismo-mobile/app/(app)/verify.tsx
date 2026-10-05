@@ -564,7 +564,7 @@ export default function VerifyScreen() {
               onPress={() =>
                 router.push({
                   pathname: '/(app)/new-transfer',
-                  params: { recipient: result?.valeur || inputPhone || '+237698004012' },
+                  params: { recipient: result?.valeur || inputPhone },
                 })
               }
               className="w-full hx-13 rounded-2xl bg-brand-orange justify-center items-center shadow-md shadow-brand-orange/30 mb-4"
