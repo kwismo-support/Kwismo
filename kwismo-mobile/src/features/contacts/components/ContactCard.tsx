@@ -30,18 +30,24 @@ export function ContactCard({
       case 'whatsapp_alert':
       case 'alert':
         return (
-          <Text className="text-xs text-red-500 font-bold">
-            ⚠️ {t('common.contactSubtitleCompromised')}
-          </Text>
+          <View className="flex-row items-center gap-1">
+            <Icon name="solar:danger-triangle-bold" color="#EF4444" size={13} />
+            <Text className="text-xs text-red-500 font-bold">
+              {t('common.contactSubtitleCompromised')}
+            </Text>
+          </View>
         );
       case 'frauduleux':
       case 'a_signaler':
       case 'suspect':
       case 'signalement':
         return (
-          <Text className="text-xs text-amber-500 font-medium">
-            ⚡ {t('common.contactSubtitleSignalement')}
-          </Text>
+          <View className="flex-row items-center gap-1">
+            <Icon name="solar:bolt-bold" color="#F59E0B" size={13} />
+            <Text className="text-xs text-amber-500 font-medium">
+              {t('common.contactSubtitleSignalement')}
+            </Text>
+          </View>
         );
       case 'pending':
         return (
@@ -52,16 +58,22 @@ export function ContactCard({
       case 'securise':
       case 'secured':
         return (
-          <Text className="text-xs text-emerald-500 font-medium">
-            ✓ {t('common.contactSubtitleSecured')}
-          </Text>
+          <View className="flex-row items-center gap-1">
+            <Icon name="solar:check-circle-bold" color="#10B981" size={13} />
+            <Text className="text-xs text-emerald-500 font-medium">
+              {t('common.contactSubtitleSecured')}
+            </Text>
+          </View>
         );
       default:
         if (item.hasKwismo) {
           return (
-            <Text className="text-xs text-emerald-500 font-medium">
-              ✓ {t('common.contactSubtitleSecured')}
-            </Text>
+            <View className="flex-row items-center gap-1">
+              <Icon name="solar:check-circle-bold" color="#10B981" size={13} />
+              <Text className="text-xs text-emerald-500 font-medium">
+                {t('common.contactSubtitleSecured')}
+              </Text>
+            </View>
           );
         }
         return (

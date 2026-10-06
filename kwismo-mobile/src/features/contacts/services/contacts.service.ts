@@ -55,7 +55,7 @@ export const contactsService = {
             if (compromisedPhonesSet.has(cleanVal)) {
               kwismoStatus = 'compromised';
             } else if (verifiedPhonesSet.has(cleanVal)) {
-              kwismoStatus = 'secured';
+              kwismoStatus = 'securise';
             } else {
               kwismoStatus = 'pending';
             }

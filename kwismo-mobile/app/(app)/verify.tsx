@@ -45,7 +45,8 @@ const DEFAULT_COUNTRY: CountryItem = {
 
 export function parseAndCleanPhone(
   rawInput: string,
-  currentCountry: CountryItem = DEFAULT_COUNTRY
+  currentCountry: CountryItem = DEFAULT_COUNTRY,
+  allowCountryAutoDetect = false
 ): { country: CountryItem; nationalPhone: string; fullE164: string } {
   const countryList = COUNTRIES_DATA && COUNTRIES_DATA.length > 0 ? COUNTRIES_DATA : [DEFAULT_COUNTRY];
   let cleaned = rawInput.trim().replace(/\s+/g, '').replace(/-/g, '');
@@ -54,51 +55,31 @@ export function parseAndCleanPhone(
     cleaned = '+' + cleaned.slice(2);
   }
 
-  let parsed = parsePhoneNumberFromString(cleaned);
-  if (!parsed && !cleaned.startsWith('+')) {
-    parsed = parsePhoneNumberFromString('+' + cleaned);
-  }
-  if (!parsed) {
-    parsed = parsePhoneNumberFromString(cleaned, currentCountry.code);
-  }
+  const isExplicitInternational = cleaned.startsWith('+');
 
-  if (parsed && parsed.country) {
-    const matched = countryList.find((c) => c.code === parsed.country);
-    if (matched) {
-      const national = parsed.nationalNumber || cleaned;
-      return {
-        country: matched,
-        nationalPhone: national,
-        fullE164: parsed.number || `${matched.callingCode}${national}`,
-      };
+  if (allowCountryAutoDetect || isExplicitInternational) {
+    let parsed = parsePhoneNumberFromString(cleaned);
+    if (!parsed && !cleaned.startsWith('+')) {
+      parsed = parsePhoneNumberFromString('+' + cleaned);
+    }
+    if (parsed && parsed.country) {
+      const matched = countryList.find((c) => c.code === parsed.country);
+      if (matched) {
+        const national = parsed.nationalNumber || cleaned.replace(/^\+/, '');
+        return {
+          country: matched,
+          nationalPhone: national,
+          fullE164: parsed.number || `${matched.callingCode}${national}`,
+        };
+      }
     }
   }
 
-  for (const c of countryList) {
-    const codeDigits = c.callingCode.replace('+', '');
-    if (cleaned.startsWith('+' + codeDigits)) {
-      const national = cleaned.slice(1 + codeDigits.length);
-      return {
-        country: c,
-        nationalPhone: national,
-        fullE164: `${c.callingCode}${national}`,
-      };
-    }
-    if (cleaned.startsWith(codeDigits) && cleaned.length > codeDigits.length + 5) {
-      const national = cleaned.slice(codeDigits.length);
-      return {
-        country: c,
-        nationalPhone: national,
-        fullE164: `${c.callingCode}${national}`,
-      };
-    }
-  }
+  const codeDigits = currentCountry.callingCode.replace('+', '');
+  let national = cleaned.replace(/^\+/, '');
 
-  const digitsOnly = cleaned.replace(/^\+/, '');
-  const prefixDigits = currentCountry.callingCode.replace('+', '');
-  let national = digitsOnly;
-  if (national.startsWith(prefixDigits) && national.length > prefixDigits.length + 5) {
-    national = national.slice(prefixDigits.length);
+  if (national.startsWith(codeDigits) && national.length > codeDigits.length + 4) {
+    national = national.slice(codeDigits.length);
   }
 
   return {
@@ -132,7 +113,7 @@ export default function VerifyScreen() {
     requestContactsPermission();
     loadRecents();
     if (params.phone) {
-      const parsed = parseAndCleanPhone(params.phone);
+      const parsed = parseAndCleanPhone(params.phone, DEFAULT_COUNTRY, true);
       setSelectedCountry(parsed.country);
       setInputPhone(parsed.nationalPhone);
       startVerificationProcess(parsed.fullE164);
@@ -194,8 +175,8 @@ export default function VerifyScreen() {
   };
 
   const handlePhoneChange = (val: string) => {
-    const parsed = parseAndCleanPhone(val, selectedCountry);
     if (val.startsWith('+') || val.startsWith('00')) {
+      const parsed = parseAndCleanPhone(val, selectedCountry, true);
       setSelectedCountry(parsed.country);
       setInputPhone(parsed.nationalPhone);
     } else {
@@ -204,7 +185,7 @@ export default function VerifyScreen() {
   };
 
   const handleSelectContact = (phone: string, name?: string) => {
-    const parsed = parseAndCleanPhone(phone, selectedCountry);
+    const parsed = parseAndCleanPhone(phone, selectedCountry, true);
     setSelectedCountry(parsed.country);
     setInputPhone(parsed.nationalPhone);
     startVerificationProcess(parsed.fullE164);
@@ -243,8 +224,7 @@ export default function VerifyScreen() {
 
   const handleSearch = () => {
     if (!inputPhone.trim()) return;
-    const parsed = parseAndCleanPhone(inputPhone, selectedCountry);
-    setSelectedCountry(parsed.country);
+    const parsed = parseAndCleanPhone(inputPhone, selectedCountry, false);
     setInputPhone(parsed.nationalPhone);
     startVerificationProcess(parsed.fullE164);
   };
@@ -484,7 +464,7 @@ export default function VerifyScreen() {
                 }`}
               >
                 {testResultType === 'secure'
-                  ? t('common.secured')
+                  ? t('common.securise')
                   : testResultType === 'warning'
                   ? t('common.riskDetected')
                   : t('common.dangerTitle')}
