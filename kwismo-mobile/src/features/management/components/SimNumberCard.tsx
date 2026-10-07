@@ -89,7 +89,7 @@ export function SimNumberCard({
               >
                 <Icon name="solar:shield-check-bold" color="#FFFFFF" size={14} />
                 <Text className="font-bold text-xs text-white">
-                  Sécuriser à nouveau
+                  {t('common.markAsSecured')}
                 </Text>
               </TouchableOpacity>
             )}

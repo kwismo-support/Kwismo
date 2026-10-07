@@ -312,7 +312,7 @@ async def get_partner_scope_kpi(partner_id: str) -> list[PartnerScopeKpiOut]:
 
 async def submit_partner_request(payload) -> Message:
     from app.core.schemas import Message
-    from app.utils.email import send_email
+    from app.utils.email import _build_email_html, send_email
 
     try:
         await db.partnerrequest.create(
@@ -330,13 +330,29 @@ async def submit_partner_request(payload) -> Message:
         logger.error("Erreur lors de la sauvegarde de la demande de partenariat en BD: %s", exc)
 
     try:
-        user_body = f"""
-        <p>Bonjour {payload.nomContact},</p>
+        user_content = f"""
+        <p style="margin-top: 0;">Bonjour <strong>{payload.nomContact}</strong>,</p>
         <p>Nous avons bien reçu votre demande de partenariat pour <strong>{payload.nomEntreprise}</strong> ({payload.typePartenariat}).</p>
-        <p>Notre équipe vous recontactera dans les plus brefs délais.</p>
-        <br/>
-        <p>Cordialement,<br/>L'équipe KWISMO</p>
+        
+        <div style="background-color: #F8FAFC; border-left: 4px solid #25B46E; border-radius: 8px; padding: 16px 20px; margin: 24px 0;">
+          <div style="font-size: 12px; color: #64748B; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Récapitulatif de votre demande</div>
+          <div style="font-size: 14px; color: #161E33; line-height: 1.6;">
+            • <strong>Entreprise :</strong> {payload.nomEntreprise}<br/>
+            • <strong>Type de partenariat :</strong> {payload.typePartenariat}<br/>
+            • <strong>Téléphone :</strong> {payload.telephone}
+          </div>
+        </div>
+
+        <p>Notre équipe commerciale étudie votre requête et vous recontactera dans les plus brefs délais.</p>
+        
+        <p style="margin-bottom: 0; margin-top: 28px;">Cordialement,<br/><strong style="color: #161E33;">L'équipe Partenariats KWISMO</strong></p>
         """
+        user_body = _build_email_html(
+            title="KWISMO — Demande de partenariat reçue",
+            subtitle="Programme Partenaire KWISMO",
+            content_html=user_content,
+        )
+
         await send_email(
             to=payload.email,
             subject="KWISMO — Demande de partenariat reçue",
@@ -344,17 +360,42 @@ async def submit_partner_request(payload) -> Message:
             dev_tag="PARTNER-REQUEST-USER",
         )
 
-        admin_body = f"""
-        <h3>Nouvelle demande de partenariat</h3>
-        <ul>
-          <li><strong>Entreprise :</strong> {payload.nomEntreprise}</li>
-          <li><strong>Contact :</strong> {payload.nomContact}</li>
-          <li><strong>Email :</strong> {payload.email}</li>
-          <li><strong>Téléphone :</strong> {payload.telephone}</li>
-          <li><strong>Type de partenariat :</strong> {payload.typePartenariat}</li>
-          <li><strong>Message :</strong> {payload.message or 'Aucun'}</li>
-        </ul>
+        admin_content = f"""
+        <p style="margin-top: 0;">Une nouvelle demande de partenariat a été soumise sur la plateforme :</p>
+        
+        <table width="100%" border="0" cellspacing="0" cellpadding="10" style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; margin: 20px 0; font-size: 14px; color: #161E33;">
+          <tr style="border-bottom: 1px solid #EDF2F7;">
+            <td width="35%" style="color: #64748B; font-weight: 600;">Entreprise :</td>
+            <td style="font-weight: 700;">{payload.nomEntreprise}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #EDF2F7;">
+            <td style="color: #64748B; font-weight: 600;">Contact :</td>
+            <td>{payload.nomContact}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #EDF2F7;">
+            <td style="color: #64748B; font-weight: 600;">Email :</td>
+            <td><a href="mailto:{payload.email}" style="color: #25B46E; text-decoration: none; font-weight: 600;">{payload.email}</a></td>
+          </tr>
+          <tr style="border-bottom: 1px solid #EDF2F7;">
+            <td style="color: #64748B; font-weight: 600;">Téléphone :</td>
+            <td>{payload.telephone}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #EDF2F7;">
+            <td style="color: #64748B; font-weight: 600;">Type Partenariat :</td>
+            <td><span style="background-color: #DEF7EC; color: #03543F; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 12px; display: inline-block;">{payload.typePartenariat}</span></td>
+          </tr>
+          <tr>
+            <td style="color: #64748B; font-weight: 600; vertical-align: top;">Message :</td>
+            <td style="white-space: pre-wrap; color: #334155;">{payload.message or 'Aucun message.'}</td>
+          </tr>
+        </table>
         """
+        admin_body = _build_email_html(
+            title=f"Nouvelle demande : {payload.nomEntreprise}",
+            subtitle="Notification Admin KWISMO",
+            content_html=admin_content,
+        )
+
         await send_email(
             to="contact@kwismo.com",
             subject=f"[KWISMO Partenaires] Nouvelle demande : {payload.nomEntreprise}",

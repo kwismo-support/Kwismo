@@ -267,6 +267,11 @@
     "noRegisteredPhone": "Aucun numéro de téléphone enregistré sur votre compte.",
     "whatsapp_alert": "Alerte WhatsApp",
     "inconnu": "Inconnu",
-    "finish": "Terminer"
+    "finish": "Terminer",
+    "markAsSecured": "Sécuriser à nouveau",
+    "markedAsSecuredSuccess": "Numéro {{phone}} marqué comme sécurisé.",
+    "receiveOtpByEmail": "Recevoir le code par e-mail (Compte)",
+    "otpSentByEmail": "Code OTP envoyé à votre adresse e-mail",
+    "secured": "Sécurisé"
   }
 }

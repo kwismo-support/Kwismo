@@ -198,7 +198,7 @@ export default function ManagementScreen() {
     if (result.success) {
       toast.success(
         channel === 'email'
-          ? (result.message || 'Code OTP envoyé à votre adresse e-mail')
+          ? (result.message || t('common.otpSentByEmail'))
           : t('common.otpSentBySms')
       );
     } else {
@@ -233,7 +233,7 @@ export default function ManagementScreen() {
         status: 'common.secured',
         badgeType: 'green',
       });
-      toast.success(result.message || `Numéro ${item.phone} marqué comme sécurisé.`);
+      toast.success(result.message || t('common.markedAsSecuredSuccess', { phone: item.phone }));
     } else {
       toast.error(result.message || t('common.retry'));
     }
@@ -498,7 +498,7 @@ export default function ManagementScreen() {
             >
               <Icon name="solar:letter-bold" color="#25B46E" size={18} className="mr-2" />
               <Text className="font-font-bold text-xs font-bold text-slate-900 dark:text-white">
-                Recevoir le code par e-mail (Compte)
+                {t('common.receiveOtpByEmail')}
               </Text>
             </TouchableOpacity>
 

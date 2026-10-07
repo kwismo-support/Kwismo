@@ -37,7 +37,6 @@ export function useDashboard() {
   useEffect(() => {
     let isMounted = true;
     (async () => {
-      // 1. Instant local cache load
       const cachedStr = await storage.getItem(DASHBOARD_CACHE_KEY);
       if (cachedStr && isMounted) {
         try {
@@ -49,7 +48,6 @@ export function useDashboard() {
         } catch {}
       }
 
-      // 2. Fetch fresh network + local activity data
       await fetchSummary(false);
       if (isMounted) setLoading(false);
     })();

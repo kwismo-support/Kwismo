@@ -267,6 +267,11 @@
     "noRegisteredPhone": "No registered phone number found on your account.",
     "whatsapp_alert": "WhatsApp Alert",
     "inconnu": "Unknown",
-    "finish": "Finish"
+    "finish": "Finish",
+    "markAsSecured": "Mark as secured",
+    "markedAsSecuredSuccess": "Number {{phone}} marked as secured.",
+    "receiveOtpByEmail": "Receive code via email (Account)",
+    "otpSentByEmail": "OTP code sent to your email address",
+    "secured": "Secured"
   }
 }

@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 import { HeaderBar } from '@/shared/components/HeaderBar';
 import { CountryFlag } from '@/shared/components/CountryFlag';
+import { CountryPickerModal, CountryItem } from '@/shared/components/CountryPickerModal';
 import { PermissionModal } from '@/shared/components/PermissionModal';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 import { toast } from '@/shared/store/toastStore';
@@ -53,6 +54,12 @@ export default function ReportScreen() {
   const [loadingCalls, setLoadingCalls] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [countryModalVisible, setCountryModalVisible] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<CountryItem>({
+    code: 'CM',
+    name: 'Cameroun',
+    callingCode: '+237',
+  });
 
   React.useEffect(() => {
     if (params.phone) {
@@ -116,7 +123,7 @@ export default function ReportScreen() {
 
     setIsSubmitting(true);
     try {
-      const formattedPhone = toE164Phone(targetPhone.trim());
+      const formattedPhone = toE164Phone(targetPhone.trim(), selectedCountry.callingCode, selectedCountry.code);
       const fingerprint = await getDeviceFingerprint();
       const selectedReasonObj = REPORT_REASONS.find((r) => r.id === selectedReason);
       const translatedReason = selectedReasonObj ? t(selectedReasonObj.labelKey) : selectedReason;
@@ -207,10 +214,17 @@ export default function ReportScreen() {
               validationError ? 'border-red-500' : 'border-slate-200 dark:border-slate-700'
             }`}
           >
-            <View className="flex-row items-center mr-2 pr-2 border-r border-slate-200 dark:border-slate-700">
-              <CountryFlag countryCode="CM" size={20} className="mr-1" />
-              <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white">+237</Text>
-            </View>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => setCountryModalVisible(true)}
+              className="flex-row items-center mr-2 pr-2 border-r border-slate-200 dark:border-slate-700"
+            >
+              <CountryFlag countryCode={selectedCountry.code} size={20} className="mr-1" />
+              <Text className="font-font-bold text-sm font-bold text-slate-900 dark:text-white mr-1">
+                {selectedCountry.callingCode}
+              </Text>
+              <Icon name="solar:alt-arrow-down-linear" color="#94A3B8" size={14} />
+            </TouchableOpacity>
 
             <TextInput
               className="flex-1 font-font-semibold text-base text-slate-900 dark:text-white"
@@ -433,6 +447,13 @@ export default function ReportScreen() {
         cancelText={t('common.cancel')}
         onConfirm={handleGrantCallLogPermission}
         onCancel={() => setPermissionModalVisible(false)}
+      />
+
+      <CountryPickerModal
+        visible={countryModalVisible}
+        onClose={() => setCountryModalVisible(false)}
+        onSelect={(c) => setSelectedCountry(c)}
+        selectedCode={selectedCountry.code}
       />
     </KeyboardAvoidingView>
   );
