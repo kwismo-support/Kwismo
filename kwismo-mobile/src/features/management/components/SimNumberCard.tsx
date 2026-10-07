@@ -9,6 +9,7 @@ interface SimNumberCardProps {
   item: UserSimNumber;
   onOpenOtp: (item: UserSimNumber) => void;
   onDeclareCompromised: (item: UserSimNumber) => void;
+  onMarkAsSecured?: (item: UserSimNumber) => void;
   onOpenDelete: (item: UserSimNumber) => void;
 }
 
@@ -16,6 +17,7 @@ export function SimNumberCard({
   item,
   onOpenOtp,
   onDeclareCompromised,
+  onMarkAsSecured,
   onOpenDelete,
 }: SimNumberCardProps) {
   const { t } = useTranslation();
@@ -71,11 +73,26 @@ export function SimNumberCard({
         )}
 
         {isCompromised && (
-          <View className="px-3 py-1 rounded bg-red-100 dark:bg-red-900/40 flex-row items-center gap-1">
-            <Icon name="solar:danger-bold" color="#EF4444" size={14} />
-            <Text className="font-bold text-xs text-red-600 dark:text-red-400">
-              {t('common.statusCompromised')}
-            </Text>
+          <View className="flex-row items-center gap-2">
+            <View className="px-2.5 py-1 rounded bg-red-100 dark:bg-red-900/40 flex-row items-center gap-1">
+              <Icon name="solar:danger-bold" color="#EF4444" size={14} />
+              <Text className="font-bold text-xs text-red-600 dark:text-red-400">
+                {t('common.statusCompromised')}
+              </Text>
+            </View>
+
+            {onMarkAsSecured && (
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => onMarkAsSecured(item)}
+                className="px-3 py-1.5 rounded-lg bg-emerald-600 flex-row items-center gap-1"
+              >
+                <Icon name="solar:shield-check-bold" color="#FFFFFF" size={14} />
+                <Text className="font-bold text-xs text-white">
+                  Sécuriser à nouveau
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
 

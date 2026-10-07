@@ -43,6 +43,7 @@ export default function ManagementScreen() {
     resendOtp,
     deleteNumber,
     declareCompromised,
+    markAsSecured,
   } = useManagement();
 
   const [fullScreenAddVisible, setFullScreenAddVisible] = useState(false);
@@ -222,6 +223,22 @@ export default function ManagementScreen() {
     }
   };
 
+  const handleMarkAsSecuredNumber = async (item: UserSimNumber) => {
+    const result = await markAsSecured(item.id);
+    if (result.success) {
+      await activityHistoryService.addActivity({
+        phone: item.phone,
+        type: 'common.myNumbers',
+        category: 'verified',
+        status: 'common.secured',
+        badgeType: 'green',
+      });
+      toast.success(result.message || `Numéro ${item.phone} marqué comme sécurisé.`);
+    } else {
+      toast.error(result.message || t('common.retry'));
+    }
+  };
+
   const handleConfirmDelete = async () => {
     if (!targetActionNumber) return;
     const result = await deleteNumber(targetActionNumber.id);
@@ -295,6 +312,7 @@ export default function ManagementScreen() {
                   setFullScreenOtpVisible(true);
                 }}
                 onDeclareCompromised={handleDeclareCompromisedNumber}
+                onMarkAsSecured={handleMarkAsSecuredNumber}
                 onOpenDelete={(target) => {
                   setTargetActionNumber(target);
                   setDeleteModalVisible(true);

@@ -25,6 +25,7 @@ import { apiClient } from '@/shared/services/apiClient';
 import { enqueueOutboxItem } from '@/shared/services/database';
 import { activityHistoryService } from '@/shared/services/activityHistoryService';
 import { callListenerService } from '@/features/call-detection/services/callListenerService';
+import { toE164Phone } from '@/shared/utils/phoneFormatter';
 
 const REPORT_REASONS = [
   { id: 'scam', labelKey: 'report.reasonScam', icon: 'solar:danger-triangle-bold' },
@@ -115,13 +116,14 @@ export default function ReportScreen() {
 
     setIsSubmitting(true);
     try {
+      const formattedPhone = toE164Phone(targetPhone.trim());
       const fingerprint = await getDeviceFingerprint();
       const selectedReasonObj = REPORT_REASONS.find((r) => r.id === selectedReason);
       const translatedReason = selectedReasonObj ? t(selectedReasonObj.labelKey) : selectedReason;
       const motifText = `${translatedReason}${description.trim() ? ' - ' + description.trim() : ''}`;
-      
+
       const payload = {
-        numero: targetPhone.trim(),
+        numero: formattedPhone,
         motif: motifText,
         device_fingerprint: fingerprint,
       };
@@ -129,7 +131,7 @@ export default function ReportScreen() {
       try {
         await apiClient.post('/reports', payload);
         await activityHistoryService.addActivity({
-          phone: targetPhone.trim(),
+          phone: formattedPhone,
           type: 'common.report',
           category: 'reports',
           status: 'common.reported',
@@ -137,14 +139,21 @@ export default function ReportScreen() {
         });
         setSuccessModalVisible(true);
       } catch (apiErr: any) {
-        if (apiErr?.response?.status === 409) {
-          const detail = apiErr.response.data?.detail || t('report.duplicateReportError');
-          setValidationError(detail);
-          toast.error(detail);
+        const errStatus = apiErr?.response?.status;
+        const detail = apiErr?.response?.data?.detail;
+
+        if (errStatus === 409) {
+          const errorMsg = detail || t('report.duplicateReportError');
+          setValidationError(errorMsg);
+          toast.error(errorMsg);
+        } else if (errStatus === 400 || errStatus === 422) {
+          const errorMsg = detail || t('report.reportError');
+          setValidationError(errorMsg);
+          toast.error(errorMsg);
         } else {
           await enqueueOutboxItem('report', payload);
           await activityHistoryService.addActivity({
-            phone: targetPhone.trim(),
+            phone: formattedPhone,
             type: 'common.report',
             category: 'reports',
             status: 'common.reported',

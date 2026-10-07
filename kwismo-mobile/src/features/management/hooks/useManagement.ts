@@ -169,6 +169,16 @@ export function useManagement() {
     return { success: false, message: res.message };
   };
 
+  const markAsSecured = async (phoneId: string) => {
+    const res = await managementApi.securePhone(phoneId);
+    if (res.success) {
+      const updated = numbers.map((n) => (n.id === phoneId ? { ...n, status: 'verified' as PhoneStatus } : n));
+      saveUpdatedNumbers(updated);
+      return { success: true, message: res.message };
+    }
+    return { success: false, message: res.message };
+  };
+
   return {
     loading,
     refreshing,
@@ -181,5 +191,6 @@ export function useManagement() {
     resendOtp,
     deleteNumber,
     declareCompromised,
+    markAsSecured,
   };
 }

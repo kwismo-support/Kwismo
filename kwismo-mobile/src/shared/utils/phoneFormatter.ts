@@ -28,3 +28,17 @@ export function formatPhoneNumber(phone?: string): string {
 
   return trimmed;
 }
+
+export function toE164Phone(phone?: string, defaultCallingCode = '+237'): string {
+  if (!phone) return '';
+  let cleaned = phone.trim().replace(/\s+/g, '').replace(/-/g, '');
+  if (!cleaned) return '';
+  if (cleaned.startsWith('+')) return cleaned;
+  if (cleaned.startsWith('00')) return '+' + cleaned.slice(2);
+
+  const codeDigits = defaultCallingCode.replace('+', '');
+  if (cleaned.startsWith(codeDigits) && cleaned.length > codeDigits.length + 5) {
+    return `+${cleaned}`;
+  }
+  return `${defaultCallingCode}${cleaned}`;
+}

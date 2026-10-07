@@ -39,22 +39,18 @@ export function useDashboard() {
     (async () => {
       // 1. Instant local cache load
       const cachedStr = await storage.getItem(DASHBOARD_CACHE_KEY);
-      let hasValidCache = false;
       if (cachedStr && isMounted) {
         try {
           const parsed = JSON.parse(cachedStr);
           if (parsed && typeof parsed === 'object') {
             setSummary(parsed);
             setLoading(false);
-            hasValidCache = true;
           }
         } catch {}
       }
 
-      // 2. Only fetch network if no cache is present
-      if (!hasValidCache) {
-        await fetchSummary(false);
-      }
+      // 2. Fetch fresh network + local activity data
+      await fetchSummary(false);
       if (isMounted) setLoading(false);
     })();
 

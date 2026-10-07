@@ -105,3 +105,19 @@ async def declare_my_phone_compromised(
     phone_id: str, user=Depends(require_roles("user", "admin", "partner", "superadmin"))
 ) -> CompromiseIncidentOut:
     return await service.declare_my_phone_compromised(user.id, phone_id, user.langue)
+
+
+@router.post(
+    "/{phone_id}/secure",
+    response_model=Message,
+    responses={**AUTH_RESPONSES, **NOT_FOUND_RESPONSE},
+    summary="Mark a compromised number as secured again / Marquer à nouveau comme sécurisé",
+    description=(
+        "**FR** — Marque à nouveau ce numéro comme sécurisé après récupération par le propriétaire.\n\n"
+        "**EN** — Marks this number as secured again after recovery by the owner."
+    ),
+)
+async def secure_my_phone(
+    phone_id: str, user=Depends(require_roles("user", "admin", "partner", "superadmin"))
+) -> Message:
+    return await service.secure_my_phone(user.id, phone_id, user.langue)

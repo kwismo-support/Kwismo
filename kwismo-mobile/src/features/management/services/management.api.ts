@@ -128,4 +128,25 @@ export const managementApi = {
       };
     }
   },
+
+  async securePhone(
+    phoneId: string
+  ): Promise<{ success: boolean; data?: any; message?: string }> {
+    try {
+      const res = await ApiClient.request<any>(`/users/me/phones/${phoneId}/secure`, {
+        method: 'POST',
+        silent: false,
+      });
+      return {
+        success: res.success,
+        data: res.data,
+        message: res.data?.message_fr || res.message,
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        message: err.message || 'Error',
+      };
+    }
+  },
 };

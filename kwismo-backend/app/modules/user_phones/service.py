@@ -265,3 +265,46 @@ async def declare_my_phone_compromised(user_id: str, phone_id: str, lang: str = 
         date_declaration=incident.dateDeclaration,
         statut=incident.statut,
     )
+
+
+async def secure_my_phone(user_id: str, phone_id: str, lang: str = "fr") -> Message:
+    phone = await db.userphone.find_unique(where={"id": phone_id})
+    if phone is None or phone.userId != user_id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("phone_not_found", lang))
+    if not phone.estCompromis:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Ce numéro n'est pas actuellement marqué comme compromis.",
+        )
+
+    await db.userphone.update(where={"id": phone_id}, data={"estCompromis": False})
+
+    await db.compromiseincident.update_many(
+        where={"userPhoneId": phone_id, "statut": "open"},
+        data={"statut": "closed"}
+    )
+
+    await db.contact.update_many(where={"numero": phone.valeur}, data={"statut": "securise"})
+
+    contacts_with_phone = await db.contact.find_many(where={"numero": phone.valeur})
+    declaring_user = await db.user.find_unique(where={"id": user_id})
+    user_name = f"{declaring_user.prenom} {declaring_user.nom}".strip() if declaring_user else phone.valeur
+
+    for c in contacts_with_phone:
+        if c.userId != user_id:
+            await db.notification.create(
+                data={
+                    "userId": c.userId,
+                    "texte": f"✅ SÉCURITÉ KWISMO : Le numéro {phone.valeur} ({user_name}) a été sécurisé à nouveau par son propriétaire.",
+                    "lu": False,
+                }
+            )
+
+    from app.core.audit_log import log_audit
+    await log_audit(user_id, "secure_phone", cible=phone_id)
+
+    return Message(
+        message_fr="Numéro marqué comme sécurisé avec succès.",
+        message_en="Number marked as secured successfully.",
+        message="Numéro marqué comme sécurisé avec succès.",
+    )
