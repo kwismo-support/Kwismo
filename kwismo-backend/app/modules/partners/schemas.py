@@ -85,3 +85,16 @@ class PartnerRequestIn(BaseModel):
     typePartenariat: str
     telephone: str
     message: str | None = None
+
+
+class PartnerRequestOut(BaseModel):
+    id: str
+    nomContact: str
+    email: str
+    nomEntreprise: str
+    typePartenariat: str
+    telephone: str
+    message: str | None = None
+    statut: str
+    createdAt: datetime
+

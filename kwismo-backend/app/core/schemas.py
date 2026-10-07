@@ -27,8 +27,9 @@ class ErrorResponse(BaseModel):
 class Message(BaseModel):
     """Reponse de confirmation simple. / Simple confirmation response."""
 
-    message_fr: str
-    message_en: str
+    message_fr: str = "Opération réussie."
+    message_en: str = "Operation successful."
+    message: str | None = None
 
 
 class HealthOut(BaseModel):

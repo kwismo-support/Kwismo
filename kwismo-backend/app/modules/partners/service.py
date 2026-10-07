@@ -4,6 +4,7 @@ import logging
 
 from fastapi import HTTPException, status
 
+from app.core.schemas import Message
 from app.db.prisma_client import db
 from app.db.repositories.partner_repository import PartnerRepository
 from app.modules.partners.affiliation import is_number_in_partner_scope
@@ -303,3 +304,88 @@ async def get_partner_scope_kpi(partner_id: str) -> list[PartnerScopeKpiOut]:
         )
         for k in kpis
     ]
+
+
+# ---------------------------------------------------------------------------
+# submit_partner_request & list_partner_requests
+# ---------------------------------------------------------------------------
+
+async def submit_partner_request(payload) -> Message:
+    from app.core.schemas import Message
+    from app.utils.email import send_email
+
+    try:
+        await db.partnerrequest.create(
+            data={
+                "nomContact": payload.nomContact,
+                "email": payload.email,
+                "nomEntreprise": payload.nomEntreprise,
+                "typePartenariat": payload.typePartenariat,
+                "telephone": payload.telephone,
+                "message": payload.message or "",
+                "statut": "pending",
+            }
+        )
+    except Exception as exc:
+        logger.error("Erreur lors de la sauvegarde de la demande de partenariat en BD: %s", exc)
+
+    try:
+        user_body = f"""
+        <p>Bonjour {payload.nomContact},</p>
+        <p>Nous avons bien reçu votre demande de partenariat pour <strong>{payload.nomEntreprise}</strong> ({payload.typePartenariat}).</p>
+        <p>Notre équipe vous recontactera dans les plus brefs délais.</p>
+        <br/>
+        <p>Cordialement,<br/>L'équipe KWISMO</p>
+        """
+        await send_email(
+            to=payload.email,
+            subject="KWISMO — Demande de partenariat reçue",
+            body_html=user_body,
+            dev_tag="PARTNER-REQUEST-USER",
+        )
+
+        admin_body = f"""
+        <h3>Nouvelle demande de partenariat</h3>
+        <ul>
+          <li><strong>Entreprise :</strong> {payload.nomEntreprise}</li>
+          <li><strong>Contact :</strong> {payload.nomContact}</li>
+          <li><strong>Email :</strong> {payload.email}</li>
+          <li><strong>Téléphone :</strong> {payload.telephone}</li>
+          <li><strong>Type de partenariat :</strong> {payload.typePartenariat}</li>
+          <li><strong>Message :</strong> {payload.message or 'Aucun'}</li>
+        </ul>
+        """
+        await send_email(
+            to="contact@kwismo.com",
+            subject=f"[KWISMO Partenaires] Nouvelle demande : {payload.nomEntreprise}",
+            body_html=admin_body,
+            dev_tag="PARTNER-REQUEST-ADMIN",
+        )
+    except Exception as exc:
+        logger.error("Erreur lors de l'envoi de l'email de demande de partenariat: %s", exc)
+
+    return Message(
+        message_fr="Demande de partenariat reçue avec succès.",
+        message_en="Partnership request received successfully.",
+        message="Demande de partenariat reçue avec succès.",
+    )
+
+
+async def list_partner_requests():
+    from app.modules.partners.schemas import PartnerRequestOut
+    requests = await db.partnerrequest.find_many(order={"createdAt": "desc"})
+    return [
+        PartnerRequestOut(
+            id=r.id,
+            nomContact=r.nomContact,
+            email=r.email,
+            nomEntreprise=r.nomEntreprise,
+            typePartenariat=r.typePartenariat,
+            telephone=r.telephone,
+            message=r.message,
+            statut=r.statut,
+            createdAt=r.createdAt,
+        )
+        for r in requests
+    ]
+

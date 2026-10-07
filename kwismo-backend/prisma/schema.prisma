@@ -300,6 +300,19 @@ model AffiliationRulePrefix {
   @@index([affiliationRuleId])
 }
 
+model PartnerRequest {
+  id              String   @id @default(cuid())
+  nomContact      String
+  email           String
+  nomEntreprise   String
+  typePartenariat String
+  telephone       String
+  message         String?
+  statut          String   @default("pending") // pending | approved | rejected
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
 // ---------------------------------------------------------------------------
 // Transferts, alertes, enquetes, KPI
 // ---------------------------------------------------------------------------

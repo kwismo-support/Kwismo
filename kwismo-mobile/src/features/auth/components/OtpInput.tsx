@@ -31,6 +31,12 @@ export const OtpInput: React.FC<OtpInputProps> = ({ length = 6, value, onChange 
     }
   };
 
+  const handleKeyPress = (e: any, index: number) => {
+    if (e.nativeEvent.key === 'Backspace' && (!value[index] || value[index] === ' ') && index > 0) {
+      inputs.current[index - 1]?.focus();
+    }
+  };
+
   return (
     <View style={styles.container}>
       {Array.from({ length }).map((_, i) => (
@@ -42,6 +48,7 @@ export const OtpInput: React.FC<OtpInputProps> = ({ length = 6, value, onChange 
           maxLength={length}
           value={value[i] || ''}
           onChangeText={(val) => handleChange(val, i)}
+          onKeyPress={(e) => handleKeyPress(e, i)}
         />
       ))}
     </View>

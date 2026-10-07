@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -61,6 +61,7 @@ export default function ManagementScreen() {
   const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);
   const [otpTimer, setOtpTimer] = useState(60);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const otpInputRefs = useRef<Array<TextInput | null>>([]);
 
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [targetActionNumber, setTargetActionNumber] = useState<UserSimNumber | null>(null);
@@ -116,6 +117,9 @@ export default function ManagementScreen() {
       setOtpCode(['', '', '', '', '', '']);
       setOtpTimer(60);
       setFullScreenOtpVisible(true);
+      setTimeout(() => {
+        otpInputRefs.current[0]?.focus();
+      }, 300);
       toast.success(t('common.otpSentBySms'));
     } else {
       setPhoneError(result.message || t('common.invalidPhoneNumber'));
@@ -132,6 +136,8 @@ export default function ManagementScreen() {
         if (i < 6) newCode[i] = d;
       });
       setOtpCode(newCode);
+      const nextIndex = Math.min(digits.length, 5);
+      otpInputRefs.current[nextIndex]?.focus();
       if (newCode.every((c) => c !== '')) {
         handleConfirmOtp(newCode.join(''));
       }
@@ -142,8 +148,18 @@ export default function ManagementScreen() {
     newCode[index] = clean;
     setOtpCode(newCode);
 
+    if (clean && index < 5) {
+      otpInputRefs.current[index + 1]?.focus();
+    }
+
     if (clean && index === 5 && newCode.every((c) => c !== '')) {
       handleConfirmOtp(newCode.join(''));
+    }
+  };
+
+  const handleKeyPress = (e: any, index: number) => {
+    if (e.nativeEvent.key === 'Backspace' && !otpCode[index] && index > 0) {
+      otpInputRefs.current[index - 1]?.focus();
     }
   };
 
@@ -427,6 +443,9 @@ export default function ManagementScreen() {
               {otpCode.map((digit, idx) => (
                 <TextInput
                   key={idx}
+                  ref={(el) => {
+                    otpInputRefs.current[idx] = el;
+                  }}
                   className={`wx-11 hx-13 rounded-xl border-2 text-center font-font-bold text-xl font-extrabold bg-white dark:bg-brand-cardDark text-slate-900 dark:text-white ${
                     digit ? 'border-brand-green' : 'border-slate-200 dark:border-slate-700'
                   }`}
@@ -434,6 +453,7 @@ export default function ManagementScreen() {
                   keyboardType="number-pad"
                   value={digit}
                   onChangeText={(txt) => handleOtpInput(txt, idx)}
+                  onKeyPress={(e) => handleKeyPress(e, idx)}
                   autoFocus={idx === 0}
                 />
               ))}

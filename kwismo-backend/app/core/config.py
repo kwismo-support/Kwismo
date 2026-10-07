@@ -26,8 +26,8 @@ class Settings(BaseSettings):
 
     otp_expire_min: int = 5
 
-    cors_origins: str = "http://localhost:5173"
-    frontend_url: str = "http://localhost:5173"
+    cors_origins: str = "http://localhost:5173,http://localhost:3000,https://kwismo.com,https://www.kwismo.com,https://app.kwismo.com,https://kwismo-web.vercel.app,https://kwismo-landing.vercel.app"
+    frontend_url: str = "https://kwismo.com"
     allowed_hosts: str = "*"
     redis_url: str = "redis://localhost:6379"
 

@@ -22,6 +22,7 @@ from app.modules.partners.schemas import (
     PartnerScopeNumberOut,
     PartnerScopeUserOut,
     PartnerRequestIn,
+    PartnerRequestOut,
 )
 
 router = APIRouter(tags=["Partners"])
@@ -33,8 +34,18 @@ router = APIRouter(tags=["Partners"])
     summary="Submit a partner request / Soumettre une demande de partenariat",
 )
 async def submit_partner_request(payload: PartnerRequestIn) -> Message:
-    # TODO: Save to DB when PartnerRequest model is added
-    return Message(message="Demande de partenariat reçue avec succès.")
+    return await service.submit_partner_request(payload)
+
+
+@router.get(
+    "/partners/requests",
+    response_model=list[PartnerRequestOut],
+    responses=AUTH_RESPONSES,
+    summary="List partner requests / Lister les demandes de partenariat",
+    description="**FR** — Réservé admin.\n\n**EN** — Admin only.",
+)
+async def list_partner_requests(user=Depends(require_roles("admin"))) -> list[PartnerRequestOut]:
+    return await service.list_partner_requests()
 
 
 @router.get(
