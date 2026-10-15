@@ -7,7 +7,7 @@ module.exports = ({ config }) => {
   const packageName = isProd ? 'com.kwismo.mobile' : 'com.kwismo.mobile.test';
   const scheme = isProd ? 'kwismo' : 'kwismo-test';
 
-  const projectId = process.env.EAS_PROJECT_ID || config.extra?.eas?.projectId;
+  const projectId = process.env.EAS_PROJECT_ID || config.extra?.eas?.projectId || '5dfc0edb-3e81-4bed-b9c2-448832f4b5ec';
 
   return {
     ...config,
@@ -20,10 +20,12 @@ module.exports = ({ config }) => {
     scheme: scheme,
     assetBundlePatterns: ['**/*'],
     ios: {
+      ...(config.ios || {}),
       supportsTablet: true,
       bundleIdentifier: bundleIdentifier,
     },
     android: {
+      ...(config.android || {}),
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#000000',
@@ -36,26 +38,20 @@ module.exports = ({ config }) => {
       bundler: 'metro',
     },
     plugins: [
-      'expo-router',
-      [
-        'expo-splash-screen',
-        {
-          image: './assets/splash.png',
-          resizeMode: 'contain',
-          backgroundColor: '#161E33',
-        },
-      ],
+      ...(config.plugins || []),
     ],
     updates: {
       enabled: true,
       checkAutomatically: 'ON_LOAD',
       fallbackToCacheTimeout: 0,
-      ...(projectId ? { url: `https://u.expo.dev/${projectId}` } : {}),
+      url: `https://u.expo.dev/${projectId}`,
     },
-    runtimeVersion: '1.0.0',
+    runtimeVersion: {
+      policy: 'appVersion',
+    },
     extra: {
       ...(config.extra || {}),
-      ...(projectId ? { eas: { projectId } } : {}),
+      eas: { projectId },
       appEnv: env,
     },
   };

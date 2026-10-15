@@ -10,10 +10,28 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "updates": {
+      "url": "https://u.expo.dev/5dfc0edb-3e81-4bed-b9c2-448832f4b5ec",
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kwismo.mobile",
-      "icon": "./assets/icon.png"
+      "icon": "./assets/icon.png",
+      "infoPlist": {
+        "NSContactsUsageDescription": "Kwismo a besoin d'accéder à vos contacts pour analyser la réputation des numéros et vous protéger contre les tentatives de fraude.",
+        "NSCameraUsageDescription": "Kwismo a besoin d'accéder à votre appareil photo pour vous permettre de prendre votre photo de profil.",
+        "NSPhotoLibraryUsageDescription": "Kwismo a besoin d'accéder à vos photos pour vous permettre de choisir une photo de profil.",
+        "UIBackgroundModes": [
+          "remote-notification",
+          "fetch"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -35,7 +53,16 @@
         "READ_CONTACTS",
         "WRITE_CONTACTS",
         "POST_NOTIFICATIONS",
-        "SYSTEM_ALERT_WINDOW"
+        "SYSTEM_ALERT_WINDOW",
+        "CAMERA",
+        "READ_MEDIA_IMAGES",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_PHONE_CALL",
+        "RECEIVE_BOOT_COMPLETED",
+        "WAKE_LOCK",
+        "VIBRATE"
       ]
     },
     "web": {
@@ -51,6 +78,20 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#FFFFFF"
+        }
+      ],
+      "expo-updates",
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Kwismo utilise vos contacts pour identifier les numéros fiables et détecter les fraudes."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Kwismo accède à vos photos pour personnaliser votre avatar.",
+          "cameraPermission": "Kwismo utilise la caméra pour prendre votre photo de profil."
         }
       ]
     ],
