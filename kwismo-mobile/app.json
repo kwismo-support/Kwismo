@@ -69,15 +69,14 @@
       "favicon": "./assets/icon.png",
       "bundler": "metro"
     },
-    "splash": {
-      "backgroundColor": "#FFFFFF"
-    },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#FFFFFF"
+          "image": "./assets/splash.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#161E33"
         }
       ],
       "expo-updates",
