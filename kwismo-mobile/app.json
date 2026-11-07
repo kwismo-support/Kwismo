@@ -30,7 +30,8 @@
         "UIBackgroundModes": [
           "remote-notification",
           "fetch"
-        ]
+        ],
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -91,6 +92,15 @@
         {
           "photosPermission": "Kwismo accède à vos photos pour personnaliser votre avatar.",
           "cameraPermission": "Kwismo utilise la caméra pour prendre votre photo de profil."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36
+          }
         }
       ]
     ],

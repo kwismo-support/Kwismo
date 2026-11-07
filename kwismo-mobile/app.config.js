@@ -1,6 +1,12 @@
 module.exports = ({ config }) => {
-  const env = process.env.APP_ENV || 'preview';
-  const isProd = env === 'production';
+  const buildProfile = process.env.EAS_BUILD_PROFILE || '';
+  const rawEnv = process.env.APP_ENV || process.env.EXPO_PUBLIC_APP_ENV || '';
+
+  // Par défaut, nous sommes en production pour éviter tout déploiement de test par inadvertance.
+  // Ne bascule en preview que si explicitement demandé.
+  const isPreview = rawEnv === 'preview' || buildProfile === 'preview' || buildProfile === 'development';
+  const env = isPreview ? 'preview' : 'production';
+  const isProd = !isPreview;
 
   const appName = isProd ? 'Kwismo' : 'Kwismo-Test';
   const bundleIdentifier = isProd ? 'com.kwismo.mobile' : 'com.kwismo.mobile.test';
