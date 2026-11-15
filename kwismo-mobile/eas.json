@@ -12,6 +12,8 @@
       "channel": "preview",
       "env": {
         "APP_ENV": "preview",
+        "EXPO_PUBLIC_APP_ENV": "preview",
+        "EXPO_PUBLIC_API_URL": "https://api-dev.kwismo.com/api/v1",
         "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
       }
     },
@@ -27,6 +29,8 @@
       },
       "env": {
         "APP_ENV": "preview",
+        "EXPO_PUBLIC_APP_ENV": "preview",
+        "EXPO_PUBLIC_API_URL": "https://api-staging.kwismo.com/api/v1",
         "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
       }
     },
@@ -42,6 +46,8 @@
       },
       "env": {
         "APP_ENV": "preview",
+        "EXPO_PUBLIC_APP_ENV": "preview",
+        "EXPO_PUBLIC_API_URL": "https://api-staging.kwismo.com/api/v1",
         "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
       }
     },
@@ -57,6 +63,8 @@
       },
       "env": {
         "APP_ENV": "staging",
+        "EXPO_PUBLIC_APP_ENV": "staging",
+        "EXPO_PUBLIC_API_URL": "https://api-staging.kwismo.com/api/v1",
         "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
       }
     },
@@ -71,6 +79,8 @@
       },
       "env": {
         "APP_ENV": "production",
+        "EXPO_PUBLIC_APP_ENV": "production",
+        "EXPO_PUBLIC_API_URL": "https://api.kwismo.com/api/v1",
         "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
       }
     },
@@ -85,11 +95,25 @@
       },
       "env": {
         "APP_ENV": "production",
+        "EXPO_PUBLIC_APP_ENV": "production",
+        "EXPO_PUBLIC_API_URL": "https://api.kwismo.com/api/v1",
         "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
       }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {}
+    },
+    "staging": {
+      "ios": {
+        "ascAppId": "6831698670"
+      }
+    },
+    "preview": {
+      "ios": {
+        "ascAppId": "6831698670"
+      }
+    }
   }
 }
