@@ -17,21 +17,40 @@ module.exports = ({ config }) => {
   const buildProfile = (process.env.EAS_BUILD_PROFILE || '').toLowerCase();
   const rawEnv = (process.env.APP_ENV || process.env.EXPO_PUBLIC_APP_ENV || '').toLowerCase();
 
-  // 3. Détermination de la cible (Production vs Staging/Test) :
-  // - Si le profil EAS est 'production' / 'production-apk' OU si APP_ENV est 'production' -> Production (com.kwismo.mobile)
-  // - Si on est sur la branche 'main' ET qu'aucun profil non-prod n'a été forcé -> Production (com.kwismo.mobile)
-  // - Si on est sur 'staging' / 'dev' OU qu'un profil test/staging/preview est spécifié -> Staging/Test (com.kwismo.mobile.test)
-  const isExplicitNonProd = ['preview', 'staging', 'development', 'test-aab'].includes(buildProfile) || ['preview', 'staging', 'development'].includes(rawEnv);
-  const isExplicitProd = ['production', 'production-apk'].includes(buildProfile) || rawEnv === 'production';
+  // 3. Détermination précise selon la table :
+  // - Production : profil 'production' / 'production-apk', env 'production', ou branche 'main'
+  // - Staging : profil 'staging' / 'staging-aab', env 'staging', ou branche 'staging'
+  // - Dev / Preview : profil 'preview' / 'preview-aab' / 'development', branche 'dev', etc.
+  const isProd =
+    ['production', 'production-apk'].includes(buildProfile) ||
+    rawEnv === 'production' ||
+    (gitBranch === 'main' && !['staging', 'staging-aab', 'preview', 'preview-aab', 'development', 'test-aab'].includes(buildProfile) && !['staging', 'preview', 'dev', 'development'].includes(rawEnv));
 
-  const isProd = isExplicitProd || (gitBranch === 'main' && !isExplicitNonProd);
-  const isStaging = !isProd && (buildProfile === 'staging' || rawEnv === 'staging' || gitBranch === 'staging');
+  const isStaging =
+    !isProd &&
+    (['staging', 'staging-aab'].includes(buildProfile) ||
+      rawEnv === 'staging' ||
+      (gitBranch === 'staging' && !['preview', 'preview-aab', 'development', 'test-aab'].includes(buildProfile) && !['preview', 'dev', 'development'].includes(rawEnv)));
 
-  const env = isProd ? 'production' : (isStaging ? 'staging' : 'preview');
-  const appName = isProd ? 'Kwismo' : (isStaging ? 'Kwismo (Staging)' : 'Kwismo-Test');
-  const bundleIdentifier = isProd ? 'com.kwismo.mobile' : 'com.kwismo.mobile.test';
-  const packageName = isProd ? 'com.kwismo.mobile' : 'com.kwismo.mobile.test';
-  const scheme = isProd ? 'kwismo' : 'kwismo-test';
+  let bundleIdentifier = 'com.kwismo.mobile.dev';
+  let packageName = 'com.kwismo.mobile.dev';
+  let appName = 'Kwismo-Dev';
+  let scheme = 'kwismo-dev';
+  let env = 'preview';
+
+  if (isProd) {
+    bundleIdentifier = 'com.kwismo.mobile';
+    packageName = 'com.kwismo.mobile';
+    appName = 'Kwismo';
+    scheme = 'kwismo';
+    env = 'production';
+  } else if (isStaging) {
+    bundleIdentifier = 'com.kwismo.mobile.staging';
+    packageName = 'com.kwismo.mobile.staging';
+    appName = 'Kwismo-Staging';
+    scheme = 'kwismo-staging';
+    env = 'staging';
+  }
 
   const projectId = process.env.EAS_PROJECT_ID || config.extra?.eas?.projectId;
 

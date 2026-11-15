@@ -30,11 +30,11 @@
       "env": {
         "APP_ENV": "preview",
         "EXPO_PUBLIC_APP_ENV": "preview",
-        "EXPO_PUBLIC_API_URL": "https://api-staging.kwismo.com/api/v1",
+        "EXPO_PUBLIC_API_URL": "https://api-dev.kwismo.com/api/v1",
         "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
       }
     },
-    "test-aab": {
+    "preview-aab": {
       "node": "22.14.0",
       "distribution": "internal",
       "channel": "preview",
@@ -47,7 +47,7 @@
       "env": {
         "APP_ENV": "preview",
         "EXPO_PUBLIC_APP_ENV": "preview",
-        "EXPO_PUBLIC_API_URL": "https://api-staging.kwismo.com/api/v1",
+        "EXPO_PUBLIC_API_URL": "https://api-dev.kwismo.com/api/v1",
         "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
       }
     },
@@ -57,6 +57,23 @@
       "channel": "staging",
       "android": {
         "buildType": "apk"
+      },
+      "ios": {
+        "simulator": false
+      },
+      "env": {
+        "APP_ENV": "staging",
+        "EXPO_PUBLIC_APP_ENV": "staging",
+        "EXPO_PUBLIC_API_URL": "https://api-staging.kwismo.com/api/v1",
+        "EAS_BUILD_NO_EXPO_GO_WARNING": "true"
+      }
+    },
+    "staging-aab": {
+      "node": "22.14.0",
+      "distribution": "internal",
+      "channel": "staging",
+      "android": {
+        "buildType": "app-bundle"
       },
       "ios": {
         "simulator": false
@@ -104,16 +121,6 @@
   "submit": {
     "production": {
       "ios": {}
-    },
-    "staging": {
-      "ios": {
-        "ascAppId": "6831698670"
-      }
-    },
-    "preview": {
-      "ios": {
-        "ascAppId": "6831698670"
-      }
     }
   }
 }

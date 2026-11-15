@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - staging
+      - dev
     paths:
       - 'kwismo-mobile/**'
       - '.github/workflows/mobile-eas-update.yml'
@@ -40,42 +41,35 @@ jobs:
         working-directory: kwismo-mobile
         run: npm run optimize
 
-      - name: Write .env for Staging (Test App)
-        if: github.ref == 'refs/heads/staging'
-        working-directory: kwismo-mobile
-        run: |
-          echo "EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL_PREVIEW || 'https://api.kwismo.com/api/v1' }}" > .env
-          echo "EXPO_PUBLIC_USE_MOCK_DATA=false" >> .env
-          echo "EXPO_PUBLIC_APP_ENV=preview" >> .env
-          echo "EXPO_PUBLIC_APP_NAME=Kwismo-Test" >> .env
-          echo "EXPO_PUBLIC_DEFAULT_LANG=fr" >> .env
-
-      - name: Write .env for Production build
-        if: github.ref == 'refs/heads/main'
-        working-directory: kwismo-mobile
-        run: |
-          echo "EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL || 'https://api.kwismo.com/api/v1' }}" > .env
-          echo "EXPO_PUBLIC_USE_MOCK_DATA=false" >> .env
-          echo "EXPO_PUBLIC_APP_ENV=production" >> .env
-          echo "EXPO_PUBLIC_APP_NAME=KWISMO" >> .env
-          echo "EXPO_PUBLIC_DEFAULT_LANG=fr" >> .env
-
-      - name: Publish Staging Update (Kwismo-Test / Preview Channel)
-        if: github.ref == 'refs/heads/staging'
+      - name: Publish Dev / Preview Update
+        if: github.ref == 'refs/heads/dev'
         working-directory: kwismo-mobile
         env:
           APP_ENV: preview
-          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL_PREVIEW || 'https://api.kwismo.com/api/v1' }}
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL_DEV || 'https://api-dev.kwismo.com/api/v1' }}
           EXPO_PUBLIC_APP_ENV: preview
+          EXPO_PUBLIC_APP_NAME: Kwismo-Dev
           EXPO_PUBLIC_USE_MOCK_DATA: 'false'
         run: eas update --auto --branch preview --non-interactive
 
-      - name: Publish Production Update (Kwismo / Production Channel)
+      - name: Publish Staging Update
+        if: github.ref == 'refs/heads/staging'
+        working-directory: kwismo-mobile
+        env:
+          APP_ENV: staging
+          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL_STAGING || 'https://api-staging.kwismo.com/api/v1' }}
+          EXPO_PUBLIC_APP_ENV: staging
+          EXPO_PUBLIC_APP_NAME: Kwismo-Staging
+          EXPO_PUBLIC_USE_MOCK_DATA: 'false'
+        run: eas update --auto --branch staging --non-interactive
+
+      - name: Publish Production Update
         if: github.ref == 'refs/heads/main'
         working-directory: kwismo-mobile
         env:
           APP_ENV: production
           EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL || 'https://api.kwismo.com/api/v1' }}
           EXPO_PUBLIC_APP_ENV: production
+          EXPO_PUBLIC_APP_NAME: Kwismo
           EXPO_PUBLIC_USE_MOCK_DATA: 'false'
         run: eas update --auto --branch production --non-interactive

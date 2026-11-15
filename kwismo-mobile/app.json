@@ -104,10 +104,16 @@
       ]
     ],
     "extra": {
-      "appEnv": "production",
+      "appEnv": "preview",
       "router": {
         "origin": false
+      },
+      "gitBranch": "dev",
+      "buildProfile": "",
+      "eas": {
+        "projectId": "b4afdaaa-fc97-4735-8957-ea56bfaa5684"
       }
-    }
+    },
+    "owner": "xybronix"
   }
 }
