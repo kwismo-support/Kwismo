@@ -9,6 +9,11 @@
 **/.git/**
 
 # Local build artifacts & caches
+cloudflare/
+cloudflare/**
+scripts/
+scripts/**
+README.md
 node_modules/
 node_modules/**
 **/node_modules/**
