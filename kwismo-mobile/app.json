@@ -105,14 +105,10 @@
       ]
     ],
     "extra": {
-      "appEnv": "preview",
+      "appEnv": "production",
       "router": {
         "origin": false
-      },
-      "eas": {
-        "projectId": "5dfc0edb-3e81-4bed-b9c2-448832f4b5ec"
       }
-    },
-    "owner": "kwismo"
+    }
   }
 }
