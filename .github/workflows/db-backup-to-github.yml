@@ -1,0 +1,65 @@
+name: Daily Database Backup to GitHub
+
+on:
+  schedule:
+    # Chaque jour à 23:50 UTC
+    - cron: '50 23 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: db-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up SSH Key
+        env:
+          SSH_KEY: ${{ secrets.AWS_EC2_SSH_KEY }}
+        run: |
+          if [ -z "$SSH_KEY" ]; then
+            echo "::error ::Le secret 'AWS_EC2_SSH_KEY' n'est pas défini dans GitHub Secrets."
+            exit 1
+          fi
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 52.45.215.39 >> ~/.ssh/known_hosts
+
+      - name: Trigger DB Backup on EC2 and retrieve dump files
+        run: |
+          ssh ubuntu@52.45.215.39 "/opt/kwismo/scripts/backup_db.sh"
+          
+          DATE_FOLDER=$(date +'%Y-%m-%d')
+          mkdir -p "db-backups/${DATE_FOLDER}"
+          
+          scp ubuntu@52.45.215.39:/opt/kwismo/backups/*$(date +'%Y%m%d')*.sql.gz "db-backups/${DATE_FOLDER}/" || \
+          scp ubuntu@52.45.215.39:/opt/kwismo/backups/*.sql.gz "db-backups/${DATE_FOLDER}/"
+          
+          ls -lh "db-backups/${DATE_FOLDER}"
+
+      - name: Commit and Push to backups branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Basculer sur la branche backups
+          git fetch origin backups:backups || git branch backups
+          git checkout backups
+          
+          git add db-backups/
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore(backup): automated daily database backup [$(date +'%Y-%m-%d %H:%M:%S')]"
+            git push origin backups
+          fi

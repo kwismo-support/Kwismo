@@ -48,4 +48,5 @@ scratch/
 .vercel
 .env*
 *.apk
+db-backups/
 !kwismo-backend/uploads/Kwismo.apk
