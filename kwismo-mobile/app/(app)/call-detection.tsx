@@ -29,6 +29,17 @@ export default function CallDetectionScreen() {
     });
   };
 
+  const handleDismissCall = async () => {
+    const phone = activeIncomingCall?.phone_number;
+    dismissCallWarning();
+    if (phone) {
+      try {
+        const { callListenerService } = await import('@/features/call-detection/services/callListenerService');
+        await callListenerService.recordCallEnded(phone);
+      } catch {}
+    }
+  };
+
   return (
     <ScrollView className="flex-1 bg-white dark:bg-slate-900" contentContainerStyle={{ padding: 20, paddingTop: 48 }}>
       <View className="flex-row items-center mb-6">
@@ -105,7 +116,7 @@ export default function CallDetectionScreen() {
       <CallWarningModal
         visible={activeIncomingCall !== null}
         callData={activeIncomingCall}
-        onDismiss={dismissCallWarning}
+        onDismiss={handleDismissCall}
         onReport={handleReportFromModal}
       />
     </ScrollView>

@@ -81,13 +81,33 @@ export const callListenerService = {
 
     try {
       await PushNotificationService.sendLocalNotification(
-        "Appel terminé — Kwismo Anti-Arnaque 🛡️",
+        "Fin d'appel récent — Kwismo 🛡️",
         `Appel avec ${callRecord.phone}. Ce numéro est-il suspect ? Touchez pour vérifier ou signaler.`,
         { route: '/(app)/report', phone: callRecord.phone }
       );
     } catch {}
 
+    try {
+      const { usePostCallStore } = await import('@/features/call-detection/store/postCallStore');
+      usePostCallStore.getState().showPostCallPrompt(callRecord.phone);
+    } catch {}
+
     return callRecord;
+  },
+
+  async checkAndPromptRecentCall(): Promise<void> {
+    try {
+      const recent = await this.getRecentUnknownCalls(10);
+      if (recent && recent.length > 0) {
+        const latest = recent[0];
+        const lastPrompted = await storage.getItem(`kwismo_last_prompt_${latest.rawPhone}`);
+        if (!lastPrompted || Date.now() - Number(lastPrompted) > 60000) {
+          await storage.setItem(`kwismo_last_prompt_${latest.rawPhone}`, String(Date.now()));
+          const { usePostCallStore } = await import('@/features/call-detection/store/postCallStore');
+          usePostCallStore.getState().showPostCallPrompt(latest.phone);
+        }
+      }
+    } catch {}
   },
 
   async getRecentUnknownCalls(maxAgeMinutes: number = 1440): Promise<SavedCallLog[]> {
