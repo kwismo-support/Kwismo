@@ -1,0 +1,69 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - dev
+    paths:
+      - 'kwismo-backend/**'
+      - 'kwismo-ai/**'
+      - '.github/workflows/deploy-aws.yml'
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Environment to deploy (prod, staging, dev, all)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - prod
+          - staging
+          - dev
+
+concurrency:
+  group: deploy-aws-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check SSH Key Secret
+        id: check-secret
+        env:
+          SSH_KEY: ${{ secrets.AWS_EC2_SSH_KEY }}
+        run: |
+          if [ -z "$SSH_KEY" ]; then
+            echo "has_key=false" >> $GITHUB_OUTPUT
+            echo "::warning ::Le secret GitHub 'AWS_EC2_SSH_KEY' n'est pas encore configuré. Veuillez l'ajouter dans GitHub Settings > Secrets > Actions."
+          else
+            echo "has_key=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Determine environment target
+        id: env-target
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "target=${{ github.event.inputs.target }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "target=prod" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/staging" ]; then
+            echo "target=staging" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" = "refs/heads/dev" ]; then
+            echo "target=dev" >> $GITHUB_OUTPUT
+          else
+            echo "target=all" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy to AWS EC2 via SSH
+        if: steps.check-secret.outputs.has_key == 'true'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 52.45.215.39
+          username: ubuntu
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          script: |
+            sudo /opt/kwismo/scripts/deploy.sh ${{ steps.env-target.outputs.target }}
