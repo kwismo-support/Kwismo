@@ -32,10 +32,10 @@ python scripts/sync_db_provider.py --generate || true
 # Application des tables en base de données selon l'environnement (Dev/Staging vs Production)
 if [ "$APP_ENV" = "production" ]; then
     echo "🔒 Environnement PRODUCTION détecté : Application sécurisée des migrations (prisma migrate deploy)..."
-    python -m prisma migrate deploy || prisma migrate deploy || true
+    python -m prisma migrate deploy || python -m prisma db push || true
 else
     echo "🔄 Environnement DEV/STAGING détecté : Synchronisation rapide du schéma (prisma db push)..."
-    python -m prisma db push --accept-data-loss || prisma db push --accept-data-loss || true
+    python -m prisma db push --accept-data-loss || true
 fi
 
 # Alimentation initiale de la base de données (Seed)
