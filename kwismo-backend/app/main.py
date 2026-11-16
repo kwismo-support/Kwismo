@@ -169,6 +169,7 @@ app = FastAPI(
     openapi_tags=TAGS_METADATA,
     docs_url=None,
     redoc_url=None,
+    lifespan=lifespan,
 )
 
 import os
@@ -230,8 +231,10 @@ from fastapi.responses import HTMLResponse, FileResponse
 )
 @app.get("/api/v1/health", response_model=HealthOut, include_in_schema=False)
 async def health() -> HealthOut:
-    from app.db.prisma_client import db
+    from app.db.prisma_client import db, connect_db
     try:
+        if not db.is_connected():
+            await connect_db()
         await db.query_raw("SELECT 1")
         return HealthOut(status="ok")
     except Exception as exc:

@@ -24,10 +24,9 @@ async def seed_roles_and_permissions() -> dict[str, str]:
     """Cree les roles et leurs droits d'acces (AccessRight)."""
     roles = {}
     for nom_role in DEFAULT_ROLES:
-        role = await db.role.upsert(
-            where={"nomRole": nom_role},
-            data={"create": {"nomRole": nom_role}, "update": {}},
-        )
+        role = await db.role.find_first(where={"nomRole": nom_role})
+        if not role:
+            role = await db.role.create(data={"nomRole": nom_role})
         roles[nom_role] = role.id
 
     permissions = {
