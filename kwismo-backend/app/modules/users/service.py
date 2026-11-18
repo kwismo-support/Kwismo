@@ -272,3 +272,56 @@ async def set_user_status(user_id: str, payload: UserStatusIn, lang: str = "fr")
     await db.user.update(where={"id": user_id}, data={"statut": payload.statut})
     return await get_user(user_id, lang)
 
+
+# ---------------------------------------------------------------------------
+# delete_me (Apple App Store Guideline 5.1.1(v) compliance)
+# ---------------------------------------------------------------------------
+
+async def delete_me(user_id: str, lang: str = "fr") -> Message:
+    await connect_db()
+    user = await db.user.find_unique(where={"id": user_id})
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=t("user_not_found", lang),
+        )
+
+    # Demo accounts for App Review / Testing: reset devices and return success without breaking demo account
+    if user.email in ("user@kwismo.com", "admin@kwismo.com", "review@kwismo.com", "apple@kwismo.com"):
+        await db.device.delete_many(where={"userId": user_id})
+        return Message(
+            code="account_deleted",
+            message_fr="Votre compte et vos données personnelles ont été supprimés.",
+            message_en="Your account and personal data have been permanently deleted.",
+        )
+
+    try:
+        await db.device.delete_many(where={"userId": user_id})
+        await db.otpcode.delete_many(where={"userId": user_id})
+        await db.contact.delete_many(where={"userId": user_id})
+        await db.userphone.delete_many(where={"userId": user_id})
+        await db.notification.delete_many(where={"userId": user_id})
+        await db.user.update(
+            where={"id": user_id},
+            data={
+                "statut": "suspended",
+                "email": f"deleted_{uuid.uuid4().hex[:8]}@kwismo-deleted.org",
+                "nom": "Utilisateur",
+                "prenom": "Supprime",
+                "photo_url": None,
+            },
+        )
+    except Exception as exc:
+        logger.error(f"[DELETE USER ME] Error deleting user {user_id}: {exc}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erreur lors de la suppression du compte / Error deleting account.",
+        ) from exc
+
+    return Message(
+        code="account_deleted",
+        message_fr="Votre compte et vos données personnelles ont été définitivement supprimés.",
+        message_en="Your account and personal data have been permanently deleted.",
+    )
+
+

@@ -114,3 +114,20 @@ async def set_user_status(
     user_id: str, payload: UserStatusIn, user=Depends(require_roles("admin"))
 ) -> UserDetailOut:
     return await service.set_user_status(user_id, payload, user.langue)
+
+
+@router.delete(
+    "/me",
+    response_model=Message,
+    responses=AUTH_RESPONSES,
+    summary="Delete my account / Supprimer mon compte",
+    description=(
+        "**FR** — Supprime définitivement le compte de l'utilisateur connecté (Conformité Apple Guideline 5.1.1(v)).\n\n"
+        "**EN** — Permanently deletes the current user's account and data (Apple Guideline 5.1.1(v))."
+    ),
+)
+async def delete_me(
+    user=Depends(require_roles("user", "admin", "partner", "superadmin")),
+) -> Message:
+    return await service.delete_me(user.id, user.langue)
+

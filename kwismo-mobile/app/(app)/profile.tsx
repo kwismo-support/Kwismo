@@ -29,11 +29,12 @@ export default function ProfileScreen() {
   const { isDark } = useAppTheme();
   const { userThemePreference, setTheme } = useThemeStore();
   const { user } = useAuthStore();
-  const { profile, loading, logout, updateProfile, refresh } = useProfile();
+  const { profile, loading, logout, deleteAccount, updateProfile, refresh } = useProfile();
   const { preferences, updatePreference } = useNotificationSettings();
 
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [avatarErr, setAvatarErr] = useState(false);
 
   const userName = user?.firstName
@@ -45,6 +46,12 @@ export default function ProfileScreen() {
   const handleLogoutConfirm = async () => {
     setLogoutModalVisible(false);
     await logout();
+    router.replace('/(auth)/login');
+  };
+
+  const handleDeleteConfirm = async () => {
+    setDeleteModalVisible(false);
+    await deleteAccount();
     router.replace('/(auth)/login');
   };
 
@@ -219,6 +226,20 @@ export default function ProfileScreen() {
             </View>
             <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={16} />
           </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => setDeleteModalVisible(true)}
+            className="flex-row items-center justify-between py-3.5 dark:bg-brand-darkBg border-b border-slate-100 dark:border-slate-800"
+          >
+            <View className="flex-row items-center gap-3 ml-1">
+              <Icon name="solar:trash-bin-trash-bold" color="#EF4444" size={22} />
+              <Text className="font-medium text-sm text-red-500 dark:text-red-400">
+                {t('common.deleteAccountItem')}
+              </Text>
+            </View>
+            <Icon name="solar:alt-arrow-right-linear" color="#CBD5E1" size={16} />
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity
@@ -305,6 +326,48 @@ export default function ProfileScreen() {
               >
                 <Text className="font-bold text-xs text-white">
                   {t('common.logoutAction')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <Modal visible={deleteModalVisible} transparent animationType="fade">
+        <Pressable className="flex-1 justify-center items-center bg-black/60 px-5" onPress={() => setDeleteModalVisible(false)}>
+          <Pressable className="w-full max-w-sm rounded-3xl p-6 bg-white dark:bg-brand-cardDark border border-slate-100 dark:border-slate-800 shadow-2xl">
+            <View className="wx-12 hx-12 rounded-full bg-red-100 dark:bg-red-950/40 items-center justify-center mb-4 self-center">
+              <Icon name="solar:trash-bin-trash-bold" color="#EF4444" size={28} />
+            </View>
+
+            <Text className="font-montserrat-bold text-lg font-bold text-slate-900 dark:text-white text-center mb-2">
+              {t('common.deleteAccountItem')}
+            </Text>
+
+            <Text className="text-xs text-slate-500 dark:text-slate-400 text-center leading-5 mb-6">
+              {i18n.language.startsWith('en')
+                ? 'Are you sure you want to permanently delete your account and personal data? This action cannot be undone.'
+                : 'Êtes-vous sûr de vouloir supprimer définitivement votre compte et vos données personnelles ? Cette action est irréversible.'}
+            </Text>
+
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => setDeleteModalVisible(false)}
+                className="flex-1 hx-11 rounded-xl bg-slate-100 dark:bg-slate-800 items-center justify-center"
+              >
+                <Text className="font-bold text-xs text-slate-700 dark:text-slate-300">
+                  {t('common.cancel')}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={handleDeleteConfirm}
+                className="flex-1 hx-11 rounded-xl bg-red-600 items-center justify-center"
+              >
+                <Text className="font-bold text-xs text-white">
+                  {i18n.language.startsWith('en') ? 'Delete' : 'Supprimer'}
                 </Text>
               </TouchableOpacity>
             </View>

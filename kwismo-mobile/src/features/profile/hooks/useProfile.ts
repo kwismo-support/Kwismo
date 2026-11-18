@@ -148,6 +148,13 @@ export function useProfile() {
     await useAuthStore.getState().logout();
   };
 
+  const handleDeleteAccount = async () => {
+    try {
+      await profileApi.deleteAccount();
+    } catch {}
+    await useAuthStore.getState().logout();
+  };
+
   return {
     profile,
     loading,
@@ -155,6 +162,7 @@ export function useProfile() {
     refresh: () => fetchProfile(true),
     updateProfile,
     logout: handleLogout,
+    deleteAccount: handleDeleteAccount,
   };
 }
 

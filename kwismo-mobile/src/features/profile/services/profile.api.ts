@@ -49,4 +49,10 @@ export const profileApi = {
       method: 'POST',
     });
   },
+
+  async deleteAccount() {
+    return ApiClient.request<{ message: string }>('/users/me', {
+      method: 'DELETE',
+    });
+  },
 };
