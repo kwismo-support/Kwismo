@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform, Clipboard } from 'react-native';
 import { callDetectionApi, CallLogItem } from './callDetection.api';
 import { storage } from '@/shared/services/storage';
 import { getDeviceContacts } from '@/shared/lib/contactsService';
@@ -95,8 +95,55 @@ export const callListenerService = {
     return callRecord;
   },
 
+  async checkClipboardForUnknownCall(): Promise<boolean> {
+    try {
+      if (!Clipboard || typeof Clipboard.getString !== 'function') return false;
+      const text = await Clipboard.getString();
+      if (!text || typeof text !== 'string') return false;
+
+      const trimmed = text.trim();
+      const clean = trimmed.replace(/[\s\-\.\(\)]/g, '');
+      // Match phone numbers with optional + and 8 to 15 digits
+      const phoneRegex = /^\+?[0-9]{8,15}$/;
+      if (!phoneRegex.test(clean)) return false;
+
+      // Do not re-prompt the same number if prompted in the last 10 minutes
+      const lastPrompted = await storage.getItem(`kwismo_last_clip_prompt_${clean}`);
+      if (lastPrompted && Date.now() - Number(lastPrompted) < 600000) {
+        return false;
+      }
+
+      // Check against device contacts
+      let isKnownContact = false;
+      try {
+        const { contacts } = await getDeviceContacts();
+        isKnownContact = contacts.some((c) => {
+          const contactClean = c.phone.replace(/[\s\-\.\(\)]/g, '');
+          return contactClean.includes(clean) || clean.includes(contactClean);
+        });
+      } catch {}
+
+      if (isKnownContact) return false;
+
+      console.log(`\x1b[32m[CALL DETECTION CLIPBOARD DETECTED]\x1b[0m Unknown phone in clipboard: "${clean}"`);
+      await storage.setItem(`kwismo_last_clip_prompt_${clean}`, String(Date.now()));
+
+      // Automatically register this call and show post-call prompt modal
+      await this.recordCallEnded(clean, 0);
+      return true;
+    } catch (err) {
+      console.warn(`[CALL DETECTION CLIPBOARD] Error checking clipboard:`, err);
+      return false;
+    }
+  },
+
   async checkAndPromptRecentCall(): Promise<void> {
     try {
+      // 1. First check if user copied an unknown phone number from dialer / call log
+      const handledFromClipboard = await this.checkClipboardForUnknownCall();
+      if (handledFromClipboard) return;
+
+      // 2. Otherwise check if there are recent stored unknown calls
       const recent = await this.getRecentUnknownCalls(10);
       if (recent && recent.length > 0) {
         const latest = recent[0];

@@ -21,7 +21,7 @@ export function PostCallPromptModal({
   if (!visible) return null;
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onDismiss} statusBarTranslucent>
       <View className="flex-1 bg-black/60 justify-end">
         <View className="rounded-t-3xl p-6 pb-9 bg-white dark:bg-brand-darkBg border-t border-slate-200 dark:border-slate-800">
           <View className="flex-row items-center justify-between mb-3">

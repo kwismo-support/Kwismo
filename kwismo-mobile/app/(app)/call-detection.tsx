@@ -33,10 +33,12 @@ export default function CallDetectionScreen() {
     const phone = activeIncomingCall?.phone_number;
     dismissCallWarning();
     if (phone) {
-      try {
-        const { callListenerService } = await import('@/features/call-detection/services/callListenerService');
-        await callListenerService.recordCallEnded(phone);
-      } catch {}
+      setTimeout(async () => {
+        try {
+          const { callListenerService } = await import('@/features/call-detection/services/callListenerService');
+          await callListenerService.recordCallEnded(phone);
+        } catch {}
+      }, 400);
     }
   };
 
