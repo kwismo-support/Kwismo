@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Modal, TouchableOpacity } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/shared/ui/Icon';
 
@@ -17,13 +17,63 @@ export function PostCallPromptModal({
   onDismiss,
 }: PostCallPromptModalProps) {
   const { t } = useTranslation();
+  const slideAnim = useRef(new Animated.Value(300)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.spring(slideAnim, {
+          toValue: 0,
+          damping: 20,
+          stiffness: 180,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 300,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+  }, [visible, fadeAnim, slideAnim]);
 
   if (!visible) return null;
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onDismiss} statusBarTranslucent>
-      <View className="flex-1 bg-black/60 justify-end">
-        <View className="rounded-t-3xl p-6 pb-9 bg-white dark:bg-brand-darkBg border-t border-slate-200 dark:border-slate-800">
+    <Animated.View
+      style={[
+        styles.absoluteContainer,
+        {
+          opacity: fadeAnim,
+        },
+      ]}
+      pointerEvents={visible ? 'auto' : 'none'}
+    >
+      <Pressable style={styles.backdrop} onPress={onDismiss} />
+
+      <Animated.View
+        style={[
+          styles.sheetContainer,
+          {
+            transform: [{ translateY: slideAnim }],
+          },
+        ]}
+      >
+        <View className="rounded-t-3xl p-6 pb-9 bg-white dark:bg-brand-darkBg border-t border-slate-200 dark:border-slate-800 shadow-2xl">
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center">
               <View className="w-10 h-10 rounded-full bg-amber-100 dark:bg-slate-800 items-center justify-center mr-3">
@@ -33,7 +83,7 @@ export function PostCallPromptModal({
                 {t('postCall.title')}
               </Text>
             </View>
-            <TouchableOpacity onPress={onDismiss}>
+            <TouchableOpacity onPress={onDismiss} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
               <Icon name="solar:close-circle-bold" color="#94A3B8" size={24} />
             </TouchableOpacity>
           </View>
@@ -62,7 +112,33 @@ export function PostCallPromptModal({
             </TouchableOpacity>
           </View>
         </View>
-      </View>
-    </Modal>
+      </Animated.View>
+    </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  absoluteContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 999999,
+    elevation: 999999,
+    justifyContent: 'flex-end',
+  },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+  },
+  sheetContainer: {
+    width: '100%',
+    zIndex: 1000000,
+  },
+});
+

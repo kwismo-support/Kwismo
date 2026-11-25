@@ -1,4 +1,5 @@
-import { Platform, Clipboard } from 'react-native';
+import { Platform } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { callDetectionApi, CallLogItem } from './callDetection.api';
 import { storage } from '@/shared/services/storage';
 import { getDeviceContacts } from '@/shared/lib/contactsService';
@@ -97,8 +98,8 @@ export const callListenerService = {
 
   async checkClipboardForUnknownCall(): Promise<boolean> {
     try {
-      if (!Clipboard || typeof Clipboard.getString !== 'function') return false;
-      const text = await Clipboard.getString();
+      if (!Clipboard || typeof Clipboard.getStringAsync !== 'function') return false;
+      const text = await Clipboard.getStringAsync();
       if (!text || typeof text !== 'string') return false;
 
       const trimmed = text.trim();

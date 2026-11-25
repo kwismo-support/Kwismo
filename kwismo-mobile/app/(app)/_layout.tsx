@@ -133,7 +133,7 @@ export default function AppLayout() {
       />
       {isMainTab && <TabBar />}
       <GlobalPermissionGuardModal
-        visible={showPermissionModal}
+        visible={showPermissionModal && !postCallVisible}
         missingPermissions={missingPermissions}
         onGrant={handleGrantPermissions}
         onDismiss={handleDismissGuard}
