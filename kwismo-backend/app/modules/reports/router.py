@@ -37,7 +37,8 @@ async def list_reports(
     page_size: int = Query(20, ge=1, le=100),
     user=Depends(require_roles("admin", "partner")),
 ) -> Page[ReportOut]:
-    return await service.list_reports(page, page_size)
+    eff_partner_id = user.partner_id if user.role not in ("admin", "superadmin", "super_admin") else None
+    return await service.list_reports(page, page_size, eff_partner_id)
 
 
 @router.patch(

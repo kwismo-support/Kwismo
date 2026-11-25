@@ -8,6 +8,7 @@ import {
   Modal,
   ActivityIndicator,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -26,12 +27,14 @@ import { SimNumberCard } from '@/features/management/components/SimNumberCard';
 import { EmptyManagementState } from '@/features/management/components/EmptyManagementState';
 import { UserSimNumber } from '@/features/management/types/management.types';
 import { activityHistoryService } from '@/shared/services/activityHistoryService';
+import { useSubscriptionStore } from '@/features/subscriptions/store/subscriptionStore';
 
 export default function ManagementScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { isDark } = useAppTheme();
+  const { maxNumbers, currentPlan } = useSubscriptionStore();
 
   const {
     loading,
@@ -84,6 +87,24 @@ export default function ManagementScreen() {
   };
 
   const handleOpenAddNumber = () => {
+    if (numbers.length >= maxNumbers) {
+      Alert.alert(
+        t('common.quotaReached', 'Limite de numéros atteinte'),
+        t(
+          'common.upgradePrompt',
+          `Votre formule actuelle est limitée à ${maxNumbers} numéro(s) protégé(s). Passez à une formule supérieure pour en protéger davantage.`
+        ),
+        [
+          { text: t('common.cancel', 'Annuler'), style: 'cancel' },
+          {
+            text: t('common.viewPlans', 'Voir les offres'),
+            onPress: () => router.push('/(app)/plans' as any),
+          },
+        ]
+      );
+      return;
+    }
+
     setNewPhoneNumber('');
     setPhoneError('');
     setFullScreenAddVisible(true);

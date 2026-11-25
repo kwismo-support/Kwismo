@@ -479,3 +479,29 @@ model ReportCategory {
   @@index([scamCategoryId])
 }
 
+// ---------------------------------------------------------------------------
+// Formules d'abonnement & Tarifs configurables (Admin)
+// ---------------------------------------------------------------------------
+
+model SubscriptionPlan {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  nomFr         String
+  nomEn         String
+  prixFcfa      Int      // Prix en FCFA (ex: 500, 1500, 5000)
+  dureeJours    Int      // 7, 30, 90, 365, etc.
+  maxNumeros    Int      @default(1) // Nombre de numéros protégés inclus
+  maxMembres    Int      @default(1) // Nombre de personnes/comptes autorisés
+  descriptionFr String?
+  descriptionEn String?
+  optionsFr     String?  // JSON list de fonctionnalités en français
+  optionsEn     String?  // JSON list de fonctionnalités en anglais
+  badgeFr       String?  // Badge optionnel (ex: "Populaire", "Économique")
+  badgeEn       String?  // Badge optionnel (ex: "Popular", "Best Value")
+  estActif      Boolean  @default(true)
+  ordre         Int      @default(0) // Ordre d'affichage
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+

@@ -96,9 +96,37 @@ async def create_report(user_id: str, payload: ReportCreateIn, lang: str = "fr")
 # list_reports
 # ---------------------------------------------------------------------------
 
-async def list_reports(page: int, page_size: int):
+async def list_reports(page: int, page_size: int, partner_id: str | None = None):
     from app.core.schemas import Page
     skip = (page - 1) * page_size
+
+    if partner_id:
+        from app.modules.partners.service import (
+            _get_partner_rules,
+            _build_prefix_map,
+            extract_prefix,
+            is_number_in_partner_scope,
+        )
+        rules = await _get_partner_rules(partner_id)
+        prefix_map = _build_prefix_map(rules)
+        if not prefix_map:
+            return Page(items=[], total=0, page=page, page_size=page_size)
+
+        all_reports = await db.report.find_many(
+            include={"numero": True},
+            order={"dateSignalement": "desc"},
+        )
+        scoped = []
+        for r in all_reports:
+            valeur = r.numero.valeur if r.numero else ""
+            for country_code, prefixes in prefix_map.items():
+                pfx = extract_prefix(valeur, country_code)
+                if is_number_in_partner_scope(pfx, prefixes):
+                    scoped.append(_to_out(r))
+                    break
+        total = len(scoped)
+        return Page(items=scoped[skip : skip + page_size], total=total, page=page, page_size=page_size)
+
     total = await db.report.count()
     items = await db.report.find_many(
         skip=skip,

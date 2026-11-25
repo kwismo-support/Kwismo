@@ -15,7 +15,10 @@ def require_roles(*roles: str):
     """Retourne une dependance qui exige un des roles donnes. / Returns a dependency requiring one of the given roles."""
 
     async def _dependency(user: CurrentUser = Depends(get_current_user)) -> CurrentUser:
-        if user.role in ("super_admin", "superadmin"):
+        if user.role in ("super_admin", "superadmin", "admin"):
+            return user
+        # Si la route accepte "partner", tout utilisateur rattaché à un partenaire (tenant) est autorisé
+        if "partner" in roles and user.partner_id:
             return user
         if user.role not in roles:
             raise HTTPException(

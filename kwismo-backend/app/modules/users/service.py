@@ -217,7 +217,7 @@ async def list_users(page: int, page_size: int, partner_id: str | None = None):
 # get_user
 # ---------------------------------------------------------------------------
 
-async def get_user(user_id: str, lang: str = "fr") -> UserDetailOut:
+async def get_user(user_id: str, current_user=None, lang: str = "fr") -> UserDetailOut:
     user = await db.user.find_unique(
         where={"id": user_id},
         include={"role": True, "partner": True, "phones": True},
@@ -227,6 +227,15 @@ async def get_user(user_id: str, lang: str = "fr") -> UserDetailOut:
             status_code=status.HTTP_404_NOT_FOUND,
             detail=t("user_not_found", lang),
         )
+
+    # Cloisonnement strict des partenaires
+    if current_user and getattr(current_user, "role", "") not in ("admin", "superadmin", "super_admin"):
+        if getattr(current_user, "partner_id", None) and user.partnerId != current_user.partner_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Accès interdit : utilisateur hors de votre périmètre partenaire. / Forbidden.",
+            )
+
     phones_count = len(user.phones or [])
     numeros = [
         UserPhoneSummaryOut(id=p.id, valeur=p.valeur, est_verifie=p.estVerifie, est_compromis=p.estCompromis)

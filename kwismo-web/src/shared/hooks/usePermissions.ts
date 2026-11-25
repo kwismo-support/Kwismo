@@ -5,10 +5,11 @@ export function usePermissions() {
   const user = useAuthStore((s) => s.user);
 
   const rawRole = (user?.role || 'user').toLowerCase();
+  const userPartnerId = user?.partnerId || (user as any)?.partner_id;
   const isSuperAdmin = rawRole === 'superadmin' || rawRole === 'super_admin';
   const isAdmin = rawRole === 'admin' || isSuperAdmin;
-  const isPartner = rawRole === 'partner';
-  const isUser = rawRole === 'user';
+  const isPartner = !isAdmin && (rawRole === 'partner' || Boolean(userPartnerId));
+  const isUser = !isAdmin && !isPartner;
 
   const role: UserRole = isSuperAdmin ? 'super_admin' : isAdmin ? 'admin' : isPartner ? 'partner' : 'user';
 

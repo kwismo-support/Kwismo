@@ -113,4 +113,4 @@ async def get_number(number_id: str, user=Depends(require_roles("admin", "partne
 async def set_number_status(
     number_id: str, payload: NumberStatusIn, user=Depends(require_roles("admin", "partner"))
 ) -> NumberDetailOut:
-    return await service.set_number_status(number_id, payload, user.langue)
+    return await service.set_number_status(number_id, payload, user, user.langue)

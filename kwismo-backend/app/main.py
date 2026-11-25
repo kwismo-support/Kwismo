@@ -38,6 +38,7 @@ from app.modules.kpi.router import router as kpi_router
 from app.modules.notifications.router import router as notifications_router
 from app.modules.numbers.router import router as numbers_router
 from app.modules.partners.router import router as partners_router
+from app.modules.plans.router import router as plans_router
 from app.modules.reports.router import router as reports_router
 from app.modules.settings.router import router as settings_router
 from app.modules.surveys.router import router as surveys_router
@@ -128,6 +129,7 @@ async def _seed_defaults() -> None:
         seed_transactions,
         seed_notifications_and_kpis,
         seed_audit_logs,
+        seed_subscription_plans,
     )
     role_ids = await seed_roles_and_permissions()
     partner_ids = await seed_partners()
@@ -144,6 +146,7 @@ async def _seed_defaults() -> None:
     await seed_transactions(user_ids, numero_ids)
     await seed_notifications_and_kpis(user_ids, partner_ids)
     await seed_audit_logs(user_ids)
+    await seed_subscription_plans()
 
     _logger.info("Seed par defaut applique avec succes (comptes, pays, operateurs, signalements, contacts, etc.).")
 
@@ -217,6 +220,7 @@ for router in (
     devices_router,
     settings_router,
     ai_gateway_router,
+    plans_router,
 ):
     app.include_router(router, prefix="/api/v1")
 

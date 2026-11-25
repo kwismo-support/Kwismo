@@ -23,6 +23,8 @@ import { useDeviceContacts } from '@/shared/hooks/useDeviceContacts';
 import { formatPhoneNumber } from '@/shared/utils/phoneFormatter';
 import { activityHistoryService } from '@/shared/services/activityHistoryService';
 import { toast } from '@/shared/store/toastStore';
+import { ExpirationBanner } from '@/features/subscriptions/components/ExpirationBanner';
+import { useSubscriptionStore } from '@/features/subscriptions/store/subscriptionStore';
 
 type FilterCategory = 'all' | 'verified' | 'threats' | 'reports' | 'transfers';
 
@@ -43,6 +45,11 @@ export default function HomeScreen() {
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('all');
   const { getContactDisplay } = useDeviceContacts();
+  const { currentPlan, status: subStatus, fetchUserSubscription } = useSubscriptionStore();
+
+  useEffect(() => {
+    fetchUserSubscription();
+  }, []);
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
@@ -162,9 +169,53 @@ export default function HomeScreen() {
                   <Icon name="reicon:verify-filled" color={colors.green} size={15} />
                 </View>
 
-                <Text className="text-xl font-bold font-title text-slate-900 dark:text-white mt-0.5">
-                  {userName}
-                </Text>
+                <View className="flex-row items-center justify-between">
+                  <Text className="text-xl font-bold font-title text-slate-900 dark:text-white mt-0.5">
+                    {userName}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => router.push('/(app)/plans' as any)}
+                    activeOpacity={0.8}
+                    className={`px-2.5 py-0.5 rounded-full flex-row items-center border ${
+                      currentPlan?.max_membres && currentPlan.max_membres > 1
+                        ? 'bg-indigo-500/15 border-indigo-500/30'
+                        : subStatus === 'active' || subStatus === 'expiring_soon'
+                        ? 'bg-emerald-500/15 border-emerald-500/30'
+                        : 'bg-slate-200 dark:bg-white/10 border-slate-300 dark:border-white/20'
+                    }`}
+                  >
+                    <Icon
+                      name={
+                        currentPlan?.max_membres && currentPlan.max_membres > 1
+                          ? 'solar:crown-bold'
+                          : subStatus === 'active' || subStatus === 'expiring_soon'
+                          ? 'solar:shield-check-bold'
+                          : 'solar:shield-bold'
+                      }
+                      size={12}
+                      color={
+                        currentPlan?.max_membres && currentPlan.max_membres > 1
+                          ? '#6366F1'
+                          : subStatus === 'active' || subStatus === 'expiring_soon'
+                          ? '#10B981'
+                          : '#64748B'
+                      }
+                    />
+                    <Text
+                      className={`text-[10px] font-bold ml-1 ${
+                        currentPlan?.max_membres && currentPlan.max_membres > 1
+                          ? 'text-indigo-600 dark:text-indigo-400'
+                          : subStatus === 'active' || subStatus === 'expiring_soon'
+                          ? 'text-emerald-600 dark:text-emerald-400'
+                          : 'text-slate-600 dark:text-slate-400'
+                      }`}
+                    >
+                      {currentPlan
+                        ? (currentPlan.nom_fr?.split(' ')[0] || 'Premium')
+                        : 'Gratuit'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
 
@@ -207,6 +258,9 @@ export default function HomeScreen() {
             </View>
           </View>
         )}
+
+        {/* Alerte Expiration / Incitation Abonnement */}
+        <ExpirationBanner />
 
         <View className="flex-row justify-between mb-8">
           <TouchableOpacity

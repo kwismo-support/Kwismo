@@ -497,6 +497,124 @@ async def seed_notifications_and_kpis(user_ids: dict[str, str], partner_ids: dic
             await db.kpi.create(data=data)
 
 
+async def seed_subscription_plans() -> None:
+    """Cree les formules d'abonnement par defaut si elles n'existent pas encore."""
+    plans = [
+        {
+            "code": "solo_hebdo",
+            "nom_fr": "Formule Hebdomadaire",
+            "nom_en": "Weekly Plan",
+            "prix_fcfa": 300,
+            "duree_jours": 7,
+            "max_numeros": 1,
+            "max_membres": 1,
+            "description_fr": "Protection essentielle pour 1 semaine d'essais ou déplacements.",
+            "description_en": "Essential protection for 1 week of trials or travel.",
+            "options_fr": ["Protection des appels et SMS", "Détection automatique d'arnaques", "Support client standard"],
+            "options_en": ["Call and SMS protection", "Automatic scam detection", "Standard customer support"],
+            "badge_fr": None,
+            "badge_en": None,
+            "est_actif": True,
+            "ordre": 1,
+        },
+        {
+            "code": "solo_mensuel",
+            "nom_fr": "Formule Mensuelle Solo",
+            "nom_en": "Solo Monthly Plan",
+            "prix_fcfa": 1000,
+            "duree_jours": 30,
+            "max_numeros": 2,
+            "max_membres": 1,
+            "description_fr": "Protection complète pour votre numéro personnel et professionnel.",
+            "description_en": "Full protection for your personal and professional numbers.",
+            "options_fr": ["Protection 24/7 sur 2 numéros", "Filtrage IA temps réel", "Sauvegarde hors-ligne des contacts fiables", "Support prioritaire"],
+            "options_en": ["24/7 protection on 2 numbers", "Real-time AI filtering", "Offline backup of verified contacts", "Priority support"],
+            "badge_fr": "Populaire",
+            "badge_en": "Popular",
+            "est_actif": True,
+            "ordre": 2,
+        },
+        {
+            "code": "famille_mensuel",
+            "nom_fr": "Pack Famille Mensuel",
+            "nom_en": "Family Monthly Pack",
+            "prix_fcfa": 2500,
+            "duree_jours": 30,
+            "max_numeros": 5,
+            "max_membres": 5,
+            "description_fr": "Protégez toute votre famille ou petite équipe contre les arnaques.",
+            "description_en": "Protect your entire family or small team against fraud.",
+            "options_fr": ["Jusqu'à 5 membres protégés", "Alertes partagées en cas de tentative d'arnaque", "Tableau de bord de sécurité familiale", "Support VIP"],
+            "options_en": ["Up to 5 protected members", "Shared alerts upon scam attempts", "Family security dashboard", "VIP support"],
+            "badge_fr": "Recommandé",
+            "badge_en": "Recommended",
+            "est_actif": True,
+            "ordre": 3,
+        },
+        {
+            "code": "famille_annuel",
+            "nom_fr": "Pack Famille Annuel",
+            "nom_en": "Family Annual Pack",
+            "prix_fcfa": 25000,
+            "duree_jours": 365,
+            "max_numeros": 10,
+            "max_membres": 6,
+            "description_fr": "Tranquillité totale pendant 1 an avec 2 mois offerts.",
+            "description_en": "Complete peace of mind for 1 year with 2 months free.",
+            "options_fr": ["Jusqu'à 6 membres et 10 numéros", "Toutes les fonctionnalités Premium incluses", "Rapports de sécurité mensuels", "Assistance dédiée prioritaire"],
+            "options_en": ["Up to 6 members and 10 numbers", "All Premium features included", "Monthly security reports", "Dedicated priority assistance"],
+            "badge_fr": "Économique",
+            "badge_en": "Best Value",
+            "est_actif": True,
+            "ordre": 4,
+        },
+    ]
+
+    for p in plans:
+        try:
+            if hasattr(db, "subscriptionplan") and db.subscriptionplan:
+                existing = await db.subscriptionplan.find_unique(where={"code": p["code"]})
+                if not existing:
+                    await db.subscriptionplan.create(
+                        data={
+                            "code": p["code"],
+                            "nomFr": p["nom_fr"],
+                            "nomEn": p["nom_en"],
+                            "prixFcfa": p["prix_fcfa"],
+                            "dureeJours": p["duree_jours"],
+                            "maxNumeros": p["max_numeros"],
+                            "maxMembres": p["max_membres"],
+                            "descriptionFr": p["description_fr"],
+                            "descriptionEn": p["description_en"],
+                            "optionsFr": json.dumps(p["options_fr"], ensure_ascii=False),
+                            "optionsEn": json.dumps(p["options_en"], ensure_ascii=False),
+                            "badgeFr": p["badge_fr"],
+                            "badgeEn": p["badge_en"],
+                            "estActif": p["est_actif"],
+                            "ordre": p["ordre"],
+                        }
+                    )
+            else:
+                existing = await db.query_raw('SELECT * FROM "SubscriptionPlan" WHERE "code" = $1 LIMIT 1', p["code"])
+                if not existing:
+                    import uuid
+                    from datetime import datetime, timezone
+                    now = datetime.now(timezone.utc)
+                    await db.execute_raw(
+                        '''
+                        INSERT INTO "SubscriptionPlan" 
+                        ("id", "code", "nomFr", "nomEn", "prixFcfa", "dureeJours", "maxNumeros", "maxMembres", "descriptionFr", "descriptionEn", "optionsFr", "optionsEn", "badgeFr", "badgeEn", "estActif", "ordre", "createdAt", "updatedAt")
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+                        ''',
+                        f"plan_{uuid.uuid4().hex[:16]}", p["code"], p["nom_fr"], p["nom_en"], p["prix_fcfa"], p["duree_jours"],
+                        p["max_numeros"], p["max_membres"], p["description_fr"], p["description_en"],
+                        json.dumps(p["options_fr"], ensure_ascii=False), json.dumps(p["options_en"], ensure_ascii=False),
+                        p["badge_fr"], p["badge_en"], p["est_actif"], p["ordre"], now, now
+                    )
+        except Exception as e:
+            pass
+
+
 async def seed_audit_logs(user_ids: dict[str, str]) -> None:
     """Cree des journalisations d'audit."""
     admin_id = user_ids.get("admin@kwismo.com")
@@ -547,6 +665,7 @@ async def main() -> None:
         await seed_notifications_and_kpis(user_ids, partner_ids)
         await seed_surveys()
         await seed_audit_logs(user_ids)
+        await seed_subscription_plans()
         print("[SEED] Base de donnees initialisee et chargee avec succes avec toutes les donnees de test.")
     finally:
         await disconnect_db()

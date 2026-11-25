@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { usePermissions } from '@/shared/hooks/usePermissions';
 import { kpiApi, KpiItem } from './services/kpi.api';
 import { numbersApi, NumberItem } from '@/features/numbers/services/numbers.api';
+import { partnersApi } from '@/features/partners/services/partners.api';
 import { reportsApi, ReportItem } from '@/features/reports/services/reports.api';
 import { PageHeader, KpiCard } from '@/shared/components';
 import { CountrySelect } from '@/shared/ui/country-select';
@@ -27,10 +28,28 @@ export default function DashboardPage() {
     setLoading(true);
 
     const fetchKpis = isPartner ? kpiApi.getPartnerKpi() : kpiApi.getGlobalKpi();
+    const fetchNumbers = isPartner
+      ? partnersApi.getScopeNumbers(1, 100).then((r) => ({
+          items: (r.items || []).map((sn) => ({
+            id: sn.id,
+            valeur: sn.valeur,
+            statut: sn.statut,
+            score_risque: sn.score_risque,
+            country_id: undefined,
+            operator_id: undefined,
+            operator_name: undefined,
+            nombre_signalements: 0,
+            date_derniere_verification: undefined,
+            created_at: undefined,
+            updated_at: undefined,
+          })),
+          total: r.total || 0,
+        }))
+      : numbersApi.getNumbers(1, 100);
 
     Promise.all([
       fetchKpis.catch(() => []),
-      numbersApi.getNumbers(1, 100).catch(() => ({ items: [], total: 0 })),
+      fetchNumbers.catch(() => ({ items: [], total: 0 })),
       reportsApi.getReports(1, 100).catch(() => ({ items: [], total: 0 })),
     ]).then(([kpiRes, numbersRes, reportsRes]) => {
       if (!mounted) return;

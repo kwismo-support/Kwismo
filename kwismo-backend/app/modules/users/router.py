@@ -81,8 +81,14 @@ async def list_users(
     user=Depends(require_roles("admin", "partner", "superadmin")),
 ) -> Page[UserListItemOut]:
     eff_partner_id = partner_id
-    if user.role == "partner" and user.partner_id:
-        eff_partner_id = user.partner_id
+    if user.role not in ("admin", "superadmin", "super_admin"):
+        if user.partner_id:
+            eff_partner_id = user.partner_id
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Accès interdit / Forbidden",
+            )
     return await service.list_users(page, page_size, eff_partner_id)
 
 
@@ -97,7 +103,7 @@ async def list_users(
     ),
 )
 async def get_user(user_id: str, user=Depends(require_roles("admin", "partner"))) -> UserDetailOut:
-    return await service.get_user(user_id, user.langue)
+    return await service.get_user(user_id, user, user.langue)
 
 
 @router.patch(

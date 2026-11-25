@@ -330,7 +330,7 @@ async def get_number(number_id: str, lang: str = "fr") -> NumberDetailOut:
 # set_number_status
 # ---------------------------------------------------------------------------
 
-async def set_number_status(number_id: str, payload: NumberStatusIn, lang: str = "fr") -> NumberDetailOut:
+async def set_number_status(number_id: str, payload: NumberStatusIn, current_user=None, lang: str = "fr") -> NumberDetailOut:
     if payload.statut not in VALID_STATUTS:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -339,6 +339,34 @@ async def set_number_status(number_id: str, payload: NumberStatusIn, lang: str =
     numero = await db.numero.find_unique(where={"id": number_id})
     if numero is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=t("number_not_found", lang))
+
+    # Cloisonnement strict des partenaires
+    if current_user and getattr(current_user, "role", "") not in ("admin", "superadmin", "super_admin"):
+        if getattr(current_user, "partner_id", None):
+            from app.modules.partners.service import (
+                _get_partner_rules,
+                _build_prefix_map,
+                extract_prefix,
+                is_number_in_partner_scope,
+            )
+            rules = await _get_partner_rules(current_user.partner_id)
+            prefix_map = _build_prefix_map(rules)
+            in_scope = False
+            for country_code, prefixes in prefix_map.items():
+                pfx = extract_prefix(numero.valeur, country_code)
+                if is_number_in_partner_scope(pfx, prefixes):
+                    in_scope = True
+                    break
+            if not in_scope:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Action interdite : ce numéro n'appartient pas au périmètre de votre organisation.",
+                )
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Accès interdit / Forbidden",
+            )
 
     if payload.reanalyser:
         # Relancer l'evaluation via kwismo-ai (avec repli automatique si IA indisponible).

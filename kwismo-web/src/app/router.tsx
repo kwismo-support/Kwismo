@@ -28,6 +28,7 @@ const ReportsPage          = lazy(() => import('@/features/reports'));
 const UserPortalPage       = lazy(() => import('@/features/user'));
 const ProfilePage          = lazy(() => import('@/features/profile'));
 const SettingsPage         = lazy(() => import('@/features/settings'));
+const PlansPage            = lazy(() => import('@/features/plans'));
 const NotificationsPage    = lazy(() => import('@/features/notifications'));
 const LegalPage            = lazy(() => import('@/features/legal/LegalPage'));
 
@@ -72,6 +73,10 @@ export function AppRouter() {
 
               <Route element={<RoleGuard permission="settings:read" />}>
                 <Route path="/app/settings" element={<SettingsPage />} />
+              </Route>
+
+              <Route element={<RoleGuard roles={['super_admin', 'admin']} />}>
+                <Route path="/app/plans" element={<PlansPage />} />
               </Route>
 
               <Route element={<RoleGuard roles={['user']} />}>

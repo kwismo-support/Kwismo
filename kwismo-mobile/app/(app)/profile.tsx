@@ -21,6 +21,7 @@ import { useThemeStore, ThemePreference } from '@/shared/store/themeStore';
 import { useAuthStore } from '@/shared/store/authStore';
 import { useProfile } from '@/features/profile/hooks/useProfile';
 import { useNotificationSettings } from '@/features/profile/hooks/useNotificationSettings';
+import { useSubscriptionStore } from '@/features/subscriptions/store/subscriptionStore';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -31,6 +32,7 @@ export default function ProfileScreen() {
   const { user } = useAuthStore();
   const { profile, loading, logout, deleteAccount, updateProfile, refresh } = useProfile();
   const { preferences, updatePreference } = useNotificationSettings();
+  const { currentPlan, status: subStatus, daysLeft, maxNumbers, maxMembers, familyMembers } = useSubscriptionStore();
 
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
@@ -122,7 +124,73 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
         className="px-4"
       >
+        {/* Section Protection & Abonnement */}
         <Text className="text-xs font-semibold text-slate-400 dark:text-slate-500 mt-3 mb-2 px-1">
+          {i18n.language?.startsWith('en') ? 'Subscription & Shield' : 'Abonnement & Protection'}
+        </Text>
+
+        <View className="p-4 rounded-2xl bg-white dark:bg-brand-cardDark border border-slate-100 dark:border-white/10 mb-4 shadow-sm">
+          <View className="flex-row items-center justify-between mb-3">
+            <View className="flex-row items-center">
+              <View className={`w-10 h-10 rounded-2xl items-center justify-center mr-3 ${
+                currentPlan ? 'bg-emerald-500/15' : 'bg-slate-100 dark:bg-white/10'
+              }`}>
+                <Icon
+                  name={currentPlan ? 'solar:shield-check-bold' : 'solar:shield-bold'}
+                  color={currentPlan ? '#10B981' : '#64748B'}
+                  size={22}
+                />
+              </View>
+              <View>
+                <Text className="text-sm font-bold text-slate-900 dark:text-white font-title">
+                  {currentPlan
+                    ? (i18n.language?.startsWith('en') ? currentPlan.nom_en : currentPlan.nom_fr)
+                    : (i18n.language?.startsWith('en') ? 'Free Protection' : 'Protection Basique')}
+                </Text>
+                <Text className="text-[11px] text-slate-500 dark:text-slate-400">
+                  {subStatus === 'active' || subStatus === 'expiring_soon'
+                    ? (i18n.language?.startsWith('en') ? `Active • ${daysLeft} days remaining` : `Actif • ${daysLeft} jours restants`)
+                    : (i18n.language?.startsWith('en') ? 'Limited protection' : 'Protection limitée')}
+                </Text>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              onPress={() => router.push('/(app)/plans' as any)}
+              className="bg-brand-blue px-3 py-1.5 rounded-xl"
+            >
+              <Text className="text-[11px] font-bold text-white">
+                {currentPlan ? (i18n.language?.startsWith('en') ? 'Change' : 'Changer') : (i18n.language?.startsWith('en') ? 'Upgrade' : 'Booster')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Quotas & Family Link */}
+          <View className="flex-row items-center justify-between border-t border-slate-100 dark:border-white/10 pt-3 mt-1">
+            <View className="flex-row items-center">
+              <Icon name="solar:phone-bold" size={13} color="#64748B" />
+              <Text className="text-[11px] text-slate-500 dark:text-slate-400 ml-1.5 font-medium">
+                {i18n.language?.startsWith('en') ? `Quota: max ${maxNumbers} numbers` : `Quota : max ${maxNumbers} numéros`}
+              </Text>
+            </View>
+
+            {currentPlan && currentPlan.max_membres > 1 && (
+              <TouchableOpacity
+                onPress={() => router.push('/(app)/family-group' as any)}
+                className="flex-row items-center"
+              >
+                <Icon name="solar:users-group-two-rounded-bold" size={13} color="#6366F1" />
+                <Text className="text-[11px] text-indigo-600 dark:text-indigo-400 ml-1 font-bold">
+                  {i18n.language?.startsWith('en')
+                    ? `Family Circle (${familyMembers.length}/${maxMembers})`
+                    : `Cercle Famille (${familyMembers.length}/${maxMembers})`}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+
+        <Text className="text-xs font-semibold text-slate-400 dark:text-slate-500 mt-2 mb-2 px-1">
           {t('common.preferenceSection')}
         </Text>
 

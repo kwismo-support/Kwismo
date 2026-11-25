@@ -33,6 +33,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/app/ussd', icon: 'solar:global-bold-duotone', labelKey: 'nav.ussd', iconColor: 'text-purple-500', permission: 'ussd:read' },
   { to: '/app/access', icon: 'solar:shield-keyhole-bold-duotone', labelKey: 'nav.access', iconColor: 'text-amber-500', permission: 'roles:read' },
   { to: '/app/reports', icon: 'solar:chart-bold-duotone', labelKey: 'nav.reports', iconColor: 'text-emerald-500', permission: 'reports:read' },
+  { to: '/app/plans', icon: 'solar:card-2-bold-duotone', labelKey: 'nav.plans', iconColor: 'text-amber-500', roles: ['super_admin', 'admin'] },
   { to: '/app/settings', icon: 'solar:settings-bold-duotone', labelKey: 'nav.settings', iconColor: 'text-slate-500', permission: 'settings:read' },
 ];
 
