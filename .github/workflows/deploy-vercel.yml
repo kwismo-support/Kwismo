@@ -39,7 +39,7 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          DEPLOY_OUTPUT=$(npx vercel deploy --yes --token=$VERCEL_TOKEN --meta githubCommitRef=dev --meta githubCommitSha=$GITHUB_SHA)
+          DEPLOY_OUTPUT=$(npx vercel deploy --yes --token=$VERCEL_TOKEN --build-env VITE_API_URL=https://api.kwismo.com/api/v1 --env VITE_API_URL=https://api.kwismo.com/api/v1 --meta githubCommitRef=dev --meta githubCommitSha=$GITHUB_SHA)
           echo "$DEPLOY_OUTPUT"
           DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep -oE 'https://[a-zA-Z0-9.-]+\.vercel\.app' | tail -n 1)
           if [ -n "$DEPLOY_URL" ]; then
@@ -54,7 +54,7 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          DEPLOY_OUTPUT=$(npx vercel deploy --yes --token=$VERCEL_TOKEN --meta githubCommitRef=staging --meta githubCommitSha=$GITHUB_SHA)
+          DEPLOY_OUTPUT=$(npx vercel deploy --yes --token=$VERCEL_TOKEN --build-env VITE_API_URL=https://api.kwismo.com/api/v1 --env VITE_API_URL=https://api.kwismo.com/api/v1 --meta githubCommitRef=staging --meta githubCommitSha=$GITHUB_SHA)
           echo "$DEPLOY_OUTPUT"
           DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep -oE 'https://[a-zA-Z0-9.-]+\.vercel\.app' | tail -n 1)
           if [ -n "$DEPLOY_URL" ]; then
@@ -69,6 +69,4 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN --meta githubCommitRef=main --meta githubCommitSha=$GITHUB_SHA
-
-
+          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN --build-env VITE_API_URL=https://api.kwismo.com/api/v1 --env VITE_API_URL=https://api.kwismo.com/api/v1 --meta githubCommitRef=main --meta githubCommitSha=$GITHUB_SHA
