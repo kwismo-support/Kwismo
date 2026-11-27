@@ -413,9 +413,7 @@ export default function ProfileScreen() {
             </Text>
 
             <Text className="text-xs text-slate-500 dark:text-slate-400 text-center leading-5 mb-6">
-              {i18n.language.startsWith('en')
-                ? 'Are you sure you want to permanently delete your account and personal data? This action cannot be undone.'
-                : 'Êtes-vous sûr de vouloir supprimer définitivement votre compte et vos données personnelles ? Cette action est irréversible.'}
+              {t('common.deleteAccountConfirmMessage')}
             </Text>
 
             <View className="flex-row gap-3">
@@ -435,7 +433,7 @@ export default function ProfileScreen() {
                 className="flex-1 hx-11 rounded-xl bg-red-600 items-center justify-center"
               >
                 <Text className="font-bold text-xs text-white">
-                  {i18n.language.startsWith('en') ? 'Delete' : 'Supprimer'}
+                  {t('common.delete')}
                 </Text>
               </TouchableOpacity>
             </View>

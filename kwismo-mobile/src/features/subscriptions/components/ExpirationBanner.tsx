@@ -7,18 +7,22 @@ import { useSubscriptionStore } from '../store/subscriptionStore';
 
 export function ExpirationBanner() {
   const router = useRouter();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isEn = i18n.language?.startsWith('en');
 
   const { status, daysLeft, currentPlan } = useSubscriptionStore();
 
   if (status === 'active') {
-    return null; // Tout va bien, pas besoin d'alerte intrusive
+    return null;
   }
 
   const handleAction = () => {
     router.push('/(app)/plans' as any);
   };
+
+  const planName = currentPlan
+    ? (isEn ? (currentPlan.nom_en || currentPlan.nom_fr) : currentPlan.nom_fr)
+    : '';
 
   if (status === 'free') {
     return (
@@ -29,10 +33,10 @@ export function ExpirationBanner() {
           </View>
           <View className="flex-1">
             <Text className="text-xs font-bold text-slate-900 dark:text-white">
-              {isEn ? 'Activate Full Protection' : 'Passez au Bouclier Premium'}
+              {t('subscriptions.banner.freeTitle')}
             </Text>
             <Text className="text-[11px] text-slate-500 dark:text-slate-400">
-              {isEn ? 'Protect up to 10 numbers & your whole family' : 'Protégez jusqu’à 10 numéros et vos proches'}
+              {t('subscriptions.banner.freeSubtitle')}
             </Text>
           </View>
         </View>
@@ -43,7 +47,7 @@ export function ExpirationBanner() {
           activeOpacity={0.8}
         >
           <Text className="text-[11px] font-bold text-white">
-            {isEn ? 'View Plans' : 'Voir les offres'}
+            {t('subscriptions.banner.viewPlans')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -60,11 +64,13 @@ export function ExpirationBanner() {
           <View className="flex-1">
             <Text className="text-xs font-bold text-amber-800 dark:text-amber-400">
               {daysLeft === 0
-                ? (isEn ? 'Expires Today!' : 'Expire aujourd’hui !')
-                : (isEn ? `Expires in ${daysLeft} days` : `Expire dans ${daysLeft} jour${daysLeft > 1 ? 's' : ''}`)}
+                ? t('subscriptions.banner.expiresToday')
+                : daysLeft === 1
+                ? t('subscriptions.banner.expiresInDay')
+                : t('subscriptions.banner.expiresInDays', { count: daysLeft })}
             </Text>
             <Text className="text-[11px] text-slate-600 dark:text-slate-300">
-              {currentPlan ? (isEn ? currentPlan.nom_en : currentPlan.nom_fr) : ''} — {isEn ? 'Renew to avoid interruption' : 'Prolongez pour rester protégé'}
+              {planName ? `${planName} — ` : ''}{t('subscriptions.banner.renewNotice')}
             </Text>
           </View>
         </View>
@@ -75,7 +81,7 @@ export function ExpirationBanner() {
           activeOpacity={0.8}
         >
           <Text className="text-[11px] font-bold text-white">
-            {isEn ? 'Renew' : 'Prolonger'}
+            {t('subscriptions.banner.renew')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -91,10 +97,10 @@ export function ExpirationBanner() {
           </View>
           <View className="flex-1">
             <Text className="text-xs font-bold text-rose-700 dark:text-rose-400">
-              {isEn ? 'Grace Period (72h)' : 'Période de Grâce (72h)'}
+              {t('subscriptions.banner.graceTitle')}
             </Text>
             <Text className="text-[11px] text-slate-600 dark:text-slate-300">
-              {isEn ? 'Subscription ended. Renew now to keep alerts active.' : 'Échéance dépassée. Régularisez pour garder vos alertes.'}
+              {t('subscriptions.banner.graceSubtitle')}
             </Text>
           </View>
         </View>
@@ -105,7 +111,7 @@ export function ExpirationBanner() {
           activeOpacity={0.8}
         >
           <Text className="text-[11px] font-bold text-white">
-            {isEn ? 'Pay Now' : 'Régulariser'}
+            {t('subscriptions.banner.payNow')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -121,10 +127,10 @@ export function ExpirationBanner() {
         </View>
         <View className="flex-1">
           <Text className="text-xs font-bold text-rose-700 dark:text-rose-400">
-            {isEn ? 'Protection Suspended' : 'Protection Suspendue'}
+            {t('subscriptions.banner.suspendedTitle')}
           </Text>
           <Text className="text-[11px] text-slate-500 dark:text-slate-400">
-            {isEn ? 'Your numbers are no longer actively filtered.' : 'Vos numéros ne sont plus protégés contre les fraudes.'}
+            {t('subscriptions.banner.suspendedSubtitle')}
           </Text>
         </View>
       </View>
@@ -135,7 +141,7 @@ export function ExpirationBanner() {
         activeOpacity={0.8}
       >
         <Text className="text-[11px] font-bold text-white">
-          {isEn ? 'Reactivate' : 'Réactiver'}
+          {t('subscriptions.banner.reactivate')}
         </Text>
       </TouchableOpacity>
     </View>

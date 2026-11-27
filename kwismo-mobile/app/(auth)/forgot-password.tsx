@@ -59,18 +59,18 @@ export default function ForgotPasswordScreen() {
               <Icon name="solar:letter-opened-bold" color="#10B981" size={36} />
             </View>
             <Text className="font-montserrat-bold text-2xl text-white text-center mb-2">
-              {t('auth.emailSentTitle', 'Lien envoyé !')}
+              {t('auth.emailSentTitle')}
             </Text>
             <Text className="text-white/90 text-sm text-center mb-6 leading-5">
-              {t('auth.emailSentDesc', 'Un email contenant un lien de réinitialisation sécurisé a été envoyé à')} :
+              {t('auth.emailSentDesc')} :
               {'\n'}
               <Text className="font-bold text-emerald-400">{email}</Text>
               {'\n\n'}
-              {t('auth.emailSentInstruction', 'Veuillez ouvrir votre boîte de réception et cliquer sur ce lien pour choisir votre nouveau mot de passe.')}
+              {t('auth.emailSentInstruction')}
             </Text>
             <View className="w-full gap-3">
               <Button
-                title={t('auth.openEmailApp', 'Ouvrir ma boîte mail')}
+                title={t('auth.openEmailApp')}
                 onPress={() => {
                   if (Platform.OS === 'ios') {
                     Linking.openURL('message://').catch(() => Linking.openURL('mailto:'));
@@ -82,7 +82,7 @@ export default function ForgotPasswordScreen() {
                 size="md"
               />
               <Button
-                title={t('common.backToLogin', 'Retour à la connexion')}
+                title={t('common.backToLogin')}
                 onPress={() => router.replace('/(auth)/login')}
                 variant="secondary"
                 size="md"

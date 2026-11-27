@@ -12,7 +12,7 @@ interface PlanCardProps {
 }
 
 export function PlanCard({ plan, isCurrent = false, onSelect, isDark = false }: PlanCardProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isEn = i18n.language?.startsWith('en');
 
   const title = isEn ? plan.nom_en : plan.nom_fr;
@@ -24,24 +24,22 @@ export function PlanCard({ plan, isCurrent = false, onSelect, isDark = false }: 
 
   return (
     <View
-      className={`rounded-2xl p-5 mb-4 border transition-all ${
+      className={`rounded-2xl p-5 mb-4 border ${
         isCurrent
           ? 'bg-emerald-500/10 border-emerald-500 shadow-sm'
           : isPopular
           ? 'bg-brand-blue/5 border-brand-blue dark:bg-brand-blue/10'
-          : isDark
-          ? 'bg-[#1D273F] border-white/10'
-          : 'bg-white border-slate-200 shadow-sm'
+          : 'bg-white dark:bg-brand-cardDark border-slate-200 dark:border-slate-800 shadow-sm'
       }`}
     >
       {/* Header avec Titre et Badge */}
       <View className="flex-row items-start justify-between mb-2">
         <View className="flex-1 pr-2">
-          <Text className={`text-lg font-bold font-title ${isDark ? 'text-white' : 'text-slate-900'}`}>
+          <Text className="text-lg font-bold font-title text-slate-900 dark:text-white">
             {title}
           </Text>
           {description ? (
-            <Text className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+            <Text className="text-xs mt-0.5 text-slate-500 dark:text-slate-400">
               {description}
             </Text>
           ) : null}
@@ -58,38 +56,38 @@ export function PlanCard({ plan, isCurrent = false, onSelect, isDark = false }: 
 
       {/* Prix et Durée */}
       <View className="flex-row items-baseline my-3">
-        <Text className={`text-2xl font-extrabold font-title ${isDark ? 'text-white' : 'text-slate-900'}`}>
+        <Text className="text-2xl font-extrabold font-title text-slate-900 dark:text-white">
           {plan.prix_fcfa.toLocaleString('fr-FR')} FCFA
         </Text>
-        <Text className={`text-xs ml-1.5 font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-          / {plan.duree_jours} {isEn ? 'days' : 'jours'}
+        <Text className="text-xs ml-1.5 font-medium text-slate-500 dark:text-slate-400">
+          / {plan.duree_jours} {plan.duree_jours > 1 ? t('subscriptions.daysSuffix') : t('subscriptions.daySuffix')}
         </Text>
       </View>
 
       {/* Capacités clés (Numéros & Membres) */}
       <View className="flex-row items-center gap-2 mb-4">
-        <View className={`flex-row items-center px-2.5 py-1 rounded-lg ${isDark ? 'bg-white/5' : 'bg-slate-100'}`}>
+        <View className="flex-row items-center px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800">
           <Icon name="solar:phone-bold" size={13} color="#10B981" />
-          <Text className={`text-[11px] font-semibold ml-1.5 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-            {plan.max_numeros} {plan.max_numeros > 1 ? (isEn ? 'numbers' : 'numéros') : (isEn ? 'number' : 'numéro')}
+          <Text className="text-[11px] font-semibold ml-1.5 text-slate-700 dark:text-slate-300">
+            {plan.max_numeros} {plan.max_numeros > 1 ? t('subscriptions.numberPlural') : t('subscriptions.numberSingular')}
           </Text>
         </View>
 
-        <View className={`flex-row items-center px-2.5 py-1 rounded-lg ${isDark ? 'bg-white/5' : 'bg-slate-100'}`}>
+        <View className="flex-row items-center px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800">
           <Icon name="solar:users-group-two-rounded-bold" size={13} color="#6366F1" />
-          <Text className={`text-[11px] font-semibold ml-1.5 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-            {plan.max_membres} {plan.max_membres > 1 ? (isEn ? 'members' : 'personnes') : (isEn ? 'member' : 'personne')}
+          <Text className="text-[11px] font-semibold ml-1.5 text-slate-700 dark:text-slate-300">
+            {plan.max_membres} {plan.max_membres > 1 ? t('subscriptions.memberPlural') : t('subscriptions.memberSingular')}
           </Text>
         </View>
       </View>
 
       {/* Liste des fonctionnalités */}
       {options.length > 0 && (
-        <View className="border-t border-slate-100 dark:border-white/10 pt-3 mb-4">
+        <View className="border-t border-slate-100 dark:border-slate-800 pt-3 mb-4">
           {options.map((opt, idx) => (
             <View key={idx} className="flex-row items-center mb-1.5">
               <Icon name="solar:check-circle-bold" size={14} color="#10B981" />
-              <Text className={`text-xs ml-2 flex-1 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+              <Text className="text-xs ml-2 flex-1 text-slate-600 dark:text-slate-300">
                 {opt}
               </Text>
             </View>
@@ -102,7 +100,7 @@ export function PlanCard({ plan, isCurrent = false, onSelect, isDark = false }: 
         <View className="w-full py-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 items-center justify-center flex-row">
           <Icon name="solar:verified-check-bold" size={16} color="#10B981" />
           <Text className="text-xs font-bold text-emerald-600 dark:text-emerald-400 ml-1.5">
-            {isEn ? 'Current Plan Active' : 'Formule Actuellement Active'}
+            {t('subscriptions.currentPlanActive')}
           </Text>
         </View>
       ) : (
@@ -118,7 +116,7 @@ export function PlanCard({ plan, isCurrent = false, onSelect, isDark = false }: 
               isPopular ? 'text-white' : 'text-white dark:text-slate-900'
             }`}
           >
-            {isEn ? 'Choose This Plan' : 'Choisir cette formule'}
+            {t('subscriptions.choosePlan')}
           </Text>
         </TouchableOpacity>
       )}

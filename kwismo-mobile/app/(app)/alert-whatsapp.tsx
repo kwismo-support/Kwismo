@@ -206,7 +206,7 @@ export default function AlertWhatsappScreen() {
       setStep('success');
 
       activityHistoryService.addActivity({
-        phone: 'Alerte WhatsApp',
+        phone: '',
         type: 'common.actionWhatsapp',
         category: 'threats',
         status: 'common.alertWhatsapp',

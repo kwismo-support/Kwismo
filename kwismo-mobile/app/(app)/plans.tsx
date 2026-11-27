@@ -21,9 +21,8 @@ import type { SubscriptionPlanItem } from '@/features/subscriptions/types/subscr
 export default function PlansScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { isDark } = useAppTheme();
-  const isEn = i18n.language?.startsWith('en');
 
   const { availablePlans, currentPlan, loading, fetchPlans, fetchUserSubscription } = useSubscriptionStore();
   const [filter, setFilter] = useState<'all' | 'solo' | 'family'>('all');
@@ -54,11 +53,11 @@ export default function PlansScreen() {
   };
 
   return (
-    <View className={`flex-1 ${isDark ? 'bg-[#161E33]' : 'bg-slate-50'}`}>
+    <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg">
       <StatusBar style={isDark ? 'light' : 'dark'} />
 
       <HeaderBar
-        title={isEn ? 'Security Plans' : 'Formules de Sécurité'}
+        title={t('subscriptions.plansTitle')}
         showBack
         onBack={() => router.back()}
       />
@@ -79,10 +78,10 @@ export default function PlansScreen() {
               </View>
               <View className="flex-1">
                 <Text className="text-base font-bold font-title text-slate-900 dark:text-white">
-                  {isEn ? 'Protect What Matters Most' : 'Protégez l’essentiel'}
+                  {t('subscriptions.heroTitle')}
                 </Text>
                 <Text className="text-xs text-slate-600 dark:text-slate-300">
-                  {isEn ? 'Real-time AI anti-scam shield & call protection' : 'Bouclier anti-arnaque IA en direct sur vos appels et SMS'}
+                  {t('subscriptions.heroSubtitle')}
                 </Text>
               </View>
             </View>
@@ -96,17 +95,15 @@ export default function PlansScreen() {
             className={`px-4 py-2 rounded-xl border ${
               filter === 'all'
                 ? 'bg-brand-navy dark:bg-white border-transparent'
-                : isDark
-                ? 'bg-[#1D273F] border-white/10'
-                : 'bg-white border-slate-200'
+                : 'bg-white dark:bg-brand-cardDark border-slate-200 dark:border-slate-800'
             }`}
           >
             <Text
               className={`text-xs font-semibold ${
-                filter === 'all' ? 'text-white dark:text-slate-900' : isDark ? 'text-slate-300' : 'text-slate-700'
+                filter === 'all' ? 'text-white dark:text-slate-900' : 'text-slate-700 dark:text-slate-300'
               }`}
             >
-              {isEn ? 'All Offers' : 'Toutes les offres'}
+              {t('subscriptions.filterAll')}
             </Text>
           </TouchableOpacity>
 
@@ -115,17 +112,15 @@ export default function PlansScreen() {
             className={`px-4 py-2 rounded-xl border ${
               filter === 'solo'
                 ? 'bg-brand-navy dark:bg-white border-transparent'
-                : isDark
-                ? 'bg-[#1D273F] border-white/10'
-                : 'bg-white border-slate-200'
+                : 'bg-white dark:bg-brand-cardDark border-slate-200 dark:border-slate-800'
             }`}
           >
             <Text
               className={`text-xs font-semibold ${
-                filter === 'solo' ? 'text-white dark:text-slate-900' : isDark ? 'text-slate-300' : 'text-slate-700'
+                filter === 'solo' ? 'text-white dark:text-slate-900' : 'text-slate-700 dark:text-slate-300'
               }`}
             >
-              {isEn ? 'Solo (1 User)' : 'Solo (1 compte)'}
+              {t('subscriptions.filterSolo')}
             </Text>
           </TouchableOpacity>
 
@@ -134,17 +129,15 @@ export default function PlansScreen() {
             className={`px-4 py-2 rounded-xl border ${
               filter === 'family'
                 ? 'bg-brand-navy dark:bg-white border-transparent'
-                : isDark
-                ? 'bg-[#1D273F] border-white/10'
-                : 'bg-white border-slate-200'
+                : 'bg-white dark:bg-brand-cardDark border-slate-200 dark:border-slate-800'
             }`}
           >
             <Text
               className={`text-xs font-semibold ${
-                filter === 'family' ? 'text-white dark:text-slate-900' : isDark ? 'text-slate-300' : 'text-slate-700'
+                filter === 'family' ? 'text-white dark:text-slate-900' : 'text-slate-700 dark:text-slate-300'
               }`}
             >
-              {isEn ? 'Family & Teams' : 'Famille & Pro'}
+              {t('subscriptions.filterFamily')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -155,14 +148,14 @@ export default function PlansScreen() {
             <View className="py-16 items-center justify-center">
               <ActivityIndicator size="large" color="#2563EB" />
               <Text className="text-xs text-slate-400 mt-3 font-medium">
-                {isEn ? 'Loading available plans...' : 'Chargement des formules disponibles...'}
+                {t('subscriptions.loadingPlans')}
               </Text>
             </View>
           ) : filteredPlans.length === 0 ? (
-            <View className="py-12 items-center justify-center bg-white dark:bg-[#1D273F] rounded-2xl p-6 border border-slate-200 dark:border-white/10">
+            <View className="py-12 items-center justify-center bg-white dark:bg-brand-cardDark rounded-2xl p-6 border border-slate-200 dark:border-slate-800">
               <Icon name="solar:box-minimalistic-bold" size={36} color="#94A3B8" />
               <Text className="text-sm font-semibold text-slate-700 dark:text-slate-300 mt-2">
-                {isEn ? 'No plans found for this category.' : 'Aucune formule dans cette catégorie.'}
+                {t('subscriptions.noPlans')}
               </Text>
             </View>
           ) : (
@@ -183,7 +176,7 @@ export default function PlansScreen() {
           <View className="flex-row items-center justify-center gap-1.5 opacity-70">
             <Icon name="solar:lock-keyhole-minimalistic-bold" size={13} color="#64748B" />
             <Text className="text-[11px] text-slate-500 dark:text-slate-400">
-              {isEn ? 'Secure payment via Orange Money, MTN MoMo & Wave' : 'Paiements sécurisés via Orange Money, MTN MoMo et Wave'}
+              {t('subscriptions.reassuranceNotice')}
             </Text>
           </View>
         </View>

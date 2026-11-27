@@ -272,6 +272,20 @@
     "markedAsSecuredSuccess": "Number {{phone}} marked as secured.",
     "receiveOtpByEmail": "Receive code via email (Account)",
     "otpSentByEmail": "OTP code sent to your email address",
-    "secured": "Secured"
+    "secured": "Secured",
+    "quotaReached": "Phone Number Limit Reached",
+    "upgradePrompt": "Your current plan is limited to {{max}} protected number(s). Upgrade to protect more numbers.",
+    "viewPlans": "View Plans",
+    "free": "Free",
+    "deleteAccountConfirmTitle": "Delete Account",
+    "deleteAccountConfirmMessage": "Are you sure you want to permanently delete your account and personal data? This action cannot be undone.",
+    "delete": "Delete",
+    "backToLogin": "Back to login",
+    "days": "days",
+    "day": "day",
+    "numbers": "numbers",
+    "number": "number",
+    "members": "members",
+    "member": "member"
   }
 }

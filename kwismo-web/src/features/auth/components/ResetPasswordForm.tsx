@@ -121,7 +121,7 @@ export default function ResetPasswordForm({ onSuccess }: ResetPasswordFormProps)
             className="text-xs text-brand-green hover:underline flex items-center gap-1.5 py-1"
           >
             <Icon icon="solar:smartphone-bold" className="text-sm" />
-            <span>Ouvrir dans l'application mobile Kwismo</span>
+            <span>{t('openInMobileApp')}</span>
           </a>
         )}
 

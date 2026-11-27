@@ -82,7 +82,7 @@ export const callListenerService = {
 
     try {
       await PushNotificationService.sendLocalNotification(
-        "Fin d'appel récent — Kwismo 🛡️",
+        "Fin d'appel récent — Kwismo",
         `Appel avec ${callRecord.phone}. Ce numéro est-il suspect ? Touchez pour vérifier ou signaler.`,
         { route: '/(app)/report', phone: callRecord.phone }
       );

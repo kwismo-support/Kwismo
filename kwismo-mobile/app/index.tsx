@@ -23,12 +23,11 @@ interface LanguageOption {
   code: string;
   label: string;
   nativeName: string;
-  flag: string;
 }
 
 const LANGUAGES: LanguageOption[] = [
-  { code: 'fr', label: 'Français', nativeName: 'Français', flag: '🇫🇷' },
-  { code: 'en', label: 'English', nativeName: 'English', flag: '🇺🇸' },
+  { code: 'fr', label: 'Français', nativeName: 'Français' },
+  { code: 'en', label: 'English', nativeName: 'English' },
 ];
 
 export default function LanguageSelectionScreen() {
@@ -123,9 +122,11 @@ export default function LanguageSelectionScreen() {
             >
               <View className="flex-row items-center">
                 {currentOption && (
-                  <Text className="text-xl mr-3">
-                    {currentOption.flag}
-                  </Text>
+                  <View className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center mr-3 border border-slate-200 dark:border-slate-700">
+                    <Text className="text-[10px] font-bold text-slate-700 dark:text-slate-300">
+                      {currentOption.code.toUpperCase()}
+                    </Text>
+                  </View>
                 )}
                 <Text
                   className={`font-semibold text-caption ${
@@ -157,9 +158,11 @@ export default function LanguageSelectionScreen() {
                       }`}
                     >
                       <View className="flex-row items-center">
-                        <Text className="text-xl mr-3">
-                          {item.flag}
-                        </Text>
+                        <View className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center mr-3 border border-slate-200 dark:border-slate-700">
+                          <Text className="text-[10px] font-bold text-slate-700 dark:text-slate-300">
+                            {item.code.toUpperCase()}
+                          </Text>
+                        </View>
                         <Text
                           className={`text-body-md ${
                             isSelected ? 'font-semibold text-brand-green' : 'font-medium text-slate-700 dark:text-slate-300'

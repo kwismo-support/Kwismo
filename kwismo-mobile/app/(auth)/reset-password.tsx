@@ -86,20 +86,20 @@ export default function ResetPasswordScreen() {
               <Icon name="solar:danger-triangle-bold" color="#F59E0B" size={36} />
             </View>
             <Text className="font-montserrat-bold text-2xl text-white text-center mb-2">
-              {t('auth.missingTokenTitle', 'Lien requis')}
+              {t('auth.missingTokenTitle')}
             </Text>
             <Text className="text-white/90 text-sm text-center mb-6 leading-5">
-              {t('auth.missingTokenDesc', 'Pour réinitialiser votre mot de passe en toute sécurité, veuillez cliquer sur le lien que vous avez reçu dans votre boîte email.')}
+              {t('auth.missingTokenDesc')}
             </Text>
             <View className="w-full gap-3">
               <Button
-                title={t('auth.requestNewLink', 'Demander un nouveau lien')}
+                title={t('auth.requestNewLink')}
                 onPress={() => router.replace('/(auth)/forgot-password')}
                 variant="primary"
                 size="md"
               />
               <Button
-                title={t('common.backToLogin', 'Retour à la connexion')}
+                title={t('common.backToLogin')}
                 onPress={() => router.replace('/(auth)/login')}
                 variant="secondary"
                 size="md"

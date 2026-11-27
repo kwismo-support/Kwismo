@@ -28,7 +28,6 @@ export default function FamilyGroupScreen() {
     currentPlan,
     familyMembers,
     maxMembers,
-    isFamilyAdmin,
     addFamilyMemberLocally,
     removeFamilyMemberLocally,
   } = useSubscriptionStore();
@@ -43,8 +42,8 @@ export default function FamilyGroupScreen() {
   const handleInviteSubmit = async () => {
     if (!inviteName.trim() || !invitePhone.trim()) {
       Alert.alert(
-        isEn ? 'Information Missing' : 'Informations incomplètes',
-        isEn ? 'Please enter both a name and a phone number.' : 'Veuillez saisir un nom et un numéro de téléphone.'
+        t('subscriptions.family.missingInfoTitle'),
+        t('subscriptions.family.missingInfoDesc')
       );
       return;
     }
@@ -54,33 +53,30 @@ export default function FamilyGroupScreen() {
     setLoading(false);
 
     if (ok) {
+      const addedName = inviteName;
       setInviteName('');
       setInvitePhone('');
       setInviteModalVisible(false);
       Alert.alert(
-        isEn ? 'Member Added' : 'Membre Ajouté',
-        isEn
-          ? `${inviteName} is now protected under your family security umbrella.`
-          : `${inviteName} est désormais protégé sous votre couverture familiale.`
+        t('subscriptions.family.addedTitle'),
+        t('subscriptions.family.addedDesc', { name: addedName })
       );
     } else {
       Alert.alert(
-        isEn ? 'Quota Limit Reached' : 'Limite atteinte',
-        isEn ? 'You have reached the maximum number of family members.' : 'Votre formule a atteint le nombre maximum de membres.'
+        t('subscriptions.family.quotaReachedTitle'),
+        t('subscriptions.family.quotaReachedDesc')
       );
     }
   };
 
   const handleRemoveMember = (id: string, name: string) => {
     Alert.alert(
-      isEn ? 'Remove Member' : 'Retirer ce membre',
-      isEn
-        ? `Are you sure you want to remove ${name} from your family plan?`
-        : `Voulez-vous vraiment retirer ${name} de votre protection familiale ?`,
+      t('subscriptions.family.removeTitle'),
+      t('subscriptions.family.removeDesc', { name }),
       [
-        { text: isEn ? 'Cancel' : 'Annuler', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: isEn ? 'Remove' : 'Retirer',
+          text: t('subscriptions.family.removeConfirm'),
           style: 'destructive',
           onPress: () => removeFamilyMemberLocally(id),
         },
@@ -88,12 +84,16 @@ export default function FamilyGroupScreen() {
     );
   };
 
+  const planName = currentPlan
+    ? (isEn ? (currentPlan.nom_en || currentPlan.nom_fr) : currentPlan.nom_fr)
+    : t('subscriptions.family.defaultTitle');
+
   return (
-    <View className={`flex-1 ${isDark ? 'bg-[#161E33]' : 'bg-slate-50'}`}>
+    <View className="flex-1 bg-slate-50 dark:bg-brand-darkBg">
       <StatusBar style={isDark ? 'light' : 'dark'} />
 
       <HeaderBar
-        title={isEn ? 'Family Security Hub' : 'Sécurité Familiale'}
+        title={t('subscriptions.family.title')}
         showBack
         onBack={() => router.back()}
       />
@@ -112,17 +112,17 @@ export default function FamilyGroupScreen() {
               </View>
               <View>
                 <Text className="text-white font-bold font-title text-base">
-                  {currentPlan ? (isEn ? currentPlan.nom_en : currentPlan.nom_fr) : (isEn ? 'Family Plan' : 'Pack Famille')}
+                  {planName}
                 </Text>
                 <Text className="text-white/80 text-xs">
-                  {familyMembers.length} / {maxMembers} {isEn ? 'protected members' : 'membres protégés'}
+                  {t('subscriptions.family.protectedMembers', { count: familyMembers.length, max: maxMembers })}
                 </Text>
               </View>
             </View>
 
             <View className="bg-white/20 px-3 py-1 rounded-full">
               <Text className="text-white text-[11px] font-bold">
-                {availableSlots} {isEn ? 'left' : 'dispo'}
+                {t('subscriptions.family.slotsLeft', { count: availableSlots })}
               </Text>
             </View>
           </View>
@@ -141,29 +141,25 @@ export default function FamilyGroupScreen() {
           <TouchableOpacity
             onPress={() => setInviteModalVisible(true)}
             activeOpacity={0.8}
-            className={`flex-row items-center justify-center p-3.5 mb-5 rounded-2xl border-2 border-dashed ${
-              isDark ? 'border-brand-blue/40 bg-brand-blue/10' : 'border-brand-blue/30 bg-brand-blue/5'
-            }`}
+            className="flex-row items-center justify-center p-3.5 mb-5 rounded-2xl border-2 border-dashed border-brand-blue/30 bg-brand-blue/5 dark:border-brand-blue/40 dark:bg-brand-blue/10"
           >
             <Icon name="solar:user-plus-bold" size={18} color="#2563EB" />
             <Text className="text-xs font-bold text-brand-blue ml-2">
-              {isEn ? '+ Invite a Family Member' : '+ Inviter un membre de ma famille'}
+              {t('subscriptions.family.inviteButton')}
             </Text>
           </TouchableOpacity>
         ) : null}
 
         {/* Liste des membres */}
-        <Text className={`text-xs font-bold uppercase tracking-wider mb-3 px-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-          {isEn ? 'Protected Family Circle' : 'Membres du Cercle'}
+        <Text className="text-xs font-bold uppercase tracking-wider mb-3 px-1 text-slate-600 dark:text-slate-400">
+          {t('subscriptions.family.circleTitle')}
         </Text>
 
         <View className="gap-2.5">
           {familyMembers.map((member) => (
             <View
               key={member.id}
-              className={`p-4 rounded-2xl border flex-row items-center justify-between ${
-                isDark ? 'bg-[#1D273F] border-white/10' : 'bg-white border-slate-200 shadow-sm'
-              }`}
+              className="p-4 rounded-2xl border flex-row items-center justify-between bg-white dark:bg-brand-cardDark border-slate-200 dark:border-slate-800 shadow-sm"
             >
               <View className="flex-row items-center flex-1 pr-2">
                 <View className={`w-10 h-10 rounded-2xl items-center justify-center mr-3 ${
@@ -178,16 +174,18 @@ export default function FamilyGroupScreen() {
 
                 <View className="flex-1">
                   <View className="flex-row items-center gap-1.5">
-                    <Text className={`text-sm font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    <Text className="text-sm font-bold text-slate-900 dark:text-white">
                       {member.name}
                     </Text>
                     {member.role === 'admin' && (
                       <View className="bg-amber-500/15 px-1.5 py-0.5 rounded">
-                        <Text className="text-[9px] font-bold text-amber-600">Admin</Text>
+                        <Text className="text-[9px] font-bold text-amber-600">
+                          {t('subscriptions.family.adminBadge')}
+                        </Text>
                       </View>
                     )}
                   </View>
-                  <Text className="text-xs text-slate-500">{member.phoneNumber}</Text>
+                  <Text className="text-xs text-slate-500 dark:text-slate-400">{member.phoneNumber}</Text>
                 </View>
               </View>
 
@@ -195,7 +193,7 @@ export default function FamilyGroupScreen() {
                 <View className="flex-row items-center bg-emerald-500/10 px-2 py-1 rounded-full border border-emerald-500/20">
                   <Icon name="solar:shield-check-bold" size={13} color="#10B981" />
                   <Text className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 ml-1">
-                    {isEn ? 'Protected' : 'Protégé'}
+                    {t('subscriptions.family.protectedBadge')}
                   </Text>
                 </View>
 
@@ -213,17 +211,15 @@ export default function FamilyGroupScreen() {
         </View>
 
         {/* Explications */}
-        <View className="mt-8 p-4 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+        <View className="mt-8 p-4 rounded-2xl bg-slate-100 dark:bg-brand-cardDark border border-slate-200 dark:border-slate-800">
           <View className="flex-row items-center mb-1.5">
             <Icon name="solar:shield-star-bold" size={16} color="#2563EB" />
-            <Text className={`text-xs font-bold ml-1.5 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              {isEn ? 'Shared Family Benefits' : 'Avantages de la Protection Familiale'}
+            <Text className="text-xs font-bold ml-1.5 text-slate-900 dark:text-white">
+              {t('subscriptions.family.benefitsTitle')}
             </Text>
           </View>
           <Text className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-            {isEn
-              ? 'All family members receive automatic scam detection on unknown incoming calls and SMS. Fraud alerts are shared immediately across the circle.'
-              : 'Tous les membres invités bénéficient gratuitement du filtrage des appels et SMS inconnus. Si un membre reçoit un appel suspect, le cercle est prévenu.'}
+            {t('subscriptions.family.benefitsDesc')}
           </Text>
         </View>
       </ScrollView>
@@ -231,10 +227,10 @@ export default function FamilyGroupScreen() {
       {/* Modal Inviter un Proche */}
       <Modal visible={inviteModalVisible} transparent animationType="slide">
         <View className="flex-1 bg-black/60 justify-end">
-          <View className={`rounded-t-3xl p-6 ${isDark ? 'bg-[#1D273F]' : 'bg-white'}`}>
+          <View className="rounded-t-3xl p-6 bg-white dark:bg-brand-cardDark border-t border-slate-200 dark:border-slate-800">
             <View className="flex-row items-center justify-between mb-4">
-              <Text className={`text-base font-bold font-title ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                {isEn ? 'Add a Family Member' : 'Ajouter un membre à la famille'}
+              <Text className="text-base font-bold font-title text-slate-900 dark:text-white">
+                {t('subscriptions.family.modalTitle')}
               </Text>
               <TouchableOpacity onPress={() => setInviteModalVisible(false)} className="p-1">
                 <Icon name="solar:close-circle-bold" size={22} color="#94A3B8" />
@@ -242,46 +238,54 @@ export default function FamilyGroupScreen() {
             </View>
 
             <View className="mb-4">
-              <Text className={`text-xs font-semibold mb-1.5 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                {isEn ? 'Full Name' : 'Nom du proche'} *
+              <Text className="text-xs font-semibold mb-1.5 text-slate-700 dark:text-slate-300">
+                {t('subscriptions.family.nameLabel')} *
               </Text>
               <TextInput
                 value={inviteName}
                 onChangeText={setInviteName}
-                placeholder="ex: Maman, Junior..."
+                placeholder={t('subscriptions.family.namePlaceholder')}
                 placeholderTextColor="#94A3B8"
-                className={`p-3 rounded-xl border text-xs ${
-                  isDark ? 'bg-white/5 border-white/15 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
-                }`}
+                className="h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-brand-darkBg text-slate-900 dark:text-white text-sm"
               />
             </View>
 
             <View className="mb-6">
-              <Text className={`text-xs font-semibold mb-1.5 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                {isEn ? 'Phone Number' : 'Numéro de téléphone'} *
+              <Text className="text-xs font-semibold mb-1.5 text-slate-700 dark:text-slate-300">
+                {t('subscriptions.family.phoneLabel')} *
               </Text>
               <TextInput
                 value={invitePhone}
                 onChangeText={setInvitePhone}
-                placeholder="ex: +237 699 00 00 00"
+                placeholder={t('subscriptions.family.phonePlaceholder')}
                 placeholderTextColor="#94A3B8"
                 keyboardType="phone-pad"
-                className={`p-3 rounded-xl border text-xs ${
-                  isDark ? 'bg-white/5 border-white/15 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
-                }`}
+                className="h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-brand-darkBg text-slate-900 dark:text-white text-sm"
               />
             </View>
 
-            <TouchableOpacity
-              onPress={handleInviteSubmit}
-              disabled={loading}
-              activeOpacity={0.8}
-              className="w-full py-3.5 rounded-xl bg-brand-blue items-center justify-center"
-            >
-              <Text className="text-xs font-bold text-white">
-                {isEn ? 'Confirm & Protect' : 'Confirmer et Protéger'}
-              </Text>
-            </TouchableOpacity>
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                onPress={() => setInviteModalVisible(false)}
+                activeOpacity={0.8}
+                className="flex-1 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 items-center justify-center bg-slate-50 dark:bg-slate-800"
+              >
+                <Text className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  {t('subscriptions.family.modalCancel')}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleInviteSubmit}
+                disabled={loading}
+                activeOpacity={0.8}
+                className="flex-1 py-3.5 rounded-xl bg-brand-blue items-center justify-center shadow-md shadow-brand-blue/30"
+              >
+                <Text className="text-xs font-bold text-white">
+                  {t('subscriptions.family.modalConfirm')}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>

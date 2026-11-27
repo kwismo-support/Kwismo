@@ -89,15 +89,12 @@ export default function ManagementScreen() {
   const handleOpenAddNumber = () => {
     if (numbers.length >= maxNumbers) {
       Alert.alert(
-        t('common.quotaReached', 'Limite de numéros atteinte'),
-        t(
-          'common.upgradePrompt',
-          `Votre formule actuelle est limitée à ${maxNumbers} numéro(s) protégé(s). Passez à une formule supérieure pour en protéger davantage.`
-        ),
+        t('common.quotaReached'),
+        t('common.upgradePrompt', { max: maxNumbers }),
         [
-          { text: t('common.cancel', 'Annuler'), style: 'cancel' },
+          { text: t('common.cancel'), style: 'cancel' },
           {
-            text: t('common.viewPlans', 'Voir les offres'),
+            text: t('common.viewPlans'),
             onPress: () => router.push('/(app)/plans' as any),
           },
         ]

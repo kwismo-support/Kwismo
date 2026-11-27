@@ -37,7 +37,7 @@ interface ContactInfo {
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isDark } = useAppTheme();
   const { user } = useAuthStore();
   const { summary, loading, refreshing, refresh } = useDashboard();
@@ -211,8 +211,10 @@ export default function HomeScreen() {
                       }`}
                     >
                       {currentPlan
-                        ? (currentPlan.nom_fr?.split(' ')[0] || 'Premium')
-                        : 'Gratuit'}
+                        ? (i18n.language?.startsWith('en')
+                            ? (currentPlan.nom_en?.split(' ')[0] || currentPlan.nom_fr?.split(' ')[0] || 'Premium')
+                            : (currentPlan.nom_fr?.split(' ')[0] || 'Premium'))
+                        : t('common.free')}
                     </Text>
                   </TouchableOpacity>
                 </View>
