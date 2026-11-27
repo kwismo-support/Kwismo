@@ -39,12 +39,16 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          DEPLOY_OUTPUT=$(npx vercel deploy --yes --token=$VERCEL_TOKEN -m githubCommitRef=dev -m githubCommitSha=$GITHUB_SHA)
+          SCOPE_FLAG=""
+          if [ -n "$VERCEL_ORG_ID" ]; then
+            SCOPE_FLAG="--scope=$VERCEL_ORG_ID"
+          fi
+          DEPLOY_OUTPUT=$(npx vercel deploy --yes --token=$VERCEL_TOKEN $SCOPE_FLAG --meta githubCommitRef=dev --meta githubCommitSha=$GITHUB_SHA)
           echo "$DEPLOY_OUTPUT"
           DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep -oE 'https://[a-zA-Z0-9.-]+\.vercel\.app' | tail -n 1)
           if [ -n "$DEPLOY_URL" ]; then
             echo "Aliasing $DEPLOY_URL to kwismo-dev.vercel.app..."
-            npx vercel alias set "$DEPLOY_URL" kwismo-dev.vercel.app --token=$VERCEL_TOKEN
+            npx vercel alias set "$DEPLOY_URL" kwismo-dev.vercel.app --token=$VERCEL_TOKEN $SCOPE_FLAG || true
           fi
 
       - name: Deploy to Staging Environment (kwismo-preview.vercel.app)
@@ -54,12 +58,16 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          DEPLOY_OUTPUT=$(npx vercel deploy --yes --token=$VERCEL_TOKEN -m githubCommitRef=staging -m githubCommitSha=$GITHUB_SHA)
+          SCOPE_FLAG=""
+          if [ -n "$VERCEL_ORG_ID" ]; then
+            SCOPE_FLAG="--scope=$VERCEL_ORG_ID"
+          fi
+          DEPLOY_OUTPUT=$(npx vercel deploy --yes --token=$VERCEL_TOKEN $SCOPE_FLAG --meta githubCommitRef=staging --meta githubCommitSha=$GITHUB_SHA)
           echo "$DEPLOY_OUTPUT"
           DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep -oE 'https://[a-zA-Z0-9.-]+\.vercel\.app' | tail -n 1)
           if [ -n "$DEPLOY_URL" ]; then
             echo "Aliasing $DEPLOY_URL to kwismo-preview.vercel.app..."
-            npx vercel alias set "$DEPLOY_URL" kwismo-preview.vercel.app --token=$VERCEL_TOKEN
+            npx vercel alias set "$DEPLOY_URL" kwismo-preview.vercel.app --token=$VERCEL_TOKEN $SCOPE_FLAG || true
           fi
 
       - name: Deploy to Production Environment (kwismo.com)
@@ -69,6 +77,10 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN -m githubCommitRef=main -m githubCommitSha=$GITHUB_SHA
+          SCOPE_FLAG=""
+          if [ -n "$VERCEL_ORG_ID" ]; then
+            SCOPE_FLAG="--scope=$VERCEL_ORG_ID"
+          fi
+          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN $SCOPE_FLAG --meta githubCommitRef=main --meta githubCommitSha=$GITHUB_SHA
 
 

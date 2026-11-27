@@ -6,6 +6,7 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
+  Linking,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,6 +28,7 @@ export default function ForgotPasswordScreen() {
   const { handleForgotPassword } = useForgotPassword();
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [isSent, setIsSent] = useState(false);
 
   const handleReset = async () => {
     setEmailError('');
@@ -41,11 +43,56 @@ export default function ForgotPasswordScreen() {
 
     const res = await handleForgotPassword(email);
     if (res.success) {
-      router.push({ pathname: '/(auth)/reset-password', params: { email: email.trim() } });
+      setIsSent(true);
       return true;
     }
     return false;
   };
+
+  if (isSent) {
+    return (
+      <AuthGradientBackground>
+        <StatusBar style="light" />
+        <View className="flex-1 px-6 justify-center items-center">
+          <View className="w-full bg-white/10 dark:bg-slate-900/60 p-6 rounded-3xl border border-white/20 items-center">
+            <View className="w-16 h-16 rounded-full bg-emerald-500/20 items-center justify-center mb-4 border border-emerald-500/30">
+              <Icon name="solar:letter-opened-bold" color="#10B981" size={36} />
+            </View>
+            <Text className="font-montserrat-bold text-2xl text-white text-center mb-2">
+              {t('auth.emailSentTitle', 'Lien envoyé !')}
+            </Text>
+            <Text className="text-white/90 text-sm text-center mb-6 leading-5">
+              {t('auth.emailSentDesc', 'Un email contenant un lien de réinitialisation sécurisé a été envoyé à')} :
+              {'\n'}
+              <Text className="font-bold text-emerald-400">{email}</Text>
+              {'\n\n'}
+              {t('auth.emailSentInstruction', 'Veuillez ouvrir votre boîte de réception et cliquer sur ce lien pour choisir votre nouveau mot de passe.')}
+            </Text>
+            <View className="w-full gap-3">
+              <Button
+                title={t('auth.openEmailApp', 'Ouvrir ma boîte mail')}
+                onPress={() => {
+                  if (Platform.OS === 'ios') {
+                    Linking.openURL('message://').catch(() => Linking.openURL('mailto:'));
+                  } else {
+                    Linking.openURL('mailto:');
+                  }
+                }}
+                variant="primary"
+                size="md"
+              />
+              <Button
+                title={t('common.backToLogin', 'Retour à la connexion')}
+                onPress={() => router.replace('/(auth)/login')}
+                variant="secondary"
+                size="md"
+              />
+            </View>
+          </View>
+        </View>
+      </AuthGradientBackground>
+    );
+  }
 
   return (
     <AuthGradientBackground>

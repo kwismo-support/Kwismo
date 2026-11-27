@@ -59,6 +59,12 @@ export function AppRouter() {
         <Route path="/register" element={<PartnerRequestPage />} />
         <Route path="/auth/register" element={<PartnerRequestPage />} />
 
+        <Route path="/reset-password" element={<AuthPage />} />
+        <Route path="/auth/reset-password" element={<AuthPage />} />
+        <Route path="/auth/reset" element={<AuthPage />} />
+        <Route path="/forgot-password" element={<AuthPage />} />
+        <Route path="/auth/forgot" element={<AuthPage />} />
+
         <Route element={<GuestGuard />}>
           <Route path="/auth/*" element={<AuthPage />} />
         </Route>

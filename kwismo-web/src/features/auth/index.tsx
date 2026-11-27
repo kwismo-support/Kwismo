@@ -17,12 +17,13 @@ export default function AuthPage() {
 
   useEffect(() => {
     const path = window.location.pathname;
-    if (path.includes('register')) {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get('token') || path.includes('reset')) {
+      setMode('reset');
+    } else if (path.includes('register')) {
       setMode('register');
     } else if (path.includes('forgot')) {
       setMode('forgot');
-    } else if (path.includes('reset')) {
-      setMode('reset');
     }
   }, []);
 

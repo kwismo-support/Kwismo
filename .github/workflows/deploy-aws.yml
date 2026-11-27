@@ -60,10 +60,11 @@ jobs:
 
       - name: Deploy to AWS EC2 via SSH
         if: steps.check-secret.outputs.has_key == 'true'
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: 52.45.215.39
-          username: ubuntu
-          key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          script: |
-            sudo /opt/kwismo/scripts/deploy.sh ${{ steps.env-target.outputs.target }}
+        env:
+          SSH_KEY: ${{ secrets.AWS_EC2_SSH_KEY }}
+          TARGET: ${{ steps.env-target.outputs.target }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ubuntu@52.45.215.39 "sudo /opt/kwismo/scripts/deploy.sh $TARGET"

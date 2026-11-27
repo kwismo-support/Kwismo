@@ -115,6 +115,16 @@ export default function ResetPasswordForm({ onSuccess }: ResetPasswordFormProps)
           <span>{t('backToLogin')}</span>
         </a>
 
+        {token && (
+          <a
+            href={`kwismo://reset-password?token=${encodeURIComponent(token)}`}
+            className="text-xs text-brand-green hover:underline flex items-center gap-1.5 py-1"
+          >
+            <Icon icon="solar:smartphone-bold" className="text-sm" />
+            <span>Ouvrir dans l'application mobile Kwismo</span>
+          </a>
+        )}
+
         <a
           href="/"
           className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition flex items-center gap-1"

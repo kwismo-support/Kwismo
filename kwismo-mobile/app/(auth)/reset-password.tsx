@@ -59,10 +59,15 @@ export default function ResetPasswordScreen() {
     return isValid;
   };
 
+  const token = params.token;
+
   const handleResetConfirm = async () => {
     if (!validateForm()) return false;
 
-    const token = params.token || 'demo-token';
+    if (!token) {
+      return false;
+    }
+
     const res = await handleResetPassword(token, newPassword);
     if (res.success) {
       router.replace('/(auth)/login');
@@ -70,6 +75,41 @@ export default function ResetPasswordScreen() {
     }
     return false;
   };
+
+  if (!token) {
+    return (
+      <AuthGradientBackground>
+        <StatusBar style="light" />
+        <View className="flex-1 px-6 justify-center items-center">
+          <View className="w-full bg-white/10 dark:bg-slate-900/60 p-6 rounded-3xl border border-white/20 items-center">
+            <View className="w-16 h-16 rounded-full bg-amber-500/20 items-center justify-center mb-4 border border-amber-500/30">
+              <Icon name="solar:danger-triangle-bold" color="#F59E0B" size={36} />
+            </View>
+            <Text className="font-montserrat-bold text-2xl text-white text-center mb-2">
+              {t('auth.missingTokenTitle', 'Lien requis')}
+            </Text>
+            <Text className="text-white/90 text-sm text-center mb-6 leading-5">
+              {t('auth.missingTokenDesc', 'Pour réinitialiser votre mot de passe en toute sécurité, veuillez cliquer sur le lien que vous avez reçu dans votre boîte email.')}
+            </Text>
+            <View className="w-full gap-3">
+              <Button
+                title={t('auth.requestNewLink', 'Demander un nouveau lien')}
+                onPress={() => router.replace('/(auth)/forgot-password')}
+                variant="primary"
+                size="md"
+              />
+              <Button
+                title={t('common.backToLogin', 'Retour à la connexion')}
+                onPress={() => router.replace('/(auth)/login')}
+                variant="secondary"
+                size="md"
+              />
+            </View>
+          </View>
+        </View>
+      </AuthGradientBackground>
+    );
+  }
 
   return (
     <AuthGradientBackground>

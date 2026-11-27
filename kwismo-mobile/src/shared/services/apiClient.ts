@@ -143,7 +143,8 @@ export class ApiClient {
           cleanEndpoint.includes('/auth/verify') ||
           cleanEndpoint.includes('/auth/otp') ||
           cleanEndpoint.includes('/auth/forgot') ||
-          cleanEndpoint.includes('/auth/reset');
+          cleanEndpoint.includes('/auth/reset') ||
+          cleanEndpoint.includes('/auth/password');
 
         if (
           response.status === 401 &&
