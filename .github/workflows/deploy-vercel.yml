@@ -15,9 +15,6 @@ jobs:
   deploy-web:
     name: Deploy Web Application (Vercel)
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: kwismo-web
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,6 +27,7 @@ jobs:
           cache-dependency-path: kwismo-web/package-lock.json
 
       - name: Install & Build Web Application
+        working-directory: kwismo-web
         run: |
           npm ci
           npm run build
