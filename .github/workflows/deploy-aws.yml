@@ -67,6 +67,25 @@ jobs:
           TARGET: ${{ steps.env-target.outputs.target }}
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_KEY" | tr -d '\r' > ~/.ssh/deploy_key
+          RAW_KEY="$SSH_KEY"
+
+          # 1. Décoder si la clé a été stockée en base64
+          if echo "$RAW_KEY" | grep -q "BEGIN"; then
+            KEY_CONTENT="$RAW_KEY"
+          else
+            KEY_CONTENT=$(echo "$RAW_KEY" | base64 -d 2>/dev/null || echo "$RAW_KEY")
+          fi
+
+          # 2. Remplacer les \n littéraux par de vrais sauts de ligne si nécessaire
+          if echo "$KEY_CONTENT" | grep -q "\\\\n"; then
+            KEY_CONTENT=$(printf "%b" "$KEY_CONTENT")
+          fi
+
+          # 3. Écrire la clé sans retours chariot Windows (\r)
+          printf "%s\n" "$KEY_CONTENT" | tr -d '\r' > ~/.ssh/deploy_key
+
+          # 4. S'assurer que le fichier se termine strictement par un saut de ligne (exigé par libcrypto / OpenSSH)
+          sed -i -e '$a\' ~/.ssh/deploy_key || printf "\n" >> ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/deploy_key ubuntu@52.45.215.39 "sudo /opt/kwismo/scripts/deploy.sh $TARGET"
+
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes -i ~/.ssh/deploy_key ubuntu@52.45.215.39 "sudo /opt/kwismo/scripts/deploy.sh $TARGET"

@@ -1,6 +1,7 @@
 """Suite complète de tests du Modèle A (50+ scénarios réels, métriques d'intervalles d'horodatages & règles de sécurité)."""
 
 import pytest
+from datetime import datetime, timezone
 from src.data.features import compute_temporal_features
 from src.data.graph import record_number_link, register_known_scammer
 from src.models.model_a import predict, rules
@@ -163,11 +164,12 @@ def test_time_decay_recent_vs_old_reports() -> None:
 
 def test_emerging_risk_spike_high_checks_ratio() -> None:
     """Un pic de 40 vérifications récentes sans signalement rédigé déclenche l'Alerte Risque Émergent."""
+    now_iso = datetime.now(timezone.utc).isoformat()
     data = {
         "numero": "237650000077",
         "nombre_signalements": 0,
         "nombre_verifications": 40,
-        "horodatages_verifications": ["2026-08-18T00:00:00Z"] * 40,
+        "horodatages_verifications": [now_iso] * 40,
     }
     score, explications, _ = predict.predict(data)
     assert any("Alerte Risque Émergent" in exp for exp in explications)

@@ -1,9 +1,9 @@
 import { Platform, PermissionsAndroid } from 'react-native';
-import * as Contacts from 'expo-contacts/legacy';
+import { getDeviceContacts } from '@/shared/lib/contactsService';
 import { verifyApi } from '@/features/verify/services/verify.api';
 import { PushNotificationService } from '@/shared/services/pushNotificationService';
 import { activityHistoryService } from '@/shared/services/activityHistoryService';
-import { permissionManager } from '@/shared/services/permissionManager';
+import { offlineQueue } from '@/shared/services/offlineQueue';
 
 export interface CallStateEvent {
   state: 'RINGING' | 'OFFHOOK' | 'IDLE';
@@ -17,43 +17,41 @@ class CallDetectionService {
   private knownContactsMap: Record<string, boolean> = {};
 
   async init(): Promise<void> {
+    if (Platform.OS !== 'android') return;
     if (this.isInitialized) return;
     this.isInitialized = true;
 
-    await this.refreshKnownContacts();
-    this.startCallMonitoring();
+    try {
+      await this.refreshKnownContacts();
+      this.startCallMonitoring();
+    } catch (err) {
+      console.warn('[KWISMO CALL DETECTION] Safe init error suppressed:', err);
+    }
   }
 
   private async refreshKnownContacts(): Promise<void> {
+    if (Platform.OS !== 'android') return;
     try {
-      const { status } = await Contacts.getPermissionsAsync();
-      if (status === 'granted') {
-        const { data } = await Contacts.getContactsAsync({
-          fields: [Contacts.Fields.PhoneNumbers],
-        });
-
-        if (data && data.length > 0) {
-          const map: Record<string, boolean> = {};
-          data.forEach((c) => {
-            if (c.phoneNumbers) {
-              c.phoneNumbers.forEach((p) => {
-                if (p.number) {
-                  const clean = p.number.replace(/[^0-9]/g, '');
-                  if (clean) {
-                    map[clean] = true;
-                    if (clean.length >= 8) {
-                      map[clean.slice(-8)] = true;
-                      map[clean.slice(-9)] = true;
-                    }
-                  }
-                }
-              });
+      const { granted, contacts } = await getDeviceContacts();
+      if (granted && contacts && contacts.length > 0) {
+        const map: Record<string, boolean> = {};
+        contacts.forEach((c) => {
+          if (c.phone) {
+            const clean = c.phone.replace(/[^0-9]/g, '');
+            if (clean) {
+              map[clean] = true;
+              if (clean.length >= 8) {
+                map[clean.slice(-8)] = true;
+                map[clean.slice(-9)] = true;
+              }
             }
-          });
-          this.knownContactsMap = map;
-        }
+          }
+        });
+        this.knownContactsMap = map;
       }
-    } catch {}
+    } catch (err) {
+      console.warn('[KWISMO CALL DETECTION] refreshKnownContacts error:', err);
+    }
   }
 
   private isUnknownNumber(phoneNumber: string): boolean {
@@ -68,6 +66,7 @@ class CallDetectionService {
   }
 
   public async handleCallEvent(event: CallStateEvent): Promise<void> {
+    if (Platform.OS !== 'android') return;
     const { state, phoneNumber } = event;
     console.log(`\x1b[35m[KWISMO CALL EVENT DETECTED]\x1b[0m State: "${state}", Phone: "${phoneNumber || 'REDACTED_BY_OS'}"`);
 
@@ -150,7 +149,6 @@ class CallDetectionService {
     } catch (err) {
       console.warn(`\x1b[33m[KWISMO OFFLINE FALLBACK]\x1b[0m API offline or failed. Queuing call for "${phone}"`);
       try {
-        const { offlineQueue } = await import('@/shared/services/offlineQueue');
         await offlineQueue.enqueue(
           'call_log',
           '/api/v1/verify/check',

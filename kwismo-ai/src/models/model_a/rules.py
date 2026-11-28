@@ -34,18 +34,24 @@ def calculate_expert_score(features: dict[str, Any]) -> tuple[float, list[str]]:
         explications.append(f"Anti-Vengeance activé : {num_sig} signalements regroupés sur {diversite_devices} appareil(s) distinct(s).")
 
     # 2. Analyse des vérifications et des intervalles temporels
-    if intervalle_verif_sec <= 300.0 and num_verif >= 5:
+    has_rapid_checks = intervalle_verif_sec <= 300.0 and num_verif >= 5
+    is_emerging_risk = (ratio_paresse >= 15.0 and vitesse_verif >= 3.0) or (num_verif >= 15 and num_sig == 0)
+
+    if has_rapid_checks:
         base_score += 0.25
         explications.append(f"Pic temporel critique : {num_verif} vérifications très rapprochées (< 5 min d'intervalle).")
-    elif ratio_paresse >= 15.0 and vitesse_verif >= 3.0:
-        base_score += 0.25
-        explications.append(f"Alerte Risque Émergent : Pic de {num_verif} vérifications récurrentes sans signalements rédigés.")
-    elif verif_pond >= 10.0 or vitesse_verif >= 4.0:
-        base_score += 0.20
-        explications.append(f"Volume élevé de vérifications d'utilisateurs ({num_verif} recherches).")
-    elif verif_pond >= 3.0:
-        base_score += 0.10
-        explications.append("Vérifications récurrentes enregistrées sur ce numéro.")
+
+    if is_emerging_risk:
+        if "Alerte Risque Émergent" not in " ".join(explications):
+            base_score = max(base_score, 0.30)
+            explications.append(f"Alerte Risque Émergent : Pic de {num_verif} vérifications récurrentes sans signalements rédigés.")
+    elif not has_rapid_checks:
+        if verif_pond >= 10.0 or vitesse_verif >= 4.0:
+            base_score += 0.20
+            explications.append(f"Volume élevé de vérifications d'utilisateurs ({num_verif} recherches).")
+        elif verif_pond >= 3.0:
+            base_score += 0.10
+            explications.append("Vérifications récurrentes enregistrées sur ce numéro.")
 
     # 3. Correlation temporelle entre vérification et signalement
     if intervalle_min_verif_sig_sec <= 600.0 and num_sig > 0:

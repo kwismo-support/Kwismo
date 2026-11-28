@@ -16,6 +16,8 @@ import { ToastContainer } from '@/shared/ui/Toast';
 import { useAuthStore } from '@/shared/store/authStore';
 import { useOTAUpdates } from '@/shared/utils/useOTAUpdates';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
+import { offlineQueue } from '@/shared/services/offlineQueue';
+import { callDetectionService } from '@/shared/services/callDetectionService';
 
 if (typeof globalThis !== 'undefined') {
   const origError = console.error;
@@ -23,7 +25,10 @@ if (typeof globalThis !== 'undefined') {
 
   console.error = (...args: any[]) => {
     const msg = typeof args[0] === 'string' ? args[0] : '';
-    if (msg.includes("Can't perform a React state update on a component that hasn't mounted yet")) {
+    if (
+      msg.includes("Can't perform a React state update on a component that hasn't mounted yet") ||
+      msg.includes("Requiring unknown module")
+    ) {
       return;
     }
     origError('\x1b[31m[KWISMO CONSOLE ERROR]:\x1b[0m', ...args);
@@ -36,11 +41,16 @@ if (typeof globalThis !== 'undefined') {
   if ((globalThis as any).ErrorUtils) {
     const previousHandler = (globalThis as any).ErrorUtils.getGlobalHandler();
     (globalThis as any).ErrorUtils.setGlobalHandler((error: any, isFatal?: boolean) => {
+      const errStr = String(error?.message || error || '');
+      if (errStr.includes('Requiring unknown module')) {
+        console.warn('[KWISMO MODULE SUPPRESSED]:', errStr);
+        return;
+      }
       console.error('[FATAL EXCEPTION]:', error?.message || error);
       if (error?.stack) {
         console.error(error.stack);
       }
-      if (previousHandler) {
+      if (previousHandler && isFatal) {
         previousHandler(error, isFatal);
       }
     });
@@ -172,12 +182,17 @@ export default function RootLayout() {
     if (fontsLoaded) {
       SplashScreen.hideAsync().catch(() => {});
       initializeAuth().finally(() => {
-        import('@/shared/services/offlineQueue').then(({ offlineQueue }) => {
+        try {
           offlineQueue.processQueue().catch(() => {});
-        });
-        import('@/shared/services/callDetectionService').then(({ callDetectionService }) => {
-          callDetectionService.init().catch(() => {});
-        });
+        } catch {}
+
+        if (Platform.OS === 'android') {
+          try {
+            callDetectionService.init().catch((err) => {
+              console.warn('[KWISMO CALL DETECTION] Init warning:', err);
+            });
+          } catch {}
+        }
       });
     }
   }, [fontsLoaded, initializeAuth]);
