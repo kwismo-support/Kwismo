@@ -66,26 +66,48 @@ jobs:
           SSH_KEY: ${{ secrets.AWS_EC2_SSH_KEY }}
           TARGET: ${{ steps.env-target.outputs.target }}
         run: |
-          mkdir -p ~/.ssh
-          RAW_KEY="$SSH_KEY"
+          python3 - << 'EOF'
+          import os, sys
 
-          # 1. Décoder si la clé a été stockée en base64
-          if echo "$RAW_KEY" | grep -q "BEGIN"; then
-            KEY_CONTENT="$RAW_KEY"
-          else
-            KEY_CONTENT=$(echo "$RAW_KEY" | base64 -d 2>/dev/null || echo "$RAW_KEY")
-          fi
+          raw = os.environ.get("SSH_KEY", "").strip()
+          if not raw:
+              print("::error ::Le secret AWS_EC2_SSH_KEY est vide.", file=sys.stderr)
+              sys.exit(1)
 
-          # 2. Remplacer les \n littéraux par de vrais sauts de ligne si nécessaire
-          if echo "$KEY_CONTENT" | grep -q "\\\\n"; then
-            KEY_CONTENT=$(printf "%b" "$KEY_CONTENT")
-          fi
+          # Nettoyer d'éventuels guillemets englobants
+          if (raw.startswith('"') and raw.endswith('"')) or (raw.startswith("'") and raw.endswith("'")):
+              raw = raw[1:-1].strip()
 
-          # 3. Écrire la clé sans retours chariot Windows (\r)
-          printf "%s\n" "$KEY_CONTENT" | tr -d '\r' > ~/.ssh/deploy_key
+          # Traiter les sauts de ligne échappés (\n textuels au lieu de vrais sauts de ligne)
+          if "\\n" in raw and "\n" not in raw:
+              raw = raw.replace("\\r\\n", "\n").replace("\\n", "\n")
 
-          # 4. S'assurer que le fichier se termine strictement par un saut de ligne (exigé par libcrypto / OpenSSH)
-          sed -i -e '$a\' ~/.ssh/deploy_key || printf "\n" >> ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
+          # Décoder si la clé a été encodée en base64
+          if "BEGIN" not in raw:
+              import base64
+              try:
+                  decoded = base64.b64decode(raw).decode('utf-8', errors='ignore')
+                  if "BEGIN" in decoded:
+                      raw = decoded
+              except Exception:
+                  pass
+
+          # Découper proprement en lignes sans \r
+          lines = [line.strip() for line in raw.replace("\r\n", "\n").replace("\r", "\n").split("\n") if line.strip()]
+
+          if not any("BEGIN" in l for l in lines):
+              print("::error ::Le secret 'AWS_EC2_SSH_KEY' ne contient pas de clé OpenSSH/PEM valide (doit contenir '-----BEGIN ... PRIVATE KEY-----').", file=sys.stderr)
+              print("Si vous disposez d'un fichier .ppk (PuTTY), convertissez-le en clé OpenSSH avec PuTTYgen avant de l'enregistrer dans GitHub Secrets.", file=sys.stderr)
+              sys.exit(1)
+
+          cleaned_key = "\n".join(lines) + "\n"
+          key_path = os.path.expanduser("~/.ssh/deploy_key")
+          os.makedirs(os.path.dirname(key_path), exist_ok=True)
+          with open(key_path, "w", encoding="utf-8", newline="\n") as f:
+              f.write(cleaned_key)
+
+          os.chmod(key_path, 0o600)
+          print(f"Cle SSH installee avec succes ({len(lines)} lignes detectees).")
+          EOF
 
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes -i ~/.ssh/deploy_key ubuntu@52.45.215.39 "sudo /opt/kwismo/scripts/deploy.sh $TARGET"
