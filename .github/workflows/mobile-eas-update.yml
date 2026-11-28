@@ -10,6 +10,17 @@ on:
       - 'kwismo-mobile/**'
       - '.github/workflows/mobile-eas-update.yml'
   workflow_dispatch:
+    inputs:
+      target:
+        description: 'Environment to publish (auto, production, staging, preview)'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - production
+          - staging
+          - preview
 
 jobs:
   publish-ota:
@@ -41,35 +52,52 @@ jobs:
         working-directory: kwismo-mobile
         run: npm run optimize
 
-      - name: Publish Dev / Preview Update
-        if: github.ref == 'refs/heads/dev'
-        working-directory: kwismo-mobile
-        env:
-          APP_ENV: preview
-          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL_DEV || 'https://api-dev.kwismo.com/api/v1' }}
-          EXPO_PUBLIC_APP_ENV: preview
-          EXPO_PUBLIC_APP_NAME: Kwismo-Dev
-          EXPO_PUBLIC_USE_MOCK_DATA: 'false'
-        run: eas update --auto --branch preview --non-interactive
+      - name: Resolve Target Environment
+        id: resolve-env
+        run: |
+          TARGET="${{ github.event.inputs.target }}"
+          BRANCH="${{ github.ref_name }}"
 
-      - name: Publish Staging Update
-        if: github.ref == 'refs/heads/staging'
-        working-directory: kwismo-mobile
-        env:
-          APP_ENV: staging
-          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL_STAGING || 'https://api-staging.kwismo.com/api/v1' }}
-          EXPO_PUBLIC_APP_ENV: staging
-          EXPO_PUBLIC_APP_NAME: Kwismo-Staging
-          EXPO_PUBLIC_USE_MOCK_DATA: 'false'
-        run: eas update --auto --branch staging --non-interactive
+          if [ -n "$TARGET" ] && [ "$TARGET" != "auto" ]; then
+            ENV_NAME="$TARGET"
+          elif [ "$BRANCH" = "main" ]; then
+            ENV_NAME="production"
+          elif [ "$BRANCH" = "staging" ]; then
+            ENV_NAME="staging"
+          elif [ "$BRANCH" = "dev" ]; then
+            ENV_NAME="preview"
+          else
+            ENV_NAME="preview"
+          fi
 
-      - name: Publish Production Update
-        if: github.ref == 'refs/heads/main'
+          echo "Selected target environment: $ENV_NAME"
+          echo "env_name=$ENV_NAME" >> $GITHUB_OUTPUT
+
+          if [ "$ENV_NAME" = "production" ]; then
+            echo "channel=production" >> $GITHUB_OUTPUT
+            echo "app_env=production" >> $GITHUB_OUTPUT
+            echo "app_name=Kwismo" >> $GITHUB_OUTPUT
+            echo "api_url=${{ secrets.EXPO_PUBLIC_API_URL || 'https://api.kwismo.com/api/v1' }}" >> $GITHUB_OUTPUT
+          elif [ "$ENV_NAME" = "staging" ]; then
+            echo "channel=staging" >> $GITHUB_OUTPUT
+            echo "app_env=staging" >> $GITHUB_OUTPUT
+            echo "app_name=Kwismo-Staging" >> $GITHUB_OUTPUT
+            echo "api_url=${{ secrets.EXPO_PUBLIC_API_URL_STAGING || 'https://api-staging.kwismo.com/api/v1' }}" >> $GITHUB_OUTPUT
+          else
+            echo "channel=preview" >> $GITHUB_OUTPUT
+            echo "app_env=preview" >> $GITHUB_OUTPUT
+            echo "app_name=Kwismo-Dev" >> $GITHUB_OUTPUT
+            echo "api_url=${{ secrets.EXPO_PUBLIC_API_URL_DEV || 'https://api-dev.kwismo.com/api/v1' }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish EAS OTA Update
         working-directory: kwismo-mobile
         env:
-          APP_ENV: production
-          EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL || 'https://api.kwismo.com/api/v1' }}
-          EXPO_PUBLIC_APP_ENV: production
-          EXPO_PUBLIC_APP_NAME: Kwismo
+          APP_ENV: ${{ steps.resolve-env.outputs.app_env }}
+          EXPO_PUBLIC_API_URL: ${{ steps.resolve-env.outputs.api_url }}
+          EXPO_PUBLIC_APP_ENV: ${{ steps.resolve-env.outputs.app_env }}
+          EXPO_PUBLIC_APP_NAME: ${{ steps.resolve-env.outputs.app_name }}
           EXPO_PUBLIC_USE_MOCK_DATA: 'false'
-        run: eas update --auto --branch production --non-interactive
+        run: |
+          echo "Publishing EAS OTA update to branch '${{ steps.resolve-env.outputs.channel }}' with API ${{ steps.resolve-env.outputs.api_url }}..."
+          eas update --auto --branch ${{ steps.resolve-env.outputs.channel }} --non-interactive

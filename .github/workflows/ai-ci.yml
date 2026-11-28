@@ -2,12 +2,12 @@ name: KWISMO AI Service CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, staging, dev ]
     paths:
       - 'kwismo-ai/**'
       - '.github/workflows/ai-ci.yml'
   pull_request:
-    branches: [ main ]
+    branches: [ main, staging, dev ]
     paths:
       - 'kwismo-ai/**'
       - '.github/workflows/ai-ci.yml'

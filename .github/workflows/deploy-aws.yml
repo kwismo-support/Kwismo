@@ -46,13 +46,15 @@ jobs:
       - name: Determine environment target
         id: env-target
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "target=${{ github.event.inputs.target }}" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+          TARGET="${{ github.event.inputs.target }}"
+          BRANCH="${{ github.ref_name }}"
+          if [ -n "$TARGET" ] && [ "$TARGET" != "all" ]; then
+            echo "target=$TARGET" >> $GITHUB_OUTPUT
+          elif [ "$BRANCH" = "main" ] || [ "${{ github.ref }}" = "refs/heads/main" ]; then
             echo "target=prod" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref }}" = "refs/heads/staging" ]; then
+          elif [ "$BRANCH" = "staging" ] || [ "${{ github.ref }}" = "refs/heads/staging" ]; then
             echo "target=staging" >> $GITHUB_OUTPUT
-          elif [ "${{ github.ref }}" = "refs/heads/dev" ]; then
+          elif [ "$BRANCH" = "dev" ] || [ "${{ github.ref }}" = "refs/heads/dev" ]; then
             echo "target=dev" >> $GITHUB_OUTPUT
           else
             echo "target=all" >> $GITHUB_OUTPUT

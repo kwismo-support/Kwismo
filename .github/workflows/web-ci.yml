@@ -2,12 +2,12 @@ name: KWISMO Frontend Web CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, staging, dev ]
     paths:
       - 'kwismo-web/**'
       - '.github/workflows/web-ci.yml'
   pull_request:
-    branches: [ main ]
+    branches: [ main, staging, dev ]
     paths:
       - 'kwismo-web/**'
       - '.github/workflows/web-ci.yml'

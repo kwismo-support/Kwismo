@@ -10,6 +10,17 @@ on:
       - 'kwismo-web/**'
       - '.github/workflows/deploy-vercel.yml'
   workflow_dispatch:
+    inputs:
+      target:
+        description: 'Environment to deploy (auto, production, staging, dev)'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - production
+          - staging
+          - dev
 
 jobs:
   deploy-web:
@@ -32,41 +43,54 @@ jobs:
           npm ci
           npm run build
 
-      - name: Deploy to Dev Environment (kwismo-dev.vercel.app)
-        if: github.ref == 'refs/heads/dev'
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      - name: Resolve Target Environment
+        id: resolve-target
         run: |
-          DEPLOY_OUTPUT=$(npx vercel deploy --yes --token=$VERCEL_TOKEN --build-env VITE_API_URL=https://api.kwismo.com/api/v1 --env VITE_API_URL=https://api.kwismo.com/api/v1 --meta githubCommitRef=dev --meta githubCommitSha=$GITHUB_SHA)
-          echo "$DEPLOY_OUTPUT"
-          DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep -oE 'https://[a-zA-Z0-9.-]+\.vercel\.app' | tail -n 1)
-          if [ -n "$DEPLOY_URL" ]; then
-            echo "Aliasing $DEPLOY_URL to kwismo-dev.vercel.app..."
-            npx vercel alias set "$DEPLOY_URL" kwismo-dev.vercel.app --token=$VERCEL_TOKEN || true
+          TARGET="${{ github.event.inputs.target }}"
+          BRANCH="${{ github.ref_name }}"
+
+          if [ -n "$TARGET" ] && [ "$TARGET" != "auto" ]; then
+            ENV_NAME="$TARGET"
+          elif [ "$BRANCH" = "main" ]; then
+            ENV_NAME="production"
+          elif [ "$BRANCH" = "staging" ]; then
+            ENV_NAME="staging"
+          elif [ "$BRANCH" = "dev" ]; then
+            ENV_NAME="dev"
+          else
+            ENV_NAME="dev"
           fi
 
-      - name: Deploy to Staging Environment (kwismo-preview.vercel.app)
-        if: github.ref == 'refs/heads/staging'
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          DEPLOY_OUTPUT=$(npx vercel deploy --yes --token=$VERCEL_TOKEN --build-env VITE_API_URL=https://api.kwismo.com/api/v1 --env VITE_API_URL=https://api.kwismo.com/api/v1 --meta githubCommitRef=staging --meta githubCommitSha=$GITHUB_SHA)
-          echo "$DEPLOY_OUTPUT"
-          DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep -oE 'https://[a-zA-Z0-9.-]+\.vercel\.app' | tail -n 1)
-          if [ -n "$DEPLOY_URL" ]; then
-            echo "Aliasing $DEPLOY_URL to kwismo-preview.vercel.app..."
-            npx vercel alias set "$DEPLOY_URL" kwismo-preview.vercel.app --token=$VERCEL_TOKEN || true
-          fi
+          echo "Selected target environment: $ENV_NAME"
+          echo "env_name=$ENV_NAME" >> $GITHUB_OUTPUT
 
-      - name: Deploy to Production Environment (kwismo.com)
-        if: github.ref == 'refs/heads/main'
+      - name: Deploy Web Application to Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          TARGET: ${{ steps.resolve-target.outputs.env_name }}
         run: |
-          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN --build-env VITE_API_URL=https://api.kwismo.com/api/v1 --env VITE_API_URL=https://api.kwismo.com/api/v1 --meta githubCommitRef=main --meta githubCommitSha=$GITHUB_SHA
+          echo "Deploying to Vercel for target environment: $TARGET (Branch: ${{ github.ref_name }})"
+          if [ "$TARGET" = "production" ]; then
+            echo "Deploying to PRODUCTION (kwismo.com)..."
+            npx vercel deploy --prod --yes --token=$VERCEL_TOKEN --build-env VITE_API_URL=https://api.kwismo.com/api/v1 --env VITE_API_URL=https://api.kwismo.com/api/v1 --meta githubCommitRef=main --meta githubCommitSha=$GITHUB_SHA
+          elif [ "$TARGET" = "staging" ]; then
+            echo "Deploying to STAGING (kwismo-preview.vercel.app)..."
+            DEPLOY_OUTPUT=$(npx vercel deploy --yes --token=$VERCEL_TOKEN --build-env VITE_API_URL=https://api.kwismo.com/api/v1 --env VITE_API_URL=https://api.kwismo.com/api/v1 --meta githubCommitRef=staging --meta githubCommitSha=$GITHUB_SHA)
+            echo "$DEPLOY_OUTPUT"
+            DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep -oE 'https://[a-zA-Z0-9.-]+\.vercel\.app' | tail -n 1)
+            if [ -n "$DEPLOY_URL" ]; then
+              echo "Aliasing $DEPLOY_URL to kwismo-preview.vercel.app..."
+              npx vercel alias set "$DEPLOY_URL" kwismo-preview.vercel.app --token=$VERCEL_TOKEN || true
+            fi
+          else
+            echo "Deploying to DEV (kwismo-dev.vercel.app)..."
+            DEPLOY_OUTPUT=$(npx vercel deploy --yes --token=$VERCEL_TOKEN --build-env VITE_API_URL=https://api.kwismo.com/api/v1 --env VITE_API_URL=https://api.kwismo.com/api/v1 --meta githubCommitRef=dev --meta githubCommitSha=$GITHUB_SHA)
+            echo "$DEPLOY_OUTPUT"
+            DEPLOY_URL=$(echo "$DEPLOY_OUTPUT" | grep -oE 'https://[a-zA-Z0-9.-]+\.vercel\.app' | tail -n 1)
+            if [ -n "$DEPLOY_URL" ]; then
+              echo "Aliasing $DEPLOY_URL to kwismo-dev.vercel.app..."
+              npx vercel alias set "$DEPLOY_URL" kwismo-dev.vercel.app --token=$VERCEL_TOKEN || true
+            fi
+          fi

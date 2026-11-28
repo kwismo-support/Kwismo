@@ -2,12 +2,12 @@ name: KWISMO Backend CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, staging, dev ]
     paths:
       - 'kwismo-backend/**'
       - '.github/workflows/backend-ci.yml'
   pull_request:
-    branches: [ main ]
+    branches: [ main, staging, dev ]
     paths:
       - 'kwismo-backend/**'
       - '.github/workflows/backend-ci.yml'

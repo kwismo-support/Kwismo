@@ -5,10 +5,22 @@ on:
     branches:
       - main
       - staging
+      - dev
     paths:
       - 'kwismo-mobile/**'
       - '.github/workflows/mobile-cloudflare-ota.yml'
   workflow_dispatch:
+    inputs:
+      target:
+        description: 'Environment to publish (auto, production, staging, dev)'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - production
+          - staging
+          - dev
 
 jobs:
   publish-cloudflare-ota:
@@ -29,24 +41,51 @@ jobs:
         working-directory: kwismo-mobile
         run: npm ci
 
-      - name: Write .env for Staging (Test App)
-        if: github.ref == 'refs/heads/staging'
-        working-directory: kwismo-mobile
+      - name: Resolve Target Environment
+        id: resolve-env
         run: |
-          echo "EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL_PREVIEW || 'https://api.kwismo.com/api/v1' }}" > .env
-          echo "EXPO_PUBLIC_USE_MOCK_DATA=false" >> .env
-          echo "EXPO_PUBLIC_APP_ENV=preview" >> .env
-          echo "EXPO_PUBLIC_APP_NAME=Kwismo-Test" >> .env
-          echo "EXPO_PUBLIC_DEFAULT_LANG=fr" >> .env
+          TARGET="${{ github.event.inputs.target }}"
+          BRANCH="${{ github.ref_name }}"
 
-      - name: Write .env for Main (Production App)
-        if: github.ref == 'refs/heads/main'
+          if [ -n "$TARGET" ] && [ "$TARGET" != "auto" ]; then
+            ENV_NAME="$TARGET"
+          elif [ "$BRANCH" = "main" ]; then
+            ENV_NAME="production"
+          elif [ "$BRANCH" = "staging" ]; then
+            ENV_NAME="staging"
+          elif [ "$BRANCH" = "dev" ]; then
+            ENV_NAME="dev"
+          else
+            ENV_NAME="dev"
+          fi
+
+          echo "Selected target environment: $ENV_NAME"
+          echo "env_name=$ENV_NAME" >> $GITHUB_OUTPUT
+
+          if [ "$ENV_NAME" = "production" ]; then
+            echo "api_url=${{ secrets.EXPO_PUBLIC_API_URL || 'https://api.kwismo.com/api/v1' }}" >> $GITHUB_OUTPUT
+            echo "app_name=Kwismo" >> $GITHUB_OUTPUT
+            echo "app_env=production" >> $GITHUB_OUTPUT
+            echo "cf_branch=main" >> $GITHUB_OUTPUT
+          elif [ "$ENV_NAME" = "staging" ]; then
+            echo "api_url=${{ secrets.EXPO_PUBLIC_API_URL_PREVIEW || secrets.EXPO_PUBLIC_API_URL_STAGING || 'https://api.kwismo.com/api/v1' }}" >> $GITHUB_OUTPUT
+            echo "app_name=Kwismo-Test" >> $GITHUB_OUTPUT
+            echo "app_env=preview" >> $GITHUB_OUTPUT
+            echo "cf_branch=staging" >> $GITHUB_OUTPUT
+          else
+            echo "api_url=${{ secrets.EXPO_PUBLIC_API_URL_DEV || 'https://api-dev.kwismo.com/api/v1' }}" >> $GITHUB_OUTPUT
+            echo "app_name=Kwismo-Dev" >> $GITHUB_OUTPUT
+            echo "app_env=dev" >> $GITHUB_OUTPUT
+            echo "cf_branch=dev" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Write .env Configuration
         working-directory: kwismo-mobile
         run: |
-          echo "EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL || 'https://api.kwismo.com/api/v1' }}" > .env
+          echo "EXPO_PUBLIC_API_URL=${{ steps.resolve-env.outputs.api_url }}" > .env
           echo "EXPO_PUBLIC_USE_MOCK_DATA=false" >> .env
-          echo "EXPO_PUBLIC_APP_ENV=production" >> .env
-          echo "EXPO_PUBLIC_APP_NAME=Kwismo" >> .env
+          echo "EXPO_PUBLIC_APP_ENV=${{ steps.resolve-env.outputs.app_env }}" >> .env
+          echo "EXPO_PUBLIC_APP_NAME=${{ steps.resolve-env.outputs.app_name }}" >> .env
           echo "EXPO_PUBLIC_DEFAULT_LANG=fr" >> .env
 
       - name: Export Optimized Metro JS Bundle
@@ -63,7 +102,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           npx wrangler pages project create kwismo-mobile-ota --production-branch=main || true
-          npx wrangler pages deploy kwismo-mobile/dist --project-name=kwismo-mobile-ota --branch=${{ github.ref_name }} --commit-dirty=true
+          npx wrangler pages deploy kwismo-mobile/dist --project-name=kwismo-mobile-ota --branch=${{ steps.resolve-env.outputs.cf_branch }} --commit-dirty=true
 
       - name: Deploy Cloudflare Edge OTA Worker
         working-directory: kwismo-mobile/cloudflare/ota-worker
@@ -79,7 +118,7 @@ jobs:
           OTA_SECRET_TOKEN: ${{ secrets.CLOUDFLARE_OTA_SECRET_TOKEN || 'kwismo-ota-secret-key-2026' }}
         run: |
           if [ -n "$OTA_WORKER_URL" ]; then
-            BRANCH_NAME="${{ github.ref_name }}"
+            BRANCH_NAME="${{ steps.resolve-env.outputs.cf_branch }}"
             TIMESTAMP=$(date +%s%3N)
             curl -s -f -X POST "$OTA_WORKER_URL/api/publish-manifest" \
               -H "Content-Type: application/json" \
