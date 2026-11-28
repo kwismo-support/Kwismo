@@ -101,7 +101,7 @@ export default function LanguageSelectionScreen() {
       <StatusBar style="light" />
 
       <Animated.View
-        className="flex-1 w-full h-full px-6 justify-between"
+        className="flex-1 w-full h-full px-6 justify-between max-w-md mx-auto self-center"
         style={{
           paddingTop: insets.top + 40,
           paddingBottom: Math.max(insets.bottom + 24, 36),
@@ -118,7 +118,7 @@ export default function LanguageSelectionScreen() {
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => setDropdownOpen(!dropdownOpen)}
-              className="w-full hx-13 bg-white dark:bg-brand-cardDark rounded-xl flex-row items-center justify-between px-5 border border-slate-200/60 dark:border-slate-700 shadow-md shadow-black/10 elevation-3"
+              className="w-full h-13 h-[52px] bg-white dark:bg-brand-cardDark rounded-xl flex-row items-center justify-between px-5 border border-slate-200/60 dark:border-slate-700 shadow-md shadow-black/10 elevation-3"
             >
               <View className="flex-row items-center">
                 {currentOption && (
@@ -190,7 +190,7 @@ export default function LanguageSelectionScreen() {
                 <TouchableOpacity
                   activeOpacity={0.88}
                   onPress={handleContinue}
-                  className="w-full hx-13 bg-brand-green rounded-xl flex-row items-center justify-center shadow-md shadow-brand-green/30 elevation-4"
+                  className="w-full h-13 h-[52px] bg-brand-green rounded-xl flex-row items-center justify-center shadow-md shadow-brand-green/30 elevation-4"
                 >
                   <Text className="font-semibold text-body-lg text-white">
                     {t('common.continue')}

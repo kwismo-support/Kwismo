@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAppTheme } from '@/shared/hooks/useAppTheme';
 
@@ -19,7 +19,7 @@ export const BrandGradientBackground: React.FC<BrandGradientBackgroundProps> = (
       <LinearGradient
         colors={colorsList}
         locations={[0.0, 0.35, 0.52, 0.62, 0.74, 0.84, 1.0]}
-        className="absolute inset-0 w-full h-full"
+        style={StyleSheet.absoluteFill}
       />
       {children}
     </View>
@@ -27,5 +27,3 @@ export const BrandGradientBackground: React.FC<BrandGradientBackgroundProps> = (
 };
 
 export default BrandGradientBackground;
-
-

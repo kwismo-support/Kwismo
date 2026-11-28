@@ -16,7 +16,7 @@ export const KwismoLogo: React.FC<KwismoLogoProps> = ({
   const logoSource: ImageSourcePropType = variant === 'white' ? logoWhite : logoDefault;
 
   return (
-    <View className="align-center justify-center z-10" style={{ width: size * 1.6, height: size }}>
+    <View className="items-center justify-center z-10" style={{ width: size * 1.6, height: size }}>
       <Image
         source={logoSource}
         style={{ width: size * 1.6, height: size }}

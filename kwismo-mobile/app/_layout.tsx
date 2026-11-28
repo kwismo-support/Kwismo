@@ -1,8 +1,13 @@
 import React, { useEffect } from 'react';
-import { Platform, View, Text } from 'react-native';
+import { Platform, View, Text, StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NativeWindStyleSheet } from 'nativewind';
+
+NativeWindStyleSheet.setOutput({
+  default: 'native',
+});
 import {
   useFonts,
   MontserratAlternates_400Regular,
@@ -206,25 +211,58 @@ export default function RootLayout() {
     <AppErrorBoundary>
       <SafeAreaProvider>
         <StatusBar style="light" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            animation: 'slide_from_right',
-            gestureEnabled: true,
-            fullScreenGestureEnabled: true,
-            animationDuration: 200,
-            contentStyle: { backgroundColor: isDark ? '#0F1626' : '#FFFFFF' },
-          }}
-        >
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(app)" options={{ headerShown: false }} />
-        </Stack>
-        <ToastContainer />
+        <View style={Platform.OS === 'web' ? layoutStyles.webWrapper : layoutStyles.nativeContainer}>
+          <View style={Platform.OS === 'web' ? layoutStyles.webFrame : layoutStyles.nativeContainer}>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                animation: 'slide_from_right',
+                gestureEnabled: true,
+                fullScreenGestureEnabled: true,
+                animationDuration: 200,
+                contentStyle: { backgroundColor: isDark ? '#0F1626' : '#FFFFFF' },
+              }}
+            >
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(app)" options={{ headerShown: false }} />
+            </Stack>
+            <ToastContainer />
+          </View>
+        </View>
       </SafeAreaProvider>
     </AppErrorBoundary>
   );
 }
+
+const layoutStyles = StyleSheet.create({
+  nativeContainer: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
+  webWrapper: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    minHeight: '100vh' as any,
+    backgroundColor: '#070C15',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  webFrame: {
+    width: '100%',
+    maxWidth: 440,
+    height: '100%',
+    maxHeight: '100vh' as any,
+    overflow: 'hidden',
+    position: 'relative',
+    backgroundColor: '#0F1626',
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+});
 
 
